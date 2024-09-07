@@ -18,10 +18,10 @@ use crate::map::{Entity, Position};
 // 1: bool = true if the entities are colliding
 // 2: Position = nomalized line of collision
 // 3: f32 = the minimum amount of overlap between the shapes that would solve the collision
-pub(crate) fn intersect_circle_polygon(
-    circle: &mut Entity,
+pub fn intersect_circle_polygon(
+    circle: &Entity,
     polygon: &Entity,
-    obstacles: &HashMap<u64, Entity>,
+    obstacles: &[Entity],
     external_wall: &Entity,
 ) -> (bool, Position, f32) {
     // The normal will be the vector in which the polygons should move to stop colliding
@@ -56,7 +56,7 @@ pub(crate) fn intersect_circle_polygon(
             polygon,
             &current_vertex,
             &next_vertex,
-            obstacles,
+            &obstacles,
             external_wall,
         ) {
             continue;
@@ -311,12 +311,9 @@ fn invalid_axis(
     polygon: &Entity,
     current_vertex: &Position,
     next_vertex: &Position,
-    obstacles: &HashMap<u64, Entity>,
+    obstacles: &[Entity],
     external_wall: &Entity,
 ) -> bool {
-    let obstacle_vector: Vec<Entity> = obstacles.clone().into_values().collect();
-    let external_wall_vector = vec![external_wall.clone()];
-
     // Check if moved vertices are inside map
 
     // Move current vertex in the axis direction for a circle diameter amount
@@ -326,46 +323,44 @@ fn invalid_axis(
     // Create a point entity to check collisions
     let mut current_vertex_point = Entity::new_point(polygon.id, current_vertex_moved);
 
-    // Check if the moved current point is actually colliding with the map
-    let mut current_vertex_point_collisions =
-        current_vertex_point.collides_with(&external_wall_vector);
-
     // Move next vertex in the axis direction for a circle diameter amount
     let next_vertex_moved = Position::add(next_vertex, &Position::mult(&axis, circle.radius * 2.0));
 
     // Create a point entity to check collisions
     let mut next_vertex_point = Entity::new_point(polygon.id, next_vertex_moved);
 
-    // Check if the moved next point is actually colliding with the map
-    let mut next_vertex_point_collisions = next_vertex_point.collides_with(&external_wall_vector);
+    // Check if the axis is actually colliding with the map
+    let axis_points = [current_vertex_point, next_vertex_point];
+    let mut axis_points_collisions = external_wall.collides_with(&axis_points);
+    let [current_vertex_point, next_vertex_point] = axis_points;
 
     // If both point are not colliding with the map that means that this axis is not a valid one to resolve the collision since they
     // are outside of the map boundaries
-    if current_vertex_point_collisions.is_empty() && next_vertex_point_collisions.is_empty() {
+    if axis_points_collisions.is_empty() {
         return true;
     }
 
     // Check if projected lines or vertices are colliding with same obstacle
 
     // Check if the moved current point is colliding with obstacles
-    current_vertex_point_collisions = current_vertex_point.collides_with(&obstacle_vector);
+    let mut current_vertex_point_collisions = current_vertex_point.collides_with(obstacles);
 
     // Create a line entity to check collisions
     let mut current_vertex_line =
         Entity::new_line(polygon.id, vec![*current_vertex, current_vertex_moved]);
 
     // Check if the projected line from the current vertex is colliding with obstacles
-    let mut current_vertex_collisions = current_vertex_line.collides_with(&obstacle_vector);
+    let mut current_vertex_collisions = current_vertex_line.collides_with(obstacles);
     current_vertex_collisions.append(&mut current_vertex_point_collisions);
 
     // Check if the moved next point is colliding with obstacles
-    next_vertex_point_collisions = next_vertex_point.collides_with(&obstacle_vector);
+    let mut next_vertex_point_collisions = next_vertex_point.collides_with(obstacles);
 
     // Create a line entity to check collisions
     let mut next_vertex_line = Entity::new_line(polygon.id, vec![*next_vertex, next_vertex_moved]);
 
     // Check if the projected line from the next vertex is colliding with obstacles
-    let mut next_vertex_collisions = next_vertex_line.collides_with(&obstacle_vector);
+    let mut next_vertex_collisions = next_vertex_line.collides_with(obstacles);
     next_vertex_collisions.append(&mut next_vertex_point_collisions);
 
     // If the collisions from the projections of the current vertex and the ones from the next vertex have the same obstacle

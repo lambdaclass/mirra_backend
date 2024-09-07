@@ -5,7 +5,7 @@ pub mod map;
 
 use crate::collision_detection::ear_clipping;
 use crate::map::{Category, Direction, Entity, Position};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 #[rustler::nif()]
 fn add(a: i64, b: i64) -> i64 {
@@ -20,6 +20,7 @@ fn move_entities(
     obstacles: HashMap<u64, Entity>,
 ) -> HashMap<u64, Entity> {
     let mut entities: HashMap<u64, Entity> = entities;
+    let obstacles: Vec<_> = obstacles.into_values().collect();
 
     for entity in entities.values_mut() {
         if entity.is_moving {
@@ -40,6 +41,8 @@ fn move_entity(
     obstacles: HashMap<u64, Entity>,
 ) -> Entity {
     let mut entity: Entity = entity;
+    let obstacles: Vec<_> = obstacles.into_values().collect();
+
     if entity.is_moving {
         entity.move_entity(delta_time);
         move_entity_to_closest_available_position(&mut entity, &external_wall, &obstacles);
@@ -57,6 +60,7 @@ fn get_closest_available_position(
 ) -> Position {
     let mut entity: Entity = entity;
     entity.position = new_position;
+    let obstacles: Vec<_> = obstacles.into_values().collect();
 
     move_entity_to_closest_available_position(&mut entity, &external_wall, &obstacles);
     entity.position
@@ -72,6 +76,8 @@ fn move_entity_to_direction(
 ) -> Entity {
     let mut entity: Entity = entity;
     entity.move_entity_to_direction(direction, amount);
+    let obstacles: Vec<_> = obstacles.into_values().collect();
+
     move_entity_to_closest_available_position(&mut entity, &external_wall, &obstacles);
 
     entity
@@ -82,7 +88,7 @@ fn move_entity_to_direction(
 /// Return a list of the players id inside the radius Vec<player_id>
 pub fn check_collisions(entity: Entity, entities: HashMap<u64, Entity>) -> Vec<u64> {
     let mut entity: Entity = entity;
-    let ent = entities.into_values().collect();
+    let ent: Vec<_> = entities.into_values().collect();
 
     entity.collides_with(&ent)
 }
@@ -207,7 +213,7 @@ fn maybe_triangulate_concave_entities(obstacles: Vec<Entity>) -> Vec<Entity> {
 fn move_entity_to_closest_available_position(
     entity: &mut Entity,
     external_wall: &Entity,
-    obstacles: &HashMap<u64, Entity>,
+    obstacles: &[Entity],
 ) {
     let process_entity: bool = entity.category == Category::Player
         || entity.category == Category::PowerUp
@@ -217,12 +223,12 @@ fn move_entity_to_closest_available_position(
         entity.move_to_next_valid_position_inside(external_wall);
     }
 
-    let collides_with = entity.collides_with(&obstacles.clone().into_values().collect());
+    let collides_with: HashSet<u64> = HashSet::from_iter(entity.collides_with(obstacles).into_iter());
 
     if process_entity && !collides_with.is_empty() {
-        let collided_with: Vec<&Entity> = collides_with
+        let collided_with: Vec<&Entity> = obstacles
             .iter()
-            .map(|id| obstacles.get(id).unwrap())
+            .filter(|entity| collides_with.contains(&entity.id))
             .collect();
         entity.move_to_next_valid_position_outside(collided_with, obstacles, external_wall);
     }

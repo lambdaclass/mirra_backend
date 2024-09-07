@@ -39,7 +39,7 @@ pub struct Entity {
     pub name: String,
 }
 
-#[derive(Deserialize, NifTaggedEnum, Clone, PartialEq)]
+#[derive(Deserialize, NifTaggedEnum, Clone, Copy, PartialEq)]
 pub enum Shape {
     Circle,
     Polygon,
@@ -117,7 +117,22 @@ impl Entity {
             category: Category::Obstacle,
             direction: Direction { x: 0.0, y: 0.0 },
             is_moving: false,
-            name: format!("{}{}", "Point ", id),
+            name: String::new(),
+        }
+    }
+
+    pub fn new_circle(id: u64, position: Position, radius: f32) -> Entity {
+        Entity {
+            id,
+            shape: Shape::Circle,
+            position,
+            radius,
+            vertices: Vec::new(),
+            speed: 0.0,
+            category: Category::Obstacle,
+            direction: Direction { x: 0.0, y: 0.0 },
+            is_moving: false,
+            name: String::new(),
         }
     }
 
@@ -132,7 +147,7 @@ impl Entity {
             category: Category::Obstacle,
             direction: Direction { x: 0.0, y: 0.0 },
             is_moving: false,
-            name: format!("{}{}", "Line ", id),
+            name: String::new(),
         }
     }
 
@@ -147,11 +162,16 @@ impl Entity {
             category: Category::Obstacle,
             direction: Direction { x: 0.0, y: 0.0 },
             is_moving: false,
-            name: format!("{}{}", "Polygon ", id),
+            name: String::new(),
         }
     }
 
-    pub fn collides_with(&self, entities: &Vec<Entity>) -> Vec<u64> {
+    // TODO:
+    // 1. Expect entities grouped by shape (if possible, treating points as
+    //    circles and lines as polygons)
+    // 2. Use these groups to simply iterate without the match
+    // 3. Receive result buffer to avoid multiple allocations
+    pub fn collides_with(&self, entities: &[Entity]) -> Vec<u64> {
         let mut result = Vec::new();
 
         for entity in entities {
@@ -180,6 +200,11 @@ impl Entity {
                 }
                 (Shape::Point, Shape::Polygon) => {
                     if point_polygon_collision(self, entity) {
+                        result.push(entity.id);
+                    }
+                }
+                (Shape::Polygon, Shape::Point) => {
+                    if point_polygon_collision(entity, self) {
                         result.push(entity.id);
                     }
                 }
@@ -232,7 +257,7 @@ impl Entity {
     pub fn move_to_next_valid_position_outside(
         &mut self,
         collided_with: Vec<&Entity>,
-        obstacles: &HashMap<u64, Entity>,
+        obstacles: &[Entity],
         external_wall: &Entity,
     ) {
         for entity in collided_with {
