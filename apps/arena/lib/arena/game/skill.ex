@@ -455,7 +455,7 @@ defmodule Arena.Game.Skill do
 
         target_player =
           Map.get(players_acc, player_id)
-          |> Entities.take_damage(real_damage, player_id)
+          |> Entities.take_damage(real_damage, player.id)
 
         send(self(), {:damage_done, player.id, damage})
 
