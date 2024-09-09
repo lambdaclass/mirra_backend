@@ -20,7 +20,6 @@ defmodule Arena.GameUpdater do
   alias Arena.Serialization.PingUpdate
   alias Arena.Serialization.Ping
   alias Phoenix.PubSub
-  alias Arena.Utils
   alias Arena.Game.Trap
 
   ##########################
