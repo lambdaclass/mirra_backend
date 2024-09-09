@@ -52,6 +52,8 @@ jobs:
           NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME_HOSTCOLOR }}
           NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+          XDG_RUNTIME_DIR: ${{ vars.XDG_RUNTIME_DIR }}
+          DBUS_SESSION_BUS_ADDRESS: ${{ vars.DBUS_SESSION_BUS_ADDRESS }}
         run: |
           set -ex
           ssh ${SSH_USERNAME}@${SSH_HOST} \
@@ -68,4 +70,6 @@ jobs:
                 SECRET_KEY_BASE=${SECRET_KEY_BASE} \
                 NEWRELIC_APP_NAME=${NEWRELIC_APP_NAME} \
                 NEWRELIC_KEY=${NEWRELIC_KEY} \
+                XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR} \
+                DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS} \
                 /home/${SSH_USERNAME}/deploy-script/deploy.sh
