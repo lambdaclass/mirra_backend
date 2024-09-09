@@ -10,7 +10,7 @@ defmodule Arena.Game.Crate do
     crate.aditional_info.health > 0
   end
 
-  def interactable_crates(crates) do
+  def alive_crates(crates) do
     Map.filter(crates, fn {_crate_id, crate} -> alive?(crate) end)
   end
 end
