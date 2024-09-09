@@ -229,11 +229,7 @@ defmodule Arena.Game.Effect do
 
         send(self(), {:damage_done, pool_owner.id, real_damage})
 
-        if Entities.alive?(entity) do
-          Entities.take_damage(entity, real_damage, pool_owner.id)
-        else
-          entity
-        end
+        Entities.take_damage(entity, real_damage, pool_owner.id)
     end
   end
 

@@ -472,11 +472,21 @@ defmodule Arena.Entities do
   defp get_shape("point"), do: :point
   defp get_shape(_), do: nil
 
-  def take_damage(%{category: :player} = entity, damage, damage_owner_id),
-    do: Player.take_damage(entity, damage, damage_owner_id)
+  def take_damage(%{category: :player} = entity, damage, damage_owner_id) do
+    if alive?(entity) do
+      Player.take_damage(entity, damage, damage_owner_id)
+    else
+      entity
+    end
+  end
 
-  def take_damage(%{category: :crate} = entity, damage, damage_owner_id),
-    do: Crate.take_damage(entity, damage, damage_owner_id)
+  def take_damage(%{category: :crate} = entity, damage, damage_owner_id) do
+    if alive?(entity) do
+      Crate.take_damage(entity, damage, damage_owner_id)
+    else
+      entity
+    end
+  end
 
   def alive?(%{category: :player} = entity), do: Player.alive?(entity)
   def alive?(%{category: :crate} = entity), do: Crate.alive?(entity)
