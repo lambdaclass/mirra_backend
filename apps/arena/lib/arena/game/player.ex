@@ -25,11 +25,11 @@ defmodule Arena.Game.Player do
     end)
   end
 
-  def take_damage(%{aditional_info: %{damage_immunity: true}} = player, _) do
+  def take_damage(%{aditional_info: %{damage_immunity: true}} = player, _, _damage_owner_id) do
     player
   end
 
-  def take_damage(player, damage) do
+  def take_damage(player, damage, damage_owner_id) do
     defense_multiplier = 1 - player.aditional_info.bonus_defense
     damage_taken = round(damage * defense_multiplier)
 
@@ -42,14 +42,21 @@ defmodule Arena.Game.Player do
 
     send(self(), {:damage_taken, player.id, damage_taken})
 
-    Map.update!(player, :aditional_info, fn info ->
-      %{
-        info
-        | health: max(info.health - damage_taken, 0),
-          last_damage_received: System.monotonic_time(:millisecond),
-          mana: min(info.mana + mana_to_recover, info.max_mana)
-      }
-    end)
+    player =
+      Map.update!(player, :aditional_info, fn info ->
+        %{
+          info
+          | health: max(info.health - damage_taken, 0),
+            last_damage_received: System.monotonic_time(:millisecond),
+            mana: min(info.mana + mana_to_recover, info.max_mana)
+        }
+      end)
+
+    unless alive?(player) do
+      send(self(), {:to_killfeed, damage_owner_id, player.id})
+    end
+
+    player
   end
 
   def kill_player(player) do
@@ -424,6 +431,30 @@ defmodule Arena.Game.Player do
         "EXECUTING_SKILL" <> _number -> true
         _ -> false
       end
+    end)
+  end
+
+  def power_up_boost(player, amount_of_power_ups, game_config) do
+    player
+    |> update_in([:aditional_info, :power_ups], fn amount -> amount + amount_of_power_ups end)
+    |> update_in([:aditional_info], fn additional_info ->
+      Enum.reduce(1..amount_of_power_ups, additional_info, fn _times, additional_info ->
+        additional_info
+        |> Map.update(:health, additional_info.health, fn current_health ->
+          Utils.increase_value_by_base_percentage(
+            current_health,
+            additional_info.base_health,
+            game_config.game.power_up_health_modifier
+          )
+        end)
+        |> Map.update(:max_health, additional_info.max_health, fn max_health ->
+          Utils.increase_value_by_base_percentage(
+            max_health,
+            additional_info.base_health,
+            game_config.game.power_up_health_modifier
+          )
+        end)
+      end)
     end)
   end
 

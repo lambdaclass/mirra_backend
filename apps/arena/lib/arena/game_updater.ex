@@ -20,7 +20,6 @@ defmodule Arena.GameUpdater do
   alias Arena.Serialization.PingUpdate
   alias Arena.Serialization.Ping
   alias Phoenix.PubSub
-  alias Arena.Utils
   alias Arena.Game.Trap
 
   ##########################
@@ -267,7 +266,6 @@ defmodule Arena.GameUpdater do
       |> move_players()
       |> reduce_players_cooldowns(delta_time)
       |> recover_mana()
-      |> resolve_players_collisions_with_power_ups()
       |> resolve_players_collisions_with_items()
       |> resolve_projectiles_effects_on_collisions(state.game_config)
       |> apply_zone_damage_to_players(state.game_config.game)
@@ -282,8 +280,6 @@ defmodule Arena.GameUpdater do
       |> add_pools_collisions()
       |> handle_pools(state.game_config)
       |> remove_expired_pools(now)
-      # Crates
-      |> handle_destroyed_crates()
       |> Map.put(:server_timestamp, now)
       # Traps
       |> remove_activated_traps()
@@ -537,13 +533,13 @@ defmodule Arena.GameUpdater do
       ) do
     entry = %{killer_id: killer_id, victim_id: victim_id}
     victim = Map.get(game_state.players, victim_id)
-    amount_of_power_ups = get_amount_of_power_ups(victim, game_config.game.power_ups_per_kill)
+    killer = Map.get(game_state.players, killer_id)
 
     game_state =
       game_state
       |> update_in([:killfeed], fn killfeed -> [entry | killfeed] end)
       |> maybe_add_kill_to_player(killer_id)
-      |> spawn_power_ups(game_config, victim, amount_of_power_ups)
+      |> grant_power_up_to_killer(game_config, killer, victim)
       |> put_player_position(victim_id)
 
     broadcast_player_dead(state.game_state.game_id, victim_id)
@@ -692,6 +688,23 @@ defmodule Arena.GameUpdater do
   def handle_info({:activate_pool, pool_id}, state) do
     state =
       put_in(state, [:game_state, :pools, pool_id, :aditional_info, :status], :READY)
+
+    {:noreply, state}
+  end
+
+  def handle_info({:crate_destroyed, player_id, crate_id}, state) do
+    game_state = state.game_state
+    crate = get_in(state.game_state, [:crates, crate_id])
+    player = get_in(state.game_state, [:players, player_id])
+
+    player = Player.power_up_boost(player, crate.aditional_info.amount_of_power_ups, state.game_config)
+
+    game_state =
+      game_state
+      |> put_in([:players, player_id], player)
+      |> put_in([:crates, crate_id, :aditional_info, :status], :DESTROYED)
+
+    state = Map.put(state, :game_state, game_state)
 
     {:noreply, state}
   end
@@ -1176,24 +1189,6 @@ defmodule Arena.GameUpdater do
     %{game_state | projectiles: moved_projectiles}
   end
 
-  defp resolve_players_collisions_with_power_ups(%{players: players, power_ups: power_ups} = game_state) do
-    {updated_players, updated_power_ups} =
-      Enum.reduce(players, {players, power_ups}, fn {_player_id, player}, {players_acc, power_ups_acc} ->
-        case find_collided_power_up(player.collides_with, power_ups_acc) do
-          nil ->
-            {players_acc, power_ups_acc}
-
-          power_up_id ->
-            power_up = Map.get(power_ups_acc, power_up_id)
-            process_power_up(player, power_up, players_acc, power_ups_acc)
-        end
-      end)
-
-    game_state
-    |> Map.put(:players, updated_players)
-    |> Map.put(:power_ups, updated_power_ups)
-  end
-
   defp resolve_players_collisions_with_items(game_state) do
     {players, items} =
       Enum.reduce(game_state.players, {game_state.players, game_state.items}, fn {_player_id, player},
@@ -1354,25 +1349,6 @@ defmodule Arena.GameUpdater do
     %{game_state | players: updated_players}
   end
 
-  defp handle_destroyed_crates(%{crates: crates} = game_state) do
-    Enum.reduce(crates, game_state, fn {crate_id, crate}, game_state ->
-      if Crate.alive?(crate) or crate.aditional_info.status == :DESTROYED do
-        game_state
-      else
-        amount_of_power_ups = crate.aditional_info.amount_of_power_ups
-
-        Process.send_after(
-          self(),
-          {:delayed_power_up_spawn, crate, amount_of_power_ups},
-          crate.aditional_info.power_up_spawn_delay_ms
-        )
-
-        game_state
-        |> put_in([:crates, crate_id, :aditional_info, :status], :DESTROYED)
-      end
-    end)
-  end
-
   defp update_bounties_states(game_state, %{bounties_enabled?: false}) do
     game_state
   end
@@ -1459,13 +1435,7 @@ defmodule Arena.GameUpdater do
 
   defp maybe_receive_zone_damage(player, elapse_time, zone_damage_interval, zone_damage)
        when elapse_time > zone_damage_interval do
-    updated_player = Player.take_damage(player, zone_damage)
-
-    unless Player.alive?(updated_player) do
-      send(self(), {:to_killfeed, 9999, player.id})
-    end
-
-    updated_player
+    Entities.take_damage(player, zone_damage, 9999)
   end
 
   defp maybe_receive_zone_damage(player, _elaptime, _zone_damage_interval, _zone_damage),
@@ -1513,7 +1483,7 @@ defmodule Arena.GameUpdater do
        ) do
     attacking_player = Map.get(players_acc, projectile.aditional_info.owner_id)
     real_damage = Player.calculate_real_damage(attacking_player, projectile.aditional_info.damage)
-    player = Player.take_damage(player, real_damage)
+    player = Entities.take_damage(player, real_damage, projectile.aditional_info.owner_id)
 
     send(
       self(),
@@ -1526,10 +1496,6 @@ defmodule Arena.GameUpdater do
       else
         projectile
       end
-
-    unless Player.alive?(player) do
-      send(self(), {:to_killfeed, projectile.aditional_info.owner_id, player.id})
-    end
 
     {
       Map.put(projectiles_acc, projectile.id, projectile),
@@ -1548,7 +1514,7 @@ defmodule Arena.GameUpdater do
        ) do
     attacking_player = Map.get(players_acc, projectile.aditional_info.owner_id)
     real_damage = Player.calculate_real_damage(attacking_player, projectile.aditional_info.damage)
-    crate = Crate.take_damage(crate, real_damage)
+    crate = Entities.take_damage(crate, real_damage, attacking_player.id)
 
     projectile =
       if projectile.aditional_info.remove_on_collision do
@@ -1641,6 +1607,18 @@ defmodule Arena.GameUpdater do
     end)
   end
 
+  defp grant_power_up_to_killer(game_state, _game_config, nil = _killer, _victim), do: game_state
+
+  defp grant_power_up_to_killer(game_state, game_config, killer, victim) do
+    amount_of_power_ups =
+      get_amount_of_power_ups(victim, game_config.game.power_ups_per_kill)
+
+    updated_killer = Player.power_up_boost(killer, amount_of_power_ups, game_config)
+
+    players = Map.get(game_state, :players) |> Map.put(killer.id, updated_killer)
+    Map.put(game_state, :players, players)
+  end
+
   defp get_amount_of_power_ups(%{aditional_info: %{power_ups: power_ups}}, power_ups_per_kill) do
     Enum.sort_by(power_ups_per_kill, fn %{minimum_amount_of_power_ups: minimum} -> minimum end, :desc)
     |> Enum.find(fn %{minimum_amount_of_power_ups: minimum} ->
@@ -1652,45 +1630,10 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  defp find_collided_power_up(collides_with, power_ups) do
-    Enum.find(collides_with, fn collided_entity_id ->
-      Map.has_key?(power_ups, collided_entity_id)
-    end)
-  end
-
   defp find_collided_item(collides_with, items) do
     Enum.find_value(collides_with, fn collided_entity_id ->
       Map.get(items, collided_entity_id)
     end)
-  end
-
-  defp process_power_up(player, power_up, players_acc, power_ups_acc) do
-    if power_up.aditional_info.status == :AVAILABLE && Player.alive?(player) do
-      updated_power_up = put_in(power_up, [:aditional_info, :status], :TAKEN)
-
-      updated_player =
-        update_in(player, [:aditional_info, :power_ups], fn amount -> amount + 1 end)
-        |> update_in([:aditional_info], fn additional_info ->
-          Map.update(additional_info, :health, additional_info.health, fn current_health ->
-            Utils.increase_value_by_base_percentage(
-              current_health,
-              additional_info.base_health,
-              power_up.aditional_info.power_up_health_modifier
-            )
-          end)
-          |> Map.update(:max_health, additional_info.max_health, fn max_health ->
-            Utils.increase_value_by_base_percentage(
-              max_health,
-              additional_info.base_health,
-              power_up.aditional_info.power_up_health_modifier
-            )
-          end)
-        end)
-
-      {Map.put(players_acc, player.id, updated_player), Map.put(power_ups_acc, power_up.id, updated_power_up)}
-    else
-      {players_acc, power_ups_acc}
-    end
   end
 
   defp handle_pools(%{pools: pools, crates: crates, players: players} = game_state, game_config) do

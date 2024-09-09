@@ -455,13 +455,9 @@ defmodule Arena.Game.Skill do
 
         target_player =
           Map.get(players_acc, player_id)
-          |> Player.take_damage(real_damage)
+          |> Entities.take_damage(real_damage, player.id)
 
         send(self(), {:damage_done, player.id, damage})
-
-        unless Player.alive?(target_player) do
-          send(self(), {:to_killfeed, player.id, target_player.id})
-        end
 
         Map.put(players_acc, player_id, target_player)
       end)
@@ -478,7 +474,7 @@ defmodule Arena.Game.Skill do
 
         crate =
           Map.get(crates_acc, crate_id)
-          |> Crate.take_damage(real_damage)
+          |> Entities.take_damage(real_damage, player.id)
 
         Map.put(crates_acc, crate_id, crate)
       end)
