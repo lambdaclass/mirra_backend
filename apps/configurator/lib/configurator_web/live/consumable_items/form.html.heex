@@ -18,6 +18,81 @@
     multiple
     options={["golden_clock_effect", "magic_boots_effect", "mirra_blessing_effect", "giant_effect", "polymorph_effect"]}
   />
+
+  <.button type="button" phx-click={show_modal("mechanic_modal")}>Edit Mechanic</.button>
+  <.modal id="mechanic_modal">
+    <.inputs_for :let={mechanic_f} field={f[:mechanics]}>
+      <.input
+        field={mechanic_f[:type]}
+        type="select"
+        label="Type"
+        prompt="Choose a value"
+        options={Ecto.Enum.values(GameBackend.Units.Skills.Mechanic, :type)}
+      />
+      <.input field={mechanic_f[:name]} type="text" label="Name" />
+      <.input field={mechanic_f[:amount]} type="number" label="Amount" />
+      <.input field={mechanic_f[:angle_between]} type="number" label="Angle between" />
+      <.input field={mechanic_f[:damage]} type="number" label="Damage" />
+      <.input field={mechanic_f[:duration_ms]} type="number" label="Duration (ms)" />
+      <.input field={mechanic_f[:interval_ms]} type="number" label="Interval (ms)" />
+      <.input field={mechanic_f[:move_by]} type="number" label="Move by" />
+      <.input field={mechanic_f[:offset]} type="number" label="Offset" />
+      <.input field={mechanic_f[:projectile_offset]} type="number" label="Projectile offset" />
+      <.input field={mechanic_f[:radius]} type="number" label="Radius" />
+      <.input field={mechanic_f[:range]} type="number" label="Range" />
+      <.input field={mechanic_f[:remove_on_collision]} type="checkbox" label="Remove on collision" />
+      <.input field={mechanic_f[:speed]} type="number" label="speed" />
+      <.input field={mechanic_f[:activation_delay_ms]} type="number" label="Activation delay ms" />
+      <.input field={mechanic_f[:preparation_delay_ms]} type="number" label="Preparation delay ms" />
+      <.input field={mechanic_f[:activate_on_proximity]} type="checkbox" label="Activate on proximity" />
+      <.input
+        field={mechanic_f[:effects_to_apply]}
+        type="select"
+        label="Effects to apply"
+        multiple
+        options={["singularity", "denial_of_service", "invisible"]}
+      />
+
+      <h2 class="text-2xl mt-2">To trigger mechanic</h2>
+      <div class="w-full rounded overflow-hidden shadow-lg">
+        <div class="px-6 pt-4 pb-2">
+          <.inputs_for :let={parent_mechanic_f} field={mechanic_f[:parent_mechanic]}>
+            <.input
+              field={parent_mechanic_f[:type]}
+              type="select"
+              label="Type"
+              prompt="Choose a value"
+              options={Ecto.Enum.values(GameBackend.Units.Skills.Mechanic, :type)}
+            />
+            <.input field={parent_mechanic_f[:name]} type="text" label="Name" />
+            <.input field={parent_mechanic_f[:amount]} type="number" label="Amount" />
+            <.input field={parent_mechanic_f[:angle_between]} type="number" label="Angle between" />
+            <.input field={parent_mechanic_f[:damage]} type="number" label="Damage" />
+            <.input field={parent_mechanic_f[:duration_ms]} type="number" label="Duration (ms)" />
+            <.input field={parent_mechanic_f[:interval_ms]} type="number" label="Interval (ms)" />
+            <.input field={parent_mechanic_f[:move_by]} type="number" label="Move by" />
+            <.input field={parent_mechanic_f[:offset]} type="number" label="Offset" />
+            <.input field={parent_mechanic_f[:projectile_offset]} type="number" label="Projectile offset" />
+            <.input field={parent_mechanic_f[:radius]} type="number" label="Radius" />
+            <.input field={parent_mechanic_f[:range]} type="number" label="Range" />
+            <.input field={parent_mechanic_f[:remove_on_collision]} type="checkbox" label="Remove on collision" />
+            <.input field={parent_mechanic_f[:speed]} type="number" label="speed" />
+            <.input field={parent_mechanic_f[:activation_delay_ms]} type="number" label="Activation delay ms" />
+            <.input field={parent_mechanic_f[:preparation_delay_ms]} type="number" label="Preparation delay ms" />
+            <.input field={parent_mechanic_f[:activate_on_proximity]} type="checkbox" label="Activate on proximity" />
+            <.input
+              field={parent_mechanic_f[:effects_to_apply]}
+              type="select"
+              label="Effects to apply"
+              multiple
+              options={["singularity", "denial_of_service", "invisible"]}
+            />
+          </.inputs_for>
+        </div>
+      </div>
+    </.inputs_for>
+  </.modal>
+
   <:actions>
     <.button>Save Consumable item</.button>
   </:actions>

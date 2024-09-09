@@ -25,6 +25,54 @@
     <dt>Effects</dt>
     <dd><%= @consumable_item.effects %></dd>
   </div>
+  <.button type="button" phx-click={show_modal("mechanic_modal")}>Show Mechanic</.button>
+  <.modal id="mechanic_modal">
+    <%= for mechanic <- @consumable_item.mechanics do %>
+      <.list>
+        <:item title="Type"><%= mechanic.type %></:item>
+        <:item title="Name"><%= mechanic.name %></:item>
+        <:item title="Angle between"><%= mechanic.angle_between %></:item>
+        <:item title="Damage"><%= mechanic.damage %></:item>
+        <:item title="Duration (ms)"><%= mechanic.duration_ms %></:item>
+        <:item title="Interval (ms)"><%= mechanic.interval_ms %></:item>
+        <:item title="Move by"><%= mechanic.move_by %></:item>
+        <:item title="Offset"><%= mechanic.offset %></:item>
+        <:item title="Projectile offset"><%= mechanic.projectile_offset %></:item>
+        <:item title="Radius"><%= mechanic.radius %></:item>
+        <:item title="Range"><%= mechanic.range %></:item>
+        <:item title="Remove on collision"><%= mechanic.remove_on_collision %></:item>
+        <:item title="Speed"><%= mechanic.speed %></:item>
+        <:item title="Effects to apply"><%= mechanic.effects_to_apply %></:item>
+        <:item title="Shape of entity"><%= mechanic.shape %></:item>
+        <:item title="vertices"><%= Jason.encode!(mechanic.vertices) %></:item>
+      </.list>
+      <%= if mechanic.parent_mechanic do %>
+        <h2 class="text-2xl mt-2">To trigger mechanic</h2>
+        <div class="w-full rounded overflow-hidden shadow-lg">
+          <div class="px-6 pt-4 pb-2">
+            <.list>
+              <:item title="Type"><%= mechanic.parent_mechanic.type %></:item>
+              <:item title="Name"><%= mechanic.parent_mechanic.name %></:item>
+              <:item title="Angle between"><%= mechanic.parent_mechanic.angle_between %></:item>
+              <:item title="Damage"><%= mechanic.parent_mechanic.damage %></:item>
+              <:item title="Duration (ms)"><%= mechanic.parent_mechanic.duration_ms %></:item>
+              <:item title="Interval (ms)"><%= mechanic.parent_mechanic.interval_ms %></:item>
+              <:item title="Move by"><%= mechanic.parent_mechanic.move_by %></:item>
+              <:item title="Offset"><%= mechanic.parent_mechanic.offset %></:item>
+              <:item title="Projectile offset"><%= mechanic.parent_mechanic.projectile_offset %></:item>
+              <:item title="Radius"><%= mechanic.parent_mechanic.radius %></:item>
+              <:item title="Range"><%= mechanic.parent_mechanic.range %></:item>
+              <:item title="Remove on collision"><%= mechanic.parent_mechanic.remove_on_collision %></:item>
+              <:item title="Speed"><%= mechanic.parent_mechanic.speed %></:item>
+              <:item title="Effects to apply"><%= mechanic.parent_mechanic.effects_to_apply %></:item>
+              <:item title="Shape of entity"><%= mechanic.parent_mechanic.shape %></:item>
+              <:item title="vertices"><%= Jason.encode!(mechanic.parent_mechanic.vertices) %></:item>
+            </.list>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </.modal>
 </div>
 
 <.back navigate={~p"/consumable_items"}>Back to Consumable Items</.back>
