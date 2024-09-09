@@ -127,7 +127,7 @@ defmodule GameClientWeb.BoardLive.Show do
       y: entity.position.y / back_size_to_front_ratio + backend_board_size / 10,
       radius: entity.radius / back_size_to_front_ratio,
       coords:
-        entity.vertices
+        entity.vertices.positions
         |> Enum.map(fn vertex ->
           [vertex.x / back_size_to_front_ratio, vertex.y / back_size_to_front_ratio]
         end),
@@ -151,7 +151,7 @@ defmodule GameClientWeb.BoardLive.Show do
       back_x: entity.position.x,
       back_y: entity.position.y,
       radius: entity.radius / back_size_to_front_ratio,
-      coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x / 5, vertex.y / 5] end),
+      coords: Enum.map(entity.vertices.positions, fn vertex -> [vertex.x / 5, vertex.y / 5] end),
       is_colliding: entity.collides_with |> Enum.any?(),
       visible_players: aditional_info.visible_players,
       effects: Enum.map(aditional_info.effects, fn effect -> effect.name end),
@@ -171,7 +171,7 @@ defmodule GameClientWeb.BoardLive.Show do
       y: entity.position.y / back_size_to_front_ratio + backend_board_size / 10,
       radius: entity.radius / back_size_to_front_ratio,
       coords:
-        entity.vertices
+        entity.vertices.positions
         |> Enum.map(fn vertex ->
           [vertex.x / back_size_to_front_ratio, vertex.y / back_size_to_front_ratio]
         end),
