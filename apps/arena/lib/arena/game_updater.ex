@@ -1138,7 +1138,7 @@ defmodule Arena.GameUpdater do
     entities_to_collide_with =
       Player.alive_players(players)
       |> Map.merge(Obstacle.get_collisionable_obstacles_for_projectiles(obstacles))
-      |> Map.merge(crates)
+      |> Map.merge(crates |> Map.filter(fn {_id, crate} -> crate.aditional_info.status != :DESTROYED end))
       |> Map.merge(pools)
       |> Map.merge(%{external_wall.id => external_wall})
 
