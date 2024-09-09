@@ -34,7 +34,8 @@ defmodule GameClientWeb.BoardLive.Show do
        game_socket_handler_pid: game_socket_handler_pid,
        backend_board_size: backend_board_size,
        back_size_to_front_ratio: back_size_to_front_ratio,
-       map_radius: map_radius
+       map_radius: map_radius,
+       game_state: nil
      )}
   end
 
@@ -87,7 +88,9 @@ defmodule GameClientWeb.BoardLive.Show do
     {:noreply, push_event(socket, "joinedGame", %{})}
   end
 
-  defp handle_game_event({:update, game_state}, socket) do
+  defp handle_game_event({:update, game_state_delta}, socket) do
+    game_state = process_game_state_delta(game_state_delta, socket.assigns.game_state)
+
     entities =
       Enum.concat([
         game_state.players,
@@ -101,6 +104,7 @@ defmodule GameClientWeb.BoardLive.Show do
       ])
       |> Enum.map(fn entity -> transform_entity_entry(entity, socket) end)
 
+    socket = assign(socket, game_state: game_state)
     {:noreply, push_event(socket, "updateEntities", %{entities: entities, player_id: socket.assigns.game_player_id})}
   end
 
@@ -178,4 +182,76 @@ defmodule GameClientWeb.BoardLive.Show do
       is_colliding: entity.collides_with |> Enum.any?()
     }
   end
+
+  defp process_game_state_delta(game_state_delta, nil) do
+    game_state_delta
+  end
+
+  defp process_game_state_delta(game_state_delta, game_state) do
+    ## This can be done using `game_state_delta` as the base instead of `game_state` cause there are only a few things we are actually
+    ## sending as deltas (obstacles, bushes, crates), everything else is still fully sent. So its simpler to use it as the base
+    %{
+      game_state_delta
+      | obstacles: process_fixed_entities_delta(game_state_delta.obstacles, game_state.obstacles),
+        bushes: process_fixed_entities_delta(game_state_delta.bushes, game_state.bushes),
+        crates: process_fixed_entities_delta(game_state_delta.crates, game_state.crates)
+    }
+  end
+
+  ## Process delta for entities that are never created/removed, hence "fixed" (as in fixed position)
+  defp process_fixed_entities_delta(entities_delta, entities) do
+    Enum.reduce(entities_delta, entities, fn {entity_id, entity_delta}, entities_acc ->
+      old_entity = Map.get(entities_acc, entity_id)
+      Map.put(entities_acc, entity_id, process_entity_delta(entity_delta, old_entity))
+    end)
+  end
+
+  defp process_entity_delta(entity_delta, nil) do
+    entity_delta
+  end
+
+  defp process_entity_delta(entity_delta, entity) do
+    %{
+      entity
+      | collides_with: entity_delta.collides_with,
+        radius: new_value_or_old(entity_delta.radius, entity.radius),
+        speed: new_value_or_old(entity_delta.speed, entity.speed),
+        is_moving: new_value_or_old(entity_delta.is_moving, entity.is_moving),
+        position: process_delta_point(entity_delta.position, entity.position),
+        direction: process_delta_point(entity_delta.direction, entity.direction),
+        aditional_info: process_entity_additional_delta(entity_delta.aditional_info, entity.aditional_info)
+    }
+  end
+
+  defp process_entity_additional_delta(nil, nil) do
+    nil
+  end
+
+  defp process_entity_additional_delta({:obstacle, obstacle_delta}, {:obstacle, obstacle}) do
+    {:obstacle,
+     %{
+       obstacle_delta
+       | color: new_value_or_old(obstacle_delta.color, obstacle.color),
+         collisionable: new_value_or_old(obstacle_delta.collisionable, obstacle.collisionable),
+         status: new_value_or_old(obstacle_delta.status, obstacle.status),
+         type: new_value_or_old(obstacle_delta.type, obstacle.type)
+     }}
+  end
+
+  defp process_entity_additional_delta({:crate, crate_delta}, {:crate, crate}) do
+    {:crate,
+     %{
+       crate_delta
+       | health: new_value_or_old(crate_delta.health, crate.health),
+         amount_of_power_ups: new_value_or_old(crate_delta.amount_of_power_ups, crate.amount_of_power_ups),
+         status: new_value_or_old(crate_delta.status, crate.status)
+     }}
+  end
+
+  defp process_delta_point(nil, point), do: point
+  defp process_delta_point(point_delta, point), do: Map.merge(point, point_delta)
+
+  defp new_value_or_old(nil, old), do: old
+  defp new_value_or_old(:CRATE_STATUS_UNDEFINED, old), do: old
+  defp new_value_or_old(new, _old), do: new
 end
