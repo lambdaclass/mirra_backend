@@ -3,7 +3,6 @@ defmodule Arena.Game.Effect do
   This module contains all the functionality related to effects
   """
 
-  alias Arena.Game.Crate
   alias Arena.GameUpdater
   alias Arena.Game.Player
   alias Arena.Entities
@@ -230,7 +229,11 @@ defmodule Arena.Game.Effect do
 
         send(self(), {:damage_done, pool_owner.id, real_damage})
 
-        maybe_deal_damage_to_entity(entity, real_damage, pool_owner.id)
+        if Entities.alive?(entity) do
+          Entities.take_damage(entity, real_damage, pool_owner.id)
+        else
+          entity
+        end
     end
   end
 
@@ -265,28 +268,6 @@ defmodule Arena.Game.Effect do
   ## Sink for mechanics that don't do anything
   defp do_effect_mechanics(_game_state, entity, _effect, _mechanic) do
     entity
-  end
-
-  defp maybe_deal_damage_to_entity(%{category: :player} = player, damage, damage_owner_id) do
-    if Player.alive?(player) do
-      player = Player.take_damage(player, damage)
-
-      unless Player.alive?(player) do
-        send(self(), {:to_killfeed, damage_owner_id, player.id})
-      end
-
-      player
-    else
-      player
-    end
-  end
-
-  defp maybe_deal_damage_to_entity(%{category: :crate} = crate, damage, damage_owner_id) do
-    if Crate.alive?(crate) do
-      Crate.take_damage(crate, damage, damage_owner_id)
-    else
-      crate
-    end
   end
 
   defp add_effect_to_entity(game_state, entity, effect, owner_id, start_action_removal_in_ms) do

@@ -1435,13 +1435,7 @@ defmodule Arena.GameUpdater do
 
   defp maybe_receive_zone_damage(player, elapse_time, zone_damage_interval, zone_damage)
        when elapse_time > zone_damage_interval do
-    updated_player = Player.take_damage(player, zone_damage)
-
-    unless Player.alive?(updated_player) do
-      send(self(), {:to_killfeed, 9999, player.id})
-    end
-
-    updated_player
+    Entities.take_damage(player, zone_damage, 9999)
   end
 
   defp maybe_receive_zone_damage(player, _elaptime, _zone_damage_interval, _zone_damage),
@@ -1489,7 +1483,7 @@ defmodule Arena.GameUpdater do
        ) do
     attacking_player = Map.get(players_acc, projectile.aditional_info.owner_id)
     real_damage = Player.calculate_real_damage(attacking_player, projectile.aditional_info.damage)
-    player = Player.take_damage(player, real_damage)
+    player = Entities.take_damage(player, real_damage, projectile.aditional_info.owner_id)
 
     send(
       self(),
@@ -1502,10 +1496,6 @@ defmodule Arena.GameUpdater do
       else
         projectile
       end
-
-    unless Player.alive?(player) do
-      send(self(), {:to_killfeed, projectile.aditional_info.owner_id, player.id})
-    end
 
     {
       Map.put(projectiles_acc, projectile.id, projectile),
@@ -1524,7 +1514,7 @@ defmodule Arena.GameUpdater do
        ) do
     attacking_player = Map.get(players_acc, projectile.aditional_info.owner_id)
     real_damage = Player.calculate_real_damage(attacking_player, projectile.aditional_info.damage)
-    crate = Crate.take_damage(crate, real_damage, attacking_player.id)
+    crate = Entities.take_damage(crate, real_damage, attacking_player.id)
 
     projectile =
       if projectile.aditional_info.remove_on_collision do

@@ -25,11 +25,11 @@ defmodule Arena.Game.Player do
     end)
   end
 
-  def take_damage(%{aditional_info: %{damage_immunity: true}} = player, _) do
+  def take_damage(%{aditional_info: %{damage_immunity: true}} = player, _, _damage_owner_id) do
     player
   end
 
-  def take_damage(player, damage) do
+  def take_damage(player, damage, damage_owner_id) do
     defense_multiplier = 1 - player.aditional_info.bonus_defense
     damage_taken = round(damage * defense_multiplier)
 
@@ -42,14 +42,21 @@ defmodule Arena.Game.Player do
 
     send(self(), {:damage_taken, player.id, damage_taken})
 
-    Map.update!(player, :aditional_info, fn info ->
-      %{
-        info
-        | health: max(info.health - damage_taken, 0),
-          last_damage_received: System.monotonic_time(:millisecond),
-          mana: min(info.mana + mana_to_recover, info.max_mana)
-      }
-    end)
+    player =
+      Map.update!(player, :aditional_info, fn info ->
+        %{
+          info
+          | health: max(info.health - damage_taken, 0),
+            last_damage_received: System.monotonic_time(:millisecond),
+            mana: min(info.mana + mana_to_recover, info.max_mana)
+        }
+      end)
+
+    unless alive?(player) do
+      send(self(), {:to_killfeed, damage_owner_id, player.id})
+    end
+
+    player
   end
 
   def kill_player(player) do
