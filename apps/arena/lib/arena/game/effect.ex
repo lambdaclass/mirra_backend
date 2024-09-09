@@ -283,13 +283,7 @@ defmodule Arena.Game.Effect do
 
   defp maybe_deal_damage_to_entity(%{category: :crate} = crate, damage, damage_owner_id) do
     if Crate.alive?(crate) do
-      crate = Crate.take_damage(crate, damage)
-
-      unless Crate.alive?(crate) do
-        send(self(), {:crate_destroyed, damage_owner_id, crate.id})
-      end
-
-      crate
+      Crate.take_damage(crate, damage, damage_owner_id)
     else
       crate
     end

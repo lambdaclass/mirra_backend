@@ -478,11 +478,7 @@ defmodule Arena.Game.Skill do
 
         crate =
           Map.get(crates_acc, crate_id)
-          |> Crate.take_damage(real_damage)
-
-        unless Crate.alive?(crate) do
-          send(self(), {:crate_destroyed, player.id, crate.id})
-        end
+          |> Crate.take_damage(real_damage, player.id)
 
         Map.put(crates_acc, crate_id, crate)
       end)

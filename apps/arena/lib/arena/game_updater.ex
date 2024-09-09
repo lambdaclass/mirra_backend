@@ -1502,11 +1502,7 @@ defmodule Arena.GameUpdater do
        ) do
     attacking_player = Map.get(players_acc, projectile.aditional_info.owner_id)
     real_damage = Player.calculate_real_damage(attacking_player, projectile.aditional_info.damage)
-    crate = Crate.take_damage(crate, real_damage)
-
-    unless Crate.alive?(crate) do
-      send(self(), {:crate_destroyed, attacking_player.id, crate.id})
-    end
+    crate = Crate.take_damage(crate, real_damage, attacking_player.id)
 
     projectile =
       if projectile.aditional_info.remove_on_collision do
