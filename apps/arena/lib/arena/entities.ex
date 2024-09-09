@@ -312,7 +312,7 @@ defmodule Arena.Entities do
       is_moving: false,
       aditional_info: %{
         name: config.name,
-        mechanics: config.mechanics,
+        mechanic: config.parent_mechanic,
         preparation_delay_ms: config.preparation_delay_ms,
         activation_delay_ms: config.activation_delay_ms,
         owner_id: owner_id,
@@ -453,7 +453,16 @@ defmodule Arena.Entities do
      }}
   end
 
-  def maybe_add_custom_info(entity) when entity.category in [:bush, :trap] do
+  def maybe_add_custom_info(entity) when entity.category == :trap do
+    {:trap,
+     %Arena.Serialization.Trap{
+       name: get_in(entity, [:aditional_info, :name]),
+       owner_id: get_in(entity, [:aditional_info, :owner_id]),
+       status: get_in(entity, [:aditional_info, :status])
+     }}
+  end
+
+  def maybe_add_custom_info(_) do
     nil
   end
 

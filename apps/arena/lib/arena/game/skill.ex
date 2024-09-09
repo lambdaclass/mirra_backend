@@ -468,11 +468,11 @@ defmodule Arena.Game.Skill do
 
     # Crates
 
-    interactable_crates =
-      Crate.interactable_crates(game_state.crates)
+    alive_crates =
+      Crate.alive_crates(game_state.crates)
 
     crates =
-      Physics.check_collisions(skill_entity, interactable_crates)
+      Physics.check_collisions(skill_entity, alive_crates)
       |> Enum.reduce(game_state.crates, fn crate_id, crates_acc ->
         real_damage = Player.calculate_real_damage(player, damage)
 

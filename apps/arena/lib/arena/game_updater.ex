@@ -188,6 +188,12 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
+  def handle_cast(:toggle_zone, %{game_state: %{zone: %{started: false}}} = state) do
+    zone_start? = state.game_state.zone.should_start?
+
+    {:noreply, put_in(state, [:game_state, :zone, :should_start?], not zone_start?)}
+  end
+
   def handle_cast(:toggle_zone, state) do
     zone_enabled? = state.game_state.zone.enabled
 
@@ -323,6 +329,7 @@ defmodule Arena.GameUpdater do
   def handle_info(:game_start, state) do
     broadcast_enable_incomming_messages(state.game_state.game_id)
 
+    Process.send_after(self(), :start_zone, state.game_config.game.zone_shrink_start_ms)
     Process.send_after(self(), :start_zone_shrink, state.game_config.game.zone_shrink_start_ms)
     Process.send_after(self(), :spawn_item, state.game_config.game.item_spawn_interval_ms)
     Process.send_after(self(), :match_timeout, state.game_config.game.match_timeout_ms)
@@ -456,6 +463,19 @@ defmodule Arena.GameUpdater do
   ##########################
   # Zone Callbacks
   ##########################
+
+  def handle_info(:start_zone, %{game_state: %{zone: %{should_start?: false}}} = state) do
+    {:noreply, put_in(state, [:game_state, :zone, :started], true)}
+  end
+
+  def handle_info(:start_zone, state) do
+    state =
+      state
+      |> put_in([:game_state, :zone, :started], true)
+      |> put_in([:game_state, :zone, :enabled], true)
+
+    {:noreply, state}
+  end
 
   def handle_info(:start_zone_shrink, state) do
     Process.send_after(self(), :stop_zone_shrink, state.game_config.game.zone_stop_interval_ms)
@@ -812,7 +832,9 @@ defmodule Arena.GameUpdater do
       |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
       |> Map.put(:zone, %{
         radius: config.map.radius,
-        enabled: config.game.zone_enabled,
+        should_start?: config.game.zone_enabled,
+        started: false,
+        enabled: false,
         shrinking: false,
         next_zone_change_timestamp:
           initial_timestamp + config.game.zone_shrink_start_ms + config.game.start_game_time_ms +
@@ -972,7 +994,7 @@ defmodule Arena.GameUpdater do
       end)
 
     Enum.reduce(activated_traps, game_state, fn {_trap_id, trap}, game_state_acc ->
-      game_state = Trap.do_mechanics(game_state_acc, trap, trap.aditional_info.mechanics)
+      game_state = Trap.do_mechanic(game_state_acc, trap, trap.aditional_info.mechanic)
       trap = put_in(trap, [:aditional_info, :status], :USED)
       update_entity_in_game_state(game_state, trap)
     end)
@@ -1151,7 +1173,7 @@ defmodule Arena.GameUpdater do
     entities_to_collide_with =
       Player.alive_players(players)
       |> Map.merge(Obstacle.get_collisionable_obstacles_for_projectiles(obstacles))
-      |> Map.merge(crates)
+      |> Map.merge(Crate.alive_crates(crates))
       |> Map.merge(pools)
       |> Map.merge(%{external_wall.id => external_wall})
 

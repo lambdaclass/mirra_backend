@@ -221,7 +221,7 @@ defmodule Arena.Game.Player do
           |> Skill.maybe_auto_aim(skill, player, targetable_players(game_state.players))
           |> case do
             {false, _} ->
-              Skill.maybe_auto_aim(skill_params.target, skill, player, Crate.interactable_crates(game_state.crates))
+              Skill.maybe_auto_aim(skill_params.target, skill, player, Crate.alive_crates(game_state.crates))
 
             auto_aim ->
               auto_aim

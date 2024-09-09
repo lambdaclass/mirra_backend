@@ -17,7 +17,7 @@ defmodule Arena.Game.Item do
   @doc """
   Apply an item mechanic to an entity, depending on the mechanic type.
   """
-  def do_mechanic(game_state, entity, {:spawn_bomb, bomb_params}) do
+  def do_mechanic(game_state, entity, %{type: "spawn_bomb"} = bomb_params) do
     last_id = game_state.last_id + 1
 
     now = System.monotonic_time(:millisecond)
@@ -29,5 +29,9 @@ defmodule Arena.Game.Item do
     game_state
     |> put_in([:last_id], last_id)
     |> put_in([:traps, new_trap.id], new_trap)
+  end
+
+  def do_mechanic(game_state, _entity, _mechanic) do
+    game_state
   end
 end

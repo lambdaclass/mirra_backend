@@ -16,7 +16,7 @@ defmodule Gateway.Controllers.CurseOfMirra.ConfigurationController do
       Jason.encode!(%{
         characters: encode_characters(version.characters),
         game: version.game_configuration,
-        items: version.consumable_items,
+        items: encode_items(version.consumable_items),
         map: version.map_configurations
       })
 
@@ -61,6 +61,19 @@ defmodule Gateway.Controllers.CurseOfMirra.ConfigurationController do
       |> Map.put(:dash_skill, encode_skill(character.dash_skill))
       |> ecto_struct_to_map()
     end)
+  end
+
+  defp encode_items(items) do
+    Enum.map(items, fn item ->
+      item
+      |> encode_item()
+    end)
+  end
+
+  defp encode_item(item) do
+    item
+    |> Map.put(:mechanics, encode_mechanics(item.mechanics))
+    |> ecto_struct_to_map()
   end
 
   defp encode_skill(nil) do
@@ -109,11 +122,22 @@ defmodule Gateway.Controllers.CurseOfMirra.ConfigurationController do
         nil
       end
 
+    parent_mechanic =
+      if mechanic.parent_mechanic do
+        mechanic.parent_mechanic
+        |> Map.put(:on_arrival_mechanic, nil)
+        |> Map.put(:on_explode_mechanics, [])
+        |> Map.put(:parent_mechanic, nil)
+      else
+        nil
+      end
+
     mechanic
     |> Map.put(:on_arrival_mechanic, mechanic.on_arrival_mechanic_id && encode_mechanic(on_arrival_mechanic))
     |> Map.put(:on_explode_mechanics, encode_mechanics(on_explode_mechanics))
+    |> Map.put(:parent_mechanic, encode_mechanic(parent_mechanic))
     |> ecto_struct_to_map()
-    |> Map.drop([:skill, :apply_effects_to, :passive_effects])
+    |> Map.drop([:skill, :consumable_item, :apply_effects_to, :passive_effects])
   end
 
   defp ecto_struct_to_map(ecto_struct) when is_struct(ecto_struct) do
