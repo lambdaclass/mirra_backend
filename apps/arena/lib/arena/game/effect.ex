@@ -3,6 +3,7 @@ defmodule Arena.Game.Effect do
   This module contains all the functionality related to effects
   """
 
+  alias Arena.Game.Crate
   alias Arena.GameUpdater
   alias Arena.Game.Player
   alias Arena.Entities
@@ -229,8 +230,7 @@ defmodule Arena.Game.Effect do
 
         send(self(), {:damage_done, pool_owner.id, real_damage})
 
-        Entities.take_damage(entity, real_damage)
-        |> maybe_send_to_killfeed(pool_owner.id)
+        deal_damage_to_entity(entity, real_damage, pool_owner.id)
     end
   end
 
@@ -267,15 +267,25 @@ defmodule Arena.Game.Effect do
     entity
   end
 
-  defp maybe_send_to_killfeed(%{category: :player} = entity, pool_owner_id) do
-    unless Player.alive?(entity) do
-      send(self(), {:to_killfeed, pool_owner_id, entity.id})
+  defp deal_damage_to_entity(%{category: :player} = player, damage, damage_owner_id) do
+    player = Player.take_damage(player, damage)
+
+    unless Player.alive?(player) do
+      send(self(), {:to_killfeed, damage_owner_id, player.id})
     end
 
-    entity
+    player
   end
 
-  defp maybe_send_to_killfeed(entity, _pool_owner_id), do: entity
+  defp deal_damage_to_entity(%{category: :crate} = crate, damage, damage_owner_id) do
+    crate = Crate.take_damage(crate, damage)
+
+    unless Crate.alive?(crate) do
+      send(self(), {:crate_destroyed, damage_owner_id, crate.id})
+    end
+
+    crate
+  end
 
   defp add_effect_to_entity(game_state, entity, effect, owner_id, start_action_removal_in_ms) do
     now = System.monotonic_time(:millisecond)
