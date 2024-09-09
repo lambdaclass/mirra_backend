@@ -230,7 +230,7 @@ defmodule Arena.Game.Effect do
 
         send(self(), {:damage_done, pool_owner.id, real_damage})
 
-        deal_damage_to_entity(entity, real_damage, pool_owner.id)
+        maybe_deal_damage_to_entity(entity, real_damage, pool_owner.id)
     end
   end
 
@@ -267,24 +267,32 @@ defmodule Arena.Game.Effect do
     entity
   end
 
-  defp deal_damage_to_entity(%{category: :player} = player, damage, damage_owner_id) do
-    player = Player.take_damage(player, damage)
+  defp maybe_deal_damage_to_entity(%{category: :player} = player, damage, damage_owner_id) do
+    if Player.alive?(player) do
+      player = Player.take_damage(player, damage)
 
-    unless Player.alive?(player) do
-      send(self(), {:to_killfeed, damage_owner_id, player.id})
+      unless Player.alive?(player) do
+        send(self(), {:to_killfeed, damage_owner_id, player.id})
+      end
+
+      player
+    else
+      player
     end
-
-    player
   end
 
-  defp deal_damage_to_entity(%{category: :crate} = crate, damage, damage_owner_id) do
-    crate = Crate.take_damage(crate, damage)
+  defp maybe_deal_damage_to_entity(%{category: :crate} = crate, damage, damage_owner_id) do
+    if Crate.alive?(crate) do
+      crate = Crate.take_damage(crate, damage)
 
-    unless Crate.alive?(crate) do
-      send(self(), {:crate_destroyed, damage_owner_id, crate.id})
+      unless Crate.alive?(crate) do
+        send(self(), {:crate_destroyed, damage_owner_id, crate.id})
+      end
+
+      crate
+    else
+      crate
     end
-
-    crate
   end
 
   defp add_effect_to_entity(game_state, entity, effect, owner_id, start_action_removal_in_ms) do
