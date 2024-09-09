@@ -1,4 +1,4 @@
-name: "[TESTING-ARGENTINA] Deploy to Argentina Arena Testing HostColor"
+name: "[TESTING-ARGENTINA-HOSTCOLOR] Deploy to Argentina Arena Testing HostColor"
 on:
   workflow_dispatch:
 

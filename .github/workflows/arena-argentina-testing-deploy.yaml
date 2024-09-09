@@ -1,4 +1,4 @@
-name: "[TESTING-ARGENTINA] Deploy to Argentina Office Arena Testing"
+name: "[TESTING-ARGENTINA-OFFICE] Deploy to Argentina Office Arena Testing"
 on:
   workflow_dispatch:
 
