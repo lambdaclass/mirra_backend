@@ -261,7 +261,6 @@ defmodule Arena.GameUpdater do
       |> move_players()
       |> reduce_players_cooldowns(delta_time)
       |> recover_mana()
-      |> resolve_players_collisions_with_power_ups()
       |> resolve_players_collisions_with_items()
       |> resolve_projectiles_effects_on_collisions(state.game_config)
       |> apply_zone_damage_to_players(state.game_config.game)
@@ -1167,24 +1166,6 @@ defmodule Arena.GameUpdater do
       |> Map.merge(recently_exploded_projectiles)
 
     %{game_state | projectiles: moved_projectiles}
-  end
-
-  defp resolve_players_collisions_with_power_ups(%{players: players, power_ups: power_ups} = game_state) do
-    {updated_players, updated_power_ups} =
-      Enum.reduce(players, {players, power_ups}, fn {_player_id, player}, {players_acc, power_ups_acc} ->
-        case find_collided_power_up(player.collides_with, power_ups_acc) do
-          nil ->
-            {players_acc, power_ups_acc}
-
-          power_up_id ->
-            power_up = Map.get(power_ups_acc, power_up_id)
-            process_power_up(player, power_up, players_acc, power_ups_acc)
-        end
-      end)
-
-    game_state
-    |> Map.put(:players, updated_players)
-    |> Map.put(:power_ups, updated_power_ups)
   end
 
   defp resolve_players_collisions_with_items(game_state) do
