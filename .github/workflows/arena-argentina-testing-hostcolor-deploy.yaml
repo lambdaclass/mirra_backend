@@ -73,3 +73,16 @@ jobs:
                 XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR} \
                 DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS} \
                 /home/${SSH_USERNAME}/deploy-script/deploy.sh
+
+      - name: Set Release Version from Tag
+        env:
+          TZ: "America/Argentina/Buenos_Aires"
+        run: echo "RELEASE_VERSION=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_ENV
+
+      - name: New Relic Application Deployment Marker
+        uses: newrelic/deployment-marker-action@v2.3.0
+        with:
+          apiKey: ${{ secrets.NEW_RELIC_API_KEY }}
+          guid: ${{ secrets.NEW_RELIC_DEPLOYMENT_ENTITY_GUID }}
+          version: "${{ env.RELEASE_VERSION }}"
+          user: "${{ github.actor }}"
