@@ -27,7 +27,7 @@ defmodule GameBackend.Items.ConsumableItem do
   @doc false
   def changeset(consumable_item, attrs) do
     consumable_item
-    |> cast(attrs, [:name, :radius, :mechanics, :active, :version_id])
+    |> cast(attrs, [:name, :radius, :active, :version_id])
     |> validate_required([:name, :radius])
     |> cast_assoc(:mechanics)
     |> cast_embed(:effect)

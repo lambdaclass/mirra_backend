@@ -71,7 +71,12 @@ defmodule Arena.Configuration do
 
   defp parse_items_config(items) do
     Enum.map(items, fn item ->
-      %{item | effect: parse_effect(item.effect)}
+      %{
+        item
+        | effect: parse_effect(item.effect),
+          radius: maybe_to_float(item.radius),
+          mechanics: parse_mechanics_config(item.mechanics)
+      }
     end)
   end
 
@@ -215,16 +220,6 @@ defmodule Arena.Configuration do
 
   defp parse_raised_mechanics_config(%{polygon_hit: polygon_hit} = mechanics) do
     %{mechanics | polygon_hit: %{polygon_hit | vertices: Enum.map(polygon_hit.vertices, &parse_position/1)}}
-  end
-
-  defp parse_items_config(items) do
-    Enum.map(items, fn item ->
-      %{
-        item
-        | radius: maybe_to_float(item.radius),
-          mechanics: parse_mechanics_config(item.mechanics)
-      }
-    end)
   end
 
   defp parse_effect(nil) do
