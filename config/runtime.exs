@@ -256,6 +256,18 @@ if config_env() == :prod do
     ],
     secret_key_base: secret_key_base
 
+  # Newrelic agent
+  newrelic_license_key =
+    System.get_env("NEWRELIC_KEY")
+
+  newrelic_app_name =
+    System.get_env("NEWRELIC_APP_NAME")
+
+  config :new_relic_agent,
+    app_name: newrelic_app_name,
+    license_key: newrelic_license_key,
+    logs_in_context: :direct
+
   # ## SSL Support
   #
   # To get SSL working, you will need to add the `https` key

@@ -312,7 +312,7 @@ defmodule Arena.Entities do
       is_moving: false,
       aditional_info: %{
         name: config.name,
-        mechanics: config.mechanics,
+        mechanic: config.parent_mechanic,
         preparation_delay_ms: config.preparation_delay_ms,
         activation_delay_ms: config.activation_delay_ms,
         owner_id: owner_id,
@@ -453,7 +453,16 @@ defmodule Arena.Entities do
      }}
   end
 
-  def maybe_add_custom_info(entity) when entity.category in [:bush, :trap] do
+  def maybe_add_custom_info(entity) when entity.category == :trap do
+    {:trap,
+     %Arena.Serialization.Trap{
+       name: get_in(entity, [:aditional_info, :name]),
+       owner_id: get_in(entity, [:aditional_info, :owner_id]),
+       status: get_in(entity, [:aditional_info, :status])
+     }}
+  end
+
+  def maybe_add_custom_info(_) do
     nil
   end
 
@@ -463,8 +472,21 @@ defmodule Arena.Entities do
   defp get_shape("point"), do: :point
   defp get_shape(_), do: nil
 
-  def take_damage(%{category: :player} = entity, damage), do: Player.take_damage(entity, damage)
-  def take_damage(%{category: :crate} = entity, damage), do: Crate.take_damage(entity, damage)
+  def take_damage(%{category: :player} = entity, damage, damage_owner_id) do
+    if alive?(entity) do
+      Player.take_damage(entity, damage, damage_owner_id)
+    else
+      entity
+    end
+  end
+
+  def take_damage(%{category: :crate} = entity, damage, damage_owner_id) do
+    if alive?(entity) do
+      Crate.take_damage(entity, damage, damage_owner_id)
+    else
+      entity
+    end
+  end
 
   def alive?(%{category: :player} = entity), do: Player.alive?(entity)
   def alive?(%{category: :crate} = entity), do: Crate.alive?(entity)

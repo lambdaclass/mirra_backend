@@ -161,8 +161,8 @@ defmodule Arena.Configuration do
         range: maybe_to_float(mechanic.range),
         speed: maybe_to_float(mechanic.speed),
         on_arrival_mechanic: parse_mechanic_config(mechanic.on_arrival_mechanic),
-        on_collide_effects: parse_on_collide_effects_config(mechanic.on_collide_effects),
         on_explode_mechanics: parse_mechanics_config(mechanic.on_explode_mechanics),
+        parent_mechanic: parse_mechanic_config(mechanic.parent_mechanic),
         effect: parse_effect(mechanic.effect)
     }
   end
@@ -217,6 +217,16 @@ defmodule Arena.Configuration do
     %{mechanics | polygon_hit: %{polygon_hit | vertices: Enum.map(polygon_hit.vertices, &parse_position/1)}}
   end
 
+  defp parse_items_config(items) do
+    Enum.map(items, fn item ->
+      %{
+        item
+        | radius: maybe_to_float(item.radius),
+          mechanics: parse_mechanics_config(item.mechanics)
+      }
+    end)
+  end
+
   defp parse_effect(nil) do
     nil
   end
@@ -232,14 +242,6 @@ defmodule Arena.Configuration do
         }
       end)
     end)
-  end
-
-  defp parse_on_collide_effects_config(nil) do
-    nil
-  end
-
-  defp parse_on_collide_effects_config(on_collide_effect) do
-    %{on_collide_effect | effect: parse_effect(on_collide_effect.effect)}
   end
 
   defp parse_position(%{x: x, y: y}) do

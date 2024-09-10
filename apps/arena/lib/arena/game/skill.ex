@@ -449,30 +449,26 @@ defmodule Arena.Game.Skill do
 
         target_player =
           Map.get(players_acc, player_id)
-          |> Player.take_damage(real_damage)
+          |> Entities.take_damage(real_damage, player.id)
 
         send(self(), {:damage_done, player.id, damage})
-
-        unless Player.alive?(target_player) do
-          send(self(), {:to_killfeed, player.id, target_player.id})
-        end
 
         Map.put(players_acc, player_id, target_player)
       end)
 
     # Crates
 
-    interactable_crates =
-      Crate.interactable_crates(game_state.crates)
+    alive_crates =
+      Crate.alive_crates(game_state.crates)
 
     crates =
-      Physics.check_collisions(skill_entity, interactable_crates)
+      Physics.check_collisions(skill_entity, alive_crates)
       |> Enum.reduce(game_state.crates, fn crate_id, crates_acc ->
         real_damage = Player.calculate_real_damage(player, damage)
 
         crate =
           Map.get(crates_acc, crate_id)
-          |> Crate.take_damage(real_damage)
+          |> Entities.take_damage(real_damage, player.id)
 
         Map.put(crates_acc, crate_id, crate)
       end)

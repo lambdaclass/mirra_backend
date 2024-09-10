@@ -242,8 +242,7 @@ defmodule Arena.Game.Effect do
 
         send(self(), {:damage_done, pool_owner.id, real_damage})
 
-        Entities.take_damage(entity, real_damage)
-        |> maybe_send_to_killfeed(pool_owner.id)
+        Entities.take_damage(entity, real_damage, pool_owner.id)
     end
   end
 
@@ -279,16 +278,6 @@ defmodule Arena.Game.Effect do
   defp do_effect_mechanics(_game_state, entity, _effect, _mechanic) do
     entity
   end
-
-  defp maybe_send_to_killfeed(%{category: :player} = entity, pool_owner_id) do
-    unless Player.alive?(entity) do
-      send(self(), {:to_killfeed, pool_owner_id, entity.id})
-    end
-
-    entity
-  end
-
-  defp maybe_send_to_killfeed(entity, _pool_owner_id), do: entity
 
   defp add_effect_to_entity(game_state, entity, effect, owner_id, start_action_removal_in_ms) do
     now = System.monotonic_time(:millisecond)

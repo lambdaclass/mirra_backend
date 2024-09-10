@@ -1207,6 +1207,40 @@ polymorph_params = %{
 {:ok, _polymorph} =
   GameBackend.Items.create_consumable_item(polymorph_params)
 
+bomb_circle_hit_mechanic =
+  %{
+    name: "bomb_circle_hit",
+    type: "circle_hit",
+    damage: 64,
+    range: 380.0,
+    offset: 400
+  }
+
+spawn_bomb_mechanic =
+  %{
+    name: "item_spawn_bomb",
+    type: "spawn_bomb",
+    radius: 200.0,
+    activation_delay_ms: 3000,
+    preparation_delay_ms: 500,
+    activate_on_proximity: true,
+    shape: "circle",
+    vertices: [],
+    parent_mechanic: bomb_circle_hit_mechanic
+  }
+
+fake_item_params = %{
+  active: false,
+  name: "fake_item",
+  radius: 200.0,
+  mechanics: [spawn_bomb_mechanic],
+  effects: [],
+  version_id: version.id
+}
+
+{:ok, _fake_item} =
+  GameBackend.Items.create_consumable_item(fake_item_params)
+
 slow_field_effect = %{
   name: "slow_field_effect",
   duration_ms: 9000,
@@ -3515,7 +3549,7 @@ brazil_arena_server =
   %{
     name: "BRAZIL",
     ip: "",
-    url: "arena-brazil-staging.championsofmirra.com",
+    url: "arena-brazil-testing-aws.championsofmirra.com",
     gateway_url: "https://central-europe-staging.championsofmirra.com",
     status: "active",
     environment: "production"

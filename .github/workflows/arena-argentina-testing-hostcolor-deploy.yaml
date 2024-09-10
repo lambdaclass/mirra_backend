@@ -1,14 +1,13 @@
-name: "[LOADTEST-SERVER-BRAZIL] Deploy to Brazil Loadtest Server"
+name: "[TESTING-ARGENTINA-HOSTCOLOR] Deploy to Argentina Arena Testing HostColor"
 on:
   workflow_dispatch:
 
 jobs:
   build-deploy:
-    name: Build and deploy to Brazil Loadtest Server
+    name: Build and deploy to Argentina Testing HostColor
     runs-on: ubuntu-latest
     environment:
-      name: testing-brazil
-      url: https://loadtest-brazil-server.championsofmirra.com/
+      name: testing-argentina
 
     steps:
       - uses: actions/checkout@v4
@@ -20,44 +19,41 @@ jobs:
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:ci
 
-      - name: Create ssh private key file from env var
+      - name: Add host keys
         env:
-          SSH_KEY: ${{ secrets.SSH_KEY }}
-          SSH_HOST: ${{ vars.TS_LOADTEST_SERVER_HOST }}
+          SSH_HOST: ${{ vars.TS_ARENA_HOST_HOSTCOLOR }}
         run: |
           set -ex
-          mkdir -p ~/.ssh/
-          sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > ~/.ssh/id_ed25519
-          chmod 400 ~/.ssh/id_ed25519
+          mkdir -p ~/.ssh
           retries=5; until ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts || [ $retries -eq 0 ]; do ((retries--)); sleep 5; done
 
       - name: Copy deploy script
         env:
-          SSH_USERNAME: ${{ vars.SSH_USERNAME }}
-          SSH_HOST: ${{ vars.TS_LOADTEST_SERVER_HOST }}
+          SSH_USERNAME: dev
+          SSH_HOST: ${{ vars.TS_ARENA_HOST_HOSTCOLOR }}
         run: |
           set -ex
-          rsync -avz --mkpath devops/deploy.sh ${SSH_USERNAME}@${SSH_HOST}:/home/${SSH_USERNAME}/deploy-script/
+          rsync --mkpath --delete -avz devops/deploy.sh ${SSH_USERNAME}@${SSH_HOST}:/home/${SSH_USERNAME}/deploy-script/
 
       - name: Execute deploy script
         env:
-          SSH_HOST: ${{ vars.TS_LOADTEST_SERVER_HOST }}
-          SSH_USERNAME: ${{ vars.SSH_USERNAME }}
+          SSH_HOST: ${{ vars.TS_ARENA_HOST_HOSTCOLOR }}
+          SSH_USERNAME: dev
           MIX_ENV: ${{ vars.MIX_ENV }}
           RELEASE: arena
           PHX_SERVER: ${{ vars.PHX_SERVER }}
-          PHX_HOST: ${{ vars.LOADTEST_SERVER_HOST }}
-          OVERRIDE_JWT: ${{ vars.OVERRIDE_JWT }}
+          PHX_HOST: ${{ vars.HOST_HOSTCOLOR }}
           PORT: ${{ vars.ARENA_PORT }}
           GATEWAY_URL: ${{ vars.GATEWAY_URL }}
           BOT_MANAGER_PORT: ${{ vars.BOT_MANAGER_PORT }}
+          BOT_MANAGER_HOST: ${{ vars.LOADTEST_CLIENT_HOST }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
-          NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME_LOADTEST_SERVER }}
+          NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME_HOSTCOLOR }}
           NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
-          DBUS_SESSION_BUS_ADDRESS: ${{ vars.DBUS_SESSION_BUS_ADDRESS }}
-          XDG_RUNTIME_DIR: ${{ vars.XDG_RUNTIME_DIR }}
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+          XDG_RUNTIME_DIR: ${{ vars.XDG_RUNTIME_DIR }}
+          DBUS_SESSION_BUS_ADDRESS: ${{ vars.DBUS_SESSION_BUS_ADDRESS }}
         run: |
           set -ex
           ssh ${SSH_USERNAME}@${SSH_HOST} \
@@ -66,7 +62,7 @@ jobs:
                 RELEASE=${RELEASE} \
                 PHX_SERVER=${PHX_SERVER} \
                 PHX_HOST=${PHX_HOST} \
-                OVERRIDE_JWT=${OVERRIDE_JWT} \
+                BOT_MANAGER_HOST=${BOT_MANAGER_HOST} \
                 PORT=${PORT} \
                 GATEWAY_URL=${GATEWAY_URL} \
                 BOT_MANAGER_PORT=${BOT_MANAGER_PORT} \
@@ -74,6 +70,19 @@ jobs:
                 SECRET_KEY_BASE=${SECRET_KEY_BASE} \
                 NEWRELIC_APP_NAME=${NEWRELIC_APP_NAME} \
                 NEWRELIC_KEY=${NEWRELIC_KEY} \
-                DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS} \
                 XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR} \
+                DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS} \
                 /home/${SSH_USERNAME}/deploy-script/deploy.sh
+
+      - name: Set Release Version from Tag
+        env:
+          TZ: "America/Argentina/Buenos_Aires"
+        run: echo "RELEASE_VERSION=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_ENV
+
+      - name: New Relic Application Deployment Marker
+        uses: newrelic/deployment-marker-action@v2.3.0
+        with:
+          apiKey: ${{ secrets.NEW_RELIC_API_KEY }}
+          guid: ${{ secrets.NEW_RELIC_DEPLOYMENT_ENTITY_GUID }}
+          version: "${{ env.RELEASE_VERSION }}"
+          user: "${{ github.actor }}"

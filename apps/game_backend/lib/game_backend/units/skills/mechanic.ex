@@ -4,6 +4,7 @@ defmodule GameBackend.Units.Skills.Mechanic do
   use GameBackend.Schema
   import Ecto.Changeset
 
+  alias GameBackend.Items.ConsumableItem
   alias GameBackend.Units.Skills.Skill
   alias GameBackend.Units.Skills.Mechanics.{ApplyEffectsTo, PassiveEffect, OnCollideEffects}
 
@@ -25,6 +26,9 @@ defmodule GameBackend.Units.Skills.Mechanic do
     field(:trigger_delay, :integer)
     field(:shape, Ecto.Enum, values: [:circle, :polygon])
     field(:vertices, {:array, :map})
+    field(:activation_delay_ms, :integer)
+    field(:preparation_delay_ms, :integer)
+    field(:activate_on_proximity, :boolean)
 
     field(:type, Ecto.Enum,
       values: [
@@ -36,11 +40,13 @@ defmodule GameBackend.Units.Skills.Mechanic do
         :multi_circle_hit,
         :teleport,
         :simple_shoot,
+        :spawn_bomb,
         :destination_shoot
       ]
     )
 
     belongs_to(:skill, Skill)
+    belongs_to(:consumable_item, ConsumableItem)
     belongs_to(:apply_effects_to, ApplyEffectsTo)
     has_many(:on_explode_mechanics, __MODULE__, foreign_key: :parent_mechanic_id)
     belongs_to(:passive_effects, PassiveEffect)
@@ -76,7 +82,11 @@ defmodule GameBackend.Units.Skills.Mechanic do
       :activation_delay,
       :speed,
       :shape,
-      :vertices
+      :vertices,
+      :consumable_item_id,
+      :activation_delay_ms,
+      :preparation_delay_ms,
+      :activate_on_proximity
     ])
     |> cast_assoc(:apply_effects_to)
     |> cast_assoc(:passive_effects)

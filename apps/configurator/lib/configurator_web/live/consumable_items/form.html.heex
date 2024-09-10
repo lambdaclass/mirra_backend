@@ -12,6 +12,7 @@
   <.input field={f[:name]} type="text" label="Name" />
   <.input field={f[:radius]} type="number" label="Radius" step="any" />
   <.input field={f[:active]} type="checkbox" label="Active" />
+
   <%= if @consumable_item.effect do %>
     <.effect_form form={f} field={:effect} />
   <% end %>
