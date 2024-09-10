@@ -3,8 +3,10 @@ defmodule GameBackend.Configuration do
   Configuration context for GameBackend
   """
   import Ecto.Query
+  require Decimal
   alias Ecto.Multi
   alias GameBackend.CurseOfMirra.GameConfiguration
+  alias GameBackend.CurseOfMirra.MapConfiguration.Position
   alias GameBackend.Items.ConsumableItem
   alias GameBackend.Units.Characters.Character
   alias GameBackend.CurseOfMirra.MapConfiguration
@@ -540,5 +542,51 @@ defmodule GameBackend.Configuration do
   """
   def get_latest_game_configuration do
     Repo.one(from(g in GameConfiguration, order_by: [desc: g.inserted_at], limit: 1))
+  end
+
+  @doc """
+  Returns a 16 base encoded string representing the hashed value of the map configurations.
+  ## Examples
+      iex> get_configuration_hash_version()
+      "A6F0CC6917D195AB8A03129ACBE1FA48364845B8"
+  """
+  def get_configuration_hash_version do
+    get_current_version()
+    |> Map.get(:map_configurations)
+    |> Enum.flat_map(fn map_config ->
+      Map.take(map_config, [:obstacles, :initial_positions, :bushes, :radius]) |> Map.values()
+    end)
+    |> List.flatten()
+    |> Enum.map(fn config -> sum_shape_coordinates(config) end)
+    |> Enum.reduce(fn coordinates_last, coordinates_current -> Decimal.add(coordinates_last, coordinates_current) end)
+    |> Decimal.to_string()
+    |> (fn coordinates -> :crypto.hash(:sha, coordinates) |> Base.encode16() end).()
+  end
+
+  # The following function retrieves a number representing a shape's figure.
+  # If it's a circle, gets its radius.
+  # For everything else, gets its vertices' positions.
+  # And for everyone, gets their positions in map.
+  # Calculate the sum of every retrieved value.
+  defp sum_shape_coordinates(%Position{x: x, y: y}) do
+    Decimal.add(x, y)
+  end
+
+  defp sum_shape_coordinates(%{shape: "circle"} = obstacle) do
+    Decimal.add(obstacle.radius, sum_shape_coordinates(obstacle.position))
+  end
+
+  defp sum_shape_coordinates(map_radius) when Decimal.is_decimal(map_radius) do
+    map_radius
+  end
+
+  defp sum_shape_coordinates([]), do: Decimal.new(0)
+
+  defp sum_shape_coordinates([vertex | vertices]) do
+    Decimal.add(sum_shape_coordinates(vertex), sum_shape_coordinates(vertices))
+  end
+
+  defp sum_shape_coordinates(%{position: position, vertices: vertices}) do
+    Decimal.add(sum_shape_coordinates(position), sum_shape_coordinates(vertices))
   end
 end
