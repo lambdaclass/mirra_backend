@@ -8,7 +8,10 @@ defmodule Arena.Configuration do
   end
 
   def get_game_config() do
+    client_config = get_client_config()
+
     get_current_game_configuration()
+    |> Map.put(:client_config, client_config)
   end
 
   defp get_current_game_configuration do
@@ -36,6 +39,14 @@ defmodule Arena.Configuration do
     |> Map.update!(:game, fn game ->
       parse_game_config(game)
     end)
+  end
+
+  defp get_client_config() do
+    {:ok, config_json} =
+      Application.app_dir(:arena, "priv/client_config.json")
+      |> File.read()
+
+    Jason.decode!(config_json, [{:keys, :atoms}])
   end
 
   defp parse_characters_config(characters) do
