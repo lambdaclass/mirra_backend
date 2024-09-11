@@ -590,16 +590,18 @@ defmodule Arena.Game.Player do
       duration_ms: skill.execution_duration_ms,
       remove_on_action: false,
       one_time_application: true,
-      effect_mechanics: %{
-        damage_immunity: %{
-          execute_multiple_times: false,
-          effect_delay_ms: 0
+      effect_mechanics: [
+        %{
+          name: "damage_immunity",
+          effect_delay_ms: 0,
+          execute_multiple_times: false
         },
-        pull_immunity: %{
-          execute_multiple_times: false,
-          effect_delay_ms: 0
+        %{
+          name: "pull_immunity",
+          effect_delay_ms: 0,
+          execute_multiple_times: false
         }
-      }
+      ]
     }
 
     player = Map.get(game_state.players, player_id)
