@@ -329,6 +329,27 @@ buff_singularity_effect =
     ]
   }
 
+inferno_effect = %{
+  name: "inferno",
+  remove_on_action: false,
+  one_time_application: true,
+  allow_multiple_effects: true,
+  effect_mechanics: [
+    %{
+      name: "speed_boost",
+      modifier: -0.60,
+      effect_delay_ms: 0,
+      execute_multiple_times: false
+    },
+    %{
+      name: "damage",
+      damage: 13,
+      effect_delay_ms: 400,
+      execute_multiple_times: true
+    }
+  ]
+}
+
 ## Mechanics
 multi_shoot = %{
   "type" => "multi_shoot",
@@ -397,6 +418,43 @@ quickslash_3 = %{
   "damage" => 80,
   "range" => 350.0,
   "offset" => 400
+}
+
+inferno = %{
+  "name" => "inferno",
+  "type" => "spawn_pool",
+  "activation_delay" => 250,
+  "duration_ms" => 8000,
+  "radius" => 400.0,
+  "range" => 0.0,
+  "shape" => "circle",
+  "vertices" => [],
+  "effect" => inferno_effect
+}
+
+otix_carbonthrow_mechanic = %{
+  "type" => "simple_shoot",
+  "speed" => 1.8,
+  "duration_ms" => 0,
+  "remove_on_collision" => false,
+  "projectile_offset" => 0,
+  "radius" => 250.0,
+  "damage" => 0,
+  "range" => 700,
+  "on_explode_mechanics" => [
+    %{
+      "type" => "circle_hit",
+      "damage" => 58,
+      "range" => 250.0,
+      "offset" => 0
+    }
+  ]
+}
+
+otix_magma_rush_mechanic = %{
+  "type" => "dash",
+  "speed" => 4.0,
+  "duration_ms" => 250
 }
 
 ## Skills
@@ -765,26 +823,8 @@ skills = [
     "can_pick_destination" => true,
     "block_movement" => true,
     "mechanics" => [
-      %{
-        "type" => "simple_shoot",
-        "speed" => 1.8,
-        "duration_ms" => 0,
-        "remove_on_collision" => false,
-        "projectile_offset" => 0,
-        "radius" => 250.0,
-        "damage" => 0,
-        "range" => 700,
-        "on_explode_mechanics" => [
-          %{
-            "type" => "circle_hit",
-            "damage" => 58,
-            "range" => 250.0,
-            "offset" => 0
-          }
-        ]
-      }
-    ],
-    "effects_to_apply" => []
+      otix_carbonthrow_mechanic
+    ]
   },
   %{
     "name" => "otix_magma_rush",
@@ -799,11 +839,7 @@ skills = [
     "can_pick_destination" => false,
     "block_movement" => true,
     "mechanics" => [
-      %{
-        "type" => "dash",
-        "speed" => 4.0,
-        "duration_ms" => 250
-      }
+      otix_magma_rush_mechanic
     ]
   },
   %{
@@ -819,19 +855,7 @@ skills = [
     "can_pick_destination" => false,
     "block_movement" => true,
     "mechanics" => [
-      %{
-        "name" => "inferno",
-        "type" => "spawn_pool",
-        "activation_delay" => 250,
-        "duration_ms" => 8000,
-        "radius" => 400.0,
-        "range" => 0.0,
-        "shape" => "circle",
-        "vertices" => [],
-        "effects_to_apply" => [
-          "inferno"
-        ]
-      }
+      inferno
     ]
   }
 ]
