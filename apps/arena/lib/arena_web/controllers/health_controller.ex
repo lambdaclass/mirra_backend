@@ -12,4 +12,12 @@ defmodule ArenaWeb.HealthController do
     |> put_status(:ok)
     |> text(Application.spec(:arena, :vsn))
   end
+
+  def update_central(conn, %{"gateway_url" => gateway_url}) do
+    System.put_env("GATEWAY_URL", gateway_url)
+
+    conn
+    |> put_status(:ok)
+    |> text(gateway_url)
+  end
 end
