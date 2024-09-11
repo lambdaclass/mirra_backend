@@ -90,8 +90,8 @@ defmodule Arena.Game.Player do
     Map.filter(players, fn {_, player} -> alive?(player) end)
   end
 
-  def targetable_players(players) do
-    Map.filter(players, fn {_, player} -> alive?(player) and not invisible?(player) end)
+  def targetable_players(current_player, players) do
+    Map.filter(players, fn {_, player} -> alive?(player) and visible?(current_player, player) end)
   end
 
   def stamina_full?(player) do
@@ -225,7 +225,7 @@ defmodule Arena.Game.Player do
 
         {auto_aim?, skill_direction} =
           skill_params.target
-          |> Skill.maybe_auto_aim(skill, player, targetable_players(game_state.players))
+          |> Skill.maybe_auto_aim(skill, player, targetable_players(player, game_state.players))
           |> case do
             {false, _} ->
               Skill.maybe_auto_aim(skill_params.target, skill, player, Crate.alive_crates(game_state.crates))
@@ -380,11 +380,8 @@ defmodule Arena.Game.Player do
     end
   end
 
-  def invisible?(player) do
-    get_in(player, [:aditional_info, :effects])
-    |> Enum.any?(fn effect ->
-      Enum.any?(effect.effect_mechanics, fn {mechanic, _} -> mechanic == :invisible end)
-    end)
+  def visible?(current_player, candidate_player) do
+    candidate_player.id in current_player.aditional_info.visible_players
   end
 
   def remove_expired_effects(player) do
