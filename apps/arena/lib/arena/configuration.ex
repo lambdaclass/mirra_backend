@@ -162,7 +162,8 @@ defmodule Arena.Configuration do
         on_arrival_mechanic: parse_mechanic_config(mechanic.on_arrival_mechanic),
         on_explode_mechanics: parse_mechanics_config(mechanic.on_explode_mechanics),
         parent_mechanic: parse_mechanic_config(mechanic.parent_mechanic),
-        effect: parse_effect(mechanic.effect)
+        effect: parse_effect(mechanic.effect),
+        on_collide_effects: parse_on_collide_effects(mechanic.on_collide_effects)
     }
   end
 
@@ -214,6 +215,17 @@ defmodule Arena.Configuration do
 
   defp parse_raised_mechanics_config(%{polygon_hit: polygon_hit} = mechanics) do
     %{mechanics | polygon_hit: %{polygon_hit | vertices: Enum.map(polygon_hit.vertices, &parse_position/1)}}
+  end
+
+  defp parse_on_collide_effects(nil) do
+    nil
+  end
+
+  defp parse_on_collide_effects(on_collide_effects) do
+    %{
+      on_collide_effects
+      | effect: parse_effect(on_collide_effects.effect)
+    }
   end
 
   defp parse_effect(nil) do
