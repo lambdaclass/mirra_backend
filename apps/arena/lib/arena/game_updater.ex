@@ -1610,13 +1610,13 @@ defmodule Arena.GameUpdater do
   defp grant_power_up_to_killer(game_state, _game_config, nil = _killer, _victim), do: game_state
 
   defp grant_power_up_to_killer(game_state, game_config, killer, victim) do
-    amount_of_power_ups =
-      get_amount_of_power_ups(victim, game_config.game.power_ups_per_kill)
-
-    updated_killer = Player.power_up_boost(killer, amount_of_power_ups, game_config)
-
-    players = Map.get(game_state, :players) |> Map.put(killer.id, updated_killer)
-    Map.put(game_state, :players, players)
+    if Player.alive?(killer) do
+      amount_of_power_ups = get_amount_of_power_ups(victim, game_config.game.power_ups_per_kill)
+      updated_killer = Player.power_up_boost(killer, amount_of_power_ups, game_config)
+      put_in(game_state, [:players, killer.id], updated_killer)
+    else
+      game_state
+    end
   end
 
   defp get_amount_of_power_ups(%{aditional_info: %{power_ups: power_ups}}, power_ups_per_kill) do
