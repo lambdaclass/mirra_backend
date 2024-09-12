@@ -1,9 +1,6 @@
 name: "[BOT-MANAGER] Deploy to Bot Manager Server"
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - add-bot-manager-workflow
 
 jobs:
   build-deploy:
