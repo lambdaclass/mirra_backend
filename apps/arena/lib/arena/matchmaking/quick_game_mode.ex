@@ -42,7 +42,7 @@ defmodule Arena.Matchmaking.QuickGameMode do
   @impl true
   def handle_call({:join, client_id, character_name, player_name}, {from_pid, _}, state) do
     create_game_for_clients([{client_id, character_name, player_name, from_pid}], %{
-      bots_enabled: false,
+      bots_enabled: true,
       zone_enabled: false
     })
 
