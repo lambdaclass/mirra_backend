@@ -73,18 +73,18 @@ defmodule ConfiguratorWeb.ArenaServerController do
   defp update_arena_gateway_url(former_url, former_url, _arena_url), do: nil
 
   defp update_arena_gateway_url(_former_url, new_url, arena_url) do
-    payload = Jason.encode!(%{gateway_url: new_url})
+    if System.get_env("PHX_HOST") == "central-europe-staging.championsofmirra.com" do
+      payload = Jason.encode!(%{gateway_url: new_url})
 
-    arena_url =
-      if String.contains?(arena_url, "localhost") do
-        "http://" <> arena_url
-      else
-        "https://" <> arena_url
-      end
-
-    spawn(fn ->
-      Finch.build(:post, arena_url <> "/api/update_central", [{"content-type", "application/json"}], payload)
-      |> Finch.request(Gateway.Finch)
-    end)
+      spawn(fn ->
+        Finch.build(
+          :post,
+          "https://" <> arena_url <> "/api/update_central",
+          [{"content-type", "application/json"}],
+          payload
+        )
+        |> Finch.request(Gateway.Finch)
+      end)
+    end
   end
 end
