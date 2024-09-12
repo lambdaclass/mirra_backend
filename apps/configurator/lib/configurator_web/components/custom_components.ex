@@ -75,7 +75,7 @@ defmodule ConfiguratorWeb.CustomComponents do
               <.input field={mechanics_form[:force]} type="number" label="Force" step="any" />
               <.input field={effect_f[:execute_multiple_times]} type="checkbox" label="Execute mechanic multiple times" />
               <.input field={mechanics_form[:damage]} type="number" label="Damage amount" />
-              <.input field={mechanics_form[:effect_delay_ms]} type="number" label="Mechanich delay" />
+              <.input field={mechanics_form[:effect_delay_ms]} type="number" label="Mechanic delay" />
               <.input field={mechanics_form[:additive_duration_add_ms]} type="number" label="Additive duration to add ms" />
               <.input
                 field={mechanics_form[:stat_multiplier]}
