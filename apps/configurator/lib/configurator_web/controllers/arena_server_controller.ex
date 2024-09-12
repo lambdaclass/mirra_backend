@@ -17,6 +17,8 @@ defmodule ConfiguratorWeb.ArenaServerController do
   def create(conn, %{"arena_server" => arena_server_params}) do
     case Configuration.create_arena_server(arena_server_params) do
       {:ok, arena_server} ->
+        update_arena_gateway_url(arena_server.gateway_url, arena_server_params["gateway_url"], arena_server.url)
+
         conn
         |> put_flash(:info, "Arena server created successfully.")
         |> redirect(to: ~p"/arena_servers/#{arena_server}")
@@ -39,6 +41,7 @@ defmodule ConfiguratorWeb.ArenaServerController do
 
   def update(conn, %{"id" => id, "arena_server" => arena_server_params}) do
     arena_server = Configuration.get_arena_server!(id)
+    update_arena_gateway_url(arena_server.gateway_url, arena_server_params["gateway_url"], arena_server.url)
 
     case Configuration.update_arena_server(arena_server, arena_server_params) do
       {:ok, arena_server} ->
@@ -64,6 +67,24 @@ defmodule ConfiguratorWeb.ArenaServerController do
         conn
         |> put_flash(:info, "Arena server deleted successfully.")
         |> redirect(to: ~p"/arena_servers")
+    end
+  end
+
+  defp update_arena_gateway_url(former_url, former_url, _arena_url), do: nil
+
+  defp update_arena_gateway_url(_former_url, new_url, arena_url) do
+    if System.get_env("PHX_HOST") == "central-europe-staging.championsofmirra.com" do
+      payload = Jason.encode!(%{gateway_url: new_url})
+
+      spawn(fn ->
+        Finch.build(
+          :post,
+          "https://" <> arena_url <> "/api/update_central",
+          [{"content-type", "application/json"}],
+          payload
+        )
+        |> Finch.request(Gateway.Finch)
+      end)
     end
   end
 end

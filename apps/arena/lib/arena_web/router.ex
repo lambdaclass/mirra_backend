@@ -10,6 +10,7 @@ defmodule ArenaWeb.Router do
 
     get "/health", HealthController, :check
     get "/version", HealthController, :version
+    post "/update_central", HealthController, :update_central
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
