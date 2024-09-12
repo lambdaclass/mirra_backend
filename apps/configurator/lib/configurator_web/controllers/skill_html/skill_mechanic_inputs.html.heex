@@ -25,13 +25,9 @@
   <.input field={fp[:range]} type="number" label="Range" />
   <.input field={fp[:remove_on_collision]} type="checkbox" label="Remove on collision" />
   <.input field={fp[:speed]} type="number" label="speed" />
-  <.input
-    field={fp[:effects_to_apply]}
-    type="select"
-    label="Effects to apply"
-    multiple
-    options={["singularity", "denial_of_service", "invisible", "inferno"]}
-  />
+  <%= if fp.data.effect do %>
+    <.effect_form form={fp} field={:effect} />
+  <% end %>
   <.input field={fp[:shape]} type="select" label="Shape of entity to spawn" options={["circle", "polygon"]} />
 
   <.input field={fp[:vertices]} type="text" label="Vertices" value={Jason.encode!(fp.data.vertices)} />

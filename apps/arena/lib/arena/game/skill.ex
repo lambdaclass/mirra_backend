@@ -2,7 +2,6 @@ defmodule Arena.Game.Skill do
   @moduledoc """
   Module for handling skills
   """
-  alias Arena.GameUpdater
   alias Arena.Game.Effect
   alias Arena.{Entities, Utils}
   alias Arena.Game.{Player, Crate}
@@ -322,13 +321,8 @@ defmodule Arena.Game.Skill do
     deal_damage_to_game_entities(game_state, entity_player_owner, polygon_damage_area, polygon_hit.damage)
   end
 
-  def handle_skill_effects(game_state, player, effects, execution_duration_ms, game_config) do
-    effects_to_apply =
-      GameUpdater.get_effects_from_config(effects, game_config)
-
-    Enum.reduce(effects_to_apply, game_state, fn effect, game_state ->
-      Effect.put_effect_to_entity(game_state, player, player.id, execution_duration_ms, effect)
-    end)
+  def handle_skill_effects(game_state, player, effect, execution_duration_ms) do
+    Effect.put_effect_to_entity(game_state, player, player.id, execution_duration_ms, effect)
   end
 
   defp calculate_angle_directions(amount, angle_between, base_direction) do

@@ -235,6 +235,121 @@ default_version_params = %{
 {:ok, version} =
   GameBackend.Configuration.create_version(default_version_params)
 
+singularity_effect = %{
+  name: "singularity",
+  remove_on_action: false,
+  one_time_application: true,
+  allow_multiple_effects: true,
+  effect_mechanics: [
+    %{
+      name: "pull",
+      force: 15.0,
+      effect_delay_ms: 0,
+      execute_multiple_times: true
+    },
+    %{
+      name: "damage",
+      damage: 13,
+      effect_delay_ms: 400,
+      execute_multiple_times: true
+    }
+  ]
+}
+
+denial_of_service =
+  %{
+    name: "denial_of_service",
+    remove_on_action: false,
+    one_time_application: true,
+    allow_multiple_effects: true,
+    effect_mechanics: [
+      %{
+        name: "damage",
+        damage: 17,
+        effect_delay_ms: 220,
+        execute_multiple_times: true
+      }
+    ]
+  }
+
+invisible_effect =
+  %{
+    name: "invisible",
+    duration_ms: 4000,
+    remove_on_action: true,
+    one_time_application: false,
+    allow_multiple_effects: true,
+    effect_mechanics: [
+      %{
+        name: "invisible",
+        execute_multiple_times: true,
+        effect_delay_ms: 0
+      },
+      %{
+        name: "speed_boost",
+        modifier: 0.25,
+        effect_delay_ms: 0,
+        execute_multiple_times: false
+      }
+    ]
+  }
+
+whirlwind_effect =
+  %{
+    name: "whirlwind",
+    duration_ms: 5000,
+    remove_on_action: false,
+    one_time_application: false,
+    allow_multiple_effects: true,
+    effect_mechanics: [
+      %{
+        name: "defense_change",
+        modifier: 0.75,
+        effect_delay_ms: 0,
+        execute_multiple_times: false
+      }
+    ]
+  }
+
+buff_singularity_effect =
+  %{
+    name: "buff_singularity",
+    remove_on_action: false,
+    one_time_application: true,
+    consume_projectile: true,
+    allow_multiple_effects: true,
+    effect_mechanics: [
+      %{
+        name: "buff_pool",
+        stat_multiplier: 0.1,
+        additive_duration_add_ms: 1000,
+        effect_delay_ms: 0,
+        execute_multiple_times: false
+      }
+    ]
+  }
+
+inferno_effect = %{
+  name: "inferno",
+  remove_on_action: false,
+  one_time_application: true,
+  allow_multiple_effects: true,
+  effect_mechanics: [
+    %{
+      name: "speed_boost",
+      modifier: -0.60,
+      effect_delay_ms: 0,
+      execute_multiple_times: false
+    },
+    %{
+      name: "damage",
+      damage: 13,
+      effect_delay_ms: 400,
+      execute_multiple_times: true
+    }
+  ]
+}
+
 ## Mechanics
 multi_shoot = %{
   "type" => "multi_shoot",
@@ -257,9 +372,7 @@ singularity = %{
   "range" => 1200.0,
   "shape" => "circle",
   "vertices" => [],
-  "effects_to_apply" => [
-    "singularity"
-  ]
+  "effect" => singularity_effect
 }
 
 simple_shoot = %{
@@ -282,9 +395,7 @@ simple_shoot = %{
     "apply_effect_to_entity_type" => [
       "pool"
     ],
-    "effects" => [
-      "buff_singularity"
-    ]
+    "effect" => buff_singularity_effect
   }
 }
 
@@ -309,7 +420,45 @@ quickslash_3 = %{
   "offset" => 400
 }
 
+inferno = %{
+  "name" => "inferno",
+  "type" => "spawn_pool",
+  "activation_delay" => 250,
+  "duration_ms" => 8000,
+  "radius" => 400.0,
+  "range" => 0.0,
+  "shape" => "circle",
+  "vertices" => [],
+  "effect" => inferno_effect
+}
+
+otix_carbonthrow_mechanic = %{
+  "type" => "simple_shoot",
+  "speed" => 1.8,
+  "duration_ms" => 0,
+  "remove_on_collision" => false,
+  "projectile_offset" => 0,
+  "radius" => 250.0,
+  "damage" => 0,
+  "range" => 700,
+  "on_explode_mechanics" => [
+    %{
+      "type" => "circle_hit",
+      "damage" => 58,
+      "range" => 250.0,
+      "offset" => 0
+    }
+  ]
+}
+
+otix_magma_rush_mechanic = %{
+  "type" => "dash",
+  "speed" => 4.0,
+  "duration_ms" => 250
+}
+
 ## Skills
+
 skills = [
   %{
     "name" => "muflus_crush",
@@ -331,7 +480,6 @@ skills = [
         "offset" => 400
       }
     ],
-    "effects_to_apply" => [],
     "version_id" => version.id
   },
   %{
@@ -394,7 +542,6 @@ skills = [
     "can_pick_destination" => false,
     "block_movement" => true,
     "mechanics" => [multi_shoot],
-    "effects_to_apply" => [],
     "version_id" => version.id
   },
   %{
@@ -439,12 +586,9 @@ skills = [
         "range" => 1200.0,
         "shape" => "circle",
         "vertices" => [],
-        "effects_to_apply" => [
-          "denial_of_service"
-        ]
+        "effect" => denial_of_service
       }
     ],
-    "effects_to_apply" => [],
     "version_id" => version.id
   },
   %{
@@ -469,7 +613,6 @@ skills = [
         "offset" => 200
       }
     ],
-    "effects_to_apply" => [],
     "version_id" => version.id
   },
   %{
@@ -492,9 +635,7 @@ skills = [
         "offset" => 0
       }
     ],
-    "effects_to_apply" => [
-      "invisible"
-    ]
+    "effect_to_apply" => invisible_effect
   },
   %{
     "name" => "uma_sneak",
@@ -515,7 +656,6 @@ skills = [
         "duration_ms" => 250
       }
     ],
-    "effects_to_apply" => [],
     "version_id" => version.id
   },
   %{
@@ -531,7 +671,6 @@ skills = [
     "can_pick_destination" => true,
     "block_movement" => true,
     "mechanics" => [singularity],
-    "effects_to_apply" => [],
     "version_id" => version.id
   },
   %{
@@ -555,7 +694,6 @@ skills = [
         "duration_ms" => 150
       }
     ],
-    "effects_to_apply" => [],
     "version_id" => version.id
   },
   %{
@@ -571,7 +709,6 @@ skills = [
     "can_pick_destination" => false,
     "block_movement" => true,
     "mechanics" => [simple_shoot],
-    "effects_to_apply" => [],
     "version_id" => version.id
   },
   %{
@@ -589,7 +726,6 @@ skills = [
     "can_pick_destination" => false,
     "block_movement" => true,
     "mechanics" => [quickslash_1],
-    "effects_to_apply" => [],
     "version_id" => version.id
   },
   %{
@@ -607,7 +743,6 @@ skills = [
     "can_pick_destination" => false,
     "block_movement" => true,
     "mechanics" => [quickslash_2],
-    "effects_to_apply" => [],
     "version_id" => version.id
   },
   %{
@@ -625,7 +760,6 @@ skills = [
     "can_pick_destination" => false,
     "block_movement" => true,
     "mechanics" => [quickslash_3],
-    "effects_to_apply" => [],
     "version_id" => version.id
   },
   %{
@@ -650,9 +784,7 @@ skills = [
         "offset" => 0
       }
     ],
-    "effects_to_apply" => [
-      "whirlwind"
-    ],
+    "effect_to_apply" => whirlwind_effect,
     "version_id" => version.id
   },
   %{
@@ -676,7 +808,6 @@ skills = [
         "on_arrival_mechanic" => %{}
       }
     ],
-    "effects_to_apply" => [],
     "version_id" => version.id
   },
   %{
@@ -692,26 +823,8 @@ skills = [
     "can_pick_destination" => true,
     "block_movement" => true,
     "mechanics" => [
-      %{
-        "type" => "simple_shoot",
-        "speed" => 1.8,
-        "duration_ms" => 0,
-        "remove_on_collision" => false,
-        "projectile_offset" => 0,
-        "radius" => 250.0,
-        "damage" => 0,
-        "range" => 700,
-        "on_explode_mechanics" => [
-          %{
-            "type" => "circle_hit",
-            "damage" => 58,
-            "range" => 250.0,
-            "offset" => 0
-          }
-        ]
-      }
-    ],
-    "effects_to_apply" => []
+      otix_carbonthrow_mechanic
+    ]
   },
   %{
     "name" => "otix_magma_rush",
@@ -726,11 +839,7 @@ skills = [
     "can_pick_destination" => false,
     "block_movement" => true,
     "mechanics" => [
-      %{
-        "type" => "dash",
-        "speed" => 4.0,
-        "duration_ms" => 250
-      }
+      otix_magma_rush_mechanic
     ]
   },
   %{
@@ -746,19 +855,7 @@ skills = [
     "can_pick_destination" => false,
     "block_movement" => true,
     "mechanics" => [
-      %{
-        "name" => "inferno",
-        "type" => "spawn_pool",
-        "activation_delay" => 250,
-        "duration_ms" => 8000,
-        "radius" => 400.0,
-        "range" => 0.0,
-        "shape" => "circle",
-        "vertices" => [],
-        "effects_to_apply" => [
-          "inferno"
-        ]
-      }
+      inferno
     ]
   }
 ]
@@ -966,60 +1063,169 @@ game_configuration_1 = %{
 {:ok, _game_configuration_1} =
   GameBackend.Configuration.create_game_configuration(game_configuration_1)
 
+golden_clock_effect = %{
+  name: "golden_clock_effect",
+  duration_ms: 9000,
+  remove_on_action: false,
+  one_time_application: true,
+  allow_multiple_effects: true,
+  effect_mechanics: [
+    %{
+      name: "reduce_stamina_interval",
+      modifier: 0.5,
+      effect_delay_ms: 0,
+      execute_multiple_times: false
+    },
+    %{
+      name: "refresh_stamina",
+      effect_delay_ms: 0,
+      execute_multiple_times: false
+    },
+    %{
+      name: "reduce_cooldowns_duration",
+      modifier: 0.5,
+      effect_delay_ms: 0,
+      execute_multiple_times: false
+    },
+    %{
+      name: "refresh_cooldowns",
+      effect_delay_ms: 0,
+      execute_multiple_times: false
+    }
+  ]
+}
+
 golden_clock_params = %{
   active: true,
   name: "golden_clock",
   radius: 200.0,
   mechanics: %{},
-  effects: ["golden_clock_effect"],
+  effect: golden_clock_effect,
   version_id: version.id
 }
 
 {:ok, _golden_clock} =
   GameBackend.Items.create_consumable_item(golden_clock_params)
 
+magic_boots_effect =
+  %{
+    name: "magic_boots_effect",
+    duration_ms: 8000,
+    remove_on_action: false,
+    one_time_application: true,
+    allow_multiple_effects: true,
+    effect_mechanics: [
+      %{
+        name: "speed_boost",
+        modifier: 0.5,
+        effect_delay_ms: 0,
+        execute_multiple_times: false
+      }
+    ]
+  }
+
 magic_boots_params = %{
   active: true,
   name: "magic_boots",
   radius: 200.0,
   mechanics: %{},
-  effects: ["magic_boots_effect"],
+  effect: magic_boots_effect,
   version_id: version.id
 }
 
 {:ok, _magic_boots} =
   GameBackend.Items.create_consumable_item(magic_boots_params)
 
+mirra_blessing_effect =
+  %{
+    name: "mirra_blessing_effect",
+    duration_ms: 7000,
+    remove_on_action: false,
+    one_time_application: true,
+    allow_multiple_effects: true,
+    effect_mechanics: [
+      %{
+        name: "damage_immunity",
+        effect_delay_ms: 0,
+        execute_multiple_times: false
+      }
+    ]
+  }
+
 mirra_blessing_params = %{
   active: true,
   name: "mirra_blessing",
   radius: 200.0,
   mechanics: %{},
-  effects: ["mirra_blessing_effect"],
+  effect: mirra_blessing_effect,
   version_id: version.id
 }
 
 {:ok, _mirra_blessing} =
   GameBackend.Items.create_consumable_item(mirra_blessing_params)
 
+giant_effect =
+  %{
+    name: "giant_effect",
+    duration_ms: 9000,
+    remove_on_action: false,
+    one_time_application: true,
+    allow_multiple_effects: true,
+    effect_mechanics: [
+      %{
+        name: "modify_radius",
+        modifier: 0.4,
+        effect_delay_ms: 0,
+        execute_multiple_times: false
+      },
+      %{
+        name: "damage_change",
+        modifier: 0.25,
+        effect_delay_ms: 0,
+        execute_multiple_times: true
+      },
+      %{
+        name: "speed_boost",
+        modifier: -0.25,
+        effect_delay_ms: 0,
+        execute_multiple_times: false
+      },
+      %{
+        name: "defense_change",
+        modifier: 0.4,
+        effect_delay_ms: 0,
+        execute_multiple_times: true
+      }
+    ]
+  }
+
 giant_fruit_params = %{
   active: true,
   name: "giant",
   radius: 200.0,
   mechanics: %{},
-  effects: ["giant_effect"],
+  effect: giant_effect,
   version_id: version.id
 }
 
 {:ok, _giant_fruit} =
   GameBackend.Items.create_consumable_item(giant_fruit_params)
 
+polymorph_effect = %{
+  name: "polymorph_effect",
+  duration_ms: 9000,
+  remove_on_action: true,
+  one_time_application: true,
+  allow_multiple_effects: true,
+  effect_mechanics: []
+}
+
 polymorph_params = %{
   active: false,
   name: "polymorph",
   radius: 200.0,
   mechanics: %{},
-  effects: ["polymorph_effect"]
+  effect: polymorph_effect
 }
 
 {:ok, _polymorph} =
@@ -1058,6 +1264,22 @@ fake_item_params = %{
 
 {:ok, _fake_item} =
   GameBackend.Items.create_consumable_item(fake_item_params)
+
+slow_field_effect = %{
+  name: "slow_field_effect",
+  duration_ms: 9000,
+  remove_on_action: true,
+  one_time_application: true,
+  allow_multiple_effects: true,
+  effect_mechanics: [
+    %{
+      name: "speed_boost",
+      modifier: -0.5,
+      effect_delay_ms: 0,
+      execute_multiple_times: false
+    }
+  ]
+}
 
 araban_map_config = %{
   name: "Araban",

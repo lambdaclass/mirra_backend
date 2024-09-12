@@ -266,7 +266,7 @@ defmodule Arena.Game.Player do
 
         Process.send_after(
           self(),
-          {:delayed_effect_application, player.id, Map.get(skill, :effects_to_apply), skill.execution_duration_ms},
+          {:delayed_effect_application, player.id, Map.get(skill, :effect_to_apply), skill.execution_duration_ms},
           skill.activation_delay_ms
         )
 
@@ -361,19 +361,15 @@ defmodule Arena.Game.Player do
     player.aditional_info.inventory != nil
   end
 
-  def use_item(player, game_state, game_config) do
+  def use_item(player, game_state) do
     case player.aditional_info.inventory do
       nil ->
         game_state
 
       item ->
         game_state =
-          Enum.reduce(item.effects, game_state, fn effect_name, game_state_acc ->
-            effect = Enum.find(game_config.effects, fn %{name: name} -> name == effect_name end)
-
-            Effect.put_effect_to_entity(game_state_acc, player, player.id, effect)
-            |> maybe_update_player_item_effects_expires_at(player, effect)
-          end)
+          Effect.put_effect_to_entity(game_state, player, player.id, item.effect)
+          |> maybe_update_player_item_effects_expires_at(player, item.effect)
           |> put_in([:players, player.id, :aditional_info, :inventory], nil)
 
         Item.do_mechanics(game_state, player, item.mechanics)
@@ -591,16 +587,18 @@ defmodule Arena.Game.Player do
       duration_ms: skill.execution_duration_ms,
       remove_on_action: false,
       one_time_application: true,
-      effect_mechanics: %{
-        damage_immunity: %{
-          execute_multiple_times: false,
-          effect_delay_ms: 0
+      effect_mechanics: [
+        %{
+          name: "damage_immunity",
+          effect_delay_ms: 0,
+          execute_multiple_times: false
         },
-        pull_immunity: %{
-          execute_multiple_times: false,
-          effect_delay_ms: 0
+        %{
+          name: "pull_immunity",
+          effect_delay_ms: 0,
+          execute_multiple_times: false
         }
-      }
+      ]
     }
 
     player = Map.get(game_state.players, player_id)

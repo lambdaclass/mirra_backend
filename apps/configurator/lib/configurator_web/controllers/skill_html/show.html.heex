@@ -12,6 +12,7 @@
     <.link href={~p"/skills/#{@skill}/edit"}>
       <.button>Edit skill</.button>
     </.link>
+    <.effect_show effect={@skill.effect_to_apply} />
   </:actions>
 </.header>
 
@@ -38,6 +39,7 @@
 
 <%= for mechanic <- @skill.mechanics do %>
   <.mechanic_show mechanic={mechanic} />
+  <.effect_show effect={mechanic.effect} />
 
   <.button type="button" phx-click={show_modal("on-arrival-mechanic-modal")}>Show on arrival mechanic</.button>
   <.modal id="on-arrival-mechanic-modal">

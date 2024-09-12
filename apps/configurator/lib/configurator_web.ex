@@ -84,6 +84,7 @@ defmodule ConfiguratorWeb do
       import Phoenix.HTML
       # Core UI components and translation
       import ConfiguratorWeb.CoreComponents
+      import ConfiguratorWeb.CustomComponents
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS

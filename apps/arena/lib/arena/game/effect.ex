@@ -82,19 +82,19 @@ defmodule Arena.Game.Effect do
     end)
   end
 
-  defp apply_stat_modifier(player, {:damage_change, damage_change}) do
+  defp apply_stat_modifier(player, %{name: "damage_change"} = damage_change) do
     update_in(player, [:aditional_info, :bonus_damage], fn bonus_damage -> bonus_damage + damage_change.modifier end)
   end
 
-  defp apply_stat_modifier(player, {:defense_change, defense_change}) do
+  defp apply_stat_modifier(player, %{name: "defense_change"} = defense_change) do
     update_in(player, [:aditional_info, :bonus_defense], fn bonus_defense ->
       min(1.0, bonus_defense + defense_change.modifier)
     end)
   end
 
-  defp apply_stat_modifier(player, {:reduce_stamina_interval, reduce_stamina_interval}) do
+  defp apply_stat_modifier(player, %{name: "reduce_stamina_interval"} = reduce_stamina_interval) do
     stamina_speedup_by =
-      (player.aditional_info.stamina_interval * reduce_stamina_interval.decrease_by)
+      (player.aditional_info.stamina_interval * reduce_stamina_interval.modifier)
       |> round()
 
     new_stamina_interval = player.aditional_info.stamina_interval - stamina_speedup_by
@@ -102,46 +102,31 @@ defmodule Arena.Game.Effect do
     put_in(player, [:aditional_info, :stamina_interval], new_stamina_interval)
   end
 
-  defp apply_stat_modifier(player, {:reduce_cooldowns_duration, reduce_cooldowns_duration}) do
-    put_in(player, [:aditional_info, :cooldown_multiplier], reduce_cooldowns_duration.multiplier)
+  defp apply_stat_modifier(player, %{name: "reduce_cooldowns_duration"} = reduce_cooldowns_duration) do
+    put_in(player, [:aditional_info, :cooldown_multiplier], reduce_cooldowns_duration.modifier)
   end
 
-  defp apply_stat_modifier(player, {:speed_boost, speed_boost}) do
+  defp apply_stat_modifier(player, %{name: "speed_boost"} = speed_boost) do
     case player.aditional_info.forced_movement do
       true -> player
       false -> %{player | speed: player.speed * (1 + speed_boost.modifier)}
     end
   end
 
-  defp apply_stat_modifier(player, {:modify_radius, modify_radius}) do
+  defp apply_stat_modifier(player, %{name: "modify_radius"} = modify_radius) do
     %{player | radius: player.radius * (1 + modify_radius.modifier)}
   end
 
-  defp apply_stat_modifier(player, {:damage_immunity, _damage_immunity}) do
+  defp apply_stat_modifier(player, %{name: "damage_immunity"} = _damage_immunity) do
     put_in(player, [:aditional_info, :damage_immunity], true)
   end
 
-  defp apply_stat_modifier(player, {:pull_immunity, _damage_immunity}) do
+  defp apply_stat_modifier(player, %{name: "pull_immunity"} = _damage_immunity) do
     put_in(player, [:aditional_info, :pull_immunity], true)
   end
 
   defp apply_stat_modifier(player, _) do
     player
-  end
-
-  @doc """
-  This function finds an updates the given attributes of an effect in a player list of effects
-  """
-  def put_in_effect(player, effect, keys, value) do
-    update_in(player, [:aditional_info, :effects], fn effects ->
-      Enum.map(effects, fn current_effect ->
-        if current_effect.id == effect.id do
-          put_in(current_effect, keys, value)
-        else
-          current_effect
-        end
-      end)
-    end)
   end
 
   @doc """
@@ -168,24 +153,52 @@ defmodule Arena.Game.Effect do
   defp apply_effect_mechanic(entity, effect, game_state) do
     now = System.monotonic_time(:millisecond)
 
-    Enum.reduce(effect.effect_mechanics, entity, fn {mechanic_name, mechanic_params} = mechanic, entity ->
+    Enum.reduce(effect.effect_mechanics, entity, fn mechanic, entity ->
       execute_multiple_times? =
-        mechanic_params.execute_multiple_times or is_nil(Map.get(mechanic_params, :last_application_time))
+        mechanic.execute_multiple_times or is_nil(Map.get(mechanic, :last_application_time))
 
       enough_time_passed? =
-        is_nil(Map.get(mechanic_params, :last_application_time)) or
-          now - Map.get(mechanic_params, :last_application_time) >= mechanic_params.effect_delay_ms
+        is_nil(Map.get(mechanic, :last_application_time)) or
+          now - Map.get(mechanic, :last_application_time) >= mechanic.effect_delay_ms
 
       if execute_multiple_times? and enough_time_passed? do
         do_effect_mechanics(game_state, entity, effect, mechanic)
-        |> put_in_effect(effect, [:effect_mechanics, mechanic_name, :last_application_time], now)
+        |> update_effect_mechanic_last_application_time(effect, mechanic, now)
       else
         entity
       end
     end)
   end
 
-  defp do_effect_mechanics(game_state, entity, effect, {:pull, pull_params}) do
+  @doc """
+  This function finds an updates the given attributes of an effect in a player list of effects
+  """
+  def update_effect_mechanic_last_application_time(player, effect, mechanic, now) do
+    update_in(player, [:aditional_info, :effects], fn effects ->
+      Enum.map(effects, fn current_effect ->
+        if current_effect.id == effect.id do
+          update_effect_mechanic_value_in_effect(effect, mechanic, :last_application_time, now)
+        else
+          current_effect
+        end
+      end)
+    end)
+  end
+
+  defp update_effect_mechanic_value_in_effect(effect, mechanic, key, value) do
+    effect
+    |> update_in([:effect_mechanics], fn effect_mechanics ->
+      Enum.map(effect_mechanics, fn effect_mechanic ->
+        if effect_mechanic.name == mechanic.name do
+          Map.put(effect_mechanic, key, value)
+        else
+          effect_mechanic
+        end
+      end)
+    end)
+  end
+
+  defp do_effect_mechanics(game_state, entity, effect, %{name: "pull"} = pull_params) do
     case Map.get(game_state.pools, effect.owner_id) do
       nil ->
         entity
@@ -215,7 +228,7 @@ defmodule Arena.Game.Effect do
     end
   end
 
-  defp do_effect_mechanics(game_state, entity, effect, {:damage, damage_params}) do
+  defp do_effect_mechanics(game_state, entity, effect, %{name: "damage"} = damage_params) do
     # TODO not all effects may come from pools entities, maybe we should update this when we implement other skills that
     # applies this effect
     Map.get(game_state.pools, effect.owner_id)
@@ -233,7 +246,7 @@ defmodule Arena.Game.Effect do
     end
   end
 
-  defp do_effect_mechanics(game_state, entity, _effect, {:buff_pool, buff_attributes}) do
+  defp do_effect_mechanics(game_state, entity, _effect, %{name: "buff_pool"} = buff_attributes) do
     Map.get(game_state.pools, entity.id)
     |> case do
       nil ->
@@ -253,11 +266,11 @@ defmodule Arena.Game.Effect do
     end
   end
 
-  defp do_effect_mechanics(_game_state, entity, _effect, {:refresh_stamina, _refresh_stamina}) do
+  defp do_effect_mechanics(_game_state, entity, _effect, %{name: "refresh_stamina"} = _refresh_stamina) do
     Entities.refresh_stamina(entity)
   end
 
-  defp do_effect_mechanics(_game_state, entity, _effect, {:refresh_cooldowns, _refresh_cooldowns}) do
+  defp do_effect_mechanics(_game_state, entity, _effect, %{name: "refresh_cooldowns"} = _refresh_cooldowns) do
     Entities.refresh_cooldowns(entity)
   end
 

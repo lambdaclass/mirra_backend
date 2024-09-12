@@ -13,7 +13,6 @@ defmodule GameBackend.Units.Skills.Mechanic do
     field(:angle_between, :decimal)
     field(:damage, :integer)
     field(:duration_ms, :integer)
-    field(:effects_to_apply, {:array, :string})
     field(:interval_ms, :integer)
     field(:move_by, :decimal)
     field(:name, :string)
@@ -54,6 +53,7 @@ defmodule GameBackend.Units.Skills.Mechanic do
     belongs_to(:on_arrival_mechanic, __MODULE__)
     belongs_to(:parent_mechanic, __MODULE__, foreign_key: :parent_mechanic_id)
     embeds_one(:on_collide_effects, OnCollideEffects)
+    embeds_one(:effect, GameBackend.CurseOfMirra.Effect)
   end
 
   def mechanic_types(), do: [:apply_effects_to, :passive_effects]
@@ -71,7 +71,6 @@ defmodule GameBackend.Units.Skills.Mechanic do
       :angle_between,
       :damage,
       :duration_ms,
-      :effects_to_apply,
       :interval_ms,
       :move_by,
       :name,
@@ -95,6 +94,7 @@ defmodule GameBackend.Units.Skills.Mechanic do
     |> cast_assoc(:on_arrival_mechanic, with: &assoc_changeset/2)
     |> cast_assoc(:on_explode_mechanics, with: &assoc_changeset/2)
     |> cast_embed(:on_collide_effects)
+    |> cast_embed(:effect)
   end
 
   defp assoc_changeset(struct, params) do

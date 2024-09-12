@@ -28,13 +28,13 @@ defmodule GameBackend.Units.Skills.Skill do
     field(:max_autoaim_range, :integer)
     field(:stamina_cost, :integer)
     field(:mana_cost, :integer)
-    field(:effects_to_apply, {:array, :string})
     field(:type, Ecto.Enum, values: [:basic, :dash, :ultimate])
 
     belongs_to(:buff, Buff)
     belongs_to(:next_skill, __MODULE__)
     has_many(:mechanics, Mechanic, on_replace: :delete)
     belongs_to(:version, Version)
+    embeds_one(:effect_to_apply, GameBackend.CurseOfMirra.Effect)
 
     timestamps()
   end
@@ -64,7 +64,6 @@ defmodule GameBackend.Units.Skills.Skill do
       :max_autoaim_range,
       :stamina_cost,
       :mana_cost,
-      :effects_to_apply,
       :type,
       :version_id
     ])
@@ -73,6 +72,7 @@ defmodule GameBackend.Units.Skills.Skill do
     |> foreign_key_constraint(:characters, name: "characters_basic_skill_id_fkey")
     |> cooldown_mechanism_validation()
     |> validate_combo_fields()
+    |> cast_embed(:effect_to_apply)
   end
 
   defp cooldown_mechanism_validation(changeset) do

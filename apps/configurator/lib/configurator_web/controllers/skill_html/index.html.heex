@@ -29,6 +29,7 @@
       </.header>
       <%= for mechanic <- skill.mechanics do %>
         <.mechanic_show mechanic={mechanic} />
+        <.effect_show effect={mechanic.effect} />
 
         <%= if not is_nil(mechanic.on_arrival_mechanic) do %>
           <.button type="button" phx-click={show_modal("on-arrival-mechanic-modal")}>Show on arrival mechanic</.button>

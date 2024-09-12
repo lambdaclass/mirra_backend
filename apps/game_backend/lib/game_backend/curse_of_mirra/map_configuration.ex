@@ -92,22 +92,23 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
     alias GameBackend.CurseOfMirra.MapConfiguration
     use GameBackend.Schema
 
-    @derive {Jason.Encoder, only: [:name, :position, :radius, :shape, :vertices, :effects_to_apply]}
+    @derive {Jason.Encoder, only: [:name, :position, :radius, :shape, :vertices, :effect]}
     embedded_schema do
       field(:name, :string)
       field(:radius, :decimal)
       field(:shape, Ecto.Enum, values: [:circle, :polygon])
-      field(:effects_to_apply, {:array, :string})
+      embeds_one(:effect, GameBackend.CurseOfMirra.Effect)
       embeds_one(:position, Position)
       embeds_many(:vertices, Position)
     end
 
     def changeset(position, attrs) do
       position
-      |> cast(attrs, [:name, :radius, :shape, :effects_to_apply])
+      |> cast(attrs, [:name, :radius, :shape])
       |> cast_embed(:position)
+      |> cast_embed(:effect)
       |> cast_embed(:vertices, drop_param: :vertices_drop, sort_param: :vertices_sort)
-      |> validate_required([:name, :position, :radius, :shape, :effects_to_apply])
+      |> validate_required([:name, :position, :radius, :shape, :effect])
       |> MapConfiguration.validate_shape()
     end
   end

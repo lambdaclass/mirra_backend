@@ -8,15 +8,9 @@ defmodule Arena.Configuration do
   end
 
   def get_game_config() do
-    {:ok, config_json} =
-      Application.app_dir(:arena, "priv/config.json")
-      |> File.read()
-
-    config = Jason.decode!(config_json, [{:keys, :atoms}])
     client_config = get_client_config()
 
-    config
-    |> Map.merge(get_current_game_configuration())
+    get_current_game_configuration()
     |> Map.put(:client_config, client_config)
   end
 
@@ -69,21 +63,32 @@ defmodule Arena.Configuration do
     end)
   end
 
+  defp parse_items_config(items) do
+    Enum.map(items, fn item ->
+      %{
+        item
+        | effect: parse_effect(item.effect),
+          radius: maybe_to_float(item.radius),
+          mechanics: parse_mechanics_config(item.mechanics)
+      }
+    end)
+  end
+
   defp parse_skill_config(%{cooldown_mechanism: "stamina", stamina_cost: cost} = skill_config) when cost >= 0 do
     skill_config = parse_combo_config(skill_config)
     mechanics = parse_mechanics_config(skill_config.mechanics)
-    %{skill_config | mechanics: mechanics}
+    %{skill_config | mechanics: mechanics, effect_to_apply: parse_effect(skill_config.effect_to_apply)}
   end
 
   defp parse_skill_config(%{cooldown_mechanism: "time", cooldown_ms: cooldown} = skill_config) when cooldown >= 0 do
     skill_config = parse_combo_config(skill_config)
     mechanics = parse_mechanics_config(skill_config.mechanics)
-    %{skill_config | mechanics: mechanics}
+    %{skill_config | mechanics: mechanics, effect_to_apply: parse_effect(skill_config.effect_to_apply)}
   end
 
   defp parse_skill_config(%{cooldown_mechanism: "mana", mana_cost: cost} = skill_config) when cost >= 0 do
     mechanics = parse_mechanics_config(skill_config.mechanics)
-    %{skill_config | mechanics: mechanics}
+    %{skill_config | mechanics: mechanics, effect_to_apply: parse_effect(skill_config.effect_to_apply)}
   end
 
   defp parse_skill_config(skill_config) do
@@ -156,7 +161,9 @@ defmodule Arena.Configuration do
         speed: maybe_to_float(mechanic.speed),
         on_arrival_mechanic: parse_mechanic_config(mechanic.on_arrival_mechanic),
         on_explode_mechanics: parse_mechanics_config(mechanic.on_explode_mechanics),
-        parent_mechanic: parse_mechanic_config(mechanic.parent_mechanic)
+        parent_mechanic: parse_mechanic_config(mechanic.parent_mechanic),
+        effect: parse_effect(mechanic.effect),
+        on_collide_effects: parse_on_collide_effects(mechanic.on_collide_effects)
     }
   end
 
@@ -210,13 +217,31 @@ defmodule Arena.Configuration do
     %{mechanics | polygon_hit: %{polygon_hit | vertices: Enum.map(polygon_hit.vertices, &parse_position/1)}}
   end
 
-  defp parse_items_config(items) do
-    Enum.map(items, fn item ->
-      %{
-        item
-        | radius: maybe_to_float(item.radius),
-          mechanics: parse_mechanics_config(item.mechanics)
-      }
+  defp parse_on_collide_effects(nil) do
+    nil
+  end
+
+  defp parse_on_collide_effects(on_collide_effects) do
+    %{
+      on_collide_effects
+      | effect: parse_effect(on_collide_effects.effect)
+    }
+  end
+
+  defp parse_effect(nil) do
+    nil
+  end
+
+  defp parse_effect(effect) do
+    Map.update!(effect, :effect_mechanics, fn effect_mechanics ->
+      Enum.map(effect_mechanics, fn effect_mechanic ->
+        %{
+          effect_mechanic
+          | modifier: maybe_to_float(effect_mechanic.modifier),
+            force: maybe_to_float(effect_mechanic.force),
+            stat_multiplier: maybe_to_float(effect_mechanic.stat_multiplier)
+        }
+      end)
     end)
   end
 
