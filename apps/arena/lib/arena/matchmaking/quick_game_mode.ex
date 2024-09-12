@@ -42,7 +42,7 @@ defmodule Arena.Matchmaking.QuickGameMode do
   @impl true
   def handle_call({:join, client_id, character_name, player_name}, {from_pid, _}, state) do
     create_game_for_clients([{client_id, character_name, player_name, from_pid}], %{
-      bots_enabled: false,
+      bots_enabled: true,
       zone_enabled: false
     })
 
@@ -88,12 +88,9 @@ defmodule Arena.Matchmaking.QuickGameMode do
   # Receives a list of clients.
   # Fills the given list with bots clients, creates a game and tells every client to join that game.
   defp create_game_for_clients(clients, game_params \\ %{}) do
-    bot_clients =
-      if Application.get_env(:arena, :spawn_bots) do
-        get_bot_clients(Application.get_env(:arena, :players_needed_in_match) - Enum.count(clients))
-      else
-        []
-      end
+    # We will spawn bots in quick-game matches.
+    # Check https://github.com/lambdaclass/mirra_backend/pull/951 to know how to restore former behavior.
+    bot_clients = get_bot_clients(Application.get_env(:arena, :players_needed_in_match) - Enum.count(clients))
 
     {:ok, game_pid} =
       GenServer.start(Arena.GameUpdater, %{
