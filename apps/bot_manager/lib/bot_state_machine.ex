@@ -38,7 +38,7 @@ defmodule BotManager.BotStateMachine do
   def decide_action(_), do: :stand
 
   defp create_random_direction() do
-    %{x: Enum.random(1..200)/100 - 1, y: Enum.random(1..200)/100 - 1}
+    %{x: Enum.random(1..200) / 100 - 1, y: Enum.random(1..200) / 100 - 1}
   end
 
   defp map_directions_to_players(game_state, bot_player) do
