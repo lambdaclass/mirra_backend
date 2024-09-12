@@ -532,27 +532,27 @@ defmodule Arena.GameUpdater do
         %{game_state: game_state, game_config: game_config} = state
       ) do
     entry = %{killer_id: killer_id, victim_id: victim_id}
-    victim = Map.get(game_state.players, victim_id)
-    killer = Map.get(game_state.players, killer_id)
 
     game_state =
       game_state
       |> update_in([:killfeed], fn killfeed -> [entry | killfeed] end)
       |> maybe_add_kill_to_player(killer_id)
-      |> grant_power_up_to_killer(game_config, killer, victim)
+      |> grant_power_up_to_killer(game_config, killer_id, victim_id)
       |> put_player_position(victim_id)
 
     broadcast_player_dead(state.game_state.game_id, victim_id)
 
     case Map.get(game_state.players, killer_id) do
       nil ->
-        GameTracker.push_event(self(), {:kill_by_zone, victim.id})
+        GameTracker.push_event(self(), {:kill_by_zone, victim_id})
 
       killer ->
+        victim = Map.get(game_state.players, victim_id)
+
         GameTracker.push_event(
           self(),
-          {:kill, %{id: killer.id, character_name: killer.aditional_info.character_name},
-           %{id: victim.id, character_name: victim.aditional_info.character_name}}
+          {:kill, %{id: killer_id, character_name: killer.aditional_info.character_name},
+           %{id: victim_id, character_name: victim.aditional_info.character_name}}
         )
     end
 
@@ -1609,9 +1609,14 @@ defmodule Arena.GameUpdater do
 
   defp grant_power_up_to_killer(game_state, _game_config, nil = _killer, _victim), do: game_state
 
-  defp grant_power_up_to_killer(game_state, game_config, killer, victim) do
-    if Player.alive?(killer) do
-      amount_of_power_ups = get_amount_of_power_ups(victim, game_config.game.power_ups_per_kill)
+  defp grant_power_up_to_killer(game_state, game_config, killer_id, victim_id) do
+    killer = Map.get(game_state.players, killer_id)
+
+    if not is_nil(killer) and Player.alive?(killer) do
+      amount_of_power_ups =
+        Map.get(game_state.players, victim_id)
+        |> get_amount_of_power_ups(game_config.game.power_ups_per_kill)
+
       updated_killer = Player.power_up_boost(killer, amount_of_power_ups, game_config)
       put_in(game_state, [:players, killer.id], updated_killer)
     else
