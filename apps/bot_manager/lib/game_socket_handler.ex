@@ -119,7 +119,7 @@ defmodule BotManager.GameSocketHandler do
         action_type:
           {:attack,
            %BotManager.Protobuf.Attack{
-             skill: Enum.random(1..3) |> to_string(),
+             skill: Enum.random(["1", "2", "3"]),
              parameters: %BotManager.Protobuf.AttackParameters{
                target: %BotManager.Protobuf.Direction{
                  x: direction.x,
