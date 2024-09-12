@@ -110,8 +110,7 @@ defmodule BotManager.GameSocketHandler do
     WebSockex.cast(self(), {:send, {:binary, game_action}})
   end
 
-  defp send_current_action(%{current_action: {:attack, direction}, attack_blocked: attack_blocked})
-       when attack_blocked == false do
+  defp send_current_action(%{current_action: {:attack, direction}, attack_blocked: false}) do
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
     game_action =
