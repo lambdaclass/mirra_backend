@@ -7,6 +7,8 @@ defmodule Gateway.Controllers.AuthController do
   alias Gateway.Auth.GoogleTokenManager
   alias GameBackend.Users
 
+  action_fallback Gateway.Controllers.FallbackController
+
   def validate_token(conn, %{"provider" => "google", "token_id" => token_id, "client_id" => client_id}) do
     case GoogleTokenManager.verify_and_validate(token_id) do
       {:ok, claims} ->
@@ -42,9 +44,6 @@ defmodule Gateway.Controllers.AuthController do
          {:ok, user} <- Users.get_user_by_id_and_game_id(claims["sub"], curse_id) do
       new_gateway_jwt = TokenManager.generate_user_token(user, client_id)
       send_resp(conn, 200, Jason.encode!(%{gateway_jwt: new_gateway_jwt, user_id: user.id}))
-    else
-      _ ->
-        send_resp(conn, 400, Jason.encode!(%{error: "bad_request"}))
     end
   end
 end

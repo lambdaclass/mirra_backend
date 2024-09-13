@@ -64,6 +64,10 @@ defmodule Gateway.Controllers.FallbackController do
     send_resp(conn, 400, Jason.encode!(%{"error" => "the user doesn't have that quest"}))
   end
 
+  def call(conn, {:error, _failed_operation, :not_found, _changes_so_far}) do
+    send_resp(conn, 404, Jason.encode!(%{"error" => "not found"}))
+  end
+
   def call(conn, {:error, failed_operation, _failed_value, _changes_so_far}) when is_binary(failed_operation) do
     send_resp(conn, 400, Jason.encode!(%{"error" => failed_operation}))
   end
