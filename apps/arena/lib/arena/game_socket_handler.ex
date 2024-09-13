@@ -86,16 +86,6 @@ defmodule Arena.GameSocketHandler do
   end
 
   @impl true
-  def websocket_info({:ping, game_state}, state) do
-    {:reply, {:binary, game_state}, state}
-  end
-
-  @impl true
-  def websocket_info({:ping_update, game_state}, state) do
-    {:reply, {:binary, game_state}, state}
-  end
-
-  @impl true
   def websocket_info({:game_update, game_state}, state) do
     # Logger.info("Websocket info, Message: GAME UPDATE")
     {:reply, {:binary, game_state}, state}
@@ -213,9 +203,6 @@ defmodule Arena.GameSocketHandler do
 
   defp handle_decoded_message(%{action_type: {:select_bounty, bounty_params}}, state),
     do: GameUpdater.select_bounty(state.game_pid, state.player_id, bounty_params.bounty_quest_id)
-
-  defp handle_decoded_message(%{action_type: {:pong, pong_params}}, state),
-    do: GameUpdater.pong(state.game_pid, self(), pong_params.ping_timestamp)
 
   defp handle_decoded_message(%{action_type: {:toggle_zone, _zone_params}}, state),
     do: GameUpdater.toggle_zone(state.game_pid)

@@ -140,31 +140,13 @@ defmodule Arena.Serialization.GameEvent do
   field(:joined, 1, type: Arena.Serialization.GameJoined, oneof: 0)
   field(:update, 2, type: Arena.Serialization.GameState, oneof: 0)
   field(:finished, 3, type: Arena.Serialization.GameFinished, oneof: 0)
-  field(:ping_update, 4, type: Arena.Serialization.PingUpdate, json_name: "pingUpdate", oneof: 0)
-  field(:toggle_bots, 5, type: Arena.Serialization.ToggleBots, json_name: "toggleBots", oneof: 0)
-  field(:ping, 6, type: Arena.Serialization.Ping, oneof: 0)
+  field(:toggle_bots, 4, type: Arena.Serialization.ToggleBots, json_name: "toggleBots", oneof: 0)
 
-  field(:bounty_selected, 7,
+  field(:bounty_selected, 5,
     type: Arena.Serialization.BountySelected,
     json_name: "bountySelected",
     oneof: 0
   )
-end
-
-defmodule Arena.Serialization.Ping do
-  @moduledoc false
-
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
-
-  field(:timestamp_now, 1, type: :int64, json_name: "timestampNow")
-end
-
-defmodule Arena.Serialization.PingUpdate do
-  @moduledoc false
-
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
-
-  field(:latency, 1, type: :uint64)
 end
 
 defmodule Arena.Serialization.BountySelected do
@@ -749,16 +731,7 @@ defmodule Arena.Serialization.GameAction do
     oneof: 0
   )
 
-  field(:pong, 9, type: Arena.Serialization.Pong, oneof: 0)
   field(:timestamp, 3, type: :int64)
-end
-
-defmodule Arena.Serialization.Pong do
-  @moduledoc false
-
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
-
-  field(:ping_timestamp, 1, type: :int64, json_name: "pingTimestamp")
 end
 
 defmodule Arena.Serialization.Zone do
