@@ -617,8 +617,12 @@ defmodule GameBackend.Users do
     start_of_week = Date.beginning_of_week(today, :sunday)
     end_of_week = Date.add(start_of_week, 6)
 
+    ## For progress tracking purposes we only care about today's quests
     updated_quests =
-      Enum.map(user.user_quests, fn user_quest ->
+      Enum.filter(user.user_quests, fn user_quest ->
+        Date.compare(today, NaiveDateTime.to_date(user_quest.inserted_at)) == :eq
+      end)
+      |> Enum.map(fn user_quest ->
         quest_progress =
           Quests.get_user_quest_progress(user_quest, user)
 
