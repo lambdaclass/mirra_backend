@@ -168,13 +168,9 @@ defmodule GameBackend.Users do
 
   defp quests_preloads(base_query) do
     naive_today = NaiveDateTime.utc_now()
-    start_of_date = NaiveDateTime.beginning_of_day(naive_today)
-    end_of_date = NaiveDateTime.end_of_day(naive_today)
-
     start_of_week = Date.beginning_of_week(NaiveDateTime.to_date(naive_today), :sunday)
-    end_of_week = Date.add(start_of_week, 6)
     {:ok, start_of_week_naive} = NaiveDateTime.new(start_of_week, ~T[00:00:00])
-    {:ok, end_of_week_naive} = NaiveDateTime.new(end_of_week, ~T[23:59:59])
+    end_of_week_naive = NaiveDateTime.add(start_of_week_naive, 7, :day)
 
     quests_subquery =
       from(user_quest in UserQuest,
@@ -182,10 +178,9 @@ defmodule GameBackend.Users do
         join: quest in assoc(user_quest, :quest),
         as: :quest,
         where:
-          (quest.type in ^["daily", "milestone"] and user_quest.inserted_at > ^start_of_date and
-             user_quest.inserted_at < ^end_of_date) or
-            (quest.type == ^"weekly" and user_quest.inserted_at > ^start_of_week_naive and
-               user_quest.inserted_at < ^end_of_week_naive),
+          quest.type in ^["daily", "weekly", "milestone"] and
+            user_quest.inserted_at >= ^start_of_week_naive and
+            user_quest.inserted_at < ^end_of_week_naive,
         preload: [:quest]
       )
 
@@ -622,8 +617,12 @@ defmodule GameBackend.Users do
     start_of_week = Date.beginning_of_week(today, :sunday)
     end_of_week = Date.add(start_of_week, 6)
 
+    ## For progress tracking purposes we only care about today's quests
     updated_quests =
-      Enum.map(user.user_quests, fn user_quest ->
+      Enum.filter(user.user_quests, fn user_quest ->
+        Date.compare(today, NaiveDateTime.to_date(user_quest.inserted_at)) == :eq
+      end)
+      |> Enum.map(fn user_quest ->
         quest_progress =
           Quests.get_user_quest_progress(user_quest, user)
 
