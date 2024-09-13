@@ -75,4 +75,8 @@ defmodule Gateway.Controllers.FallbackController do
   def call(conn, {:error, failed_operation, _failed_value, _changes_so_far}) do
     send_resp(conn, 400, Jason.encode!(%{"error" => Atom.to_string(failed_operation)}))
   end
+
+  def call(conn, _) do
+    send_resp(conn, 400, Jason.encode!(%{"error" => "Bad request"}))
+  end
 end
