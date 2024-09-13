@@ -559,8 +559,10 @@ defmodule GameBackend.Configuration do
     |> List.flatten()
     |> Enum.map(fn config -> sum_shape_coordinates(config) end)
     |> Enum.reduce(fn coordinates_last, coordinates_current -> Decimal.add(coordinates_last, coordinates_current) end)
-    |> Decimal.to_string()
-    |> (fn coordinates -> :crypto.hash(:sha, coordinates) |> Base.encode16() end).()
+    |> Decimal.to_float()
+    |> :math.pow(2)
+    |> round()
+    |> Integer.to_string()
   end
 
   # The following function retrieves a number representing a shape's figure.
