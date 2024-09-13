@@ -71,21 +71,16 @@ defmodule BotManager.GameSocketHandler do
 
   def handle_info(:perform_action, state) do
     Process.send_after(self(), :perform_action, @action_delay_ms)
-
     send_current_action(state)
-
-    state =
-      case state.current_action do
-        {:attack, _} ->
-          Map.put(state, :attack_blocked, true)
-          Process.send_after(self(), :unblock_attack, Enum.random(2000..4000))
-
-        _ ->
-          state
-      end
-
-    {:ok, state}
+    {:ok, update_block_attack_state(state)}
   end
+
+  defp update_block_attack_state(%{current_action: {:attack, _}} = state) do
+    Process.send_after(self(), :unblock_attack, Enum.random(2000..4000))
+    Map.put(state, :attack_blocked, true)
+  end
+
+  defp update_block_attack_state(state), do: state
 
   def handle_cast({:send, {_type, _msg} = frame}, state) do
     {:reply, frame, state}
