@@ -1,11 +1,26 @@
 defmodule Arena.Matchmaking.GameLauncher do
   @moduledoc false
   alias Arena.Utils
+  alias Ecto.UUID
 
   use GenServer
 
   # Time to wait to start game with any amount of clients
   @start_timeout_ms 4_000
+
+  @bot_names [
+    "TheBlackSwordman",
+    "SlashJava",
+    "SteelBallRun",
+    "Jeff",
+    "Messi",
+    "Stone Ocean",
+    "Jeepers Creepers",
+    "Bob",
+    "El javo",
+    "Alberso",
+    "Thomas"
+  ]
 
   # API
   def start_link(_) do
@@ -87,12 +102,28 @@ defmodule Arena.Matchmaking.GameLauncher do
     end)
   end
 
+  defp get_bot_clients(missing_clients) do
+    characters =
+      Arena.Configuration.get_game_config()
+      |> Map.get(:characters)
+      |> Enum.filter(fn character -> character.active end)
+
+    Enum.map(1..missing_clients//1, fn i ->
+      client_id = UUID.generate()
+
+      {client_id, Enum.random(characters).name, Enum.at(@bot_names, i), nil}
+    end)
+  end
+
   # Receives a list of clients.
   # Fills the given list with bots clients, creates a game and tells every client to join that game.
   defp create_game_for_clients(clients, game_params \\ %{}) do
-    # We won't spawn bots in normal matches.
-    # Check https://github.com/lambdaclass/mirra_backend/pull/951 to know how to restore former behavior
-    bot_clients = []
+    # We spawn bots only if there is one player
+    bot_clients =
+      case Enum.count(clients) do
+        1 -> get_bot_clients(Application.get_env(:arena, :players_needed_in_match) - Enum.count(clients))
+        _ -> []
+      end
 
     {:ok, game_pid} =
       GenServer.start(Arena.GameUpdater, %{
