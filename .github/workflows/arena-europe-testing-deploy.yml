@@ -50,7 +50,7 @@ jobs:
           PORT: ${{ vars.ARENA_PORT }}
           GATEWAY_URL: ${{ vars.GATEWAY_URL }}
           BOT_MANAGER_PORT: ${{ vars.BOT_MANAGER_PORT }}
-          BOT_MANAGER_HOST: ${{ vars.LOADTEST_CLIENT_HOST }}
+          BOT_MANAGER_HOST: ${{ vars.BOT_MANAGER_HOST }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
           NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME }}
