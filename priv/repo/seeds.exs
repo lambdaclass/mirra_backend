@@ -1284,7 +1284,7 @@ slow_field_effect = %{
 araban_map_config = %{
   name: "Araban",
   radius: 5520.0,
-  active: true,
+  active: false,
   initial_positions: [
     %{
       x: 5400,
@@ -3403,7 +3403,7 @@ araban_map_config = %{
 merliot_map_config = %{
   name: "Merliot",
   radius: 10000.0,
-  active: false,
+  active: true,
   initial_positions: [
     %{
       x: 5360.0,
