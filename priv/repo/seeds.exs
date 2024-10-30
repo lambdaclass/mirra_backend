@@ -3554,7 +3554,512 @@ merliot_map_config = %{
           y: -6800.0
         }
       ]
-    }
+    },
+    %{
+      name: "Center Bottom Left Top Wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -2140, y: -319},
+        %{x: -1991, y: -315},
+        %{x: -1962, y: -981},
+        %{x: -2169, y: -985}
+      ]
+    },
+    %{
+      name: "Center Bottom Left Mid Wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -2169, y: -985},
+        %{x: -1962, y: -981},
+        %{x: -1602, y: -1295},
+        %{x: -1743, y: -1444}
+      ]
+    },
+    %{
+      name: "Center Bottom Left Down Wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -1289, y: -1586},
+        %{x: -836, y: -2083},
+        %{x: -938, y: -2196},
+        %{x: -1446, y: -1746},
+        %{x: -1446, y: -1746}
+      ]
+    },
+    %{
+      name: "Center Bottom Right Down Wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 341, y: -2144},
+        %{x: 341, y: -2010},
+        %{x: 982, y: -2010},
+        %{x: 994, y: -2185}
+      ]
+    },
+    %{
+      name: "Center Bottom Right Mid Wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 994, y: -2185},
+        %{x: 982, y: -2010},
+        %{x: 1329, y: -1615},
+        %{x: 1472, y: -1751}
+      ]
+    },
+    %{
+      name: "Center Bottom Right Top Wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 1777, y: -1457},
+        %{x: 1608, y: -1317},
+        %{x: 2108, y: -854},
+        %{x: 2226, y: -961}
+      ]
+    },
+    %{
+      name: "Center Top Left Bottom Wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -2173, y: 922},
+        %{x: -1710, y: 1433},
+        %{x: -1566, y: 1305},
+        %{x: -2055, y: 826}
+      ]
+    },
+    %{
+      name: "Center Top Left Mid Wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -1281, y: 1622},
+        %{x: -1412, y: 1722},
+        %{x: -966, y: 2183},
+        %{x: -961, y: 2006}
+      ]
+    },
+    %{
+      name: "Center Top Left Top Wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -966, y: 2183},
+        %{x: -961, y: 2006},
+        %{x: -310, y: 2013},
+        %{x: -310, y: 2157}
+      ]
+    },
+    %{
+      name: "Center Top Right Bottom Wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 2137, y: 355},
+        %{x: 1969, y: 342},
+        %{x: 1956, y: 990},
+        %{x: 2159, y: 990}
+      ]
+    },
+    %{
+      name: "Center Top Right Mid Wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 2159, y: 990},
+        %{x: 1961, y: 990},
+        %{x: 1576, y: 1313},
+        %{x: 1712, y: 1449}
+      ]
+    },
+    %{
+      name: "Center Top Right Top Wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 1410, y: 1748},
+        %{x: 1269, y: 1610},
+        %{x: 797, y: 2086},
+        %{x: 910, y: 2182}
+      ]
+    },
+    %{
+      name: "Inner Square Bottom Left",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -1423, y: -329},
+        %{x: -1331, y: -237},
+        %{x: -781, y: -779},
+        %{x: -834, y: -840}
+      ]
+    },
+    %{
+      name: "Inner Square Bottom Right",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 418, y: -1340},
+        %{x: 314, y: -1256},
+        %{x: 904, y: -744},
+        %{x: 962, y: -796}
+      ]
+    },
+    %{
+      name: "Inner Square Top Right",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 782, y: 878},
+        %{x: 846, y: 938},
+        %{x: 1411, y: 382},
+        %{x: 1291, y: 292}
+      ]
+    },
+    %{
+      name: "Inner Square Top Left",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -757, y: 814},
+        %{x: -817, y: 882},
+        %{x: -269, y: 1434},
+        %{x: -179, y: 1353}
+      ]
+    },
+    %{
+      name: "External Square Left 1",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -5189, y: 3405},
+        %{x: -5342, y: 3405},
+        %{x: -5399, y: 5178},
+        %{x: -5245, y: 5178}
+      ]
+    },
+    %{
+      name: "External Square Left 2",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -5211, y: -2170},
+        %{x: -5403, y: -2191},
+        %{x: -5369, y: -891},
+        %{x: -5232, y: -891}
+      ]
+    },
+    %{
+      name: "External Square Left 3",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -5416, y: -2598},
+        %{x: -5206, y: -2598},
+        %{x: -5245, y: -3276},
+        %{x: -5402, y: -3285}
+      ]
+    },
+    %{
+      name: "External Square Top 1",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -3397, y: 5295},
+        %{x: -3397, y: 5443},
+        %{x: -2729, y: 5495},
+        %{x: -2719, y: 5285}
+      ]
+    },
+    %{
+      name: "External Square Top 2",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -2312, y: 5295},
+        %{x: -2298, y: 5491},
+        %{x: -1024, y: 5510},
+        %{x: -1014, y: 5367}
+      ]
+    },
+    %{
+      name: "External Square Top 3",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 3371, y: 5174},
+        %{x: 3376, y: 5314},
+        %{x: 5157, y: 5304},
+        %{x: 5157, y: 5159}
+      ]
+    },
+    %{
+      name: "External Square Right 1",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 5201, y: 3296},
+        %{x: 5334, y: 3296},
+        %{x: 5372, y: 2661},
+        %{x: 5182, y: 2642}
+      ]
+    },
+    %{
+      name: "External Square Right 2",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 5173, y: 2208},
+        %{x: 5365, y: 2201},
+        %{x: 5337, y: 928},
+        %{x: 5188, y: 928}
+      ]
+    },
+    %{
+      name: "External Square Right 3",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 5149, y: -3411},
+        %{x: 5282, y: -3411},
+        %{x: 5262, y: -5172},
+        %{x: 5119, y: -5182}
+      ]
+    },
+    %{
+      name: "External Square Bottom 1",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 2596, y: -5361},
+        %{x: 2591, y: -5181},
+        %{x: 3245, y: -5207},
+        %{x: 3245, y: -5341}
+      ]
+    },
+    %{
+      name: "External Square Bottom 2",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 892, y: -5309},
+        %{x: 892, y: -5157},
+        %{x: 2156, y: -5178},
+        %{x: 2156, y: -5367}
+      ]
+    },
+    %{
+      name: "External Square Bottom 3",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -5191, y: -5278},
+        %{x: -5191, y: -5135},
+        %{x: -3423, y: -5143},
+        %{x: -3423, y: -5274}
+      ]
+    },
   ],
   bushes: [],
   pools: [],
