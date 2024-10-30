@@ -350,6 +350,49 @@ inferno_effect = %{
   ]
 }
 
+toxic_onion_effect = %{
+  name: "toxic_onion",
+  remove_on_action: false,
+  duration_ms: 4000,
+  one_time_application: false,
+  allow_multiple_effects: true,
+  effect_mechanics: [
+    %{
+      name: "speed_boost",
+      modifier: -0.60,
+      effect_delay_ms: 0,
+      execute_multiple_times: false
+    }
+  ]
+}
+
+peb_effect = %{
+  name: "putrid_elixir_bomb",
+  remove_on_action: false,
+  one_time_application: true,
+  allow_multiple_effects: true,
+  effect_mechanics: [
+    %{
+      name: "speed_boost",
+      modifier: -0.60,
+      effect_delay_ms: 0,
+      execute_multiple_times: false
+    },
+    %{
+      name: "damage",
+      damage: 10,
+      effect_delay_ms: 200,
+      execute_multiple_times: true
+    },
+    %{
+      name: "damage",
+      damage: 70,
+      effect_delay_ms: 0,
+      execute_multiple_times: false
+    }
+  ]
+}
+
 ## Mechanics
 multi_shoot = %{
   "type" => "multi_shoot",
@@ -430,6 +473,47 @@ inferno = %{
   "shape" => "circle",
   "vertices" => [],
   "effect" => inferno_effect
+}
+
+toxic_onion_explosion = %{
+  "name" => "toxic_onion_explosion",
+  "type" => "circle_hit",
+  "damage" => 58,
+  "range" => 250.0,
+  "offset" => 0,
+  "effect" => toxic_onion_effect
+}
+
+toxic_onion = %{
+  "type" => "simple_shoot",
+  "speed" => 1.8,
+  "duration_ms" => 0,
+  "remove_on_collision" => false,
+  "projectile_offset" => 0,
+  "radius" => 250.0,
+  "damage" => 0,
+  "range" => 700,
+  "on_explode_mechanics" => [
+    toxic_onion_explosion
+  ]
+}
+
+putrid_elixir_bomb = %{
+  "name" => "putrid_elixir_bomb",
+  "type" => "spawn_pool",
+  "activation_delay" => 250,
+  "duration_ms" => 8000,
+  "radius" => 400.0,
+  "range" => 0.0,
+  "shape" => "circle",
+  "vertices" => [],
+  "effect" => peb_effect
+}
+
+spore_dash = %{
+  "type" => "dash",
+  "speed" => 4.0,
+  "duration_ms" => 250
 }
 
 otix_carbonthrow_mechanic = %{
@@ -857,6 +941,54 @@ skills = [
     "mechanics" => [
       inferno
     ]
+  },
+  %{
+    "name" => "shinko_toxic_onion",
+    "type" => "basic",
+    "cooldown_mechanism" => "stamina",
+    "execution_duration_ms" => 450,
+    "activation_delay_ms" => 150,
+    "is_passive" => false,
+    "autoaim" => true,
+    "max_autoaim_range" => 1400,
+    "stamina_cost" => 1,
+    "can_pick_destination" => true,
+    "block_movement" => true,
+    "mechanics" => [
+      toxic_onion
+    ]
+  },
+  %{
+    "name" => "shinko_spore_dash",
+    "type" => "dash",
+    "cooldown_mechanism" => "time",
+    "cooldown_ms" => 5500,
+    "execution_duration_ms" => 250,
+    "activation_delay_ms" => 0,
+    "is_passive" => false,
+    "autoaim" => false,
+    "max_autoaim_range" => 0,
+    "can_pick_destination" => false,
+    "block_movement" => true,
+    "mechanics" => [
+      spore_dash
+    ]
+  },
+  %{
+    "name" => "shinko_PEB",
+    "type" => "ultimate",
+    "cooldown_mechanism" => "time",
+    "cooldown_ms" => 10000,
+    "execution_duration_ms" => 1000,
+    "activation_delay_ms" => 0,
+    "is_passive" => false,
+    "autoaim" => true,
+    "max_autoaim_range" => 1000,
+    "can_pick_destination" => true,
+    "block_movement" => true,
+    "mechanics" => [
+      putrid_elixir_bomb
+    ]
   }
 ]
 
@@ -972,7 +1104,7 @@ valtimer_params = %{
 
 kenzu_params = %{
   name: "kenzu",
-  active: false,
+  active: true,
   base_speed: 1,
   base_size: 100.0,
   base_health: 400,
@@ -994,7 +1126,7 @@ kenzu_params = %{
 
 otix_params = %{
   name: "otix",
-  active: false,
+  active: true,
   base_speed: 0.68,
   base_size: 100.0,
   base_health: 400,
@@ -1009,8 +1141,33 @@ otix_params = %{
   version_id: version.id
 }
 
+shinko_params = %{
+  name: "shinko",
+  active: true,
+  base_speed: 0.68,
+  base_size: 100.0,
+  base_health: 400,
+  base_stamina: 3,
+  stamina_interval: 2000,
+  max_inventory_size: 1,
+  natural_healing_interval: 1000,
+  natural_healing_damage_interval: 3500,
+  basic_skill_id: skills["shinko_toxic_onion"],
+  ultimate_skill_id: skills["shinko_PEB"],
+  dash_skill_id: skills["shinko_spore_dash"],
+  version_id: version.id
+}
+
 # Insert characters
-[muflus_params, h4ck_params, uma_params, valtimer_params, kenzu_params, otix_params]
+[
+  muflus_params,
+  h4ck_params,
+  uma_params,
+  valtimer_params,
+  kenzu_params,
+  otix_params,
+  shinko_params
+]
 |> Enum.each(fn char_params ->
   Map.put(char_params, :game_id, curse_of_mirra_id)
   |> Map.put(:faction, "none")
