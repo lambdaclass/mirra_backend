@@ -1422,7 +1422,7 @@ fake_item_params = %{
 {:ok, _fake_item} =
   GameBackend.Items.create_consumable_item(fake_item_params)
 
-slow_field_effect = %{
+_slow_field_effect = %{
   name: "slow_field_effect",
   duration_ms: 9000,
   remove_on_action: true,
