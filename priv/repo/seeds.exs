@@ -369,24 +369,19 @@ toxic_onion_effect = %{
 peb_effect = %{
   name: "putrid_elixir_bomb",
   remove_on_action: false,
+  duration_ms: 4000,
   one_time_application: true,
   allow_multiple_effects: true,
   effect_mechanics: [
     %{
-      name: "speed_boost",
-      modifier: -0.60,
-      effect_delay_ms: 0,
-      execute_multiple_times: false
-    },
-    %{
       name: "damage",
       damage: 10,
-      effect_delay_ms: 200,
+      effect_delay_ms: 250,
       execute_multiple_times: true
     },
     %{
       name: "damage",
-      damage: 70,
+      damage: 50,
       effect_delay_ms: 0,
       execute_multiple_times: false
     }
@@ -982,9 +977,9 @@ skills = [
     "execution_duration_ms" => 1000,
     "activation_delay_ms" => 0,
     "is_passive" => false,
-    "autoaim" => true,
-    "max_autoaim_range" => 1000,
-    "can_pick_destination" => true,
+    "autoaim" => false,
+    "max_autoaim_range" => 0,
+    "can_pick_destination" => false,
     "block_movement" => true,
     "mechanics" => [
       putrid_elixir_bomb
