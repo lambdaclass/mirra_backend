@@ -353,15 +353,15 @@ inferno_effect = %{
 toxic_onion_effect = %{
   name: "toxic_onion",
   remove_on_action: false,
-  duration_ms: 4000,
+  duration_ms: 3000,
   one_time_application: false,
   allow_multiple_effects: true,
   effect_mechanics: [
     %{
-      name: "speed_boost",
-      modifier: -0.60,
-      effect_delay_ms: 0,
-      execute_multiple_times: false
+      name: "damage",
+      damage: 20,
+      effect_delay_ms: 1000,
+      execute_multiple_times: true
     }
   ]
 }
