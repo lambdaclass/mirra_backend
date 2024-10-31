@@ -4060,6 +4060,164 @@ merliot_map_config = %{
         %{x: -3423, y: -5274}
       ]
     },
+    %{
+      name: "Bottom Left Rock",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -4746, y: -6453},
+        %{x: -4647, y: -6005},
+        %{x: -4189, y: -5744},
+        %{x: -3696, y: -5487},
+        %{x: -3340, y: -5690},
+        %{x: -3621, y: -6261},
+        %{x: -3720, y: -6530},
+        %{x: -4130, y: -6592}
+      ]
+    },
+    %{
+      name: "Bottom Mid Rock",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 921, y: -6393},
+        %{x: 987, y: -5753},
+        %{x: 1873, y: -5819},
+        %{x: 2669, y: -6131},
+        %{x: 2653, y: -6443},
+        %{x: 1775, y: -6509}
+      ]
+    },
+    %{
+      name: "Right Bottom Rock",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 6530, y: -4611},
+        %{x: 5717, y: -3593},
+        %{x: 6721, y: -3586}
+      ]
+    },
+    %{
+      name: "Right Top Rock",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 6538, y: 624},
+        %{x: 5741, y: 548},
+        %{x: 5850, y: 1513},
+        %{x: 6110, y: 2243},
+        %{x: 6538, y: 2268}
+      ]
+    },
+    %{
+      name: "Top Right Rock",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 3841, y: 6589},
+        %{x: 4221, y: 6589},
+        %{x: 4641, y: 6069},
+        %{x: 3751, y: 5499},
+        %{x: 3621, y: 6089}
+      ]
+    },
+    %{
+      name: "Top Left Rock",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -738, y: 5739},
+        %{x: -738, y: 5959},
+        %{x: -1078, y: 6619},
+        %{x: -2568, y: 6539},
+        %{x: -2578, y: 6189},
+        %{x: -1938, y: 5789},
+        %{x: -1288, y: 5659}
+      ]
+    },
+    %{
+      name: "Left Top Rock",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -6458, y: 4619},
+        %{x: -5866, y: 4027},
+        %{x: -5648, y: 3592},
+        %{x: -6057, y: 3427},
+        %{x: -6579, y: 3488},
+        %{x: -6596, y: 4036}
+      ]
+    },
+    %{
+      name: "Left Bottom Rock",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -6398, y: -610},
+        %{x: -5728, y: -660},
+        %{x: -5718, y: -1290},
+        %{x: -5818, y: -1810},
+        %{x: -6278, y: -2290},
+        %{x: -6478, y: -2320}
+      ]
+    }
   ],
   bushes: [],
   pools: [],
