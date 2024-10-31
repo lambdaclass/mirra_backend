@@ -185,7 +185,7 @@ defmodule Arena.Game.Effect do
     update_in(player, [:aditional_info, :effects], fn effects ->
       Enum.map(effects, fn current_effect ->
         if current_effect.id == effect.id do
-          update_effect_mechanic_value_in_effect(effect, mechanic, :last_application_time, now)
+          update_effect_mechanic_value_in_effect(current_effect, mechanic, :last_application_time, now)
         else
           current_effect
         end
@@ -237,20 +237,27 @@ defmodule Arena.Game.Effect do
   end
 
   defp do_effect_mechanics(game_state, entity, effect, %{name: "damage"} = damage_params) do
-    # TODO not all effects may come from pools entities, maybe we should update this when we implement other skills that
-    # applies this effect
-    Map.get(game_state.pools, effect.owner_id)
+    Map.get(effect, :player_owner_id, get_entity_player_owner_id(game_state, effect.owner_id))
     |> case do
       nil ->
         entity
 
-      pool ->
-        pool_owner = Map.get(game_state.players, pool.aditional_info.owner_id)
-        real_damage = Player.calculate_real_damage(pool_owner, damage_params.damage)
+      owner_id ->
+        owner = Map.get(game_state.players, owner_id)
+        real_damage = Player.calculate_real_damage(owner, damage_params.damage)
 
-        send(self(), {:damage_done, pool_owner.id, real_damage})
+        send(self(), {:damage_done, owner_id, real_damage})
 
-        Entities.take_damage(entity, real_damage, pool_owner.id)
+        Entities.take_damage(entity, real_damage, owner_id)
+        |> update_in([:aditional_info, :effects], fn effects ->
+          Enum.map(effects, fn current_effect ->
+            if current_effect.id == effect.id do
+              Map.put(current_effect, :player_owner_id, owner_id)
+            else
+              current_effect
+            end
+          end)
+        end)
     end
   end
 
@@ -285,6 +292,19 @@ defmodule Arena.Game.Effect do
   ## Sink for mechanics that don't do anything
   defp do_effect_mechanics(_game_state, entity, _effect, _mechanic) do
     entity
+  end
+
+  defp get_entity_player_owner_id(game_state, owner_id) do
+    # Append here entities that apply effects. For now are pools and projectiles.
+    damage_entity =
+      Map.merge(game_state.projectiles, game_state.pools)
+      |> Map.get(owner_id)
+
+    if not is_nil(damage_entity) do
+      damage_entity.aditional_info.owner_id
+    else
+      nil
+    end
   end
 
   defp add_effect_to_entity(game_state, entity, effect, owner_id, start_action_removal_in_ms) do
