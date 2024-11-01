@@ -13,6 +13,7 @@ defmodule GameBackend.CurseOfMirra.Effect do
              :allow_multiple_effects,
              :consume_projectile,
              :effect_mechanics,
+             :disabled_outside_pool,
              :name
            ]}
   embedded_schema do
@@ -22,6 +23,7 @@ defmodule GameBackend.CurseOfMirra.Effect do
     field(:one_time_application, :boolean)
     field(:allow_multiple_effects, :boolean)
     field(:consume_projectile, :boolean)
+    field(:disabled_outside_pool, :boolean)
     embeds_many(:effect_mechanics, EffectMechanic)
   end
 
@@ -33,12 +35,14 @@ defmodule GameBackend.CurseOfMirra.Effect do
       :one_time_application,
       :allow_multiple_effects,
       :consume_projectile,
+      :disabled_outside_pool,
       :name
     ])
     |> validate_required([
       :remove_on_action,
       :one_time_application,
       :allow_multiple_effects,
+      :disabled_outside_pool,
       :name
     ])
     |> cast_embed(:effect_mechanics)
