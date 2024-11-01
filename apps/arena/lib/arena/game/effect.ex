@@ -294,10 +294,10 @@ defmodule Arena.Game.Effect do
       Map.merge(game_state.projectiles, game_state.pools)
       |> Map.get(owner_id)
 
-    if not is_nil(damage_entity) do
-      damage_entity.aditional_info.owner_id
-    else
+    if is_nil(damage_entity) do
       nil
+    else
+      damage_entity.aditional_info.owner_id
     end
   end
 
