@@ -243,15 +243,7 @@ defmodule Arena.Game.Effect do
         send(self(), {:damage_done, owner_id, real_damage})
 
         Entities.take_damage(entity, real_damage, owner_id)
-        |> update_in([:aditional_info, :effects], fn effects ->
-          Enum.map(effects, fn current_effect ->
-            if current_effect.id == effect.id do
-              Map.put(current_effect, :player_owner_id, owner_id)
-            else
-              current_effect
-            end
-          end)
-        end)
+        |> add_player_owner_of_effect_to_entity(effect.id, owner_id)
     end
   end
 
@@ -299,6 +291,18 @@ defmodule Arena.Game.Effect do
     else
       damage_entity.aditional_info.owner_id
     end
+  end
+
+  defp add_player_owner_of_effect_to_entity(entity, effect_id, owner_id) do
+    update_in(entity, [:aditional_info, :effects], fn effects ->
+      Enum.map(effects, fn current_effect ->
+        if current_effect.id == effect_id do
+          Map.put(current_effect, :player_owner_id, owner_id)
+        else
+          current_effect
+        end
+      end)
+    end)
   end
 
   defp add_effect_to_entity(game_state, entity, effect, owner_id, start_action_removal_in_ms) do
