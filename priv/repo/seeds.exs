@@ -240,6 +240,7 @@ singularity_effect = %{
   remove_on_action: false,
   one_time_application: true,
   allow_multiple_effects: true,
+  disabled_outside_pool: true,
   effect_mechanics: [
     %{
       name: "pull",
@@ -262,6 +263,7 @@ denial_of_service =
     remove_on_action: false,
     one_time_application: true,
     allow_multiple_effects: true,
+    disabled_outside_pool: true,
     effect_mechanics: [
       %{
         name: "damage",
@@ -279,6 +281,7 @@ invisible_effect =
     remove_on_action: true,
     one_time_application: false,
     allow_multiple_effects: true,
+    disabled_outside_pool: true,
     effect_mechanics: [
       %{
         name: "invisible",
@@ -301,6 +304,7 @@ whirlwind_effect =
     remove_on_action: false,
     one_time_application: false,
     allow_multiple_effects: true,
+    disabled_outside_pool: true,
     effect_mechanics: [
       %{
         name: "defense_change",
@@ -318,6 +322,7 @@ buff_singularity_effect =
     one_time_application: true,
     consume_projectile: true,
     allow_multiple_effects: true,
+    disabled_outside_pool: true,
     effect_mechanics: [
       %{
         name: "buff_pool",
@@ -334,6 +339,7 @@ inferno_effect = %{
   remove_on_action: false,
   one_time_application: true,
   allow_multiple_effects: true,
+  disabled_outside_pool: true,
   effect_mechanics: [
     %{
       name: "speed_boost",
@@ -356,6 +362,7 @@ toxic_onion_effect = %{
   duration_ms: 3000,
   one_time_application: false,
   allow_multiple_effects: true,
+  disabled_outside_pool: false,
   effect_mechanics: [
     %{
       name: "damage",
@@ -372,6 +379,7 @@ peb_effect = %{
   duration_ms: 4000,
   one_time_application: true,
   allow_multiple_effects: true,
+  disabled_outside_pool: false,
   effect_mechanics: [
     %{
       name: "damage",
@@ -1221,6 +1229,7 @@ golden_clock_effect = %{
   remove_on_action: false,
   one_time_application: true,
   allow_multiple_effects: true,
+  disabled_outside_pool: false,
   effect_mechanics: [
     %{
       name: "reduce_stamina_interval",
@@ -1266,6 +1275,7 @@ magic_boots_effect =
     remove_on_action: false,
     one_time_application: true,
     allow_multiple_effects: true,
+    disabled_outside_pool: true,
     effect_mechanics: [
       %{
         name: "speed_boost",
@@ -1295,6 +1305,7 @@ mirra_blessing_effect =
     remove_on_action: false,
     one_time_application: true,
     allow_multiple_effects: true,
+    disabled_outside_pool: true,
     effect_mechanics: [
       %{
         name: "damage_immunity",
@@ -1323,6 +1334,7 @@ giant_effect =
     remove_on_action: false,
     one_time_application: true,
     allow_multiple_effects: true,
+    disabled_outside_pool: true,
     effect_mechanics: [
       %{
         name: "modify_radius",
@@ -1367,6 +1379,7 @@ polymorph_effect = %{
   name: "polymorph_effect",
   duration_ms: 9000,
   remove_on_action: true,
+  disabled_outside_pool: false,
   one_time_application: true,
   allow_multiple_effects: true,
   effect_mechanics: []
@@ -1423,6 +1436,7 @@ _slow_field_effect = %{
   remove_on_action: true,
   one_time_application: true,
   allow_multiple_effects: true,
+  disabled_outside_pool: false,
   effect_mechanics: [
     %{
       name: "speed_boost",

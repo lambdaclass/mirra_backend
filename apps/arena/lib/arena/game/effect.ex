@@ -50,20 +50,14 @@ defmodule Arena.Game.Effect do
     cond do
       Map.has_key?(game_state.players, entity_id) ->
         update_in(game_state, [:players, entity_id, :aditional_info, :effects], fn current_effects ->
-          # TODO: here we filter "all damage" effects for toxic Shinko attacks. This needs a better handling.
-          Enum.reject(current_effects, fn effect ->
-            effect.owner_id == owner_id and
-              not Enum.all?(effect.effect_mechanics, fn mechanic -> mechanic.name == "damage" end)
-          end)
+          # Here we remove all effects from owner if they only apply there (pools for now).
+          Enum.reject(current_effects, fn effect -> effect.owner_id == owner_id and effect.disabled_outside_pool end)
         end)
 
       Map.has_key?(game_state.crates, entity_id) ->
         update_in(game_state, [:crates, entity_id, :aditional_info, :effects], fn current_effects ->
-          # TODO: here we filter "all damage" effects for toxic Shinko attacks. This needs a better handling.
-          Enum.reject(current_effects, fn effect ->
-            effect.owner_id == owner_id and
-              not Enum.all?(effect.effect_mechanics, fn mechanic -> mechanic.name == "damage" end)
-          end)
+          # Here we remove all effects from owner if they only apply there (pools for now).
+          Enum.reject(current_effects, fn effect -> effect.owner_id == owner_id and effect.disabled_outside_pool end)
         end)
 
       true ->
