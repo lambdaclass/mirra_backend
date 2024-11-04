@@ -81,4 +81,7 @@ export NEWRELIC_KEY=$NEWRELIC_KEY
 rm -rf ${HOME}/arena/mirra_backend
 mv /tmp/mirra_backend ${HOME}/arena/
 
+export $(cat .env | xargs)
+arena daemon
+
 /Users/lambdaclass/arena/mirra_backend/_build/prod/rel/arena/bin/arena daemon
