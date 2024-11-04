@@ -3720,6 +3720,1286 @@ merliot_map_config = %{
           y: -6800.0
         }
       ]
+    },
+    %{
+      name: "Center Bottom Left Top Wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -2140, y: -319},
+        %{x: -1991, y: -315},
+        %{x: -1962, y: -981},
+        %{x: -2169, y: -985}
+      ]
+    },
+    %{
+      name: "Center Bottom Left Mid Wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -2169, y: -985},
+        %{x: -1962, y: -981},
+        %{x: -1602, y: -1295},
+        %{x: -1743, y: -1444}
+      ]
+    },
+    %{
+      name: "Center Bottom Left Down Wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -1289, y: -1586},
+        %{x: -836, y: -2083},
+        %{x: -938, y: -2196},
+        %{x: -1446, y: -1746},
+        %{x: -1446, y: -1746}
+      ]
+    },
+    %{
+      name: "Center Bottom Right Down Wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 341, y: -2144},
+        %{x: 341, y: -2010},
+        %{x: 982, y: -2010},
+        %{x: 994, y: -2185}
+      ]
+    },
+    %{
+      name: "Center Bottom Right Mid Wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 994, y: -2185},
+        %{x: 982, y: -2010},
+        %{x: 1329, y: -1615},
+        %{x: 1472, y: -1751}
+      ]
+    },
+    %{
+      name: "Center Bottom Right Top Wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 1777, y: -1457},
+        %{x: 1608, y: -1317},
+        %{x: 2108, y: -854},
+        %{x: 2226, y: -961}
+      ]
+    },
+    %{
+      name: "Center Top Left Bottom Wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -2173, y: 922},
+        %{x: -1710, y: 1433},
+        %{x: -1566, y: 1305},
+        %{x: -2055, y: 826}
+      ]
+    },
+    %{
+      name: "Center Top Left Mid Wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -1281, y: 1622},
+        %{x: -1412, y: 1722},
+        %{x: -966, y: 2183},
+        %{x: -961, y: 2006}
+      ]
+    },
+    %{
+      name: "Center Top Left Top Wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -966, y: 2183},
+        %{x: -961, y: 2006},
+        %{x: -310, y: 2013},
+        %{x: -310, y: 2157}
+      ]
+    },
+    %{
+      name: "Center Top Right Bottom Wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 2137, y: 355},
+        %{x: 1969, y: 342},
+        %{x: 1956, y: 990},
+        %{x: 2159, y: 990}
+      ]
+    },
+    %{
+      name: "Center Top Right Mid Wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 2159, y: 990},
+        %{x: 1961, y: 990},
+        %{x: 1576, y: 1313},
+        %{x: 1712, y: 1449}
+      ]
+    },
+    %{
+      name: "Center Top Right Top Wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 1410, y: 1748},
+        %{x: 1269, y: 1610},
+        %{x: 797, y: 2086},
+        %{x: 910, y: 2182}
+      ]
+    },
+    %{
+      name: "Inner Square Bottom Left",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -1423, y: -329},
+        %{x: -1331, y: -237},
+        %{x: -781, y: -779},
+        %{x: -834, y: -840}
+      ]
+    },
+    %{
+      name: "Inner Square Bottom Right",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 418, y: -1340},
+        %{x: 314, y: -1256},
+        %{x: 904, y: -744},
+        %{x: 962, y: -796}
+      ]
+    },
+    %{
+      name: "Inner Square Top Right",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 782, y: 878},
+        %{x: 846, y: 938},
+        %{x: 1411, y: 382},
+        %{x: 1291, y: 292}
+      ]
+    },
+    %{
+      name: "Inner Square Top Left",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -757, y: 814},
+        %{x: -817, y: 882},
+        %{x: -269, y: 1434},
+        %{x: -179, y: 1353}
+      ]
+    },
+    %{
+      name: "External Square Left 1",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -5189, y: 3405},
+        %{x: -5342, y: 3405},
+        %{x: -5399, y: 5178},
+        %{x: -5245, y: 5178}
+      ]
+    },
+    %{
+      name: "External Square Left 2",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -5211, y: -2170},
+        %{x: -5403, y: -2191},
+        %{x: -5369, y: -891},
+        %{x: -5232, y: -891}
+      ]
+    },
+    %{
+      name: "External Square Left 3",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -5416, y: -2598},
+        %{x: -5206, y: -2598},
+        %{x: -5245, y: -3276},
+        %{x: -5402, y: -3285}
+      ]
+    },
+    %{
+      name: "External Square Top 1",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -3397, y: 5295},
+        %{x: -3397, y: 5443},
+        %{x: -2729, y: 5495},
+        %{x: -2719, y: 5285}
+      ]
+    },
+    %{
+      name: "External Square Top 2",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -2312, y: 5295},
+        %{x: -2298, y: 5491},
+        %{x: -1024, y: 5510},
+        %{x: -1014, y: 5367}
+      ]
+    },
+    %{
+      name: "External Square Top 3",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 3371, y: 5174},
+        %{x: 3376, y: 5314},
+        %{x: 5157, y: 5304},
+        %{x: 5157, y: 5159}
+      ]
+    },
+    %{
+      name: "External Square Right 1",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 5201, y: 3296},
+        %{x: 5334, y: 3296},
+        %{x: 5372, y: 2661},
+        %{x: 5182, y: 2642}
+      ]
+    },
+    %{
+      name: "External Square Right 2",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 5173, y: 2208},
+        %{x: 5365, y: 2201},
+        %{x: 5337, y: 928},
+        %{x: 5188, y: 928}
+      ]
+    },
+    %{
+      name: "External Square Right 3",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 5149, y: -3411},
+        %{x: 5282, y: -3411},
+        %{x: 5262, y: -5172},
+        %{x: 5119, y: -5182}
+      ]
+    },
+    %{
+      name: "External Square Bottom 1",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 2596, y: -5361},
+        %{x: 2591, y: -5181},
+        %{x: 3245, y: -5207},
+        %{x: 3245, y: -5341}
+      ]
+    },
+    %{
+      name: "External Square Bottom 2",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 892, y: -5309},
+        %{x: 892, y: -5157},
+        %{x: 2156, y: -5178},
+        %{x: 2156, y: -5367}
+      ]
+    },
+    %{
+      name: "External Square Bottom 3",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -5191, y: -5278},
+        %{x: -5191, y: -5135},
+        %{x: -3423, y: -5143},
+        %{x: -3423, y: -5274}
+      ]
+    },
+    %{
+      name: "Bottom Left Rock",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -4746, y: -6453},
+        %{x: -4647, y: -6005},
+        %{x: -4189, y: -5744},
+        %{x: -3696, y: -5487},
+        %{x: -3340, y: -5690},
+        %{x: -3621, y: -6261},
+        %{x: -3720, y: -6530},
+        %{x: -4130, y: -6592}
+      ]
+    },
+    %{
+      name: "Bottom Mid Rock",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 921, y: -6393},
+        %{x: 987, y: -5753},
+        %{x: 1873, y: -5819},
+        %{x: 2669, y: -6131},
+        %{x: 2653, y: -6443},
+        %{x: 1775, y: -6509}
+      ]
+    },
+    %{
+      name: "Right Bottom Rock",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 6530, y: -4611},
+        %{x: 5717, y: -3593},
+        %{x: 6721, y: -3586}
+      ]
+    },
+    %{
+      name: "Right Top Rock",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 6538, y: 624},
+        %{x: 5741, y: 548},
+        %{x: 5850, y: 1513},
+        %{x: 6110, y: 2243},
+        %{x: 6538, y: 2268}
+      ]
+    },
+    %{
+      name: "Top Right Rock",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 3841, y: 6589},
+        %{x: 4221, y: 6589},
+        %{x: 4641, y: 6069},
+        %{x: 3751, y: 5499},
+        %{x: 3621, y: 6089}
+      ]
+    },
+    %{
+      name: "Top Left Rock",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -738, y: 5739},
+        %{x: -738, y: 5959},
+        %{x: -1078, y: 6619},
+        %{x: -2568, y: 6539},
+        %{x: -2578, y: 6189},
+        %{x: -1938, y: 5789},
+        %{x: -1288, y: 5659}
+      ]
+    },
+    %{
+      name: "Left Top Rock",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -6458, y: 4619},
+        %{x: -5866, y: 4027},
+        %{x: -5648, y: 3592},
+        %{x: -6057, y: 3427},
+        %{x: -6579, y: 3488},
+        %{x: -6596, y: 4036}
+      ]
+    },
+    %{
+      name: "Left Bottom Rock",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -6398, y: -610},
+        %{x: -5728, y: -660},
+        %{x: -5718, y: -1290},
+        %{x: -5818, y: -1810},
+        %{x: -6278, y: -2290},
+        %{x: -6478, y: -2320}
+      ]
+    },
+    %{
+      name: "Left Rock and Tree",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -3936, y: -945},
+        %{x: -3669, y: -1696},
+        %{x: -3877, y: -1854},
+        %{x: -4381, y: -1380},
+        %{x: -4421, y: -1064}
+      ]
+    },
+    %{
+      name: "Bottom Rock and Tree",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 1259, y: -3918},
+        %{x: 1266, y: -3457},
+        %{x: 2030, y: -3319},
+        %{x: 2188, y: -3622},
+        %{x: 1775, y: -3897}
+      ]
+    },
+    %{
+      name: "Right Rock and Tree",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 4381, y: 1029},
+        %{x: 3891, y: 849},
+        %{x: 3581, y: 1559},
+        %{x: 3931, y: 1789},
+        %{x: 4341, y: 1359}
+      ]
+    },
+    %{
+      name: "Top Rock and Tree",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -1272, y: 4082},
+        %{x: -1122, y: 3652},
+        %{x: -1819, y: 3323},
+        %{x: -2051, y: 3507},
+        %{x: -1694, y: 3912}
+      ]
+    },
+    %{
+      name: "Bottom Left Trees",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -2066, y: -2729},
+        %{x: -1560, y: -2873},
+        %{x: -1141, y: -3229},
+        %{x: -1160, y: -3523},
+        %{x: -1610, y: -3661},
+        %{x: -1948, y: -3555},
+        %{x: -2142, y: -3086}
+      ]
+    },
+    %{
+      name: "Bottom Right Trees",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 2906, y: -1665},
+        %{x: 3090, y: -1726},
+        %{x: 3379, y: -1591},
+        %{x: 3668, y: -1480},
+        %{x: 3668, y: -712},
+        %{x: 3336, y: -681},
+        %{x: 3040, y: -1081}
+      ]
+    },
+    %{
+      name: "Top Right Trees",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: 994, y: 3303},
+        %{x: 1035, y: 3588},
+        %{x: 1781, y: 3646},
+        %{x: 2131, y: 3035},
+        %{x: 1965, y: 2802},
+        %{x: 1596, y: 2864},
+        %{x: 1291, y: 3107}
+      ]
+    },
+    %{
+      name: "Top Left Trees",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{x: -3064, y: 1962},
+        %{x: -2784, y: 1930},
+        %{x: -2728, y: 1339},
+        %{x: -2912, y: 788},
+        %{x: -3200, y: 709},
+        %{x: -3408, y: 1100},
+        %{x: -3464, y: 1580}
+      ]
+    },
+    %{
+      name: "Left Top Water 1",
+      radius: 0.0,
+      shape: "polygon",
+      type: :lake,
+      base_status: nil,
+      statuses_cycle: %{},
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: -4360, y: 2759},
+        %{x: -3871, y: 2734},
+        %{x: -3896, y: 2402},
+        %{x: -3896, y: 1995},
+        %{x: -4593, y: 2012},
+        %{x: -4444, y: 2410}
+      ]
+    },
+    %{
+      name: "Left Top Water 2",
+      radius: 0.0,
+      shape: "polygon",
+      type: :lake,
+      base_status: nil,
+      statuses_cycle: %{},
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: -4894, y: 1998},
+        %{x: -3216, y: 2003},
+        %{x: -3569, y: 1139},
+        %{x: -4555, y: 1139},
+        %{x: -4937, y: 1643}
+      ]
+    },
+    %{
+      name: "Left Top Water 3",
+      radius: 0.0,
+      shape: "polygon",
+      type: :lake,
+      base_status: nil,
+      statuses_cycle: %{},
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: -4541, y: 1134},
+        %{x: -3569, y: 1141},
+        %{x: -3526, y: 672},
+        %{x: -3900, y: 643},
+        %{x: -4345, y: 597}
+      ]
+    },
+    %{
+      name: "Left Top Water 4",
+      radius: 0.0,
+      shape: "polygon",
+      type: :lake,
+      base_status: nil,
+      statuses_cycle: %{},
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: -4345, y: 597},
+        %{x: -3900, y: 643},
+        %{x: -4058, y: 339},
+        %{x: -4255, y: 314}
+      ]
+    },
+    %{
+      name: "Left Bottom Water 1",
+      radius: 0.0,
+      shape: "polygon",
+      type: :lake,
+      base_status: nil,
+      statuses_cycle: %{},
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: -3117, y: -2805},
+        %{x: -2539, y: -2621},
+        %{x: -1953, y: -3549},
+        %{x: -2872, y: -3743}
+      ]
+    },
+    %{
+      name: "Left Bottom Water 2",
+      radius: 0.0,
+      shape: "polygon",
+      type: :lake,
+      base_status: nil,
+      statuses_cycle: %{},
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: -2854, y: -3751},
+        %{x: -1953, y: -3549},
+        %{x: -1674, y: -4649},
+        %{x: -2944, y: -4636}
+      ]
+    },
+    %{
+      name: "Left Bottom Water 3",
+      radius: 0.0,
+      shape: "polygon",
+      type: :lake,
+      base_status: nil,
+      statuses_cycle: %{},
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: -1953, y: -3549},
+        %{x: -837, y: -3421},
+        %{x: -532, y: -4091},
+        %{x: -1674, y: -4649}
+      ]
+    },
+    %{
+      name: "Close to Wall Top Left Water",
+      radius: 0.0,
+      shape: "polygon",
+      type: :lake,
+      base_status: nil,
+      statuses_cycle: %{},
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: -6430, y: 3520},
+        %{x: -5150, y: 3016},
+        %{x: -5365, y: 2132},
+        %{x: -6439, y: 2505}
+      ]
+    },
+    %{
+      name: "Close to Wall Top Right Water",
+      radius: 0.0,
+      shape: "polygon",
+      type: :lake,
+      base_status: nil,
+      statuses_cycle: %{},
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: 2254, y: 5881},
+        %{x: 2496, y: 6558},
+        %{x: 3691, y: 6546},
+        %{x: 3376, y: 5862}
+      ]
+    },
+    %{
+      name: "Close To Wall Bottom Left Water",
+      radius: 0.0,
+      shape: "polygon",
+      type: :lake,
+      base_status: nil,
+      statuses_cycle: %{},
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: -3340, y: -5690},
+        %{x: -3225, y: -5524},
+        %{x: -2132, y: -5561},
+        %{x: -2530, y: -6395},
+        %{x: -3665, y: -6404},
+        %{x: -3621, y: -6261}
+      ]
+    },
+    %{
+      name: "Close To Wall Bottom Right Water",
+      radius: 0.0,
+      shape: "polygon",
+      type: :lake,
+      base_status: nil,
+      statuses_cycle: %{},
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: 5717, y: -3593},
+        %{x: 5889, y: -2323},
+        %{x: 6579, y: -2499},
+        %{x: 6534, y: -3543}
+      ]
+    },
+    %{
+      name: "Bottom Mid Water 1",
+      radius: 0.0,
+      shape: "polygon",
+      type: :lake,
+      base_status: nil,
+      statuses_cycle: %{},
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: -272, y: -3195},
+        %{x: 596, y: -3003},
+        %{x: 808, y: -3648},
+        %{x: -23, y: -3927}
+      ]
+    },
+    %{
+      name: "Bottom Mid Water 2",
+      radius: 0.0,
+      shape: "polygon",
+      type: :lake,
+      base_status: nil,
+      statuses_cycle: %{},
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: 596, y: -3003},
+        %{x: 2056, y: -2643},
+        %{x: 2260, y: -3295},
+        %{x: 808, y: -3648}
+      ]
+    },
+    %{
+      name: "Top Mid Water 1",
+      radius: 0.0,
+      shape: "polygon",
+      type: :lake,
+      base_status: nil,
+      statuses_cycle: %{},
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: -3200, y: 2970},
+        %{x: -1950, y: 3392},
+        %{x: -1689, y: 2797},
+        %{x: -2855, y: 2262}
+      ]
+    },
+    %{
+      name: "Top Mid Water 2",
+      radius: 0.0,
+      shape: "polygon",
+      type: :lake,
+      base_status: nil,
+      statuses_cycle: %{},
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: -1950, y: 3392},
+        %{x: -181, y: 3983},
+        %{x: 140, y: 3279},
+        %{x: -1689, y: 2797}
+      ]
+    },
+    %{
+      name: "Right Mid Water 1",
+      radius: 0.0,
+      shape: "polygon",
+      type: :lake,
+      base_status: nil,
+      statuses_cycle: %{},
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: 2664, y: 2310},
+        %{x: 3299, y: 2519},
+        %{x: 3659, y: 1608},
+        %{x: 2966, y: 1407}
+      ]
+    },
+    %{
+      name: "Right Mid Water 2",
+      radius: 0.0,
+      shape: "polygon",
+      type: :lake,
+      base_status: nil,
+      statuses_cycle: %{},
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: 2966, y: 1407},
+        %{x: 3659, y: 1608},
+        %{x: 4035, y: -68},
+        %{x: 3478, y: -200}
+      ]
+    },
+    %{
+      name: "Left Mid Water 1",
+      radius: 0.0,
+      shape: "polygon",
+      type: :lake,
+      base_status: nil,
+      statuses_cycle: %{},
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: -4107, y: -343},
+        %{x: -3368, y: -169},
+        %{x: -3147, y: -871},
+        %{x: -3957, y: -1003}
+      ]
+    },
+    %{
+      name: "Left Mid Water 2",
+      radius: 0.0,
+      shape: "polygon",
+      type: :lake,
+      base_status: nil,
+      statuses_cycle: %{},
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: -3952, y: -1002},
+        %{x: -3142, y: -870},
+        %{x: -2826, y: -2024},
+        %{x: -3448, y: -2203}
+      ]
+    },
+    %{
+      name: "Bottom Right Water 1",
+      radius: 0.0,
+      shape: "polygon",
+      type: :lake,
+      base_status: nil,
+      statuses_cycle: %{},
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: 2965, y: -3062},
+        %{x: 2653, y: -2438},
+        %{x: 3633, y: -1502},
+        %{x: 4596, y: -2699}
+      ]
+    },
+    %{
+      name: "Bottom Right Water 2",
+      radius: 0.0,
+      shape: "polygon",
+      type: :lake,
+      base_status: nil,
+      statuses_cycle: %{},
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: 3615, y: -694},
+        %{x: 4212, y: -509},
+        %{x: 4629, y: -1281},
+        %{x: 3630, y: -1498}
+      ]
+    },
+    %{
+      name: "Bottom Right Water 3",
+      radius: 0.0,
+      shape: "polygon",
+      type: :lake,
+      base_status: nil,
+      statuses_cycle: %{},
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: 3630, y: -1498},
+        %{x: 4629, y: -1281},
+        %{x: 5611, y: -2263},
+        %{x: 4596, y: -2699}
+      ]
+    },
+    %{
+      name: "Top Right Water 1",
+      radius: 0.0,
+      shape: "polygon",
+      type: :lake,
+      base_status: nil,
+      statuses_cycle: %{},
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: 3029, y: 3061},
+        %{x: 2381, y: 2856},
+        %{x: 1717, y: 3634},
+        %{x: 2762, y: 4031}
+      ]
+    },
+    %{
+      name: "Top Right Water 2",
+      radius: 0.0,
+      shape: "polygon",
+      type: :lake,
+      base_status: nil,
+      statuses_cycle: %{},
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: 1717, y: 3634},
+        %{x: 991, y: 3634},
+        %{x: 902, y: 4408},
+        %{x: 1455, y: 4845}
+      ]
+    },
+    %{
+      name: "Top Right Water 3",
+      radius: 0.0,
+      shape: "polygon",
+      type: :lake,
+      base_status: nil,
+      statuses_cycle: %{},
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: 1717, y: 3634},
+        %{x: 1455, y: 4845},
+        %{x: 2092, y: 5603},
+        %{x: 3003, y: 5182},
+        %{x: 2762, y: 4031}
+      ]
     }
   ],
   bushes: [],
