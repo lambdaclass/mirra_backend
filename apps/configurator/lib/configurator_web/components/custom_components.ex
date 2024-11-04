@@ -59,6 +59,7 @@ defmodule ConfiguratorWeb.CustomComponents do
         <.input field={effect_f[:duration_ms]} type="number" label="Effect duration" />
         <.input field={effect_f[:remove_on_action]} type="checkbox" label="Remove effect on action" />
         <.input field={effect_f[:one_time_application]} type="checkbox" label="Apply effect once" />
+        <.input field={effect_f[:disabled_outside_pool]} type="checkbox" label="Disabled outside pool" />
         <.input field={effect_f[:allow_multiple_effects]} type="checkbox" label="Allow more that one effect instance" />
         <.input field={effect_f[:consume_projectile]} type="checkbox" label="Consume projectile" />
         <.inputs_for :let={mechanics_form} field={effect_f[:effect_mechanics]}>
