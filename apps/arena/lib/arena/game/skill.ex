@@ -27,7 +27,13 @@ defmodule Arena.Game.Skill do
 
     entity_player_owner = get_entity_player_owner(game_state, entity)
 
-    deal_damage_to_game_entities(game_state, entity_player_owner, circular_damage_area, circle_hit.damage)
+    apply_damage_and_effects_to_entities(
+      game_state,
+      entity_player_owner,
+      circular_damage_area,
+      circle_hit.damage,
+      circle_hit.effect
+    )
     |> maybe_move_player(entity, circle_hit[:move_by])
   end
 
@@ -48,7 +54,7 @@ defmodule Arena.Game.Skill do
     cone_area = Entities.make_polygon(entity.id, triangle_points)
     entity_player_owner = get_entity_player_owner(game_state, entity)
 
-    deal_damage_to_game_entities(game_state, entity_player_owner, cone_area, cone_hit.damage)
+    apply_damage_and_effects_to_entities(game_state, entity_player_owner, cone_area, cone_hit.damage)
     |> maybe_move_player(entity, cone_hit[:move_by])
   end
 
@@ -318,7 +324,7 @@ defmodule Arena.Game.Skill do
 
     entity_player_owner = get_entity_player_owner(game_state, entity)
 
-    deal_damage_to_game_entities(game_state, entity_player_owner, polygon_damage_area, polygon_hit.damage)
+    apply_damage_and_effects_to_entities(game_state, entity_player_owner, polygon_damage_area, polygon_hit.damage)
   end
 
   def handle_skill_effects(game_state, player, effect, execution_duration_ms) do
@@ -436,14 +442,27 @@ defmodule Arena.Game.Skill do
     direction
   end
 
-  defp deal_damage_to_game_entities(game_state, player, skill_entity, damage) do
+  defp apply_damage_and_effects_to_entities(game_state, player, skill_entity, damage, effect \\ nil) do
     # Players
     alive_players =
       Player.alive_players(game_state.players)
       |> Map.filter(fn {_, alive_player} -> alive_player.id != player.id end)
 
+    collided_players = Physics.check_collisions(skill_entity, alive_players)
+
+    # Apply effects to players
+    game_state =
+      if is_nil(effect) do
+        game_state
+      else
+        Enum.reduce(collided_players, game_state, fn collided_player_id, game_state ->
+          collided_player = Map.get(game_state.players, collided_player_id)
+          Effect.put_effect_to_entity(game_state, collided_player, skill_entity.id, effect)
+        end)
+      end
+
     players =
-      Physics.check_collisions(skill_entity, alive_players)
+      collided_players
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
         real_damage = Player.calculate_real_damage(player, damage)
 
