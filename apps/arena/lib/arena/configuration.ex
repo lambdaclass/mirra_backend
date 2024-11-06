@@ -177,7 +177,7 @@ defmodule Arena.Configuration do
       map_config
       | radius: maybe_to_float(map_config.radius),
         initial_positions: Enum.map(map_config.initial_positions, &parse_position/1),
-        square_wall: map_config.square_wall |> IO.inspect(),
+        square_wall: map_config.square_wall,
         obstacles: Enum.map(map_config.obstacles, &parse_obstacle/1),
         pools: Enum.map(map_config.pools, &parse_entity_values/1),
         bushes: Enum.map(map_config.bushes, &parse_entity_values/1),

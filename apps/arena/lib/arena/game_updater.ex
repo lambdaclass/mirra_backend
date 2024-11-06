@@ -590,12 +590,12 @@ defmodule Arena.GameUpdater do
     item_config = Enum.random(state.game_config.items)
 
     position =
-      random_position_in_map(
+      random_position_in_square(
         item_config.radius,
         state.game_state.external_wall,
         state.game_state.obstacles,
         state.game_state.external_wall.position,
-        state.game_state.external_wall.radius
+        state.game_state.square_wall
       )
 
     item = Entities.new_item(last_id, position, item_config)
@@ -792,6 +792,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:damage_done, %{})
       |> Map.put(:crates, %{})
       |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
+      |> Map.put(:square_wall, config.map.square_wall)
       |> Map.put(:zone, %{
         radius: config.map.radius,
         should_start?: config.game.zone_enabled,
@@ -1634,6 +1635,37 @@ defmodule Arena.GameUpdater do
     integer_radius = trunc(available_radius - object_radius)
     x = Enum.random(-integer_radius..integer_radius) / 1.0 + initial_position.x
     y = Enum.random(-integer_radius..integer_radius) / 1.0 + initial_position.y
+
+    circle = %{
+      id: 1,
+      shape: :circle,
+      position: %{x: x, y: y},
+      radius: object_radius,
+      vertices: [],
+      speed: 0.0,
+      category: :power_up,
+      direction: %{x: 0.0, y: 0.0},
+      is_moving: false,
+      name: "Circle 1"
+    }
+
+    collisionable_obstacles =
+      Map.filter(obstacles, fn {_obstacle_id, obstacle} -> obstacle.aditional_info.collisionable end)
+
+    Physics.get_closest_available_position(
+      circle.position,
+      circle,
+      external_wall,
+      collisionable_obstacles
+    )
+  end
+
+  defp random_position_in_square(object_radius, external_wall, obstacles, initial_position, square_wall) do
+    x =
+      Enum.random(trunc(square_wall.left)..trunc(square_wall.right)) / 1.0 + initial_position.x
+
+    y =
+      Enum.random(trunc(square_wall.bottom)..trunc(square_wall.top)) / 1.0 + initial_position.y
 
     circle = %{
       id: 1,
