@@ -5004,7 +5004,13 @@ merliot_map_config = %{
   ],
   bushes: [],
   pools: [],
-  version_id: version.id
+  version_id: version.id,
+  square_wall: %{
+    right: 6400,
+    left: -6400,
+    bottom: -6400,
+    top: 6400
+  }
 }
 
 {:ok, _araban_map_configuration} =
