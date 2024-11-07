@@ -1636,28 +1636,7 @@ defmodule Arena.GameUpdater do
     x = Enum.random(-integer_radius..integer_radius) / 1.0 + initial_position.x
     y = Enum.random(-integer_radius..integer_radius) / 1.0 + initial_position.y
 
-    circle = %{
-      id: 1,
-      shape: :circle,
-      position: %{x: x, y: y},
-      radius: object_radius,
-      vertices: [],
-      speed: 0.0,
-      category: :power_up,
-      direction: %{x: 0.0, y: 0.0},
-      is_moving: false,
-      name: "Circle 1"
-    }
-
-    collisionable_obstacles =
-      Map.filter(obstacles, fn {_obstacle_id, obstacle} -> obstacle.aditional_info.collisionable end)
-
-    Physics.get_closest_available_position(
-      circle.position,
-      circle,
-      external_wall,
-      collisionable_obstacles
-    )
+    set_spawn_point(%{x: x, y: y}, object_radius, external_wall, obstacles)
   end
 
   defp random_position_in_square(object_radius, external_wall, obstacles, initial_position, square_wall) do
@@ -1667,10 +1646,14 @@ defmodule Arena.GameUpdater do
     y =
       Enum.random(trunc(square_wall.bottom)..trunc(square_wall.top)) / 1.0 + initial_position.y
 
+    set_spawn_point(%{x: x, y: y}, object_radius, external_wall, obstacles)
+  end
+
+  defp set_spawn_point(desired_position, object_radius, external_wall, obstacles) do
     circle = %{
       id: 1,
       shape: :circle,
-      position: %{x: x, y: y},
+      position: desired_position,
       radius: object_radius,
       vertices: [],
       speed: 0.0,
