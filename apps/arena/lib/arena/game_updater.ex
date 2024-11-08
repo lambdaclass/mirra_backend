@@ -267,6 +267,9 @@ defmodule Arena.GameUpdater do
       |> activate_trap_mechanics()
       # Obstacles
       |> handle_obstacles_transitions()
+      # Deathmatch
+      |> add_players_to_respawn_queue(state.game_config)
+      |> respawn_players(state.game_config)
 
     {:ok, state_diff} = diff(state.last_broadcasted_game_state, game_state)
 
@@ -838,6 +841,7 @@ defmodule Arena.GameUpdater do
       )
       |> Map.put(:positions, %{})
       |> Map.put(:traps, %{})
+      |> Map.put(:respawn_queue, %{})
 
     {game, _} =
       Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id, character_name, player_name,
@@ -1899,6 +1903,47 @@ defmodule Arena.GameUpdater do
       true -> :no_diff
       false -> {:ok, new}
     end
+  end
+
+  defp add_players_to_respawn_queue(game_state, game_config) do
+    death_players =
+      game_state.players
+      |> Enum.filter(fn {_player_id, player} ->
+        not Player.alive?(player)
+      end)
+
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
+    respawn_queue =
+      Enum.reduce(death_players, game_state.respawn_queue, fn {player_id, _player}, respawn_queue ->
+        if Map.has_key?(respawn_queue, player_id) do
+          respawn_queue
+        else
+          Map.put(respawn_queue, player_id, now + game_config.game.respawn_time)
+        end
+      end)
+
+    Map.put(game_state, :respawn_queue, respawn_queue)
+  end
+
+  defp respawn_players(game_state, game_config) do
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
+    players_to_respawn =
+      game_state.respawn_queue
+      |> Enum.filter(fn {_player_id, time} ->
+        time < now
+      end)
+
+    {game_state, respawn_queue} =
+      Enum.reduce(players_to_respawn, {game_state, game_state.respawn_queue}, fn {player_id, _time},
+                                                                                 {game_state, respawn_queue} ->
+        new_position = Enum.random(game_config.map.initial_positions)
+        player = Map.get(game_state.players, player_id) |> Player.respawn_player(new_position)
+        {put_in(game_state, [:players, player_id], player), Map.delete(respawn_queue, player_id)}
+      end)
+
+    Map.put(game_state, :respawn_queue, respawn_queue)
   end
 
   ##########################

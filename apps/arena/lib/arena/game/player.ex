@@ -451,6 +451,14 @@ defmodule Arena.Game.Player do
     end)
   end
 
+  def respawn_player(player, position) do
+    aditional_info = player.aditional_info |> Map.put(:health, player.aditional_info.max_health)
+
+    player
+    |> Map.put(:aditional_info, aditional_info)
+    |> Map.put(:position, position)
+  end
+
   ####################
   # Internal helpers #
   ####################
