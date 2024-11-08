@@ -6,7 +6,8 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
   import Ecto.Changeset
   alias GameBackend.Configuration.Version
 
-  @derive {Jason.Encoder, only: [:name, :radius, :initial_positions, :obstacles, :bushes, :pools, :crates, :active]}
+  @derive {Jason.Encoder,
+           only: [:name, :radius, :initial_positions, :obstacles, :bushes, :pools, :crates, :active, :square_wall]}
 
   schema "map_configurations" do
     field(:name, :string)
@@ -18,6 +19,7 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
     embeds_many(:pools, __MODULE__.Pool, on_replace: :delete)
     embeds_many(:bushes, __MODULE__.Bush, on_replace: :delete)
     embeds_many(:crates, __MODULE__.Crate, on_replace: :delete)
+    embeds_one(:square_wall, __MODULE__.SquareWall, on_replace: :delete)
 
     belongs_to(:version, Version)
 
@@ -34,7 +36,30 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
     |> cast_embed(:bushes)
     |> cast_embed(:pools)
     |> cast_embed(:crates)
+    |> cast_embed(:square_wall)
     |> unique_constraint(:name)
+  end
+
+  defmodule SquareWall do
+    @moduledoc """
+    SquareWall embedded schema to be used by MapConfiguration
+    """
+
+    use GameBackend.Schema
+
+    @derive {Jason.Encoder, only: [:right, :left, :top, :bottom]}
+    embedded_schema do
+      field(:right, :integer)
+      field(:left, :integer)
+      field(:top, :integer)
+      field(:bottom, :integer)
+    end
+
+    def changeset(square_wall, attrs) do
+      square_wall
+      |> cast(attrs, [:right, :left, :top, :bottom])
+      |> validate_required([:right, :left, :top, :bottom])
+    end
   end
 
   defmodule Position do
