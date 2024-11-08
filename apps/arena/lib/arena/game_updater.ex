@@ -328,7 +328,7 @@ defmodule Arena.GameUpdater do
   def handle_info(:deathmatch_end_game_check, state) do
     players =
       state.game_state.players
-      |> Enum.map(fn player ->
+      |> Enum.map(fn {player} ->
         %{kills: kills} = GameTracker.get_player_result(player.id)
         {player.id, kills}
       end)
@@ -770,6 +770,10 @@ defmodule Arena.GameUpdater do
 
     encoded_state = GameEvent.encode(%GameEvent{event: {:finished, game_state}})
     PubSub.broadcast(Arena.PubSub, state.game_id, {:game_finished, encoded_state})
+  end
+
+  defp broadcast_player_respawn(game_id, player_id) do
+    PubSub.broadcast(Arena.PubSub, game_id, {:respawn_player, player_id})
   end
 
   defp complete_entities(nil, _), do: []
@@ -1940,6 +1944,7 @@ defmodule Arena.GameUpdater do
                                                                                  {game_state, respawn_queue} ->
         new_position = Enum.random(game_config.map.initial_positions)
         player = Map.get(game_state.players, player_id) |> Player.respawn_player(new_position)
+        broadcast_player_respawn(game_state.game_id, player_id)
         {put_in(game_state, [:players, player_id], player), Map.delete(respawn_queue, player_id)}
       end)
 
