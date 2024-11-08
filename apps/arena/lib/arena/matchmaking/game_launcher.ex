@@ -111,7 +111,7 @@ defmodule Arena.Matchmaking.GameLauncher do
     Enum.map(1..missing_clients//1, fn i ->
       client_id = UUID.generate()
 
-      {client_id, Enum.random(characters).name, Enum.at(@bot_names, i), nil}
+      {client_id, "uren", Enum.at(@bot_names, i), nil}
     end)
   end
 
