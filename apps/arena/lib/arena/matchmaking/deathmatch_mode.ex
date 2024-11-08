@@ -5,6 +5,10 @@ defmodule Arena.Matchmaking.DeathmatchMode do
 
   use GenServer
 
+  # 3 Mins
+  @match_duration 180_000
+  @respawn_time 5000
+
   # Time to wait to start game with any amount of clients
   @start_timeout_ms 4_000
 
@@ -129,7 +133,11 @@ defmodule Arena.Matchmaking.DeathmatchMode do
       GenServer.start(Arena.GameUpdater, %{
         clients: clients,
         bot_clients: bot_clients,
-        game_params: game_params |> Map.put(:game_mode, :deathmatch)
+        game_params:
+          game_params
+          |> Map.put(:game_mode, :deathmatch)
+          |> Map.put(:match_duration, @match_duration)
+          |> Map.put(:respawn_time, @respawn_time)
       })
 
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()

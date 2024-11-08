@@ -308,13 +308,41 @@ defmodule Arena.GameUpdater do
     Process.send_after(self(), :match_timeout, state.game_config.game.match_timeout_ms)
 
     send(self(), :natural_healing)
-    send(self(), {:end_game_check, Map.keys(state.game_state.players)})
+
+    if state.game_config.game.game_mode != :deathmatch do
+      send(self(), {:end_game_check, Map.keys(state.game_state.players)})
+    else
+      Process.send_after(self(), :deathmatch_end_game_check, state.game_config.game.match_duration)
+    end
 
     unless state.game_config.game.bots_enabled do
       toggle_bots(self())
     end
 
     {:noreply, put_in(state, [:game_state, :status], :RUNNING)}
+  end
+
+  def handle_info(:deathmatch_end_game_check, state) do
+    players =
+      state.game_state.players
+      |> Enum.map(fn player ->
+        %{kills: kills} = GameTracker.get_player_result(player.id)
+        {player.id, kills}
+      end)
+      |> Enum.sort_by(fn {_player_id, kills} -> kills end, :desc)
+
+    winner = Enum.at(players, 1)
+
+    state =
+      state
+      |> put_in([:game_state, :status], :ENDED)
+      |> update_in([:game_state], fn game_state -> put_player_position(game_state, winner.id) end)
+
+    PubSub.broadcast(Arena.PubSub, state.game_state.game_id, :end_game_state)
+    broadcast_game_ended(winner, state.game_state)
+    GameTracker.finish_tracking(self(), winner.id)
+
+    Process.send_after(self(), :game_ended, state.game_config.game.shutdown_game_wait_ms)
   end
 
   def handle_info({:end_game_check, last_players_ids}, state) do
