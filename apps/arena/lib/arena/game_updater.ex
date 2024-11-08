@@ -1911,7 +1911,7 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  defp add_players_to_respawn_queue(game_state, game_config) do
+  defp add_players_to_respawn_queue(game_state, %{game: %{game_mode: :deathmatch}} = game_config) do
     death_players =
       game_state.players
       |> Enum.filter(fn {_player_id, player} ->
@@ -1932,7 +1932,9 @@ defmodule Arena.GameUpdater do
     Map.put(game_state, :respawn_queue, respawn_queue)
   end
 
-  defp respawn_players(game_state, game_config) do
+  defp add_players_to_respawn_queue(game_state, _game_config), do: game_state
+
+  defp respawn_players(game_state, %{game: %{game_mode: :deathmatch}} = game_config) do
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
     players_to_respawn =
@@ -1952,6 +1954,8 @@ defmodule Arena.GameUpdater do
 
     Map.put(game_state, :respawn_queue, respawn_queue)
   end
+
+  defp respawn_players(game_state, _game_config), do: game_state
 
   ##########################
   # End Helpers
