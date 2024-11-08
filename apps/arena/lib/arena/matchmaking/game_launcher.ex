@@ -129,7 +129,7 @@ defmodule Arena.Matchmaking.GameLauncher do
       GenServer.start(Arena.GameUpdater, %{
         clients: clients,
         bot_clients: bot_clients,
-        game_params: game_params
+        game_params: game_params |> Map.put(:game_mode, :battle_royale)
       })
 
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()

@@ -1,11 +1,13 @@
-defmodule Arena.Matchmaking.QuickGameMode do
+defmodule Arena.Matchmaking.DeathmatchMode do
   @moduledoc false
   alias Arena.Utils
   alias Ecto.UUID
 
   use GenServer
 
-  # The available names for bots to enter a match, we should change this in the future
+  # Time to wait to start game with any amount of clients
+  @start_timeout_ms 4_000
+
   @bot_names [
     "TheBlackSwordman",
     "SlashJava",
@@ -29,24 +31,45 @@ defmodule Arena.Matchmaking.QuickGameMode do
     GenServer.call(__MODULE__, {:join, client_id, character_name, player_name})
   end
 
-  def leave(_client_id) do
-    :noop
+  def leave(client_id) do
+    GenServer.call(__MODULE__, {:leave, client_id})
   end
 
   # Callbacks
   @impl true
   def init(_) do
-    {:ok, %{}}
+    Process.send_after(self(), :launch_game?, 300)
+    {:ok, %{clients: [], batch_start_at: 0}}
   end
 
   @impl true
-  def handle_call({:join, client_id, character_name, player_name}, {from_pid, _}, state) do
-    create_game_for_clients([{client_id, character_name, player_name, from_pid}], %{
-      bots_enabled: true,
-      zone_enabled: false
-    })
+  def handle_call({:join, client_id, character_name, player_name}, {from_pid, _}, %{clients: clients} = state) do
+    batch_start_at = maybe_make_batch_start_at(state.clients, state.batch_start_at)
 
-    {:reply, :ok, state}
+    {:reply, :ok,
+     %{
+       state
+       | batch_start_at: batch_start_at,
+         clients: clients ++ [{client_id, character_name, player_name, from_pid}]
+     }}
+  end
+
+  def handle_call({:leave, client_id}, _, state) do
+    clients = Enum.reject(state.clients, fn {id, _, _, _} -> id == client_id end)
+    {:reply, :ok, %{state | clients: clients}}
+  end
+
+  @impl true
+  def handle_info(:launch_game?, %{clients: clients} = state) do
+    Process.send_after(self(), :launch_game?, 300)
+    diff = System.monotonic_time(:millisecond) - state.batch_start_at
+
+    if length(clients) >= Application.get_env(:arena, :players_needed_in_match) or
+         (diff >= @start_timeout_ms and length(clients) > 0) do
+      send(self(), :start_game)
+    end
+
+    {:noreply, state}
   end
 
   def handle_info(:start_game, state) do
@@ -56,7 +79,6 @@ defmodule Arena.Matchmaking.QuickGameMode do
     {:noreply, %{state | clients: remaining_clients}}
   end
 
-  @impl true
   def handle_info({:spawn_bot_for_player, bot_client, game_id}, state) do
     spawn(fn ->
       Finch.build(:get, Utils.get_bot_connection_url(game_id, bot_client))
@@ -64,6 +86,20 @@ defmodule Arena.Matchmaking.QuickGameMode do
     end)
 
     {:noreply, state}
+  end
+
+  defp maybe_make_batch_start_at([], _) do
+    System.monotonic_time(:millisecond)
+  end
+
+  defp maybe_make_batch_start_at([_ | _], batch_start_at) do
+    batch_start_at
+  end
+
+  defp spawn_bot_for_player(bot_clients, game_id) do
+    Enum.each(bot_clients, fn {bot_client, _, _, _} ->
+      send(self(), {:spawn_bot_for_player, bot_client, game_id})
+    end)
   end
 
   defp get_bot_clients(missing_clients) do
@@ -79,24 +115,21 @@ defmodule Arena.Matchmaking.QuickGameMode do
     end)
   end
 
-  defp spawn_bot_for_player(bot_clients, game_id) do
-    Enum.each(bot_clients, fn {bot_client, _, _, _} ->
-      send(self(), {:spawn_bot_for_player, bot_client, game_id})
-    end)
-  end
-
   # Receives a list of clients.
   # Fills the given list with bots clients, creates a game and tells every client to join that game.
   defp create_game_for_clients(clients, game_params \\ %{}) do
-    # We will spawn bots in quick-game matches.
-    # Check https://github.com/lambdaclass/mirra_backend/pull/951 to know how to restore former behavior.
-    bot_clients = get_bot_clients(Application.get_env(:arena, :players_needed_in_match) - Enum.count(clients))
+    # We spawn bots only if there is one player
+    bot_clients =
+      case Enum.count(clients) do
+        1 -> get_bot_clients(Application.get_env(:arena, :players_needed_in_match) - Enum.count(clients))
+        _ -> []
+      end
 
     {:ok, game_pid} =
       GenServer.start(Arena.GameUpdater, %{
         clients: clients,
         bot_clients: bot_clients,
-        game_params: game_params |> Map.put(:game_mode, :quick_game)
+        game_params: game_params |> Map.put(:game_mode, :deathmatch)
       })
 
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()
