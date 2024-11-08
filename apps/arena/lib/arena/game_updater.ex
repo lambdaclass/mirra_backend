@@ -328,24 +328,26 @@ defmodule Arena.GameUpdater do
   def handle_info(:deathmatch_end_game_check, state) do
     players =
       state.game_state.players
-      |> Enum.map(fn {player} ->
-        %{kills: kills} = GameTracker.get_player_result(player.id)
-        {player.id, kills}
+      |> Enum.map(fn {player_id, player} ->
+        %{kills: kills} = GameTracker.get_player_result(player_id)
+        {player_id, player, kills}
       end)
-      |> Enum.sort_by(fn {_player_id, kills} -> kills end, :desc)
+      |> Enum.sort_by(fn {_player_id, _player, kills} -> kills end, :desc)
 
-    winner = Enum.at(players, 1)
+    {winner_id, winner, _kills} = Enum.at(players, 1)
 
     state =
       state
       |> put_in([:game_state, :status], :ENDED)
-      |> update_in([:game_state], fn game_state -> put_player_position(game_state, winner.id) end)
+      |> update_in([:game_state], fn game_state -> put_player_position(game_state, winner_id) end)
 
     PubSub.broadcast(Arena.PubSub, state.game_state.game_id, :end_game_state)
     broadcast_game_ended(winner, state.game_state)
-    GameTracker.finish_tracking(self(), winner.id)
+    GameTracker.finish_tracking(self(), winner_id)
 
     Process.send_after(self(), :game_ended, state.game_config.game.shutdown_game_wait_ms)
+
+    {:noreply, state}
   end
 
   def handle_info({:end_game_check, last_players_ids}, state) do
