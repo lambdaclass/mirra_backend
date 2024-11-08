@@ -6,7 +6,7 @@ defmodule Arena.Matchmaking.DeathmatchMode do
   use GenServer
 
   # 3 Mins
-  @match_duration 30_000
+  @match_duration 180_000
   @respawn_time 5000
 
   # Time to wait to start game with any amount of clients
