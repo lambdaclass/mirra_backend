@@ -96,7 +96,7 @@ defmodule Arena.Matchmaking.QuickGameMode do
       GenServer.start(Arena.GameUpdater, %{
         clients: clients,
         bot_clients: bot_clients,
-        game_params: game_params |> Map.put(:game_mode, :quick_game)
+        game_params: game_params |> Map.put(:game_mode, :QUICK_GAME)
       })
 
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()

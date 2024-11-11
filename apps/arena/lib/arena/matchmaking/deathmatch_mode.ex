@@ -135,7 +135,7 @@ defmodule Arena.Matchmaking.DeathmatchMode do
         bot_clients: bot_clients,
         game_params:
           game_params
-          |> Map.put(:game_mode, :deathmatch)
+          |> Map.put(:game_mode, :DEATHMATCH)
           |> Map.put(:match_duration, @match_duration)
           |> Map.put(:respawn_time, @respawn_time)
       })

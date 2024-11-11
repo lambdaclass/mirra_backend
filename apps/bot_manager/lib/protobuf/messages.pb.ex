@@ -1,7 +1,18 @@
+defmodule BotManager.Protobuf.GameMode do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
+
+  field(:BATTLE, 0)
+  field(:DEATHMATCH, 1)
+  field(:PAIR, 2)
+  field(:QUICK_GAME, 3)
+end
+
 defmodule BotManager.Protobuf.GameStatus do
   @moduledoc false
 
-  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:PREPARING, 0)
   field(:RUNNING, 1)
@@ -12,7 +23,7 @@ end
 defmodule BotManager.Protobuf.ProjectileStatus do
   @moduledoc false
 
-  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:PROJECTILE_STATUS_UNDEFINED, 0)
   field(:ACTIVE, 1)
@@ -23,7 +34,7 @@ end
 defmodule BotManager.Protobuf.CrateStatus do
   @moduledoc false
 
-  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:CRATE_STATUS_UNDEFINED, 0)
   field(:FINE, 1)
@@ -33,7 +44,7 @@ end
 defmodule BotManager.Protobuf.PowerUpstatus do
   @moduledoc false
 
-  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:AVAILABLE, 0)
   field(:TAKEN, 1)
@@ -43,7 +54,7 @@ end
 defmodule BotManager.Protobuf.PlayerActionType do
   @moduledoc false
 
-  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:MOVING, 0)
   field(:STARTING_SKILL_1, 1)
@@ -56,7 +67,7 @@ end
 defmodule BotManager.Protobuf.TrapStatus do
   @moduledoc false
 
-  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:PENDING, 0)
   field(:PREPARED, 1)
@@ -67,7 +78,7 @@ end
 defmodule BotManager.Protobuf.PoolStatus do
   @moduledoc false
 
-  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:WAITING, 0)
   field(:READY, 1)
@@ -76,7 +87,7 @@ end
 defmodule BotManager.Protobuf.Direction do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:x, 1, proto3_optional: true, type: :float)
   field(:y, 2, proto3_optional: true, type: :float)
@@ -85,7 +96,7 @@ end
 defmodule BotManager.Protobuf.Position do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:x, 1, proto3_optional: true, type: :float)
   field(:y, 2, proto3_optional: true, type: :float)
@@ -94,7 +105,7 @@ end
 defmodule BotManager.Protobuf.ListPositionPB do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:positions, 1, repeated: true, type: BotManager.Protobuf.Position)
 end
@@ -102,7 +113,7 @@ end
 defmodule BotManager.Protobuf.LobbyEvent do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   oneof(:event, 0)
 
@@ -115,25 +126,25 @@ end
 defmodule BotManager.Protobuf.LeaveLobby do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 end
 
 defmodule BotManager.Protobuf.LeftLobby do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 end
 
 defmodule BotManager.Protobuf.JoinedLobby do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 end
 
 defmodule BotManager.Protobuf.GameEvent do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   oneof(:event, 0)
 
@@ -152,7 +163,7 @@ end
 defmodule BotManager.Protobuf.BountySelected do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:bounty, 1, type: BotManager.Protobuf.BountyInfo)
 end
@@ -160,7 +171,7 @@ end
 defmodule BotManager.Protobuf.GameFinished.PlayersEntry do
   @moduledoc false
 
-  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:key, 1, type: :uint64)
   field(:value, 2, type: BotManager.Protobuf.Entity)
@@ -169,7 +180,7 @@ end
 defmodule BotManager.Protobuf.GameFinished do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:winner, 1, type: BotManager.Protobuf.Entity)
 
@@ -183,7 +194,7 @@ end
 defmodule BotManager.Protobuf.GameJoined do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:player_id, 1, type: :uint64, json_name: "playerId")
   field(:config, 2, type: BotManager.Protobuf.Configuration)
@@ -193,7 +204,7 @@ end
 defmodule BotManager.Protobuf.Configuration do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:game, 1, type: BotManager.Protobuf.ConfigGame)
   field(:map, 2, type: BotManager.Protobuf.ConfigMap)
@@ -204,17 +215,18 @@ end
 defmodule BotManager.Protobuf.ConfigGame do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:tick_rate_ms, 1, type: :float, json_name: "tickRateMs")
   field(:bounty_pick_time_ms, 2, type: :float, json_name: "bountyPickTimeMs")
   field(:start_game_time_ms, 3, type: :float, json_name: "startGameTimeMs")
+  field(:game_mode, 4, type: BotManager.Protobuf.GameMode, json_name: "gameMode", enum: true)
 end
 
 defmodule BotManager.Protobuf.ConfigMap do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:radius, 1, type: :float)
   field(:name, 2, type: :string)
@@ -223,7 +235,7 @@ end
 defmodule BotManager.Protobuf.ConfigCharacter.SkillsEntry do
   @moduledoc false
 
-  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:key, 1, type: :string)
   field(:value, 2, type: BotManager.Protobuf.ConfigSkill)
@@ -232,7 +244,7 @@ end
 defmodule BotManager.Protobuf.ConfigCharacter do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:name, 1, type: :string)
   field(:active, 2, type: :bool)
@@ -253,7 +265,7 @@ end
 defmodule BotManager.Protobuf.ClientConfig do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:server_update, 1, type: BotManager.Protobuf.ConfigServerUpdate, json_name: "serverUpdate")
 end
@@ -261,7 +273,7 @@ end
 defmodule BotManager.Protobuf.ConfigServerUpdate do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:timestamp_difference_samples_to_check_warning, 1,
     type: :uint64,
@@ -282,7 +294,7 @@ end
 defmodule BotManager.Protobuf.ConfigSkill do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:name, 1, type: :string)
   field(:cooldown_ms, 2, type: :uint64, json_name: "cooldownMs")
@@ -299,7 +311,7 @@ end
 defmodule BotManager.Protobuf.GameState.PlayersEntry do
   @moduledoc false
 
-  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:key, 1, type: :uint64)
   field(:value, 2, type: BotManager.Protobuf.Entity)
@@ -308,7 +320,7 @@ end
 defmodule BotManager.Protobuf.GameState.ProjectilesEntry do
   @moduledoc false
 
-  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:key, 1, type: :uint64)
   field(:value, 2, type: BotManager.Protobuf.Entity)
@@ -317,7 +329,7 @@ end
 defmodule BotManager.Protobuf.GameState.PlayerTimestampsEntry do
   @moduledoc false
 
-  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:key, 1, type: :uint64)
   field(:value, 2, type: :int64)
@@ -326,7 +338,7 @@ end
 defmodule BotManager.Protobuf.GameState.DamageTakenEntry do
   @moduledoc false
 
-  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:key, 1, type: :uint64)
   field(:value, 2, type: :uint64)
@@ -335,7 +347,7 @@ end
 defmodule BotManager.Protobuf.GameState.DamageDoneEntry do
   @moduledoc false
 
-  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:key, 1, type: :uint64)
   field(:value, 2, type: :uint64)
@@ -344,7 +356,7 @@ end
 defmodule BotManager.Protobuf.GameState.PowerUpsEntry do
   @moduledoc false
 
-  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:key, 1, type: :uint64)
   field(:value, 2, type: BotManager.Protobuf.Entity)
@@ -353,7 +365,7 @@ end
 defmodule BotManager.Protobuf.GameState.ItemsEntry do
   @moduledoc false
 
-  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:key, 1, type: :uint64)
   field(:value, 2, type: BotManager.Protobuf.Entity)
@@ -362,7 +374,7 @@ end
 defmodule BotManager.Protobuf.GameState.ObstaclesEntry do
   @moduledoc false
 
-  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:key, 1, type: :uint64)
   field(:value, 2, type: BotManager.Protobuf.Entity)
@@ -371,7 +383,7 @@ end
 defmodule BotManager.Protobuf.GameState.PoolsEntry do
   @moduledoc false
 
-  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:key, 1, type: :uint64)
   field(:value, 2, type: BotManager.Protobuf.Entity)
@@ -380,7 +392,7 @@ end
 defmodule BotManager.Protobuf.GameState.CratesEntry do
   @moduledoc false
 
-  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:key, 1, type: :uint64)
   field(:value, 2, type: BotManager.Protobuf.Entity)
@@ -389,7 +401,7 @@ end
 defmodule BotManager.Protobuf.GameState.BushesEntry do
   @moduledoc false
 
-  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:key, 1, type: :uint64)
   field(:value, 2, type: BotManager.Protobuf.Entity)
@@ -398,7 +410,7 @@ end
 defmodule BotManager.Protobuf.GameState.TrapsEntry do
   @moduledoc false
 
-  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:key, 1, type: :uint64)
   field(:value, 2, type: BotManager.Protobuf.Entity)
@@ -407,7 +419,7 @@ end
 defmodule BotManager.Protobuf.GameState do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:game_id, 1, type: :string, json_name: "gameId")
   field(:players, 2, repeated: true, type: BotManager.Protobuf.GameState.PlayersEntry, map: true)
@@ -470,7 +482,7 @@ end
 defmodule BotManager.Protobuf.Entity do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   oneof(:aditional_info, 0)
 
@@ -499,7 +511,7 @@ end
 defmodule BotManager.Protobuf.Player.CooldownsEntry do
   @moduledoc false
 
-  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:key, 1, type: :string)
   field(:value, 2, type: :uint64)
@@ -508,7 +520,7 @@ end
 defmodule BotManager.Protobuf.Player do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:health, 1, proto3_optional: true, type: :uint64)
   field(:kill_count, 2, proto3_optional: true, type: :uint64, json_name: "killCount")
@@ -544,7 +556,7 @@ end
 defmodule BotManager.Protobuf.Effect do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:name, 1, type: :string)
   field(:duration_ms, 2, type: :uint32, json_name: "durationMs")
@@ -554,7 +566,7 @@ end
 defmodule BotManager.Protobuf.Item do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:name, 2, proto3_optional: true, type: :string)
 end
@@ -562,7 +574,7 @@ end
 defmodule BotManager.Protobuf.Projectile do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:damage, 1, proto3_optional: true, type: :uint64)
   field(:owner_id, 2, proto3_optional: true, type: :uint64, json_name: "ownerId")
@@ -573,7 +585,7 @@ end
 defmodule BotManager.Protobuf.Obstacle do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:color, 1, proto3_optional: true, type: :string)
   field(:collisionable, 2, proto3_optional: true, type: :bool)
@@ -584,7 +596,7 @@ end
 defmodule BotManager.Protobuf.PowerUp do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:owner_id, 1, type: :uint64, json_name: "ownerId")
   field(:status, 2, type: BotManager.Protobuf.PowerUpstatus, enum: true)
@@ -593,7 +605,7 @@ end
 defmodule BotManager.Protobuf.Crate do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:health, 1, proto3_optional: true, type: :uint64)
 
@@ -609,7 +621,7 @@ end
 defmodule BotManager.Protobuf.Pool do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:owner_id, 1, type: :uint64, json_name: "ownerId")
   field(:status, 2, type: BotManager.Protobuf.PoolStatus, enum: true)
@@ -620,13 +632,13 @@ end
 defmodule BotManager.Protobuf.Bush do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 end
 
 defmodule BotManager.Protobuf.Trap do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:owner_id, 1, type: :uint64, json_name: "ownerId")
   field(:name, 2, type: :string)
@@ -636,7 +648,7 @@ end
 defmodule BotManager.Protobuf.PlayerAction do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:action, 1, type: BotManager.Protobuf.PlayerActionType, enum: true)
   field(:duration, 2, type: :uint64)
@@ -647,7 +659,7 @@ end
 defmodule BotManager.Protobuf.Move do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:direction, 1, type: BotManager.Protobuf.Direction)
 end
@@ -655,7 +667,7 @@ end
 defmodule BotManager.Protobuf.Attack do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:skill, 1, type: :string)
   field(:parameters, 2, type: BotManager.Protobuf.AttackParameters)
@@ -664,7 +676,7 @@ end
 defmodule BotManager.Protobuf.AttackParameters do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:target, 1, type: BotManager.Protobuf.Direction)
 end
@@ -672,7 +684,7 @@ end
 defmodule BotManager.Protobuf.UseItem do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:item, 1, type: :uint64)
 end
@@ -680,7 +692,7 @@ end
 defmodule BotManager.Protobuf.SelectBounty do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:bounty_quest_id, 1, type: :string, json_name: "bountyQuestId")
 end
@@ -688,19 +700,19 @@ end
 defmodule BotManager.Protobuf.ToggleZone do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 end
 
 defmodule BotManager.Protobuf.ToggleBots do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 end
 
 defmodule BotManager.Protobuf.ChangeTickrate do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:tickrate, 1, type: :int64)
 end
@@ -708,7 +720,7 @@ end
 defmodule BotManager.Protobuf.GameAction do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   oneof(:action_type, 0)
 
@@ -737,7 +749,7 @@ end
 defmodule BotManager.Protobuf.Zone do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:radius, 1, type: :float)
   field(:enabled, 2, type: :bool)
@@ -748,7 +760,7 @@ end
 defmodule BotManager.Protobuf.KillEntry do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:killer_id, 1, type: :uint64, json_name: "killerId")
   field(:victim_id, 2, type: :uint64, json_name: "victimId")
@@ -757,7 +769,7 @@ end
 defmodule BotManager.Protobuf.BountyInfo do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:id, 1, type: :string)
   field(:description, 2, type: :string)
@@ -768,7 +780,7 @@ end
 defmodule BotManager.Protobuf.CurrencyReward do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:currency, 1, type: :string)
   field(:amount, 2, type: :int64)
