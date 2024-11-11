@@ -451,8 +451,8 @@ simple_piercing_shoot = %{
   "duration_ms" => 2500,
   "remove_on_collision" => false,
   "projectile_offset" => 100,
-  "radius" => 200.0,
-  "damage" => 1
+  "radius" => 150.0,
+  "damage" => 2
 }
 
 multi_piercing_shoot = %{
@@ -460,12 +460,25 @@ multi_piercing_shoot = %{
   # The angle should be always 360 / amount of projectiles
   "angle_between" => 120.0,
   "amount" => 3,
-  "speed" => 1.1,
-  "duration_ms" => 1000,
+  "speed" => 0.8,
+  "duration_ms" => 2500,
   "remove_on_collision" => false,
   "projectile_offset" => 100,
-  "damage" => 1,
-  "radius" => 100.0
+  "damage" => 2,
+  "radius" => 150.0,
+  "on_explode_mechanics" => [
+    %{
+      "name" => "tornado",
+      "type" => "spawn_pool",
+      "activation_delay" => 250,
+      "duration_ms" => 4000,
+      "radius" => 350.0,
+      "range" => 0.0,
+      "shape" => "circle",
+      "vertices" => [],
+      "effect" => singularity_effect
+    }
+  ]
 }
 
 quickslash_1 = %{
@@ -541,12 +554,6 @@ spore_dash = %{
   "speed" => 4.0,
   "duration_ms" => 250
 }
-
-# uren_dash = %{
-#   "type" => "dash",
-#   "speed" => 4.0,
-#   "duration_ms" => 250
-# }
 
 otix_carbonthrow_mechanic = %{
   "type" => "simple_shoot",
@@ -1055,7 +1062,7 @@ skills = [
     "name" => "uren_dash",
     "type" => "dash",
     "cooldown_mechanism" => "time",
-    "cooldown_ms" => 2000,
+    "cooldown_ms" => 4000,
     "execution_duration_ms" => 250,
     "activation_delay_ms" => 0,
     "is_passive" => false,
@@ -1067,7 +1074,7 @@ skills = [
       %{
         "type" => "dash",
         "speed" => 4,
-        "duration_ms" => 100
+        "duration_ms" => 250
       }
     ]
   }

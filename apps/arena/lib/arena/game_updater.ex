@@ -1266,7 +1266,7 @@ defmodule Arena.GameUpdater do
           game_state,
           projectile,
           projectile.aditional_info.on_explode_mechanics,
-          %{skill_direction: projectile.direction}
+          %{skill_direction: projectile.direction, auto_aim?: false}
         )
       else
         game_state

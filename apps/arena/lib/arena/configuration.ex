@@ -51,11 +51,6 @@ defmodule Arena.Configuration do
 
   defp parse_characters_config(characters) do
     Enum.map(characters, fn character ->
-      IO.inspect(character.name)
-      IO.inspect(character.basic_skill)
-      IO.inspect(character.ultimate_skill)
-      IO.inspect(character.dash_skill)
-
       character_skills = %{
         "1" => parse_skill_config(character.basic_skill),
         "2" => parse_skill_config(character.ultimate_skill),
