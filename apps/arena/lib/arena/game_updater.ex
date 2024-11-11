@@ -1640,6 +1640,9 @@ defmodule Arena.GameUpdater do
   end
 
   defp random_position_in_square(object_radius, external_wall, obstacles, initial_position, square_wall) do
+    IO.inspect(square_wall, label: :aver_wall)
+    IO.inspect(initial_position, label: :aver_position)
+
     x =
       Enum.random(trunc(square_wall.left)..trunc(square_wall.right)) / 1.0 + initial_position.x
 
