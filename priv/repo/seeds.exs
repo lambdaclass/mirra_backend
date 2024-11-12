@@ -250,7 +250,7 @@ singularity_effect = %{
     },
     %{
       name: "damage",
-      damage: 13,
+      damage: 15,
       effect_delay_ms: 400,
       execute_multiple_times: true
     }
@@ -452,7 +452,7 @@ simple_piercing_shoot = %{
   "remove_on_collision" => false,
   "projectile_offset" => 100,
   "radius" => 150.0,
-  "damage" => 2
+  "damage" => 4
 }
 
 multi_piercing_shoot = %{
@@ -464,7 +464,7 @@ multi_piercing_shoot = %{
   "duration_ms" => 1500,
   "remove_on_collision" => false,
   "projectile_offset" => 100,
-  "damage" => 2,
+  "damage" => 5,
   "radius" => 150.0,
   "on_explode_mechanics" => [
     %{
@@ -1052,8 +1052,8 @@ skills = [
     "execution_duration_ms" => 1000,
     "activation_delay_ms" => 0,
     "is_passive" => false,
-    "autoaim" => false,
-    "max_autoaim_range" => 0,
+    "autoaim" => true,
+    "max_autoaim_range" => 1200,
     "can_pick_destination" => false,
     "block_movement" => true,
     "mechanics" => [multi_piercing_shoot]
