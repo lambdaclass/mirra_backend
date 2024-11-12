@@ -3671,7 +3671,7 @@ araban_map_config = %{
 
 merliot_map_config = %{
   name: "Merliot",
-  radius: 10000.0,
+  radius: 15000.0,
   active: true,
   initial_positions: [
     %{
@@ -3718,19 +3718,19 @@ merliot_map_config = %{
       vertices: [
         %{
           x: 6400.0,
-          y: 6800.0
+          y: 12000.0
         },
         %{
-          x: 6800.0,
-          y: 6800.0
+          x: 12000.0,
+          y: 12000.0
         },
         %{
-          x: 6800.0,
-          y: -6800.0
+          x: 12000.0,
+          y: -12000.0
         },
         %{
           x: 6400.0,
-          y: -6800.0
+          y: -12000.0
         }
       ]
     },
@@ -3752,11 +3752,11 @@ merliot_map_config = %{
         },
         %{
           x: 6400.0,
-          y: 6800.0
+          y: 12000.0
         },
         %{
           x: -6400.0,
-          y: 6800.0
+          y: 12000.0
         },
         %{
           x: -6400.0,
@@ -3778,19 +3778,19 @@ merliot_map_config = %{
       vertices: [
         %{
           x: -6400.0,
-          y: 6800.0
+          y: 12000.0
         },
         %{
-          x: -6800.0,
-          y: 6800.0
+          x: -12000.0,
+          y: 12000.0
         },
         %{
-          x: -6800.0,
-          y: -6800.0
+          x: -12000.0,
+          y: -12000.0
         },
         %{
           x: -6400.0,
-          y: -6800.0
+          y: -12000.0
         }
       ]
     },
@@ -3816,11 +3816,11 @@ merliot_map_config = %{
         },
         %{
           x: 6400.0,
-          y: -6800.0
+          y: -12000.0
         },
         %{
           x: -6400.0,
-          y: -6800.0
+          y: -12000.0
         }
       ]
     },
@@ -5105,9 +5105,337 @@ merliot_map_config = %{
       ]
     }
   ],
-  bushes: [],
+  bushes: [
+    %{
+      name: "Bottom Left A1",
+      radius: 0.0,
+      shape: "polygon",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: -6370, y: -5029},
+        %{x: -5550, y: -5029},
+        %{x: -5430, y: -5659},
+        %{x: -6370, y: -5669}
+      ]
+    },
+    %{
+      name: "Bottom Left A2",
+      radius: 0.0,
+      shape: "polygon",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: -6370, y: -5669},
+        %{x: -5114, y: -5649},
+        %{x: -5107, y: -6427},
+        %{x: -6349, y: -6434}
+      ]
+    },
+    %{
+      name: "Bottom Left A3",
+      radius: 0.0,
+      shape: "polygon",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: -5107, y: -6427},
+        %{x: -5100, y: -6072},
+        %{x: -4643, y: -6072},
+        %{x: -4643, y: -6441}
+      ]
+    },
+    %{
+      name: "Bottom Mid A1",
+      radius: 0.0,
+      shape: "polygon",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: -2583, y: -6420},
+        %{x: -2354, y: -5906},
+        %{x: -1411, y: -5953},
+        %{x: -1471, y: -6487}
+      ]
+    },
+    %{
+      name: "Bottom Mid A2",
+      radius: 1000,
+      shape: "polygon",
+      position: %{x: 0, y: 0},
+      vertices: [
+        %{x: -2220, y: -6063},
+        %{x: -2219, y: -5587},
+        %{x: -1774, y: -5566},
+        %{x: -1774, y: -6089}
+      ]
+    },
+    %{
+      name: "Bottom Mid B1",
+      radius: 1800,
+      shape: "circle",
+      position: %{x: 1570, y: -7248},
+      vertices: []
+    },
+    %{
+      name: "Bottom Mid B2",
+      radius: 500,
+      shape: "circle",
+      position: %{x: 310, y: -6110},
+      vertices: []
+    },
+    %{
+      name: "Bottom Mid B3",
+      radius: 500,
+      shape: "circle",
+      position: %{x: 2712, y: -6114},
+      vertices: []
+    },
+    %{
+      name: "Bottom Mid C1",
+      radius: 0.0,
+      shape: "polygon",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: 4970, y: -6462},
+        %{x: 4963, y: -6040},
+        %{x: 6658, y: -6040},
+        %{x: 6665, y: -6442}
+      ]
+    },
+    %{
+      name: "Bottom Mid C2",
+      radius: 0.0,
+      shape: "polygon",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: 5485, y: -6023},
+        %{x: 5485, y: -5673},
+        %{x: 6650, y: -5673},
+        %{x: 6663, y: -6040}
+      ]
+    },
+    %{
+      name: "Bottom Mid C3",
+      radius: 0.0,
+      shape: "polygon",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: 6000, y: -5614},
+        %{x: 6000, y: -5275},
+        %{x: 6628, y: -5275},
+        %{x: 6656, y: -5599}
+      ]
+    },
+    %{
+      name: "Mid Left A1",
+      radius: 1800,
+      shape: "circle",
+      position: %{x: -6940, y: -1239},
+      vertices: []
+    },
+    %{
+      name: "Mid Left A2",
+      radius: 700,
+      shape: "circle",
+      position: %{x: -6020, y: -2129},
+      vertices: []
+    },
+    %{
+      name: "Mid Left A3",
+      radius: 700,
+      shape: "circle",
+      position: %{x: -6000, y: -439},
+      vertices: []
+    },
+    %{
+      name: "Mid Left B1",
+      radius: 500,
+      shape: "circle",
+      position: %{x: -6360, y: 2020},
+      vertices: []
+    },
+    %{
+      name: "Mid Left B2",
+      radius: 500,
+      shape: "circle",
+      position: %{x: -5810, y: 2220},
+      vertices: []
+    },
+    %{
+      name: "Top Left B1",
+      radius: 1000,
+      shape: "circle",
+      position: %{x: -6390, y: 6550},
+      vertices: []
+    },
+    %{
+      name: "Top Mid A1",
+      radius: 1700,
+      shape: "circle",
+      position: %{x: -1480, y: 6970},
+      vertices: []
+    },
+    %{
+      name: "Top Mid A2",
+      radius: 700,
+      shape: "circle",
+      position: %{x: 1859, y: 6110},
+      vertices: []
+    },
+    %{
+      name: "Top Right A1",
+      radius: 1700,
+      shape: "circle",
+      position: %{x: 7369, y: 6680},
+      vertices: []
+    },
+    %{
+      name: "Mid Right A1",
+      radius: 700,
+      shape: "circle",
+      position: %{x: 6653, y: 2360},
+      vertices: []
+    },
+    %{
+      name: "Mid Right A2",
+      radius: 700,
+      shape: "circle",
+      position: %{x: 6486, y: 655},
+      vertices: []
+    },
+    %{
+      name: "Mid Right A3",
+      radius: 700,
+      shape: "circle",
+      position: %{x: 6300, y: 2007},
+      vertices: []
+    },
+    %{
+      name: "Mid Right B1",
+      radius: 0,
+      shape: "polygon",
+      position: %{x: 0.0, y: 0.0},
+      vertices: [
+        %{x: 6085, y: -1374},
+        %{x: 6596, y: -1374},
+        %{x: 6497, y: -2222},
+        %{x: 5911, y: -2222}
+      ]
+    },
+    %{
+      name: "Mid Right B2",
+      radius: 300,
+      shape: "circle",
+      position: %{x: 5626, y: -1885},
+      vertices: []
+    },
+    %{
+      name: "Mid Top A1",
+      radius: 1000,
+      shape: "circle",
+      position: %{x: 3799, y: 3810},
+      vertices: []
+    },
+    %{
+      name: "Mid Top A2",
+      radius: 0,
+      shape: "polygon",
+      position: %{x: 0.0, y: 0.0},
+      vertices: [
+        %{x: -2010, y: 4592},
+        %{x: -421, y: 4368},
+        %{x: -504, y: 3850},
+        %{x: -2110, y: 4132}
+      ]
+    },
+    %{
+      name: "Mid Top A3",
+      radius: 700,
+      shape: "circle",
+      position: %{x: -3800, y: 3690},
+      vertices: []
+    },
+    %{
+      name: "Mid Bottom A1",
+      radius: 850,
+      shape: "circle",
+      position: %{x: -1570, y: -2879},
+      vertices: []
+    },
+    %{
+      name: "Mid Bottom B1",
+      radius: 850,
+      shape: "circle",
+      position: %{x: -1570, y: -2879},
+      vertices: []
+    },
+    %{
+      name: "Mid Bottom C1",
+      radius: 1000,
+      shape: "circle",
+      position: %{x: 1529, y: -3639},
+      vertices: []
+    },
+    %{
+      name: "Mid Bottom A4",
+      radius: 0.0,
+      shape: "polygon",
+      position: %{x: 0.0, y: 0.0},
+      vertices: [
+        %{x: 2480, y: -1523},
+        %{x: 3445, y: -1518},
+        %{x: 3445, y: -2205},
+        %{x: 2489, y: -2242}
+      ]
+    },
+    %{
+      name: "Mid Top A1",
+      radius: 1000,
+      shape: "circle",
+      position: %{x: 4229, y: 1160},
+      vertices: []
+    },
+    %{
+      name: "Mid Top B1",
+      radius: 950,
+      shape: "circle",
+      position: %{x: -3110, y: 1220},
+      vertices: []
+    },
+    %{
+      name: "Mid Top C1",
+      radius: 900,
+      shape: "circle",
+      position: %{x: 1819, y: 3130},
+      vertices: []
+    }
+  ],
   pools: [],
-  version_id: version.id
+  version_id: version.id,
+  square_wall: %{
+    right: 6400,
+    left: -6400,
+    bottom: -6400,
+    top: 6400
+  }
 }
 
 {:ok, _araban_map_configuration} =
