@@ -250,7 +250,7 @@ singularity_effect = %{
     },
     %{
       name: "damage",
-      damage: 13,
+      damage: 15,
       effect_delay_ms: 400,
       execute_multiple_times: true
     }
@@ -443,6 +443,41 @@ simple_shoot = %{
     ],
     "effect" => buff_singularity_effect
   }
+}
+
+simple_piercing_shoot = %{
+  "type" => "simple_shoot",
+  "speed" => 0.8,
+  "duration_ms" => 2500,
+  "remove_on_collision" => false,
+  "projectile_offset" => 100,
+  "radius" => 150.0,
+  "damage" => 4
+}
+
+multi_piercing_shoot = %{
+  "type" => "multi_shoot",
+  "angle_between" => 120.0,
+  "amount" => 3,
+  "speed" => 0.8,
+  "duration_ms" => 1500,
+  "remove_on_collision" => false,
+  "projectile_offset" => 100,
+  "damage" => 5,
+  "radius" => 150.0,
+  "on_explode_mechanics" => [
+    %{
+      "name" => "tornado",
+      "type" => "spawn_pool",
+      "activation_delay" => 250,
+      "duration_ms" => 4000,
+      "radius" => 350.0,
+      "range" => 0.0,
+      "shape" => "circle",
+      "vertices" => [],
+      "effect" => singularity_effect
+    }
+  ]
 }
 
 quickslash_1 = %{
@@ -992,6 +1027,55 @@ skills = [
     "mechanics" => [
       putrid_elixir_bomb
     ]
+  },
+  %{
+    "name" => "uren_basic",
+    "type" => "basic",
+    "cooldown_mechanism" => "stamina",
+    "execution_duration_ms" => 450,
+    "activation_delay_ms" => 150,
+    "is_passive" => false,
+    "autoaim" => true,
+    "max_autoaim_range" => 1500,
+    "stamina_cost" => 1,
+    "can_pick_destination" => false,
+    "block_movement" => true,
+    "mechanics" => [simple_piercing_shoot],
+    "version_id" => version.id
+  },
+  %{
+    "name" => "uren_ultimate",
+    "type" => "ultimate",
+    "cooldown_mechanism" => "time",
+    "cooldown_ms" => 10000,
+    "execution_duration_ms" => 1000,
+    "activation_delay_ms" => 0,
+    "is_passive" => false,
+    "autoaim" => true,
+    "max_autoaim_range" => 1200,
+    "can_pick_destination" => false,
+    "block_movement" => true,
+    "mechanics" => [multi_piercing_shoot]
+  },
+  %{
+    "name" => "uren_dash",
+    "type" => "dash",
+    "cooldown_mechanism" => "time",
+    "cooldown_ms" => 4000,
+    "execution_duration_ms" => 250,
+    "activation_delay_ms" => 0,
+    "is_passive" => false,
+    "autoaim" => false,
+    "max_autoaim_range" => 0,
+    "can_pick_destination" => false,
+    "block_movement" => true,
+    "mechanics" => [
+      %{
+        "type" => "dash",
+        "speed" => 4,
+        "duration_ms" => 250
+      }
+    ]
   }
 ]
 
@@ -1161,6 +1245,23 @@ shinko_params = %{
   version_id: version.id
 }
 
+uren_params = %{
+  name: "uren",
+  active: true,
+  base_speed: 0.68,
+  base_size: 100.0,
+  base_health: 400,
+  base_stamina: 3,
+  stamina_interval: 2000,
+  max_inventory_size: 1,
+  natural_healing_interval: 1000,
+  natural_healing_damage_interval: 3500,
+  basic_skill_id: skills["uren_basic"],
+  ultimate_skill_id: skills["uren_ultimate"],
+  dash_skill_id: skills["uren_dash"],
+  version_id: version.id
+}
+
 # Insert characters
 [
   muflus_params,
@@ -1169,7 +1270,8 @@ shinko_params = %{
   valtimer_params,
   kenzu_params,
   otix_params,
-  shinko_params
+  shinko_params,
+  uren_params
 ]
 |> Enum.each(fn char_params ->
   Map.put(char_params, :game_id, curse_of_mirra_id)
