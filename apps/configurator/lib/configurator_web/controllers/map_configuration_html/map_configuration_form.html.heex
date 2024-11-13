@@ -6,9 +6,14 @@
   <.input
     field={f[:version_id]}
     type="select"
-    options={Enum.map(GameBackend.Configuration.list_versions(), fn version -> {version.name, version.id} end)}
+    options={
+      Enum.map(GameBackend.Configuration.list_versions(), fn version ->
+        {version.name, version.id}
+      end)
+    }
     label="Version"
-  /> <.input field={f[:name]} type="text" label="Name" />
+  />
+  <.input field={f[:name]} type="text" label="Name" />
   <.input field={f[:radius]} type="number" label="Radius" step="any" />
   <.input
     field={f[:initial_positions]}
@@ -16,7 +21,12 @@
     label="Initial positions"
     value={embed_to_string(f[:initial_positions].value)}
   />
-  <.input field={f[:square_wall]} type="textarea" label="Square Wall" value={json_encode(f[:square_wall].value)} />
+  <.input
+    field={f[:square_wall]}
+    type="textarea"
+    label="Square Wall"
+    value={embed_to_string(f[:square_wall].value) |> Jason.encode!() |> Jason.Formatter.pretty_print()}
+  />
   <.input field={f[:obstacles]} type="textarea" label="Obstacles" value={embed_to_string(f[:obstacles].value)} />
   <.input field={f[:bushes]} type="textarea" label="Bushes" value={embed_to_string(f[:bushes].value)} />
   <.input field={f[:pools]} type="textarea" label="Pools" value={embed_to_string(f[:pools].value)} />

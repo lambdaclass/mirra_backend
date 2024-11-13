@@ -105,7 +105,9 @@
       <% else %>
         <.button type="button" phx-click={show_modal("square-wall-#{@map_configuration.id}")}>Show</.button>
         <.modal id={"square-wall-#{@map_configuration.id}"}>
-          <p class="whitespace-pre"><%= json_encode(@map_configuration.square_wall) %></p>
+          <p class="whitespace-pre">
+            <%= embed_to_string(@map_configuration.square_wall) |> Jason.encode!() |> Jason.Formatter.pretty_print() %>
+          </p>
         </.modal>
       <% end %>
     </dd>
