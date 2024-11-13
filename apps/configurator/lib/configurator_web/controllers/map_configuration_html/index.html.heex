@@ -60,6 +60,16 @@
       </.modal>
     <% end %>
   </:col>
+  <:col :let={map_configuration} label="Square Wall">
+    <%= if is_nil(map_configuration.square_wall) do %>
+      <p>N/A</p>
+    <% else %>
+      <.button type="button" phx-click={show_modal("square-wall-#{map_configuration.id}")}>Show</.button>
+      <.modal id={"square-wall-#{map_configuration.id}"}>
+        <p class="whitespace-pre"><%= json_encode(map_configuration.square_wall) %></p>
+      </.modal>
+    <% end %>
+  </:col>
   <:action :let={map_configuration}>
     <.link navigate={~p"/map_configurations/#{map_configuration}"}>View</.link>
   </:action>
