@@ -15,8 +15,7 @@ defmodule ConfiguratorWeb.MapConfigurationHTML do
     embeds
     |> Enum.map(&embed_to_string/1)
     |> Enum.reject(&(&1 == nil))
-    |> Jason.encode!()
-    |> Jason.Formatter.pretty_print()
+    |> json_encode
   end
 
   def embed_to_string(nil), do: nil
@@ -33,5 +32,11 @@ defmodule ConfiguratorWeb.MapConfigurationHTML do
 
   def embed_to_string(struct) when is_map(struct) do
     struct
+  end
+
+  def json_encode(value) do
+    value
+    |> Jason.encode!()
+    |> Jason.Formatter.pretty_print()
   end
 end
