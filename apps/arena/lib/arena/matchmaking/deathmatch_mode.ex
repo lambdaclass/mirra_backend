@@ -6,6 +6,7 @@ defmodule Arena.Matchmaking.DeathmatchMode do
   use GenServer
 
   # 3 Mins
+  # TODO: add this to the configurator https://github.com/lambdaclass/mirra_backend/issues/985
   @match_duration 180_000
   @respawn_time 5000
 

@@ -334,7 +334,7 @@ defmodule Arena.GameUpdater do
       end)
       |> Enum.sort_by(fn {_player_id, _player, kills} -> kills end, :desc)
 
-    {winner_id, winner, _kills} = Enum.at(players, 1)
+    {winner_id, winner, _kills} = Enum.at(players, 0)
 
     state =
       state
@@ -1912,17 +1912,11 @@ defmodule Arena.GameUpdater do
   end
 
   defp add_players_to_respawn_queue(game_state, %{game: %{game_mode: :DEATHMATCH}} = game_config) do
-    death_players =
-      game_state.players
-      |> Enum.filter(fn {_player_id, player} ->
-        not Player.alive?(player)
-      end)
-
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
     respawn_queue =
-      Enum.reduce(death_players, game_state.respawn_queue, fn {player_id, _player}, respawn_queue ->
-        if Map.has_key?(respawn_queue, player_id) do
+      Enum.reduce(game_state.players, game_state.respawn_queue, fn {player_id, player}, respawn_queue ->
+        if Map.has_key?(respawn_queue, player_id) || Player.alive?(player) do
           respawn_queue
         else
           Map.put(respawn_queue, player_id, now + game_config.game.respawn_time)
