@@ -97,6 +97,19 @@
       <% end %>
     </dd>
   </div>
+  <div class="flex gap-5 py-4 border-b-2 items-center">
+    <dt>Square Wall</dt>
+    <dd>
+      <%= if is_nil(@map_configuration.square_wall) do %>
+        <p>N/A</p>
+      <% else %>
+        <.button type="button" phx-click={show_modal("square-wall-#{@map_configuration.id}")}>Show</.button>
+        <.modal id={"square-wall-#{@map_configuration.id}"}>
+          <p class="whitespace-pre"><%= json_encode(@map_configuration.square_wall) %></p>
+        </.modal>
+      <% end %>
+    </dd>
+  </div>
 </div>
 
 <.back navigate={~p"/map_configurations"}>Back to Map Configurations</.back>
