@@ -832,7 +832,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:square_wall, config.map.square_wall)
       |> Map.put(:zone, %{
         radius: config.map.radius,
-        should_start?: if(config.game.game_mode == :deathmatch, do: false, else: config.game.zone_enabled),
+        should_start?: if(config.game.game_mode == :DEATHMATCH, do: false, else: config.game.zone_enabled),
         started: false,
         enabled: false,
         shrinking: false,
