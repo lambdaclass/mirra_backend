@@ -17,7 +17,12 @@ defmodule Arena.Matchmaking.QuickGameMode do
     "Bob",
     "El javo",
     "Alberso",
-    "Thomas"
+    "Thomas",
+    "Timmy",
+    "Pablito",
+    "Nicolino",
+    "Cangrejo",
+    "Mansito"
   ]
 
   # API
