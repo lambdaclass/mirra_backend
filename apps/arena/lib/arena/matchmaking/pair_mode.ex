@@ -20,7 +20,11 @@ defmodule Arena.Matchmaking.PairMode do
     "El javo",
     "Alberso",
     "Thomas",
-    "Timmy"
+    "Timmy",
+    "Pablito",
+    "Nicolino",
+    "Cangrejo",
+    "Mansito"
   ]
 
   # API

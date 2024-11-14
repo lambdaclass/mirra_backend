@@ -20,7 +20,11 @@ defmodule Arena.Matchmaking.GameLauncher do
     "El javo",
     "Alberso",
     "Thomas",
-    "Timmy"
+    "Timmy",
+    "Pablito",
+    "Nicolino",
+    "Cangrejo",
+    "Mansito"
   ]
 
   # API
