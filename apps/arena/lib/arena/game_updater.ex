@@ -794,7 +794,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
       |> Map.put(:square_wall, config.map.square_wall)
       |> Map.put(:zone, %{
-        radius: config.map.radius,
+        radius: config.map.radius - 5000,
         should_start?: config.game.zone_enabled,
         started: false,
         enabled: false,
