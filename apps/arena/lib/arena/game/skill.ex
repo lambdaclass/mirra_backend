@@ -288,6 +288,37 @@ defmodule Arena.Game.Skill do
     put_in(game_state, [:players, entity.id], entity)
   end
 
+  def do_mechanic(game_state, %{category: :projectile} = entity, %{type: "spawn_pool"} = pool_params, skill_params) do
+    last_id = game_state.last_id + 1
+
+    skill_direction = maybe_multiply_by_range(skill_params.skill_direction, skill_params.auto_aim?, pool_params.range)
+
+    target_position = %{
+      x: entity.position.x + skill_direction.x,
+      y: entity.position.y + skill_direction.y
+    }
+
+    Process.send_after(self(), {:activate_pool, last_id}, pool_params.activation_delay)
+
+    pool_params =
+      Map.merge(
+        %{
+          id: last_id,
+          position: target_position,
+          owner_id: entity.aditional_info.owner_id,
+          skill_key: entity.aditional_info.skill_key,
+          status: :WAITING
+        },
+        pool_params
+      )
+
+    pool =
+      Entities.new_pool(pool_params)
+
+    put_in(game_state, [:pools, last_id], pool)
+    |> put_in([:last_id], last_id)
+  end
+
   def do_mechanic(game_state, player, %{type: "spawn_pool"} = pool_params, skill_params) do
     last_id = game_state.last_id + 1
 
