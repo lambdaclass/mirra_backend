@@ -13,20 +13,6 @@ defmodule Arena.Matchmaking.DeathmatchMode do
   # Time to wait to start game with any amount of clients
   @start_timeout_ms 4_000
 
-  @bot_names [
-    "TheBlackSwordman",
-    "SlashJava",
-    "SteelBallRun",
-    "Jeff",
-    "Messi",
-    "Stone Ocean",
-    "Jeepers Creepers",
-    "Bob",
-    "El javo",
-    "Alberso",
-    "Thomas"
-  ]
-
   # API
   def start_link(_) do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
@@ -116,7 +102,7 @@ defmodule Arena.Matchmaking.DeathmatchMode do
     Enum.map(1..missing_clients//1, fn i ->
       client_id = UUID.generate()
 
-      {client_id, Enum.random(characters).name, Enum.at(@bot_names, i), nil}
+      {client_id, Enum.random(characters).name, Enum.at(Arena.Utils.bot_names(), i), nil}
     end)
   end
 

@@ -4,6 +4,26 @@ defmodule Arena.Utils do
   It contains utility functions like math functions.
   """
 
+  # The available names for bots to enter a match, we should change this in the future
+  @bot_names [
+    "TheBlackSwordman",
+    "SlashJava",
+    "SteelBallRun",
+    "Jeff",
+    "Messi",
+    "Stone Ocean",
+    "Jeepers Creepers",
+    "Bob",
+    "El javo",
+    "Alberso",
+    "Thomas",
+    "Timmy",
+    "Pablito",
+    "Nicolino",
+    "Cangrejo",
+    "Mansito"
+  ]
+
   def normalize(%{x: 0, y: 0}) do
     %{x: 0, y: 0}
   end
@@ -28,6 +48,10 @@ defmodule Arena.Utils do
     protocol = get_correct_protocol(bot_manager_host)
 
     "#{protocol}#{bot_manager_host}/join/#{server_url}/#{game_id}/#{bot_client}"
+  end
+
+  def bot_names() do
+    @bot_names
   end
 
   defp get_correct_protocol("localhost" <> _host), do: "http://"
