@@ -58,7 +58,6 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
     def changeset(square_wall, attrs) do
       square_wall
       |> cast(attrs, [:right, :left, :top, :bottom])
-      |> validate_required([:right, :left, :top, :bottom])
     end
   end
 

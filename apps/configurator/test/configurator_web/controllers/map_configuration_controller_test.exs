@@ -13,7 +13,8 @@ defmodule ConfiguratorWeb.MapConfigurationControllerTest do
     bushes: "",
     pools: "",
     crates: "",
-    active: true
+    active: true,
+    square_wall: ""
   }
   @update_attrs %{
     name: "another_map",
@@ -23,7 +24,8 @@ defmodule ConfiguratorWeb.MapConfigurationControllerTest do
     bushes: "",
     pools: "",
     crates: "",
-    active: false
+    active: false,
+    square_wall: nil
   }
   @invalid_attrs %{
     name: nil,
@@ -33,7 +35,8 @@ defmodule ConfiguratorWeb.MapConfigurationControllerTest do
     bushes: nil,
     pools: nil,
     crates: nil,
-    active: nil
+    active: nil,
+    square_wall: ""
   }
 
   describe "index" do

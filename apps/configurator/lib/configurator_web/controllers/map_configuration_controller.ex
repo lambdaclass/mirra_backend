@@ -163,6 +163,7 @@ defmodule ConfiguratorWeb.MapConfigurationController do
     |> Map.update("bushes", "", &parse_json/1)
     |> Map.update("pools", "", &parse_json/1)
     |> Map.update("crates", "", &parse_json/1)
+    |> Map.update("square_wall", "", &parse_json/1)
   end
 
   defp parse_json(""), do: []

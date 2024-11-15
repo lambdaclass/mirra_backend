@@ -831,7 +831,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
       |> Map.put(:square_wall, config.map.square_wall)
       |> Map.put(:zone, %{
-        radius: config.map.radius,
+        radius: config.map.radius - 5000,
         should_start?: if(config.game.game_mode == :DEATHMATCH, do: false, else: config.game.zone_enabled),
         started: false,
         enabled: false,
@@ -1305,7 +1305,7 @@ defmodule Arena.GameUpdater do
           game_state,
           projectile,
           projectile.aditional_info.on_explode_mechanics,
-          %{skill_direction: projectile.direction}
+          %{skill_direction: projectile.direction, auto_aim?: false}
         )
       else
         game_state
