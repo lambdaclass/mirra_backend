@@ -587,6 +587,8 @@ defmodule ArenaLoadTest.Serialization.Player do
     type: :uint32,
     json_name: "currentBasicAnimation"
   )
+
+  field(:team, 19, proto3_optional: true, type: :uint32)
 end
 
 defmodule ArenaLoadTest.Serialization.Effect do

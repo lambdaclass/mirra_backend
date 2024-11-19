@@ -539,6 +539,8 @@ defmodule GameClient.Protobuf.Player do
     type: :uint32,
     json_name: "currentBasicAnimation"
   )
+
+  field(:team, 19, proto3_optional: true, type: :uint32)
 end
 
 defmodule GameClient.Protobuf.Effect do

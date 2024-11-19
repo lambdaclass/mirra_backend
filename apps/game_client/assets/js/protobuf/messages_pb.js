@@ -6973,7 +6973,8 @@ proto.Player.toObject = function(includeInstance, msg) {
     forcedMovement: jspb.Message.getBooleanFieldWithDefault(msg, 15, false),
     bountyCompleted: jspb.Message.getBooleanFieldWithDefault(msg, 16, false),
     mana: jspb.Message.getFieldWithDefault(msg, 17, 0),
-    currentBasicAnimation: jspb.Message.getFieldWithDefault(msg, 18, 0)
+    currentBasicAnimation: jspb.Message.getFieldWithDefault(msg, 18, 0),
+    team: jspb.Message.getFieldWithDefault(msg, 19, 0)
   };
 
   if (includeInstance) {
@@ -7088,6 +7089,10 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
     case 18:
       var value = /** @type {number} */ (reader.readUint32());
       msg.setCurrentBasicAnimation(value);
+      break;
+    case 19:
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setTeam(value);
       break;
     default:
       reader.skipField();
@@ -7241,6 +7246,13 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeUint32(
       18,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 19));
+  if (f != null) {
+    writer.writeUint32(
+      19,
       f
     );
   }
@@ -7885,6 +7897,42 @@ proto.Player.prototype.clearCurrentBasicAnimation = function() {
  */
 proto.Player.prototype.hasCurrentBasicAnimation = function() {
   return jspb.Message.getField(this, 18) != null;
+};
+
+
+/**
+ * optional uint32 team = 19;
+ * @return {number}
+ */
+proto.Player.prototype.getTeam = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 19, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setTeam = function(value) {
+  return jspb.Message.setField(this, 19, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.clearTeam = function() {
+  return jspb.Message.setField(this, 19, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.Player.prototype.hasTeam = function() {
+  return jspb.Message.getField(this, 19) != null;
 };
 
 

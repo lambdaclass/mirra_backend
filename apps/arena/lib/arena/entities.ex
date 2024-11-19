@@ -395,7 +395,8 @@ defmodule Arena.Entities do
        forced_movement: get_in(entity, [:aditional_info, :forced_movement]),
        bounty_completed: get_in(entity, [:aditional_info, :bounty_completed]),
        mana: get_in(entity, [:aditional_info, :mana]),
-       current_basic_animation: get_in(entity, [:aditional_info, :current_basic_animation])
+       current_basic_animation: get_in(entity, [:aditional_info, :current_basic_animation]),
+       team: get_in(entity, [:aditional_info, :team])
      }}
   end
 
