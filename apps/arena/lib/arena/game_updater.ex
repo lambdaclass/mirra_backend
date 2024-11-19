@@ -334,7 +334,6 @@ defmodule Arena.GameUpdater do
       end)
       |> Enum.sort_by(fn {_player_id, _player, kills} -> kills end, :desc)
 
-
     {winner_id, winner, _kills} = Enum.at(players, 0)
 
     state =
