@@ -312,7 +312,7 @@ defmodule Arena.GameUpdater do
 
     send(self(), :natural_healing)
 
-    if state.game_config.game.game_mode != :deathmatch do
+    if state.game_config.game.game_mode != :DEATHMATCH do
       send(self(), {:end_game_check, Map.keys(state.game_state.players)})
     else
       Process.send_after(self(), :deathmatch_end_game_check, state.game_config.game.match_duration)
@@ -334,12 +334,18 @@ defmodule Arena.GameUpdater do
       end)
       |> Enum.sort_by(fn {_player_id, _player, kills} -> kills end, :desc)
 
+
     {winner_id, winner, _kills} = Enum.at(players, 0)
 
     state =
       state
       |> put_in([:game_state, :status], :ENDED)
-      |> update_in([:game_state], fn game_state -> put_player_position(game_state, winner_id) end)
+      |> update_in([:game_state], fn game_state ->
+        players
+        |> Enum.reduce(game_state, fn {player_id, _player, _kills}, game_state_acc ->
+          put_player_position(game_state_acc, player_id)
+        end)
+      end)
 
     PubSub.broadcast(Arena.PubSub, state.game_state.game_id, :end_game_state)
     broadcast_game_ended(winner, state.game_state)
