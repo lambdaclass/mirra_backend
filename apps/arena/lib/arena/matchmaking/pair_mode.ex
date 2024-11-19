@@ -46,16 +46,24 @@ defmodule Arena.Matchmaking.PairMode do
   def handle_call({:join, client_id, character_name, player_name}, {from_pid, _}, %{clients: clients} = state) do
     batch_start_at = maybe_make_batch_start_at(state.clients, state.batch_start_at)
 
+    client = %{
+      client_id: client_id,
+      character_name: character_name,
+      name: player_name,
+      from_pid: from_pid,
+      type: :human
+    }
+
     {:reply, :ok,
      %{
        state
        | batch_start_at: batch_start_at,
-         clients: clients ++ [{client_id, character_name, player_name, from_pid}]
+         clients: clients ++ [client]
      }}
   end
 
   def handle_call({:leave, client_id}, _, state) do
-    clients = Enum.reject(state.clients, fn {id, _, _, _} -> id == client_id end)
+    clients = Enum.reject(state.clients, fn %{client_id: id} -> id == client_id end)
     {:reply, :ok, %{state | clients: clients}}
   end
 
@@ -105,13 +113,13 @@ defmodule Arena.Matchmaking.PairMode do
     Enum.map(1..missing_clients//1, fn i ->
       client_id = UUID.generate()
 
-      {client_id, Enum.random(characters).name, Enum.at(@bot_names, i), nil}
+      %{client_id: client_id, character_name: Enum.random(characters).name, name: Enum.at(bot_names, i), type: :bot}
     end)
   end
 
   defp spawn_bot_for_player(bot_clients, game_id) do
-    Enum.each(bot_clients, fn {bot_client, _, _, _} ->
-      send(self(), {:spawn_bot_for_player, bot_client, game_id})
+    Enum.each(bot_clients, fn %{client_id: bot_client_id} ->
+      send(self(), {:spawn_bot_for_player, bot_client_id, game_id})
     end)
   end
 
@@ -125,10 +133,11 @@ defmodule Arena.Matchmaking.PairMode do
         []
       end
 
+    players = Utils.assign_teams_to_players(clients ++ bot_clients, :pair)
+
     {:ok, game_pid} =
       GenServer.start(Arena.GameUpdater, %{
-        clients: clients,
-        bot_clients: bot_clients,
+        players: players,
         game_params: game_params
       })
 
@@ -136,7 +145,7 @@ defmodule Arena.Matchmaking.PairMode do
 
     spawn_bot_for_player(bot_clients, game_id)
 
-    Enum.each(clients, fn {_client_id, _character_name, _player_name, from_pid} ->
+    Enum.each(clients, fn %{from_pid: from_pid} ->
       Process.send(from_pid, {:join_game, game_id}, [])
       Process.send(from_pid, :leave_waiting_game, [])
     end)
