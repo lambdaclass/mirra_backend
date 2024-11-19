@@ -6,7 +6,30 @@ defmodule Arena.Entities do
   alias Arena.Game.Player
   alias Arena.Game.Crate
 
-  def new_player(id, character_name, player_name, position, direction, config, now) do
+  @type new_player_params :: %{
+          id: integer(),
+          team: integer(),
+          player_name: String.t(),
+          position: %{x: float(), y: float()},
+          direction: %{x: float(), y: float()},
+          character_name: String.t(),
+          config: map(),
+          now: integer()
+        }
+
+  @spec new_player(new_player_params()) :: map()
+  def new_player(params) do
+    %{
+      id: id,
+      player_name: player_name,
+      position: position,
+      direction: direction,
+      character_name: character_name,
+      config: config,
+      now: now,
+      team: team
+    } = params
+
     character = Configuration.get_character_config(character_name, config)
 
     %{
@@ -21,6 +44,7 @@ defmodule Arena.Entities do
       direction: direction,
       is_moving: false,
       aditional_info: %{
+        team: team,
         health: character.base_health,
         base_health: character.base_health,
         max_health: character.base_health,
@@ -72,14 +96,26 @@ defmodule Arena.Entities do
     }
   end
 
-  def new_projectile(
-        id,
-        position,
-        direction,
-        owner_id,
-        skill_key,
-        config_params
-      ) do
+  @type new_projectile_params :: %{
+          id: integer(),
+          owner: map(),
+          position: %{x: float(), y: float()},
+          direction: %{x: float(), y: float()},
+          skill_key: String.t(),
+          config_params: map()
+        }
+
+  @spec new_projectile(new_projectile_params()) :: map()
+  def new_projectile(params) do
+    %{
+      id: id,
+      owner: owner,
+      position: position,
+      direction: direction,
+      skill_key: skill_key,
+      config_params: config_params
+    } = params
+
     %{
       id: id,
       category: :projectile,
@@ -94,7 +130,8 @@ defmodule Arena.Entities do
       aditional_info: %{
         skill_key: skill_key,
         damage: config_params.damage,
-        owner_id: owner_id,
+        owner_id: owner.id,
+        owner_team: owner.aditional_info.team,
         status: :ACTIVE,
         remove_on_collision: config_params.remove_on_collision,
         on_explode_mechanics: Map.get(config_params, :on_explode_mechanics),
@@ -178,7 +215,8 @@ defmodule Arena.Entities do
       is_moving: false,
       aditional_info: %{
         effect_to_apply: pool_params.effect,
-        owner_id: pool_params.owner_id,
+        owner_id: pool_params.owner.id,
+        owner_team: pool_params.owner.aditional_info.team,
         effects: [],
         stat_multiplier: 0,
         duration_ms: duration_ms,
