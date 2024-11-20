@@ -275,6 +275,7 @@ defmodule Arena.Entities do
         time_until_transition: nil
       }
     }
+    |> Arena.Game.Obstacle.handle_transition_init()
   end
 
   def new_bush(id, position, radius, shape, vertices \\ []) do

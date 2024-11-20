@@ -19,7 +19,7 @@ defmodule Arena.Game.Obstacle do
     Map.filter(obstacles, fn {_obstacle_id, obstacle} -> obstacle.aditional_info.collide_with_projectiles end)
   end
 
-  def handle_transition_init(obstacle) do
+  def handle_transition_init(%{aditional_info: %{type: "dynamic"}} = obstacle) do
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
     current_status_params =
@@ -33,6 +33,8 @@ defmodule Arena.Game.Obstacle do
       |> Map.put(:time_until_transition_start, now + current_status_params.time_until_transition_ms)
     end)
   end
+
+  def handle_transition_init(obstacle), do: obstacle
 
   def update_obstacle_transition_status(game_state, %{aditional_info: %{type: "dynamic"}} = obstacle) do
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
