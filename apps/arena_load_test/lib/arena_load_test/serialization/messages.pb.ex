@@ -162,6 +162,15 @@ defmodule ArenaLoadTest.Serialization.BountySelected do
   field(:bounty, 1, type: ArenaLoadTest.Serialization.BountyInfo)
 end
 
+defmodule ArenaLoadTest.Serialization.GameFinished.WinnersEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: ArenaLoadTest.Serialization.Entity)
+end
+
 defmodule ArenaLoadTest.Serialization.GameFinished.PlayersEntry do
   @moduledoc false
 
@@ -176,7 +185,11 @@ defmodule ArenaLoadTest.Serialization.GameFinished do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:winner, 1, type: ArenaLoadTest.Serialization.Entity)
+  field(:winners, 1,
+    repeated: true,
+    type: ArenaLoadTest.Serialization.GameFinished.WinnersEntry,
+    map: true
+  )
 
   field(:players, 2,
     repeated: true,
