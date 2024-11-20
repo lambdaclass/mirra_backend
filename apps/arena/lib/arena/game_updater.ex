@@ -329,14 +329,17 @@ defmodule Arena.GameUpdater do
           state.game_config.game.end_game_interval_ms
         )
 
-      {:ended, winner} ->
+      {:ended, winner_team} ->
+        winner_team_ids = Enum.map(winner_team, fn {id, _player} -> id end)
+        winner_team_number = Enum.random(winner_team) |> elem(1) |> get_in([:aditional_info, :team])
+
         state =
           put_in(state, [:game_state, :status], :ENDED)
-          |> update_in([:game_state], fn game_state -> put_player_position(game_state, winner.id) end)
+          |> update_in([:game_state], fn game_state -> put_player_position(game_state, winner_team_ids) end)
 
         PubSub.broadcast(Arena.PubSub, state.game_state.game_id, :end_game_state)
-        broadcast_game_ended(winner, state.game_state)
-        GameTracker.finish_tracking(self(), winner.id)
+        broadcast_game_ended(winner_team, state.game_state)
+        GameTracker.finish_tracking(self(), winner_team_number)
 
         ## The idea of having this waiting period is in case websocket processes keep
         ## sending messages, this way we give some time before making them crash
@@ -734,9 +737,9 @@ defmodule Arena.GameUpdater do
     PubSub.broadcast(Arena.PubSub, game_id, {:game_update, encoded_state})
   end
 
-  defp broadcast_game_ended(winner, state) do
+  defp broadcast_game_ended(winners, state) do
     game_state = %GameFinished{
-      winner: complete_entity(winner, :player),
+      winners: complete_entities(winners, :player),
       players: complete_entities(state.players, :player)
     }
 
@@ -1364,19 +1367,28 @@ defmodule Arena.GameUpdater do
       Map.values(players)
       |> Enum.filter(&Player.alive?/1)
 
-    cond do
-      Enum.count(players_alive) == 1 && Enum.count(players) > 1 ->
-        {:ended, hd(players_alive)}
+    teams_alive = Enum.map(players_alive, fn player -> player.aditional_info.team end)
 
-      Enum.empty?(players_alive) ->
+    cond do
+      Enum.empty?(teams_alive) ->
         ## TODO: We probably should have a better tiebraker (e.g. most kills, less deaths, etc),
         ##    but for now a random between the ones that were alive last is enough
-        player = Map.get(players, Enum.random(last_players_ids))
-        {:ended, player}
+        random_team = Map.get(players, Enum.random(last_players_ids)) |> list_same_team_players(players)
+        {:ended, random_team}
+
+      Enum.uniq(teams_alive) |> Enum.count() == 1 ->
+        random_alive_player = Enum.random(players_alive)
+        {:ended, list_same_team_players(random_alive_player, players)}
 
       true ->
         {:ongoing, Enum.map(players_alive, & &1.id)}
     end
+  end
+
+  defp list_same_team_players(player, players) do
+    Enum.filter(players, fn {_id, current_player} ->
+      current_player.aditional_info.team == player.aditional_info.team
+    end)
   end
 
   defp maybe_receive_zone_damage(player, elapse_time, zone_damage_interval, zone_damage)
@@ -1780,6 +1792,12 @@ defmodule Arena.GameUpdater do
   defp get_entity_path(%{category: :obstacle}), do: :obstacles
   defp get_entity_path(%{category: :trap}), do: :traps
   defp get_entity_path(%{category: :crate}), do: :crates
+
+  defp put_player_position(game_state, player_ids) when is_list(player_ids) do
+    Enum.reduce(player_ids, game_state, fn player_id, game_state_acc ->
+      put_player_position(game_state_acc, player_id)
+    end)
+  end
 
   defp put_player_position(%{positions: positions} = game_state, player_id) do
     next_position = Application.get_env(:arena, :players_needed_in_match) - Enum.count(positions)
