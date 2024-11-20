@@ -531,6 +531,30 @@ defmodule Arena.Entities do
   def alive?(%{category: :crate} = entity), do: Crate.alive?(entity)
   def alive?(%{category: :pool} = _entity), do: true
 
+  def filter_damageable(source, targets) do
+    Map.filter(targets, fn {_, target} -> can_damage?(source, target) end)
+  end
+
+  def filter_targetable(source, targets) do
+    Map.filter(targets, fn {_, target} -> can_damage?(source, target) and visible?(source, target) end)
+  end
+
+  defp visible?(%{category: :player} = source, target), do: Player.visible?(source, target)
+  defp visible?(%{category: _any} = _source, _target), do: true
+
+  def can_damage?(source, target) do
+    alive?(target) and not same_team?(source, target)
+  end
+
+  def same_team?(source, target) do
+    get_team(source) == get_team(target)
+  end
+
+  defp get_team(%{category: :player} = entity), do: entity.aditional_info.team
+  defp get_team(%{category: :projectile} = entity), do: entity.aditional_info.owner_team
+  defp get_team(%{category: :pool} = entity), do: entity.aditional_info.owner_team
+  defp get_team(%{category: category} = _entity), do: category
+
   def update_entity(%{category: :player} = entity, game_state) do
     put_in(game_state, [:players, entity.id], entity)
   end

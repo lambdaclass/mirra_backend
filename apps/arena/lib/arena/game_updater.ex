@@ -1498,7 +1498,9 @@ defmodule Arena.GameUpdater do
   defp decide_collided_entity(projectile, [entity_id | other_entities], external_wall_id, players, crates) do
     cond do
       Map.get(players, entity_id) ->
-        if Player.alive?(Map.get(players, entity_id)) do
+        target_player = Map.get(players, entity_id)
+
+        if Entities.can_damage?(projectile, target_player) do
           entity_id
         else
           decide_collided_entity(projectile, other_entities, external_wall_id, players, crates)
@@ -1588,9 +1590,11 @@ defmodule Arena.GameUpdater do
   end
 
   defp handle_pools(%{pools: pools, crates: crates, players: players} = game_state) do
-    entities = Map.merge(crates, players)
+    target_entities = Map.merge(crates, players)
 
     Enum.reduce(pools, game_state, fn {_pool_id, pool}, game_state ->
+      entities = Entities.filter_damageable(pool, target_entities)
+
       Enum.reduce(entities, game_state, fn {entity_id, entity}, acc ->
         if entity_id in pool.collides_with and pool.aditional_info.status == :READY do
           add_pool_effects(acc, entity, pool)
@@ -1672,7 +1676,7 @@ defmodule Arena.GameUpdater do
 
       visible_players =
         Map.delete(players, player_id)
-        |> Enum.reduce([], fn {candicandidate_player_id, candidate_player}, acc ->
+        |> Enum.reduce([], fn {candidate_player_id, candidate_player}, acc ->
           candidate_bush_collisions =
             Enum.filter(candidate_player.collides_with, fn collided_id ->
               Map.has_key?(bushes, collided_id)
@@ -1694,9 +1698,12 @@ defmodule Arena.GameUpdater do
 
           player_is_executing_skill? = Player.player_executing_skill?(candidate_player)
 
-          if Enum.empty?(candidate_bush_collisions) or (players_in_same_bush? and players_close_enough?) or
+          # TODO: This needs a refactor.
+          # There are a lot of unnecessary calculations above when players are in the same team.
+          if Entities.same_team?(player, candidate_player) or Enum.empty?(candidate_bush_collisions) or
+               (players_in_same_bush? and players_close_enough?) or
                enough_time_since_last_skill? or player_has_item_effect? or player_is_executing_skill? do
-            [candicandidate_player_id | acc]
+            [candidate_player_id | acc]
           else
             acc
           end

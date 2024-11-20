@@ -3,7 +3,6 @@ defmodule Arena.Game.Player do
   Module for interacting with Player entity
   """
 
-  alias Arena.Game.Crate
   alias Arena.GameUpdater
   alias Arena.GameTracker
   alias Arena.Utils
@@ -90,8 +89,8 @@ defmodule Arena.Game.Player do
     Map.filter(players, fn {_, player} -> alive?(player) end)
   end
 
-  def targetable_players(current_player, players) do
-    Map.filter(players, fn {_, player} -> alive?(player) and visible?(current_player, player) end)
+  def same_team?(source, target) do
+    target.aditional_info.team != source.aditional_info.team
   end
 
   def stamina_full?(player) do
@@ -225,10 +224,10 @@ defmodule Arena.Game.Player do
 
         {auto_aim?, skill_direction} =
           skill_params.target
-          |> Skill.maybe_auto_aim(skill, player, targetable_players(player, game_state.players))
+          |> Skill.maybe_auto_aim(skill, player, game_state.players)
           |> case do
             {false, _} ->
-              Skill.maybe_auto_aim(skill_params.target, skill, player, Crate.alive_crates(game_state.crates))
+              Skill.maybe_auto_aim(skill_params.target, skill, player, game_state.crates)
 
             auto_aim ->
               auto_aim
@@ -376,8 +375,8 @@ defmodule Arena.Game.Player do
     end
   end
 
-  def visible?(current_player, candidate_player) do
-    candidate_player.id in current_player.aditional_info.visible_players
+  def visible?(source_player, target_player) do
+    target_player.id in source_player.aditional_info.visible_players
   end
 
   def remove_expired_effects(player) do

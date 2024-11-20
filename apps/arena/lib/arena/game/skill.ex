@@ -131,18 +131,19 @@ defmodule Arena.Game.Skill do
     last_id = game_state.last_id + 1
 
     projectile =
-      Entities.new_projectile(
-        last_id,
-        get_position_with_offset(
-          entity_player_owner.position,
-          entity_player_owner.direction,
-          repeated_shot.projectile_offset
-        ),
-        randomize_direction_in_angle(entity.direction, repeated_shot.angle),
-        entity_player_owner.id,
-        skill_params.skill_key,
-        repeated_shot
-      )
+      Entities.new_projectile(%{
+        id: last_id,
+        owner: entity_player_owner,
+        position:
+          get_position_with_offset(
+            entity_player_owner.position,
+            entity_player_owner.direction,
+            repeated_shot.projectile_offset
+          ),
+        direction: randomize_direction_in_angle(entity.direction, repeated_shot.angle),
+        skill_key: skill_params.skill_key,
+        config_params: repeated_shot
+      })
 
     Process.send_after(self(), {:remove_projectile, projectile.id}, repeated_shot.duration_ms)
 
@@ -164,18 +165,19 @@ defmodule Arena.Game.Skill do
       last_id = game_state_acc.last_id + 1
 
       projectile =
-        Entities.new_projectile(
-          last_id,
-          get_position_with_offset(
-            entity_player_owner.position,
-            skill_direction,
-            multishot.projectile_offset
-          ),
-          direction,
-          entity_player_owner.id,
-          skill_params.skill_key,
-          multishot
-        )
+        Entities.new_projectile(%{
+          id: last_id,
+          owner: entity_player_owner,
+          position:
+            get_position_with_offset(
+              entity_player_owner.position,
+              skill_direction,
+              multishot.projectile_offset
+            ),
+          direction: direction,
+          skill_key: skill_params.skill_key,
+          config_params: multishot
+        })
 
       Process.send_after(self(), {:remove_projectile, projectile.id}, multishot.duration_ms)
 
@@ -210,18 +212,19 @@ defmodule Arena.Game.Skill do
     duration_ms = Physics.calculate_duration(entity.position, target_position, simple_shoot.speed, simple_shoot.range)
 
     projectile =
-      Entities.new_projectile(
-        last_id,
-        get_position_with_offset(
-          entity_player_owner.position,
-          direction,
-          simple_shoot.projectile_offset
-        ),
-        direction,
-        entity_player_owner.id,
-        skill_params.skill_key,
-        simple_shoot
-      )
+      Entities.new_projectile(%{
+        id: last_id,
+        owner: entity_player_owner,
+        position:
+          get_position_with_offset(
+            entity_player_owner.position,
+            direction,
+            simple_shoot.projectile_offset
+          ),
+        direction: direction,
+        skill_key: skill_params.skill_key,
+        config_params: simple_shoot
+      })
 
     Process.send_after(self(), {:remove_projectile, projectile.id}, duration_ms)
 
@@ -240,18 +243,19 @@ defmodule Arena.Game.Skill do
     entity_player_owner = get_entity_player_owner(game_state, entity)
 
     projectile =
-      Entities.new_projectile(
-        last_id,
-        get_position_with_offset(
-          entity_player_owner.position,
-          skill_direction,
-          simple_shoot.projectile_offset
-        ),
-        skill_direction,
-        entity_player_owner.id,
-        skill_params.skill_key,
-        simple_shoot
-      )
+      Entities.new_projectile(%{
+        id: last_id,
+        owner: entity_player_owner,
+        position:
+          get_position_with_offset(
+            entity_player_owner.position,
+            skill_direction,
+            simple_shoot.projectile_offset
+          ),
+        direction: skill_direction,
+        skill_key: skill_params.skill_key,
+        config_params: simple_shoot
+      })
 
     Process.send_after(self(), {:remove_projectile, projectile.id}, simple_shoot.duration_ms)
 
@@ -290,6 +294,7 @@ defmodule Arena.Game.Skill do
 
   def do_mechanic(game_state, %{category: :projectile} = entity, %{type: "spawn_pool"} = pool_params, skill_params) do
     last_id = game_state.last_id + 1
+    entity_player_owner = get_entity_player_owner(game_state, entity)
 
     skill_direction = maybe_multiply_by_range(skill_params.skill_direction, skill_params.auto_aim?, pool_params.range)
 
@@ -304,8 +309,8 @@ defmodule Arena.Game.Skill do
       Map.merge(
         %{
           id: last_id,
+          owner: entity_player_owner,
           position: target_position,
-          owner_id: entity.aditional_info.owner_id,
           skill_key: entity.aditional_info.skill_key,
           status: :WAITING
         },
@@ -321,6 +326,7 @@ defmodule Arena.Game.Skill do
 
   def do_mechanic(game_state, player, %{type: "spawn_pool"} = pool_params, skill_params) do
     last_id = game_state.last_id + 1
+    entity_player_owner = get_entity_player_owner(game_state, player)
 
     skill_direction = maybe_multiply_by_range(skill_params.skill_direction, skill_params.auto_aim?, pool_params.range)
 
@@ -335,8 +341,8 @@ defmodule Arena.Game.Skill do
       Map.merge(
         %{
           id: last_id,
+          owner: entity_player_owner,
           position: target_position,
-          owner_id: player.id,
           skill_key: skill_params.skill_key,
           status: :WAITING
         },
@@ -411,8 +417,10 @@ defmodule Arena.Game.Skill do
   def maybe_auto_aim(%{x: x, y: y}, skill, player, entities) when x == 0.0 and y == 0.0 do
     case skill.autoaim do
       true ->
+        targetable_entities = Entities.filter_targetable(player, entities)
+
         {use_autoaim?, nearest_entity_position_in_range} =
-          Physics.nearest_entity_position_in_range(player, entities, skill.max_autoaim_range)
+          Physics.nearest_entity_position_in_range(player, targetable_entities, skill.max_autoaim_range)
 
         {use_autoaim?, nearest_entity_position_in_range |> maybe_normalize(not skill.can_pick_destination)}
 
@@ -447,9 +455,9 @@ defmodule Arena.Game.Skill do
        }),
        do: get_in(game_state, [:players, owner_id])
 
-  # Default to zone id
+  # Default to zone
   defp get_entity_player_owner(_game_state, _),
-    do: %{id: 9999}
+    do: %{id: 9999, aditional_info: %{team: :zone}}
 
   defp maybe_move_player(game_state, %{category: :player} = player, move_by)
        when not is_nil(move_by) do
@@ -475,11 +483,8 @@ defmodule Arena.Game.Skill do
 
   defp apply_damage_and_effects_to_entities(game_state, player, skill_entity, damage, effect \\ nil) do
     # Players
-    alive_players =
-      Player.alive_players(game_state.players)
-      |> Map.filter(fn {_, alive_player} -> alive_player.id != player.id end)
-
-    collided_players = Physics.check_collisions(skill_entity, alive_players)
+    damageable_players = Entities.filter_damageable(player, game_state.players)
+    collided_players = Physics.check_collisions(skill_entity, damageable_players)
 
     # Apply effects to players
     game_state =
