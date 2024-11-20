@@ -5,21 +5,6 @@ defmodule Arena.Matchmaking.QuickGameMode do
 
   use GenServer
 
-  # The available names for bots to enter a match, we should change this in the future
-  @bot_names [
-    "TheBlackSwordman",
-    "SlashJava",
-    "SteelBallRun",
-    "Jeff",
-    "Messi",
-    "Stone Ocean",
-    "Jeepers Creepers",
-    "Bob",
-    "El javo",
-    "Alberso",
-    "Thomas"
-  ]
-
   # API
   def start_link(_) do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)

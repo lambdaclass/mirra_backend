@@ -5,23 +5,6 @@ defmodule Arena.Matchmaking.GameLauncher do
 
   use GenServer
 
-  # Time to wait to start game with any amount of clients
-  @start_timeout_ms 4_000
-
-  @bot_names [
-    "TheBlackSwordman",
-    "SlashJava",
-    "SteelBallRun",
-    "Jeff",
-    "Messi",
-    "Stone Ocean",
-    "Jeepers Creepers",
-    "Bob",
-    "El javo",
-    "Alberso",
-    "Thomas"
-  ]
-
   # API
   def start_link(_) do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
@@ -73,7 +56,7 @@ defmodule Arena.Matchmaking.GameLauncher do
     diff = System.monotonic_time(:millisecond) - state.batch_start_at
 
     if length(clients) >= Application.get_env(:arena, :players_needed_in_match) or
-         (diff >= @start_timeout_ms and length(clients) > 0) do
+         (diff >= Utils.start_timeout_ms() and length(clients) > 0) do
       send(self(), :start_game)
     end
 
@@ -116,10 +99,12 @@ defmodule Arena.Matchmaking.GameLauncher do
       |> Map.get(:characters)
       |> Enum.filter(fn character -> character.active end)
 
+    bot_names = Utils.list_bot_names(missing_clients)
+
     Enum.map(1..missing_clients//1, fn i ->
       client_id = UUID.generate()
 
-      %{client_id: client_id, character_name: Enum.random(characters).name, name: Enum.at(bot_names, i), type: :bot}
+      %{client_id: client_id, character_name: Enum.random(characters).name, name: Enum.at(bot_names, i - 1), type: :bot}
     end)
   end
 

@@ -4,6 +4,78 @@ defmodule Arena.Utils do
   It contains utility functions like math functions.
   """
 
+  @bot_prefixes [
+    "Astro",
+    "Blaze",
+    "Lunar",
+    "Nova",
+    "Pixel",
+    "Ember",
+    "Turbo",
+    "Echo",
+    "Frost",
+    "Zenith",
+    "Apex",
+    "Orbit",
+    "Cyber",
+    "Drift",
+    "Vivid",
+    "Solar",
+    "Nimbus",
+    "Quirk",
+    "Bolt",
+    "Hollow",
+    "AllRed",
+    "Rust",
+    "Metal",
+    "Golden",
+    "Reverse",
+    "Time",
+    "Chromian",
+    "Elegant",
+    "Jealous",
+    "Adorable",
+    "Dangerous",
+    "Charming",
+    "Royal"
+  ]
+  @bot_suffixes [
+    "Hopper",
+    "Runner",
+    "Flyer",
+    "Rover",
+    "Spark",
+    "Skull",
+    "Whisper",
+    "Seeker",
+    "Rider",
+    "Chaser",
+    "Strider",
+    "Hunter",
+    "Shadow",
+    "Glimmer",
+    "Wave",
+    "Glow",
+    "Wing",
+    "Dash",
+    "Fang",
+    "Shade",
+    "Elixir",
+    "Cavalier",
+    "Lord",
+    "Socks",
+    "Creator",
+    "Suit",
+    "Greed",
+    "Gun",
+    "Balloon",
+    "Lawyer",
+    "Elevator",
+    "Spider",
+    "Dream",
+    "WashingMachine"
+  ]
+
   def normalize(%{x: 0, y: 0}) do
     %{x: 0, y: 0}
   end
@@ -48,4 +120,20 @@ defmodule Arena.Utils do
   end
 
   def assign_teams_to_players(players, _not_implemented), do: players
+
+  def list_bot_names(amount) do
+    prefixes = Enum.take_random(@bot_prefixes, amount)
+    suffixes = Enum.take_random(@bot_suffixes, amount)
+
+    generate_names(prefixes, suffixes)
+  end
+
+  defp generate_names([], []), do: []
+
+  defp generate_names([prefix | prefixes], [suffix | suffixes]) do
+    [prefix <> suffix | generate_names(prefixes, suffixes)]
+  end
+
+  # Time to wait to start game with any amount of clients
+  def start_timeout_ms(), do: 4_000
 end
