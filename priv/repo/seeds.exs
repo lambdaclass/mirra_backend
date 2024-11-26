@@ -4025,316 +4025,6 @@ merliot_map_config = %{
       ]
     },
     %{
-      name: "Inner Square Bottom Left",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: -1423, y: -329},
-        %{x: -1331, y: -237},
-        %{x: -781, y: -779},
-        %{x: -834, y: -840}
-      ]
-    },
-    %{
-      name: "Inner Square Bottom Right",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: 418, y: -1340},
-        %{x: 314, y: -1256},
-        %{x: 904, y: -744},
-        %{x: 962, y: -796}
-      ]
-    },
-    %{
-      name: "Inner Square Top Right",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: 782, y: 878},
-        %{x: 846, y: 938},
-        %{x: 1411, y: 382},
-        %{x: 1291, y: 292}
-      ]
-    },
-    %{
-      name: "Inner Square Top Left",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: -757, y: 814},
-        %{x: -817, y: 882},
-        %{x: -269, y: 1434},
-        %{x: -179, y: 1353}
-      ]
-    },
-    %{
-      name: "External Square Left 1",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: -5189, y: 3405},
-        %{x: -5342, y: 3405},
-        %{x: -5399, y: 5178},
-        %{x: -5245, y: 5178}
-      ]
-    },
-    %{
-      name: "External Square Left 2",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: -5211, y: -2170},
-        %{x: -5403, y: -2191},
-        %{x: -5369, y: -891},
-        %{x: -5232, y: -891}
-      ]
-    },
-    %{
-      name: "External Square Left 3",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: -5416, y: -2598},
-        %{x: -5206, y: -2598},
-        %{x: -5245, y: -3276},
-        %{x: -5402, y: -3285}
-      ]
-    },
-    %{
-      name: "External Square Top 1",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: -3397, y: 5295},
-        %{x: -3397, y: 5443},
-        %{x: -2729, y: 5495},
-        %{x: -2719, y: 5285}
-      ]
-    },
-    %{
-      name: "External Square Top 2",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: -2312, y: 5295},
-        %{x: -2298, y: 5491},
-        %{x: -1024, y: 5510},
-        %{x: -1014, y: 5367}
-      ]
-    },
-    %{
-      name: "External Square Top 3",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: 3371, y: 5174},
-        %{x: 3376, y: 5314},
-        %{x: 5157, y: 5304},
-        %{x: 5157, y: 5159}
-      ]
-    },
-    %{
-      name: "External Square Right 1",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: 5201, y: 3296},
-        %{x: 5334, y: 3296},
-        %{x: 5372, y: 2661},
-        %{x: 5182, y: 2642}
-      ]
-    },
-    %{
-      name: "External Square Right 2",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: 5173, y: 2208},
-        %{x: 5365, y: 2201},
-        %{x: 5337, y: 928},
-        %{x: 5188, y: 928}
-      ]
-    },
-    %{
-      name: "External Square Right 3",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: 5149, y: -3411},
-        %{x: 5282, y: -3411},
-        %{x: 5262, y: -5172},
-        %{x: 5119, y: -5182}
-      ]
-    },
-    %{
-      name: "External Square Bottom 1",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: 2596, y: -5361},
-        %{x: 2591, y: -5181},
-        %{x: 3245, y: -5207},
-        %{x: 3245, y: -5341}
-      ]
-    },
-    %{
-      name: "External Square Bottom 2",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: 892, y: -5309},
-        %{x: 892, y: -5157},
-        %{x: 2156, y: -5178},
-        %{x: 2156, y: -5367}
-      ]
-    },
-    %{
-      name: "External Square Bottom 3",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: -5191, y: -5278},
-        %{x: -5191, y: -5135},
-        %{x: -3423, y: -5143},
-        %{x: -3423, y: -5274}
-      ]
-    },
-    %{
-      name: "Bottom Left Rock",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: -4746, y: -6453},
-        %{x: -4647, y: -6005},
-        %{x: -4189, y: -5744},
-        %{x: -3696, y: -5487},
-        %{x: -3340, y: -5690},
-        %{x: -3621, y: -6261},
-        %{x: -3720, y: -6530},
-        %{x: -4130, y: -6592}
-      ]
-    },
-    %{
       name: "Bottom Mid Rock",
       position: %{
         x: 0.0,
@@ -4366,9 +4056,9 @@ merliot_map_config = %{
       base_status: "",
       statuses_cycle: %{},
       vertices: [
-        %{x: 6530, y: -4611},
-        %{x: 5717, y: -3593},
-        %{x: 6721, y: -3586}
+        %{x: 5571, y: -3342},
+        %{x: 6721, y: -3586},
+        %{x: 6530, y: -4611}
       ]
     },
     %{
@@ -4402,11 +4092,11 @@ merliot_map_config = %{
       base_status: "",
       statuses_cycle: %{},
       vertices: [
-        %{x: 3841, y: 6589},
+        %{x: 3691, y: 6589},
         %{x: 4221, y: 6589},
         %{x: 4641, y: 6069},
         %{x: 3751, y: 5499},
-        %{x: 3621, y: 6089}
+        %{x: 3236, y: 5565}
       ]
     },
     %{
@@ -4444,10 +4134,8 @@ merliot_map_config = %{
       vertices: [
         %{x: -6458, y: 4619},
         %{x: -5866, y: 4027},
-        %{x: -5648, y: 3592},
-        %{x: -6057, y: 3427},
-        %{x: -6579, y: 3488},
-        %{x: -6596, y: 4036}
+        %{x: -5648, y: 3000},
+        %{x: -6596, y: 3000}
       ]
     },
     %{
@@ -4471,25 +4159,6 @@ merliot_map_config = %{
       ]
     },
     %{
-      name: "Left Rock and Tree",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: -3936, y: -945},
-        %{x: -3669, y: -1696},
-        %{x: -3877, y: -1854},
-        %{x: -4381, y: -1380},
-        %{x: -4421, y: -1064}
-      ]
-    },
-    %{
       name: "Bottom Rock and Tree",
       position: %{
         x: 0.0,
@@ -4509,126 +4178,52 @@ merliot_map_config = %{
       ]
     },
     %{
-      name: "Right Rock and Tree",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
+      name: "TopLeft - RockTreeBush - Rock",
       type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: 4381, y: 1029},
-        %{x: 3891, y: 849},
-        %{x: 3581, y: 1559},
-        %{x: 3931, y: 1789},
-        %{x: 4341, y: 1359}
-      ]
+      radius: 250,
+      shape: "circle",
+      position: %{x: -1283, y: 3909},
+      vertices: []
     },
     %{
-      name: "Top Rock and Tree",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
+      name: "TopLeft - RockTreeBush - Tree",
       type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: -1272, y: 4082},
-        %{x: -1122, y: 3652},
-        %{x: -1819, y: 3323},
-        %{x: -2051, y: 3507},
-        %{x: -1694, y: 3912}
-      ]
+      radius: 250,
+      shape: "circle",
+      position: %{x: -1679, y: 3690},
+      vertices: []
     },
     %{
-      name: "Bottom Left Trees",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
+      name: "MidBottomLeft - TreeBush - Trees",
       type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: -2066, y: -2729},
-        %{x: -1560, y: -2873},
-        %{x: -1141, y: -3229},
-        %{x: -1160, y: -3523},
-        %{x: -1610, y: -3661},
-        %{x: -1948, y: -3555},
-        %{x: -2142, y: -3086}
-      ]
+      radius: 550,
+      shape: "circle",
+      position: %{x: -1759, y: -3426},
+      vertices: []
     },
     %{
-      name: "Bottom Right Trees",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
+      name: "MidBottomRight - TreeBush - Trees",
       type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: 2906, y: -1665},
-        %{x: 3090, y: -1726},
-        %{x: 3379, y: -1591},
-        %{x: 3668, y: -1480},
-        %{x: 3668, y: -712},
-        %{x: 3336, y: -681},
-        %{x: 3040, y: -1081}
-      ]
+      radius: 500,
+      shape: "circle",
+      position: %{x: 3424, y: -1564},
+      vertices: []
     },
     %{
-      name: "Top Right Trees",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
+      name: "MidTopRight - TreeBush - Trees",
       type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: 994, y: 3303},
-        %{x: 1035, y: 3588},
-        %{x: 1781, y: 3646},
-        %{x: 2131, y: 3035},
-        %{x: 1965, y: 2802},
-        %{x: 1596, y: 2864},
-        %{x: 1291, y: 3107}
-      ]
+      radius: 500,
+      shape: "circle",
+      position: %{x: 1873, y: 3276},
+      vertices: []
     },
     %{
-      name: "Top Left Trees",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
+      name: "MidTopLeft - TreeBush - Trees",
       type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: -3064, y: 1962},
-        %{x: -2784, y: 1930},
-        %{x: -2728, y: 1339},
-        %{x: -2912, y: 788},
-        %{x: -3200, y: 709},
-        %{x: -3408, y: 1100},
-        %{x: -3464, y: 1580}
-      ]
+      radius: 400,
+      shape: "circle",
+      position: %{x: -3200, y: 1300},
+      vertices: []
     },
     %{
       name: "Left Top Water 1",
@@ -4644,10 +4239,8 @@ merliot_map_config = %{
       vertices: [
         %{x: -4360, y: 2759},
         %{x: -3871, y: 2734},
-        %{x: -3896, y: 2402},
-        %{x: -3896, y: 1995},
-        %{x: -4593, y: 2012},
-        %{x: -4444, y: 2410}
+        %{x: -3896, y: 1900},
+        %{x: -4900, y: 1800}
       ]
     },
     %{
@@ -4662,11 +4255,10 @@ merliot_map_config = %{
         y: 0.0
       },
       vertices: [
-        %{x: -4894, y: 1998},
-        %{x: -3216, y: 2003},
-        %{x: -3569, y: 1139},
-        %{x: -4555, y: 1139},
-        %{x: -4937, y: 1643}
+        %{x: -3871, y: 2734},
+        %{x: -3167, y: 3087},
+        %{x: -2743, y: 2204},
+        %{x: -3896, y: 1900}
       ]
     },
     %{
@@ -4681,11 +4273,10 @@ merliot_map_config = %{
         y: 0.0
       },
       vertices: [
-        %{x: -4541, y: 1134},
-        %{x: -3569, y: 1141},
-        %{x: -3526, y: 672},
-        %{x: -3900, y: 643},
-        %{x: -4345, y: 597}
+        %{x: -4900, y: 1800},
+        %{x: -3216, y: 2150},
+        %{x: -3569, y: 1139},
+        %{x: -4555, y: 1139}
       ]
     },
     %{
@@ -4700,10 +4291,10 @@ merliot_map_config = %{
         y: 0.0
       },
       vertices: [
-        %{x: -4345, y: 597},
-        %{x: -3900, y: 643},
-        %{x: -4058, y: 339},
-        %{x: -4255, y: 314}
+        %{x: -4555, y: 1139},
+        %{x: -3569, y: 1139},
+        %{x: -3500, y: 500},
+        %{x: -4345, y: 400}
       ]
     },
     %{
@@ -4718,8 +4309,8 @@ merliot_map_config = %{
         y: 0.0
       },
       vertices: [
-        %{x: -3117, y: -2805},
-        %{x: -2539, y: -2621},
+        %{x: -3117, y: -2705},
+        %{x: -2539, y: -2550},
         %{x: -1953, y: -3549},
         %{x: -2872, y: -3743}
       ]
@@ -4736,10 +4327,10 @@ merliot_map_config = %{
         y: 0.0
       },
       vertices: [
-        %{x: -2854, y: -3751},
+        %{x: -2872, y: -3743},
         %{x: -1953, y: -3549},
-        %{x: -1674, y: -4649},
-        %{x: -2944, y: -4636}
+        %{x: -1788, y: -4935},
+        %{x: -3029, y: -4477}
       ]
     },
     %{
@@ -4757,7 +4348,7 @@ merliot_map_config = %{
         %{x: -1953, y: -3549},
         %{x: -837, y: -3421},
         %{x: -532, y: -4091},
-        %{x: -1674, y: -4649}
+        %{x: -1788, y: -4935}
       ]
     },
     %{
@@ -4774,7 +4365,7 @@ merliot_map_config = %{
       vertices: [
         %{x: -6430, y: 3520},
         %{x: -5150, y: 3016},
-        %{x: -5365, y: 2132},
+        %{x: -5600, y: 2132},
         %{x: -6439, y: 2505}
       ]
     },
@@ -4790,10 +4381,10 @@ merliot_map_config = %{
         y: 0.0
       },
       vertices: [
-        %{x: 2254, y: 5881},
         %{x: 2496, y: 6558},
         %{x: 3691, y: 6546},
-        %{x: 3376, y: 5862}
+        %{x: 3236, y: 5565},
+        %{x: 2209, y: 6059}
       ]
     },
     %{
@@ -4808,12 +4399,10 @@ merliot_map_config = %{
         y: 0.0
       },
       vertices: [
-        %{x: -3340, y: -5690},
-        %{x: -3225, y: -5524},
-        %{x: -2132, y: -5561},
+        %{x: -3168, y: -5127},
+        %{x: -2062, y: -5648},
         %{x: -2530, y: -6395},
-        %{x: -3665, y: -6404},
-        %{x: -3621, y: -6261}
+        %{x: -3665, y: -6404}
       ]
     },
     %{
@@ -4828,10 +4417,10 @@ merliot_map_config = %{
         y: 0.0
       },
       vertices: [
-        %{x: 5717, y: -3593},
-        %{x: 5889, y: -2323},
+        %{x: 6046, y: -2263},
         %{x: 6579, y: -2499},
-        %{x: 6534, y: -3543}
+        %{x: 6534, y: -3543},
+        %{x: 5571, y: -3342}
       ]
     },
     %{
@@ -4871,24 +4460,6 @@ merliot_map_config = %{
       ]
     },
     %{
-      name: "Top Mid Water 1",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: -3200, y: 2970},
-        %{x: -1950, y: 3392},
-        %{x: -1689, y: 2797},
-        %{x: -2855, y: 2262}
-      ]
-    },
-    %{
       name: "Top Mid Water 2",
       radius: 0.0,
       shape: "polygon",
@@ -4900,10 +4471,10 @@ merliot_map_config = %{
         y: 0.0
       },
       vertices: [
-        %{x: -1950, y: 3392},
-        %{x: -181, y: 3983},
-        %{x: 140, y: 3279},
-        %{x: -1689, y: 2797}
+        %{x: -2438, y: 3333},
+        %{x: -50, y: 4148},
+        %{x: 250, y: 3280},
+        %{x: -2076, y: 2509}
       ]
     },
     %{
@@ -4990,10 +4561,27 @@ merliot_map_config = %{
         y: 0.0
       },
       vertices: [
-        %{x: 2965, y: -3062},
         %{x: 2653, y: -2438},
         %{x: 3633, y: -1502},
-        %{x: 4596, y: -2699}
+        %{x: 4470, y: -2860},
+        %{x: 2792, y: -3186}
+      ]
+    },
+    %{
+      name: "Bottom Right Water 1 prima",
+      radius: 0.0,
+      shape: "polygon",
+      type: :lake,
+      base_status: nil,
+      statuses_cycle: %{},
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{x: 3633, y: -1502},
+        %{x: 4896, y: -2963},
+        %{x: 4470, y: -2860}
       ]
     },
     %{
@@ -5028,8 +4616,8 @@ merliot_map_config = %{
       vertices: [
         %{x: 3630, y: -1498},
         %{x: 4629, y: -1281},
-        %{x: 5611, y: -2263},
-        %{x: 4596, y: -2699}
+        %{x: 5371, y: -1881},
+        %{x: 4896, y: -2963}
       ]
     },
     %{
@@ -5062,10 +4650,10 @@ merliot_map_config = %{
         y: 0.0
       },
       vertices: [
+        %{x: 565, y: 4300},
+        %{x: 1455, y: 4700},
         %{x: 1717, y: 3634},
-        %{x: 991, y: 3634},
-        %{x: 902, y: 4408},
-        %{x: 1455, y: 4845}
+        %{x: 808, y: 3500}
       ]
     },
     %{
@@ -5080,334 +4668,76 @@ merliot_map_config = %{
         y: 0.0
       },
       vertices: [
-        %{x: 1717, y: 3634},
-        %{x: 1455, y: 4845},
-        %{x: 2092, y: 5603},
-        %{x: 3003, y: 5182},
-        %{x: 2762, y: 4031}
+        %{x: 1455, y: 4700},
+        %{x: 1802, y: 5366},
+        %{x: 3000, y: 4737},
+        %{x: 2762, y: 4031},
+        %{x: 1717, y: 3634}
       ]
     }
   ],
   bushes: [
     %{
-      name: "Bottom Left A1",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: -6370, y: -5029},
-        %{x: -5550, y: -5029},
-        %{x: -5430, y: -5659},
-        %{x: -6370, y: -5669}
-      ]
-    },
-    %{
-      name: "Bottom Left A2",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: -6370, y: -5669},
-        %{x: -5114, y: -5649},
-        %{x: -5107, y: -6427},
-        %{x: -6349, y: -6434}
-      ]
-    },
-    %{
-      name: "Bottom Left A3",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: -5107, y: -6427},
-        %{x: -5100, y: -6072},
-        %{x: -4643, y: -6072},
-        %{x: -4643, y: -6441}
-      ]
-    },
-    %{
-      name: "Bottom Mid A1",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: -2583, y: -6420},
-        %{x: -2354, y: -5906},
-        %{x: -1411, y: -5953},
-        %{x: -1471, y: -6487}
-      ]
-    },
-    %{
-      name: "Bottom Mid A2",
-      radius: 1000,
-      shape: "polygon",
-      position: %{x: 0, y: 0},
-      vertices: [
-        %{x: -2220, y: -6063},
-        %{x: -2219, y: -5587},
-        %{x: -1774, y: -5566},
-        %{x: -1774, y: -6089}
-      ]
-    },
-    %{
-      name: "Bottom Mid B1",
-      radius: 1800,
-      shape: "circle",
-      position: %{x: 1570, y: -7248},
-      vertices: []
-    },
-    %{
-      name: "Bottom Mid B2",
-      radius: 500,
-      shape: "circle",
-      position: %{x: 310, y: -6110},
-      vertices: []
-    },
-    %{
-      name: "Bottom Mid B3",
-      radius: 500,
-      shape: "circle",
-      position: %{x: 2712, y: -6114},
-      vertices: []
-    },
-    %{
-      name: "Bottom Mid C1",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: 4970, y: -6462},
-        %{x: 4963, y: -6040},
-        %{x: 6658, y: -6040},
-        %{x: 6665, y: -6442}
-      ]
-    },
-    %{
-      name: "Bottom Mid C2",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: 5485, y: -6023},
-        %{x: 5485, y: -5673},
-        %{x: 6650, y: -5673},
-        %{x: 6663, y: -6040}
-      ]
-    },
-    %{
-      name: "Bottom Mid C3",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: 6000, y: -5614},
-        %{x: 6000, y: -5275},
-        %{x: 6628, y: -5275},
-        %{x: 6656, y: -5599}
-      ]
-    },
-    %{
-      name: "Mid Left A1",
-      radius: 1800,
-      shape: "circle",
-      position: %{x: -6940, y: -1239},
-      vertices: []
-    },
-    %{
-      name: "Mid Left A2",
-      radius: 700,
-      shape: "circle",
-      position: %{x: -6020, y: -2129},
-      vertices: []
-    },
-    %{
-      name: "Mid Left A3",
-      radius: 700,
-      shape: "circle",
-      position: %{x: -6000, y: -439},
-      vertices: []
-    },
-    %{
-      name: "Mid Left B1",
-      radius: 500,
-      shape: "circle",
-      position: %{x: -6360, y: 2020},
-      vertices: []
-    },
-    %{
-      name: "Mid Left B2",
-      radius: 500,
-      shape: "circle",
-      position: %{x: -5810, y: 2220},
-      vertices: []
-    },
-    %{
-      name: "Top Left B1",
+      name: "Top Left Corner",
       radius: 1000,
       shape: "circle",
       position: %{x: -6390, y: 6550},
       vertices: []
     },
     %{
-      name: "Top Mid A1",
-      radius: 1700,
-      shape: "circle",
-      position: %{x: -1480, y: 6970},
-      vertices: []
-    },
-    %{
-      name: "Top Mid A2",
-      radius: 700,
-      shape: "circle",
-      position: %{x: 1859, y: 6110},
-      vertices: []
-    },
-    %{
-      name: "Top Right A1",
-      radius: 1700,
-      shape: "circle",
-      position: %{x: 7369, y: 6680},
-      vertices: []
-    },
-    %{
-      name: "Mid Right A1",
-      radius: 700,
-      shape: "circle",
-      position: %{x: 6653, y: 2360},
-      vertices: []
-    },
-    %{
-      name: "Mid Right A2",
-      radius: 700,
-      shape: "circle",
-      position: %{x: 6486, y: 655},
-      vertices: []
-    },
-    %{
-      name: "Mid Right A3",
-      radius: 700,
-      shape: "circle",
-      position: %{x: 6300, y: 2007},
-      vertices: []
-    },
-    %{
-      name: "Mid Right B1",
-      radius: 0,
-      shape: "polygon",
-      position: %{x: 0.0, y: 0.0},
-      vertices: [
-        %{x: 6085, y: -1374},
-        %{x: 6596, y: -1374},
-        %{x: 6497, y: -2222},
-        %{x: 5911, y: -2222}
-      ]
-    },
-    %{
-      name: "Mid Right B2",
-      radius: 300,
-      shape: "circle",
-      position: %{x: 5626, y: -1885},
-      vertices: []
-    },
-    %{
-      name: "Mid Top A1",
+      name: "Top Right Corner",
       radius: 1000,
       shape: "circle",
-      position: %{x: 3799, y: 3810},
+      position: %{x: 6390, y: 6550},
       vertices: []
     },
     %{
-      name: "Mid Top A2",
-      radius: 0,
-      shape: "polygon",
-      position: %{x: 0.0, y: 0.0},
-      vertices: [
-        %{x: -2010, y: 4592},
-        %{x: -421, y: 4368},
-        %{x: -504, y: 3850},
-        %{x: -2110, y: 4132}
-      ]
+      name: "Bottom Left Corner",
+      radius: 1000,
+      shape: "circle",
+      position: %{x: -6390, y: -6550},
+      vertices: []
     },
     %{
-      name: "Mid Top A3",
+      name: "Bottom Right Corner",
+      radius: 1000,
+      shape: "circle",
+      position: %{x: 6390, y: -6550},
+      vertices: []
+    },
+    %{
+      name: "TopLeft - RockTreeBush - Bush",
+      radius: 250,
+      shape: "circle",
+      position: %{x: -1610, y: 3994},
+      vertices: []
+    },
+    %{
+      name: "MidBottomLeft - TreeBush - Bush",
+      radius: 800,
+      shape: "circle",
+      position: %{x: -1759, y: -3426},
+      vertices: []
+    },
+    %{
+      name: "MidBottomRight - TreeBush - Bush",
+      radius: 750,
+      shape: "circle",
+      position: %{x: 3350, y: -1634},
+      vertices: []
+    },
+    %{
+      name: "MidTopLeft - TreeBush - Bush",
+      radius: 650,
+      shape: "circle",
+      position: %{x: -3200, y: 1300},
+      vertices: []
+    },
+    %{
+      name: "MidTopRight - TreeBush - Bush",
       radius: 700,
       shape: "circle",
-      position: %{x: -3800, y: 3690},
-      vertices: []
-    },
-    %{
-      name: "Mid Bottom A1",
-      radius: 850,
-      shape: "circle",
-      position: %{x: -1570, y: -2879},
-      vertices: []
-    },
-    %{
-      name: "Mid Bottom B1",
-      radius: 850,
-      shape: "circle",
-      position: %{x: -1570, y: -2879},
-      vertices: []
-    },
-    %{
-      name: "Mid Bottom C1",
-      radius: 1000,
-      shape: "circle",
-      position: %{x: 1529, y: -3639},
-      vertices: []
-    },
-    %{
-      name: "Mid Bottom A4",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{x: 0.0, y: 0.0},
-      vertices: [
-        %{x: 2480, y: -1523},
-        %{x: 3445, y: -1518},
-        %{x: 3445, y: -2205},
-        %{x: 2489, y: -2242}
-      ]
-    },
-    %{
-      name: "Mid Top A1",
-      radius: 1000,
-      shape: "circle",
-      position: %{x: 4229, y: 1160},
-      vertices: []
-    },
-    %{
-      name: "Mid Top B1",
-      radius: 950,
-      shape: "circle",
-      position: %{x: -3110, y: 1220},
-      vertices: []
-    },
-    %{
-      name: "Mid Top C1",
-      radius: 900,
-      shape: "circle",
-      position: %{x: 1819, y: 3130},
+      position: %{x: 1873, y: 3276},
       vertices: []
     }
   ],
