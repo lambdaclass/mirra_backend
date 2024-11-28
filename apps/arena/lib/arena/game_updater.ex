@@ -371,6 +371,9 @@ defmodule Arena.GameUpdater do
       Map.get(state.game_state.players, player_id)
       |> Player.reset_forced_movement(previous_speed)
 
+    # Dash finished, we unblock the actions.
+    broadcast_player_block_actions(state.game_state.game_id, player_id, false)
+
     state = put_in(state, [:game_state, :players, player_id], player)
     {:noreply, state}
   end
@@ -383,6 +386,9 @@ defmodule Arena.GameUpdater do
     game_state =
       put_in(state.game_state, [:players, player_id], player)
       |> Skill.do_mechanic(player, on_arrival_mechanic, %{skill_direction: player.direction})
+
+    # Leap finished, we unblock the actions.
+    broadcast_player_block_actions(state.game_state.game_id, player_id, false)
 
     {:noreply, %{state | game_state: game_state}}
   end
