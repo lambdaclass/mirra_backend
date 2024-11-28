@@ -116,6 +116,17 @@ defmodule Arena.GameSocketHandler do
     end
   end
 
+  def websocket_info({:respawn_player, player_id}, state) do
+    state =
+      if state.player_id == player_id do
+        state |> Map.put(:enable, true) |> Map.put(:player_alive, true)
+      else
+        state
+      end
+
+    {:ok, state}
+  end
+
   @impl true
   def websocket_info({:block_actions, player_id, value}, state) do
     if state.player_id == player_id do

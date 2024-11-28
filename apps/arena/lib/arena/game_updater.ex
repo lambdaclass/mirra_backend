@@ -267,6 +267,9 @@ defmodule Arena.GameUpdater do
       |> activate_trap_mechanics()
       # Obstacles
       |> handle_obstacles_transitions()
+      # Deathmatch
+      |> add_players_to_respawn_queue(state.game_config)
+      |> respawn_players(state.game_config)
 
     {:ok, state_diff} = diff(state.last_broadcasted_game_state, game_state)
 
@@ -308,13 +311,48 @@ defmodule Arena.GameUpdater do
     Process.send_after(self(), :match_timeout, state.game_config.game.match_timeout_ms)
 
     send(self(), :natural_healing)
-    send(self(), {:end_game_check, Map.keys(state.game_state.players)})
+
+    if state.game_config.game.game_mode != :DEATHMATCH do
+      send(self(), {:end_game_check, Map.keys(state.game_state.players)})
+    else
+      Process.send_after(self(), :deathmatch_end_game_check, state.game_config.game.match_duration)
+    end
 
     unless state.game_config.game.bots_enabled do
       toggle_bots(self())
     end
 
     {:noreply, put_in(state, [:game_state, :status], :RUNNING)}
+  end
+
+  def handle_info(:deathmatch_end_game_check, state) do
+    players =
+      state.game_state.players
+      |> Enum.map(fn {player_id, player} ->
+        %{kills: kills} = GameTracker.get_player_result(player_id)
+        {player_id, player, kills}
+      end)
+      |> Enum.sort_by(fn {_player_id, _player, kills} -> kills end, :desc)
+
+    {winner_id, winner, _kills} = Enum.at(players, 0)
+
+    state =
+      state
+      |> put_in([:game_state, :status], :ENDED)
+      |> update_in([:game_state], fn game_state ->
+        players
+        |> Enum.reduce(game_state, fn {player_id, _player, _kills}, game_state_acc ->
+          put_player_position(game_state_acc, player_id)
+        end)
+      end)
+
+    PubSub.broadcast(Arena.PubSub, state.game_state.game_id, :end_game_state)
+    broadcast_game_ended(winner, state.game_state)
+    GameTracker.finish_tracking(self(), winner_id)
+
+    Process.send_after(self(), :game_ended, state.game_config.game.shutdown_game_wait_ms)
+
+    {:noreply, state}
   end
 
   def handle_info({:end_game_check, last_players_ids}, state) do
@@ -747,6 +785,10 @@ defmodule Arena.GameUpdater do
     PubSub.broadcast(Arena.PubSub, state.game_id, {:game_finished, encoded_state})
   end
 
+  defp broadcast_player_respawn(game_id, player_id) do
+    PubSub.broadcast(Arena.PubSub, game_id, {:respawn_player, player_id})
+  end
+
   defp complete_entities(nil, _), do: []
 
   defp complete_entities(entities, category) do
@@ -801,7 +843,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:square_wall, config.map.square_wall)
       |> Map.put(:zone, %{
         radius: config.map.radius - 5000,
-        should_start?: config.game.zone_enabled,
+        should_start?: if(config.game.game_mode == :DEATHMATCH, do: false, else: config.game.zone_enabled),
         started: false,
         enabled: false,
         shrinking: false,
@@ -816,6 +858,7 @@ defmodule Arena.GameUpdater do
       )
       |> Map.put(:positions, %{})
       |> Map.put(:traps, %{})
+      |> Map.put(:respawn_queue, %{})
 
     {game, _} =
       Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id, character_name, player_name,
@@ -1878,6 +1921,46 @@ defmodule Arena.GameUpdater do
       false -> {:ok, new}
     end
   end
+
+  defp add_players_to_respawn_queue(game_state, %{game: %{game_mode: :DEATHMATCH}} = game_config) do
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
+    respawn_queue =
+      Enum.reduce(game_state.players, game_state.respawn_queue, fn {player_id, player}, respawn_queue ->
+        if Map.has_key?(respawn_queue, player_id) || Player.alive?(player) do
+          respawn_queue
+        else
+          Map.put(respawn_queue, player_id, now + game_config.game.respawn_time)
+        end
+      end)
+
+    Map.put(game_state, :respawn_queue, respawn_queue)
+  end
+
+  defp add_players_to_respawn_queue(game_state, _game_config), do: game_state
+
+  defp respawn_players(game_state, %{game: %{game_mode: :DEATHMATCH}} = game_config) do
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
+    players_to_respawn =
+      game_state.respawn_queue
+      |> Enum.filter(fn {_player_id, time} ->
+        time < now
+      end)
+
+    {game_state, respawn_queue} =
+      Enum.reduce(players_to_respawn, {game_state, game_state.respawn_queue}, fn {player_id, _time},
+                                                                                 {game_state, respawn_queue} ->
+        new_position = Enum.random(game_config.map.initial_positions)
+        player = Map.get(game_state.players, player_id) |> Player.respawn_player(new_position)
+        broadcast_player_respawn(game_state.game_id, player_id)
+        {put_in(game_state, [:players, player_id], player), Map.delete(respawn_queue, player_id)}
+      end)
+
+    Map.put(game_state, :respawn_queue, respawn_queue)
+  end
+
+  defp respawn_players(game_state, _game_config), do: game_state
 
   ##########################
   # End Helpers
