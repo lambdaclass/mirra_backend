@@ -1,9 +1,14 @@
-defmodule Arena.Matchmaking.GameLauncher do
+defmodule Arena.Matchmaking.DeathmatchMode do
   @moduledoc false
   alias Arena.Utils
   alias Ecto.UUID
 
   use GenServer
+
+  # 3 Mins
+  # TODO: add this to the configurator https://github.com/lambdaclass/mirra_backend/issues/985
+  @match_duration 180_000
+  @respawn_time 5000
 
   # Time to wait to start game with any amount of clients
   @start_timeout_ms 4_000
@@ -115,7 +120,11 @@ defmodule Arena.Matchmaking.GameLauncher do
       GenServer.start(Arena.GameUpdater, %{
         clients: clients,
         bot_clients: bot_clients,
-        game_params: game_params |> Map.put(:game_mode, :BATTLE)
+        game_params:
+          game_params
+          |> Map.put(:game_mode, :DEATHMATCH)
+          |> Map.put(:match_duration, @match_duration)
+          |> Map.put(:respawn_time, @respawn_time)
       })
 
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()

@@ -5,26 +5,6 @@ defmodule Arena.Matchmaking.QuickGameMode do
 
   use GenServer
 
-  # The available names for bots to enter a match, we should change this in the future
-  @bot_names [
-    "TheBlackSwordman",
-    "SlashJava",
-    "SteelBallRun",
-    "Jeff",
-    "Messi",
-    "Stone Ocean",
-    "Jeepers Creepers",
-    "Bob",
-    "El javo",
-    "Alberso",
-    "Thomas",
-    "Timmy",
-    "Pablito",
-    "Nicolino",
-    "Cangrejo",
-    "Mansito"
-  ]
-
   # API
   def start_link(_) do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
@@ -80,7 +60,7 @@ defmodule Arena.Matchmaking.QuickGameMode do
     Enum.map(1..missing_clients//1, fn i ->
       client_id = UUID.generate()
 
-      {client_id, Enum.random(characters).name, Enum.at(@bot_names, i), nil}
+      {client_id, Enum.random(characters).name, Enum.at(Arena.Utils.bot_names(), i), nil}
     end)
   end
 
@@ -101,7 +81,7 @@ defmodule Arena.Matchmaking.QuickGameMode do
       GenServer.start(Arena.GameUpdater, %{
         clients: clients,
         bot_clients: bot_clients,
-        game_params: game_params
+        game_params: game_params |> Map.put(:game_mode, :QUICK_GAME)
       })
 
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()

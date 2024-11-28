@@ -17,6 +17,7 @@ defmodule Arena.Application do
       Arena.Matchmaking.GameLauncher,
       Arena.Matchmaking.PairMode,
       Arena.Matchmaking.QuickGameMode,
+      Arena.Matchmaking.DeathmatchMode,
       Arena.GameBountiesFetcher,
       Arena.GameTracker,
       Arena.Authentication.GatewaySigner,
