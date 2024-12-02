@@ -234,7 +234,13 @@ defmodule Arena.Game.Player do
           end
 
         execution_duration = calculate_duration(skill, player.position, skill_direction, auto_aim?)
-        Process.send_after(self(), {:block_actions, player.id, false}, execution_duration)
+
+        # For dash and leaps, we rely the unblock action message to their stop action callbacks
+        is_dash_or_leap? = Enum.any?(skill.mechanics, fn mechanic -> mechanic.type in ["leap", "dash"] end)
+
+        unless is_dash_or_leap? do
+          Process.send_after(self(), {:block_actions, player.id, false}, execution_duration)
+        end
 
         if skill.block_movement do
           send(self(), {:block_movement, player.id, true})
@@ -448,6 +454,14 @@ defmodule Arena.Game.Player do
         end)
       end)
     end)
+  end
+
+  def respawn_player(player, position) do
+    aditional_info = player.aditional_info |> Map.put(:health, player.aditional_info.base_health)
+
+    player
+    |> Map.put(:aditional_info, aditional_info)
+    |> Map.put(:position, position)
   end
 
   ####################

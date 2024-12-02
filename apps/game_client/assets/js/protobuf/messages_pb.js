@@ -47,6 +47,7 @@ goog.exportSymbol('proto.GameEvent', null, global);
 goog.exportSymbol('proto.GameEvent.EventCase', null, global);
 goog.exportSymbol('proto.GameFinished', null, global);
 goog.exportSymbol('proto.GameJoined', null, global);
+goog.exportSymbol('proto.GameMode', null, global);
 goog.exportSymbol('proto.GameState', null, global);
 goog.exportSymbol('proto.GameStatus', null, global);
 goog.exportSymbol('proto.Item', null, global);
@@ -3478,7 +3479,8 @@ proto.ConfigGame.toObject = function(includeInstance, msg) {
   var f, obj = {
     tickRateMs: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
     bountyPickTimeMs: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
-    startGameTimeMs: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0)
+    startGameTimeMs: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0),
+    gameMode: jspb.Message.getFieldWithDefault(msg, 4, 0)
   };
 
   if (includeInstance) {
@@ -3527,6 +3529,10 @@ proto.ConfigGame.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {number} */ (reader.readFloat());
       msg.setStartGameTimeMs(value);
       break;
+    case 4:
+      var value = /** @type {!proto.GameMode} */ (reader.readEnum());
+      msg.setGameMode(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -3574,6 +3580,13 @@ proto.ConfigGame.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0.0) {
     writer.writeFloat(
       3,
+      f
+    );
+  }
+  f = message.getGameMode();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      4,
       f
     );
   }
@@ -3631,6 +3644,24 @@ proto.ConfigGame.prototype.getStartGameTimeMs = function() {
  */
 proto.ConfigGame.prototype.setStartGameTimeMs = function(value) {
   return jspb.Message.setProto3FloatField(this, 3, value);
+};
+
+
+/**
+ * optional GameMode game_mode = 4;
+ * @return {!proto.GameMode}
+ */
+proto.ConfigGame.prototype.getGameMode = function() {
+  return /** @type {!proto.GameMode} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/**
+ * @param {!proto.GameMode} value
+ * @return {!proto.ConfigGame} returns this
+ */
+proto.ConfigGame.prototype.setGameMode = function(value) {
+  return jspb.Message.setProto3EnumField(this, 4, value);
 };
 
 
@@ -12385,6 +12416,16 @@ proto.CurrencyReward.prototype.setAmount = function(value) {
   return jspb.Message.setProto3IntField(this, 2, value);
 };
 
+
+/**
+ * @enum {number}
+ */
+proto.GameMode = {
+  BATTLE: 0,
+  DEATHMATCH: 1,
+  PAIR: 2,
+  QUICK_GAME: 3
+};
 
 /**
  * @enum {number}

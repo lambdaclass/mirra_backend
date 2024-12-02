@@ -69,10 +69,18 @@ message Configuration {
   ClientConfig client_config = 4;
 }
 
+enum GameMode{
+  BATTLE = 0;
+  DEATHMATCH = 1;
+  PAIR = 2;
+  QUICK_GAME = 3;
+}
+
 message ConfigGame {
   float tick_rate_ms = 1;
   float bounty_pick_time_ms = 2;
   float start_game_time_ms = 3;
+  GameMode game_mode = 4;
 }
 
 message ConfigMap {

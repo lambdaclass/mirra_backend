@@ -1,9 +1,14 @@
-defmodule Arena.Matchmaking.GameLauncher do
+defmodule Arena.Matchmaking.DeathmatchMode do
   @moduledoc false
   alias Arena.Utils
   alias Ecto.UUID
 
   use GenServer
+
+  # 3 Mins
+  # TODO: add this to the configurator https://github.com/lambdaclass/mirra_backend/issues/985
+  @match_duration 180_000
+  @respawn_time 5000
 
   # API
   def start_link(_) do
@@ -110,8 +115,13 @@ defmodule Arena.Matchmaking.GameLauncher do
 
   # Receives a list of clients.
   # Fills the given list with bots clients, creates a game and tells every client to join that game.
-  def create_game_for_clients(clients, game_params \\ %{}) do
-    game_params = Map.put(game_params, :game_mode, :BATTLE)
+  defp create_game_for_clients(clients, game_params \\ %{}) do
+    game_params =
+      Map.merge(game_params, %{
+        game_mode: :DEATHMATCH,
+        match_duration: @match_duration,
+        respawn_time: @respawn_time
+      })
 
     # We spawn bots only if there is one player
     bot_clients =

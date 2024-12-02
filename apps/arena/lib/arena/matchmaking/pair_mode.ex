@@ -111,6 +111,8 @@ defmodule Arena.Matchmaking.PairMode do
   # Receives a list of clients.
   # Fills the given list with bots clients, creates a game and tells every client to join that game.
   defp create_game_for_clients(clients, game_params \\ %{}) do
+    game_params = Map.put(game_params, :game_mode, :PAIR)
+
     bot_clients =
       if Application.get_env(:arena, :spawn_bots) do
         get_bot_clients(Application.get_env(:arena, :players_needed_in_match) - Enum.count(clients))
@@ -120,11 +122,7 @@ defmodule Arena.Matchmaking.PairMode do
 
     players = Utils.assign_teams_to_players(clients ++ bot_clients, :pair)
 
-    {:ok, game_pid} =
-      GenServer.start(Arena.GameUpdater, %{
-        players: players,
-        game_params: game_params
-      })
+    {:ok, game_pid} = GenServer.start(Arena.GameUpdater, %{players: players, game_params: game_params})
 
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()
 
