@@ -357,4 +357,22 @@ defmodule Arena.Game.Effect do
 
     GameUpdater.update_entity_in_game_state(game_state, updated_entity)
   end
+
+  def invincible_effect do
+    %{
+      name: "respawn_grace_period",
+      duration_ms: 2000,
+      remove_on_action: false,
+      one_time_application: true,
+      allow_multiple_effects: true,
+      disabled_outside_pool: true,
+      effect_mechanics: [
+        %{
+          name: "damage_immunity",
+          effect_delay_ms: 0,
+          execute_multiple_times: false
+        }
+      ]
+    }
+  end
 end

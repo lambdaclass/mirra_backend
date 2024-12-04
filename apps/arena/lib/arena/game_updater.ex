@@ -1952,9 +1952,16 @@ defmodule Arena.GameUpdater do
       Enum.reduce(players_to_respawn, {game_state, game_state.respawn_queue}, fn {player_id, _time},
                                                                                  {game_state, respawn_queue} ->
         new_position = Enum.random(game_config.map.initial_positions)
-        player = Map.get(game_state.players, player_id) |> Player.respawn_player(new_position)
+
+        player =
+          Map.get(game_state.players, player_id)
+          |> Player.respawn_player(new_position)
+
+        game_state =
+          Effect.put_effect_to_entity(game_state, player, player_id, Effect.invincible_effect())
+
         broadcast_player_respawn(game_state.game_id, player_id)
-        {put_in(game_state, [:players, player_id], player), Map.delete(respawn_queue, player_id)}
+        {game_state, Map.delete(respawn_queue, player_id)}
       end)
 
     Map.put(game_state, :respawn_queue, respawn_queue)
