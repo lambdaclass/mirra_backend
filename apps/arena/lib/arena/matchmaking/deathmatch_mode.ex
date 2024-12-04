@@ -7,7 +7,7 @@ defmodule Arena.Matchmaking.DeathmatchMode do
 
   # 3 Mins
   # TODO: add this to the configurator https://github.com/lambdaclass/mirra_backend/issues/985
-  @match_duration 180_000
+  @match_duration 20_000
   @respawn_time 5000
 
   # Time to wait to start game with any amount of clients
