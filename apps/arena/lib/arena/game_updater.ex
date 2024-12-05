@@ -556,11 +556,12 @@ defmodule Arena.GameUpdater do
       |> maybe_add_kill_to_player(killer_id)
       |> grant_power_up_to_killer(game_config, killer_id, victim_id)
 
-    game_state = if game_config.game.game_mode != :DEATHMATCH do
-      put_player_position(game_state, victim_id)
-    else
-      game_state
-    end
+    game_state =
+      if game_config.game.game_mode != :DEATHMATCH do
+        put_player_position(game_state, victim_id)
+      else
+        game_state
+      end
 
     broadcast_player_dead(state.game_state.game_id, victim_id)
 
