@@ -333,16 +333,17 @@ defmodule Arena.GameUpdater do
         {player_id, player, kills}
       end)
       |> Enum.sort_by(fn {_player_id, _player, kills} -> kills end, :desc)
+      |> Enum.with_index(1)
 
-    {winner_id, winner, _kills} = Enum.at(players, 0)
+    {{winner_id, winner, _kills}, _position} = Enum.at(players, 0)
 
     state =
       state
       |> put_in([:game_state, :status], :ENDED)
       |> update_in([:game_state], fn game_state ->
         players
-        |> Enum.reduce(game_state, fn {player_id, _player, _kills}, game_state_acc ->
-          put_player_position(game_state_acc, player_id)
+        |> Enum.reduce(game_state, fn {{player_id, _player, kills}, position}, game_state_acc ->
+          put_player_position(game_state_acc, player_id, position)
         end)
       end)
 
@@ -1845,6 +1846,13 @@ defmodule Arena.GameUpdater do
   defp put_player_position(%{positions: positions} = game_state, player_id) do
     next_position = Application.get_env(:arena, :players_needed_in_match) - Enum.count(positions)
 
+    {client_id, _player_id} =
+      Enum.find(game_state.client_to_player_map, fn {_, map_player_id} -> map_player_id == player_id end)
+
+    update_in(game_state, [:positions], fn positions -> Map.put(positions, client_id, "#{next_position}") end)
+  end
+
+  defp put_player_position(game_state, player_id, next_position) do
     {client_id, _player_id} =
       Enum.find(game_state.client_to_player_map, fn {_, map_player_id} -> map_player_id == player_id end)
 
