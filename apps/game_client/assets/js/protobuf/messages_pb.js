@@ -2755,7 +2755,7 @@ proto.GameFinished.prototype.toObject = function(opt_includeInstance) {
  */
 proto.GameFinished.toObject = function(includeInstance, msg) {
   var f, obj = {
-    winner: (f = msg.getWinner()) && proto.Entity.toObject(includeInstance, f),
+    winnersMap: (f = msg.getWinnersMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
     playersMap: (f = msg.getPlayersMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : []
   };
 
@@ -2794,9 +2794,10 @@ proto.GameFinished.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new proto.Entity;
-      reader.readMessage(value,proto.Entity.deserializeBinaryFromReader);
-      msg.setWinner(value);
+      var value = msg.getWinnersMap();
+      reader.readMessage(value, function(message, reader) {
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
+         });
       break;
     case 2:
       var value = msg.getPlayersMap();
@@ -2833,13 +2834,9 @@ proto.GameFinished.prototype.serializeBinary = function() {
  */
 proto.GameFinished.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getWinner();
-  if (f != null) {
-    writer.writeMessage(
-      1,
-      f,
-      proto.Entity.serializeBinaryToWriter
-    );
+  f = message.getWinnersMap(true);
+  if (f && f.getLength() > 0) {
+    f.serializeBinary(1, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
   }
   f = message.getPlayersMap(true);
   if (f && f.getLength() > 0) {
@@ -2849,39 +2846,25 @@ proto.GameFinished.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional Entity winner = 1;
- * @return {?proto.Entity}
+ * map<uint64, Entity> winners = 1;
+ * @param {boolean=} opt_noLazyCreate Do not create the map if
+ * empty, instead returning `undefined`
+ * @return {!jspb.Map<number,!proto.Entity>}
  */
-proto.GameFinished.prototype.getWinner = function() {
-  return /** @type{?proto.Entity} */ (
-    jspb.Message.getWrapperField(this, proto.Entity, 1));
+proto.GameFinished.prototype.getWinnersMap = function(opt_noLazyCreate) {
+  return /** @type {!jspb.Map<number,!proto.Entity>} */ (
+      jspb.Message.getMapField(this, 1, opt_noLazyCreate,
+      proto.Entity));
 };
 
 
 /**
- * @param {?proto.Entity|undefined} value
- * @return {!proto.GameFinished} returns this
-*/
-proto.GameFinished.prototype.setWinner = function(value) {
-  return jspb.Message.setWrapperField(this, 1, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
+ * Clears values from the map. The map will be non-null.
  * @return {!proto.GameFinished} returns this
  */
-proto.GameFinished.prototype.clearWinner = function() {
-  return this.setWinner(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.GameFinished.prototype.hasWinner = function() {
-  return jspb.Message.getField(this, 1) != null;
+proto.GameFinished.prototype.clearWinnersMap = function() {
+  this.getWinnersMap().clear();
+  return this;
 };
 
 
@@ -7004,7 +6987,8 @@ proto.Player.toObject = function(includeInstance, msg) {
     forcedMovement: jspb.Message.getBooleanFieldWithDefault(msg, 15, false),
     bountyCompleted: jspb.Message.getBooleanFieldWithDefault(msg, 16, false),
     mana: jspb.Message.getFieldWithDefault(msg, 17, 0),
-    currentBasicAnimation: jspb.Message.getFieldWithDefault(msg, 18, 0)
+    currentBasicAnimation: jspb.Message.getFieldWithDefault(msg, 18, 0),
+    team: jspb.Message.getFieldWithDefault(msg, 19, 0)
   };
 
   if (includeInstance) {
@@ -7119,6 +7103,10 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
     case 18:
       var value = /** @type {number} */ (reader.readUint32());
       msg.setCurrentBasicAnimation(value);
+      break;
+    case 19:
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setTeam(value);
       break;
     default:
       reader.skipField();
@@ -7272,6 +7260,13 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeUint32(
       18,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 19));
+  if (f != null) {
+    writer.writeUint32(
+      19,
       f
     );
   }
@@ -7916,6 +7911,42 @@ proto.Player.prototype.clearCurrentBasicAnimation = function() {
  */
 proto.Player.prototype.hasCurrentBasicAnimation = function() {
   return jspb.Message.getField(this, 18) != null;
+};
+
+
+/**
+ * optional uint32 team = 19;
+ * @return {number}
+ */
+proto.Player.prototype.getTeam = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 19, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setTeam = function(value) {
+  return jspb.Message.setField(this, 19, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.clearTeam = function() {
+  return jspb.Message.setField(this, 19, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.Player.prototype.hasTeam = function() {
+  return jspb.Message.getField(this, 19) != null;
 };
 
 

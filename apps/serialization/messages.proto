@@ -52,7 +52,7 @@ message BountySelected {
 }
 
 message GameFinished {
-  Entity winner = 1;
+  map<uint64, Entity> winners = 1;
   map<uint64, Entity> players = 2;
 }
 
@@ -216,6 +216,7 @@ message Player {
   optional bool bounty_completed = 16;
   optional uint64 mana = 17;
   optional uint32 current_basic_animation = 18;
+  optional uint32 team = 19;
 }
 
 message Effect {

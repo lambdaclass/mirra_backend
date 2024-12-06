@@ -59,12 +59,12 @@ defmodule Arena.GameUpdater do
   # END API
   ##########################
 
-  def init(%{clients: clients, bot_clients: bot_clients, game_params: game_params}) do
+  def init(%{players: players, game_params: game_params}) do
     game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
     game_config = Configuration.get_game_config()
     game_config = Map.put(game_config, :game, Map.merge(game_config.game, game_params))
 
-    game_state = new_game(game_id, clients ++ bot_clients, game_config)
+    game_state = new_game(game_id, players, game_config)
     match_id = Ecto.UUID.generate()
 
     send(self(), :update_game)
@@ -77,8 +77,11 @@ defmodule Arena.GameUpdater do
       Process.send_after(self(), :game_start, game_config.game.start_game_time_ms)
     end
 
-    clients_ids = Enum.map(clients, fn {client_id, _, _, _} -> client_id end)
-    bot_clients_ids = Enum.map(bot_clients, fn {client_id, _, _, _} -> client_id end)
+    clients_ids =
+      Enum.filter(players, fn player -> player.type == :human end) |> Enum.map(fn player -> player.client_id end)
+
+    bot_clients_ids =
+      Enum.filter(players, fn player -> player.type == :bot end) |> Enum.map(fn player -> player.client_id end)
 
     :ok = GameTracker.start_tracking(match_id, game_state.client_to_player_map, game_state.players, clients_ids)
 
@@ -326,29 +329,38 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info(:deathmatch_end_game_check, state) do
-    players =
+    players_with_kills =
       state.game_state.players
       |> Enum.map(fn {player_id, player} ->
         %{kills: kills} = GameTracker.get_player_result(player_id)
-        {player_id, player, kills}
+        Map.put(player, :kills, kills)
       end)
-      |> Enum.sort_by(fn {_player_id, _player, kills} -> kills end, :desc)
 
-    {winner_id, winner, _kills} = Enum.at(players, 0)
+    {winner_team, _team_kills} =
+      players_with_kills
+      |> Enum.group_by(fn player -> player.aditional_info.team end)
+      |> Enum.map(fn {team, players} ->
+        team_kills = Enum.reduce(players, 0, fn player, acc -> player.kills + acc end)
+        {team, team_kills}
+      end)
+      |> Enum.max_by(fn {_team, team_kills} -> team_kills end)
+
+    winners =
+      Enum.filter(state.game_state.players, fn {_player_id, player} -> player.aditional_info.team == winner_team end)
 
     state =
       state
       |> put_in([:game_state, :status], :ENDED)
       |> update_in([:game_state], fn game_state ->
-        players
-        |> Enum.reduce(game_state, fn {player_id, _player, _kills}, game_state_acc ->
-          put_player_position(game_state_acc, player_id)
+        players_with_kills
+        |> Enum.reduce(game_state, fn player, game_state_acc ->
+          put_player_position(game_state_acc, player.id)
         end)
       end)
 
     PubSub.broadcast(Arena.PubSub, state.game_state.game_id, :end_game_state)
-    broadcast_game_ended(winner, state.game_state)
-    GameTracker.finish_tracking(self(), winner_id)
+    broadcast_game_ended(winners, state.game_state)
+    GameTracker.finish_tracking(self(), winner_team)
 
     Process.send_after(self(), :game_ended, state.game_config.game.shutdown_game_wait_ms)
 
@@ -364,14 +376,17 @@ defmodule Arena.GameUpdater do
           state.game_config.game.end_game_interval_ms
         )
 
-      {:ended, winner} ->
+      {:ended, winner_team} ->
+        winner_team_ids = Enum.map(winner_team, fn {id, _player} -> id end)
+        winner_team_number = Enum.random(winner_team) |> elem(1) |> get_in([:aditional_info, :team])
+
         state =
           put_in(state, [:game_state, :status], :ENDED)
-          |> update_in([:game_state], fn game_state -> put_player_position(game_state, winner.id) end)
+          |> update_in([:game_state], fn game_state -> put_player_position(game_state, winner_team_ids) end)
 
         PubSub.broadcast(Arena.PubSub, state.game_state.game_id, :end_game_state)
-        broadcast_game_ended(winner, state.game_state)
-        GameTracker.finish_tracking(self(), winner.id)
+        broadcast_game_ended(winner_team, state.game_state)
+        GameTracker.finish_tracking(self(), winner_team_number)
 
         ## The idea of having this waiting period is in case websocket processes keep
         ## sending messages, this way we give some time before making them crash
@@ -775,9 +790,9 @@ defmodule Arena.GameUpdater do
     PubSub.broadcast(Arena.PubSub, game_id, {:game_update, encoded_state})
   end
 
-  defp broadcast_game_ended(winner, state) do
+  defp broadcast_game_ended(winners, state) do
     game_state = %GameFinished{
-      winner: complete_entity(winner, :player),
+      winners: complete_entities(winners, :player),
       players: complete_entities(state.players, :player)
     }
 
@@ -818,30 +833,38 @@ defmodule Arena.GameUpdater do
   ##########################
 
   # Create a new game
-  defp new_game(game_id, clients, config) do
-    now = System.monotonic_time(:millisecond)
+  defp new_game(game_id, players, config) do
+    initialize_game_params(game_id, config)
+    |> initialize_players(players, config)
+    |> initialize_obstacles(config.map.obstacles)
+    |> initialize_crates(config.map.crates)
+    |> initialize_bushes(config.map.bushes)
+    |> initialize_pools(config.map.pools)
+  end
+
+  defp initialize_game_params(game_id, config) do
     initial_timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
-    new_game =
-      Map.new(game_id: game_id)
-      |> Map.put(:last_id, 0)
-      |> Map.put(:players, %{})
-      |> Map.put(:power_ups, %{})
-      |> Map.put(:projectiles, %{})
-      |> Map.put(:items, %{})
-      |> Map.put(:player_timestamps, %{})
-      |> Map.put(:obstacles, %{})
-      |> Map.put(:bushes, %{})
-      |> Map.put(:server_timestamp, 0)
-      |> Map.put(:client_to_player_map, %{})
-      |> Map.put(:pools, %{})
-      |> Map.put(:killfeed, [])
-      |> Map.put(:damage_taken, %{})
-      |> Map.put(:damage_done, %{})
-      |> Map.put(:crates, %{})
-      |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
-      |> Map.put(:square_wall, config.map.square_wall)
-      |> Map.put(:zone, %{
+    %{
+      game_id: game_id,
+      last_id: 0,
+      players: %{},
+      power_ups: %{},
+      projectiles: %{},
+      items: %{},
+      player_timestamps: %{},
+      obstacles: %{},
+      bushes: %{},
+      server_timestamp: 0,
+      client_to_player_map: %{},
+      pools: %{},
+      killfeed: [],
+      damage_taken: %{},
+      damage_done: %{},
+      crates: %{},
+      external_wall: Entities.new_external_wall(0, config.map.radius),
+      square_wall: config.map.square_wall,
+      zone: %{
         radius: config.map.radius - 5000,
         should_start?: if(config.game.game_mode == :DEATHMATCH, do: false, else: config.game.zone_enabled),
         started: false,
@@ -850,132 +873,108 @@ defmodule Arena.GameUpdater do
         next_zone_change_timestamp:
           initial_timestamp + config.game.zone_shrink_start_ms + config.game.start_game_time_ms +
             config.game.bounty_pick_time_ms
-      })
-      |> Map.put(:status, :PREPARING)
-      |> Map.put(
-        :start_game_timestamp,
-        initial_timestamp + config.game.start_game_time_ms + config.game.bounty_pick_time_ms
-      )
-      |> Map.put(:positions, %{})
-      |> Map.put(:traps, %{})
-      |> Map.put(:respawn_queue, %{})
+      },
+      status: :PREPARING,
+      start_game_timestamp: initial_timestamp + config.game.start_game_time_ms + config.game.bounty_pick_time_ms,
+      positions: %{},
+      traps: %{},
+      respawn_queue: %{}
+    }
+  end
 
-    {game, _} =
-      Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id, character_name, player_name,
-                                                                         _from_pid},
-                                                                        {new_game, positions} ->
-        last_id = new_game.last_id + 1
+  defp initialize_players(game_state, players, config) do
+    now = System.monotonic_time(:millisecond)
+
+    {game_state, _} =
+      Enum.reduce(players, {game_state, config.map.initial_positions}, fn player, {game_acc, positions} ->
+        last_id = game_acc.last_id + 1
         {pos, positions} = get_next_position(positions)
         direction = Physics.get_direction_from_positions(pos, %{x: 0.0, y: 0.0})
 
-        players =
-          new_game.players
-          |> Map.put(
-            last_id,
-            Entities.new_player(last_id, character_name, player_name, pos, direction, config, now)
-          )
+        new_player_params = %{
+          id: last_id,
+          team: player.team,
+          player_name: player.name,
+          position: pos,
+          direction: direction,
+          character_name: player.character_name,
+          config: config,
+          now: now
+        }
 
-        new_game =
-          new_game
+        players =
+          game_acc.players
+          |> Map.put(last_id, Entities.new_player(new_player_params))
+
+        game_acc =
+          game_acc
           |> Map.put(:last_id, last_id)
           |> Map.put(:players, players)
-          |> put_in([:client_to_player_map, client_id], last_id)
+          |> put_in([:client_to_player_map, player.client_id], last_id)
           |> put_in([:player_timestamps, last_id], 0)
 
-        {new_game, positions}
+        {game_acc, positions}
       end)
 
-    {obstacles, last_id} = initialize_obstacles(config.map.obstacles, game.last_id)
-    {crates, last_id} = initialize_crates(config.map.crates, last_id)
-    {bushes, last_id} = initialize_bushes(config.map.bushes, last_id)
-    {pools, last_id} = initialize_pools(config.map.pools, last_id)
-
-    game
-    |> Map.put(:last_id, last_id)
-    |> Map.put(:obstacles, obstacles)
-    |> Map.put(:bushes, bushes)
-    |> Map.put(:crates, crates)
-    |> Map.put(:pools, pools)
+    game_state
   end
 
-  # Initialize obstacles
-  defp initialize_obstacles(obstacles, last_id) do
-    Enum.reduce(obstacles, {Map.new(), last_id}, fn obstacle, {obstacles_acc, last_id} ->
-      last_id = last_id + 1
+  defp initialize_obstacles(game_state, []), do: game_state
+
+  defp initialize_obstacles(game_state, obstacles) do
+    Enum.reduce(obstacles, game_state, fn obstacle_config, game_state_acc ->
+      last_id = game_state_acc.last_id + 1
+      game_state_acc = Map.put(game_state_acc, :last_id, last_id)
 
       obstacle =
         Entities.new_obstacle(
           last_id,
-          obstacle
+          obstacle_config
         )
 
-      obstacle =
-        if obstacle.aditional_info.type == "dynamic" do
-          Obstacle.handle_transition_init(obstacle)
-        else
-          obstacle
-        end
-
-      obstacles_acc =
-        Map.put(
-          obstacles_acc,
-          last_id,
-          obstacle
-        )
-
-      {obstacles_acc, last_id}
+      put_in(game_state_acc, [:obstacles, last_id], obstacle)
     end)
   end
 
-  defp initialize_bushes(bushes, last_id) do
-    Enum.reduce(bushes, {Map.new(), last_id}, fn bush, {bush_acc, last_id} ->
-      last_id = last_id + 1
+  defp initialize_bushes(game_state, []), do: game_state
 
-      bush_acc =
-        Map.put(
-          bush_acc,
-          last_id,
-          Entities.new_bush(last_id, bush.position, bush.radius, bush.shape, bush.vertices)
-        )
-
-      {bush_acc, last_id}
+  defp initialize_bushes(game_state, bushes) do
+    Enum.reduce(bushes, game_state, fn bush, game_state_acc ->
+      last_id = game_state_acc.last_id + 1
+      game_state_acc = Map.put(game_state_acc, :last_id, last_id)
+      bush = Entities.new_bush(last_id, bush.position, bush.radius, bush.shape, bush.vertices)
+      put_in(game_state_acc, [:bushes, last_id], bush)
     end)
   end
 
-  # Initialize crates
-  defp initialize_crates(crates, last_id) do
-    Enum.reduce(crates, {Map.new(), last_id}, fn crate, {crates_acc, last_id} ->
-      last_id = last_id + 1
+  defp initialize_crates(game_state, []), do: game_state
 
-      crates_acc =
-        Map.put(
-          crates_acc,
-          last_id,
-          Entities.new_crate(
-            last_id,
-            crate
-          )
-        )
-
-      {crates_acc, last_id}
+  defp initialize_crates(game_state, crates) do
+    Enum.reduce(crates, game_state, fn crate, game_state_acc ->
+      last_id = game_state_acc.last_id + 1
+      game_state_acc = Map.put(game_state_acc, :last_id, last_id)
+      crate = Entities.new_crate(last_id, crate)
+      put_in(game_state_acc, [:crates, last_id], crate)
     end)
   end
 
-  defp initialize_pools(pools, last_id) do
-    Enum.reduce(pools, {Map.new(), last_id}, fn pool, {pools_acc, last_id} ->
-      last_id = last_id + 1
+  defp initialize_pools(game_state, []), do: game_state
 
-      pools_acc =
-        Map.put(
-          pools_acc,
-          last_id,
-          Entities.new_pool(
-            pool
-            |> Map.merge(%{id: last_id, owner_id: 9999, skill_key: "0", status: :READY})
-          )
-        )
+  defp initialize_pools(game_state, pools) do
+    Enum.reduce(pools, game_state, fn pool, game_state_acc ->
+      last_id = game_state_acc.last_id + 1
+      game_state_acc = Map.put(game_state_acc, :last_id, last_id)
 
-      {pools_acc, last_id}
+      pool_params =
+        Map.merge(pool, %{
+          id: last_id,
+          owner: %{id: 9999, aditional_info: %{team: :pool}},
+          skill_key: "0",
+          status: :READY
+        })
+
+      pool = Entities.new_pool(pool_params)
+      put_in(game_state_acc, [:pools, last_id], pool)
     end)
   end
 
@@ -1426,19 +1425,28 @@ defmodule Arena.GameUpdater do
       Map.values(players)
       |> Enum.filter(&Player.alive?/1)
 
-    cond do
-      Enum.count(players_alive) == 1 && Enum.count(players) > 1 ->
-        {:ended, hd(players_alive)}
+    teams_alive = Enum.map(players_alive, fn player -> player.aditional_info.team end)
 
-      Enum.empty?(players_alive) ->
+    cond do
+      Enum.empty?(teams_alive) ->
         ## TODO: We probably should have a better tiebraker (e.g. most kills, less deaths, etc),
         ##    but for now a random between the ones that were alive last is enough
-        player = Map.get(players, Enum.random(last_players_ids))
-        {:ended, player}
+        random_team = Map.get(players, Enum.random(last_players_ids)) |> list_same_team_players(players)
+        {:ended, random_team}
+
+      Enum.uniq(teams_alive) |> Enum.count() == 1 ->
+        random_alive_player = Enum.random(players_alive)
+        {:ended, list_same_team_players(random_alive_player, players)}
 
       true ->
         {:ongoing, Enum.map(players_alive, & &1.id)}
     end
+  end
+
+  defp list_same_team_players(player, players) do
+    Enum.filter(players, fn {_id, current_player} ->
+      current_player.aditional_info.team == player.aditional_info.team
+    end)
   end
 
   defp maybe_receive_zone_damage(player, elapse_time, zone_damage_interval, zone_damage)
@@ -1560,7 +1568,9 @@ defmodule Arena.GameUpdater do
   defp decide_collided_entity(projectile, [entity_id | other_entities], external_wall_id, players, crates) do
     cond do
       Map.get(players, entity_id) ->
-        if Player.alive?(Map.get(players, entity_id)) do
+        target_player = Map.get(players, entity_id)
+
+        if Entities.can_damage?(projectile, target_player) do
           entity_id
         else
           decide_collided_entity(projectile, other_entities, external_wall_id, players, crates)
@@ -1650,9 +1660,11 @@ defmodule Arena.GameUpdater do
   end
 
   defp handle_pools(%{pools: pools, crates: crates, players: players} = game_state) do
-    entities = Map.merge(crates, players)
+    target_entities = Map.merge(crates, players)
 
     Enum.reduce(pools, game_state, fn {_pool_id, pool}, game_state ->
+      entities = Entities.filter_damageable(pool, target_entities)
+
       Enum.reduce(entities, game_state, fn {entity_id, entity}, acc ->
         if entity_id in pool.collides_with and pool.aditional_info.status == :READY do
           add_pool_effects(acc, entity, pool)
@@ -1734,7 +1746,7 @@ defmodule Arena.GameUpdater do
 
       visible_players =
         Map.delete(players, player_id)
-        |> Enum.reduce([], fn {candicandidate_player_id, candidate_player}, acc ->
+        |> Enum.reduce([], fn {candidate_player_id, candidate_player}, acc ->
           candidate_bush_collisions =
             Enum.filter(candidate_player.collides_with, fn collided_id ->
               Map.has_key?(bushes, collided_id)
@@ -1756,9 +1768,12 @@ defmodule Arena.GameUpdater do
 
           player_is_executing_skill? = Player.player_executing_skill?(candidate_player)
 
-          if Enum.empty?(candidate_bush_collisions) or (players_in_same_bush? and players_close_enough?) or
+          # TODO: This needs a refactor.
+          # There are a lot of unnecessary calculations above when players are in the same team.
+          if Entities.same_team?(player, candidate_player) or Enum.empty?(candidate_bush_collisions) or
+               (players_in_same_bush? and players_close_enough?) or
                enough_time_since_last_skill? or player_has_item_effect? or player_is_executing_skill? do
-            [candicandidate_player_id | acc]
+            [candidate_player_id | acc]
           else
             acc
           end
@@ -1835,6 +1850,12 @@ defmodule Arena.GameUpdater do
   defp get_entity_path(%{category: :obstacle}), do: :obstacles
   defp get_entity_path(%{category: :trap}), do: :traps
   defp get_entity_path(%{category: :crate}), do: :crates
+
+  defp put_player_position(game_state, player_ids) when is_list(player_ids) do
+    Enum.reduce(player_ids, game_state, fn player_id, game_state_acc ->
+      put_player_position(game_state_acc, player_id)
+    end)
+  end
 
   defp put_player_position(%{positions: positions} = game_state, player_id) do
     next_position = Application.get_env(:arena, :players_needed_in_match) - Enum.count(positions)

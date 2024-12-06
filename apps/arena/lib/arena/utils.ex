@@ -4,24 +4,76 @@ defmodule Arena.Utils do
   It contains utility functions like math functions.
   """
 
-  # The available names for bots to enter a match, we should change this in the future
-  @bot_names [
-    "TheBlackSwordman",
-    "SlashJava",
-    "SteelBallRun",
-    "Jeff",
-    "Messi",
-    "Stone Ocean",
-    "Jeepers Creepers",
-    "Bob",
-    "El javo",
-    "Alberso",
-    "Thomas",
-    "Timmy",
-    "Pablito",
-    "Nicolino",
-    "Cangrejo",
-    "Mansito"
+  @bot_prefixes [
+    "Astro",
+    "Blaze",
+    "Lunar",
+    "Nova",
+    "Pixel",
+    "Ember",
+    "Turbo",
+    "Echo",
+    "Frost",
+    "Zenith",
+    "Apex",
+    "Orbit",
+    "Cyber",
+    "Drift",
+    "Vivid",
+    "Solar",
+    "Nimbus",
+    "Quirk",
+    "Bolt",
+    "Hollow",
+    "AllRed",
+    "Rust",
+    "Metal",
+    "Golden",
+    "Reverse",
+    "Time",
+    "Chromian",
+    "Elegant",
+    "Jealous",
+    "Adorable",
+    "Dangerous",
+    "Charming",
+    "Royal"
+  ]
+  @bot_suffixes [
+    "Hopper",
+    "Runner",
+    "Flyer",
+    "Rover",
+    "Spark",
+    "Skull",
+    "Whisper",
+    "Seeker",
+    "Rider",
+    "Chaser",
+    "Strider",
+    "Hunter",
+    "Shadow",
+    "Glimmer",
+    "Wave",
+    "Glow",
+    "Wing",
+    "Dash",
+    "Fang",
+    "Shade",
+    "Elixir",
+    "Cavalier",
+    "Lord",
+    "Socks",
+    "Creator",
+    "Suit",
+    "Greed",
+    "Gun",
+    "Balloon",
+    "Lawyer",
+    "Elevator",
+    "Spider",
+    "Dream",
+    "WashingMachine"
   ]
 
   def normalize(%{x: 0, y: 0}) do
@@ -50,10 +102,38 @@ defmodule Arena.Utils do
     "#{protocol}#{bot_manager_host}/join/#{server_url}/#{game_id}/#{bot_client}"
   end
 
-  def bot_names() do
-    @bot_names
-  end
-
   defp get_correct_protocol("localhost" <> _host), do: "http://"
   defp get_correct_protocol(_host), do: "https://"
+
+  def assign_teams_to_players(players, :pair) do
+    Enum.chunk_every(players, 2)
+    |> Enum.with_index(fn player_pair, index ->
+      Enum.map(player_pair, fn player -> Map.put(player, :team, index) end)
+    end)
+    |> List.flatten()
+  end
+
+  def assign_teams_to_players(players, :solo) do
+    Enum.with_index(players, fn player, index ->
+      Map.put(player, :team, index)
+    end)
+  end
+
+  def assign_teams_to_players(players, _not_implemented), do: players
+
+  def list_bot_names(amount) do
+    prefixes = Enum.take_random(@bot_prefixes, amount)
+    suffixes = Enum.take_random(@bot_suffixes, amount)
+
+    generate_names(prefixes, suffixes)
+  end
+
+  defp generate_names([], []), do: []
+
+  defp generate_names([prefix | prefixes], [suffix | suffixes]) do
+    [prefix <> suffix | generate_names(prefixes, suffixes)]
+  end
+
+  # Time to wait to start game with any amount of clients
+  def start_timeout_ms(), do: 4_000
 end
