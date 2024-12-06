@@ -342,7 +342,7 @@ defmodule Arena.GameUpdater do
       |> put_in([:game_state, :status], :ENDED)
       |> update_in([:game_state], fn game_state ->
         players
-        |> Enum.reduce(game_state, fn {{player_id, _player, kills}, position}, game_state_acc ->
+        |> Enum.reduce(game_state, fn {{player_id, _player, _kills}, position}, game_state_acc ->
           put_player_position(game_state_acc, player_id, position)
         end)
       end)
