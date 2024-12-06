@@ -329,29 +329,38 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info(:deathmatch_end_game_check, state) do
-    players =
+    players_with_kills =
       state.game_state.players
       |> Enum.map(fn {player_id, player} ->
         %{kills: kills} = GameTracker.get_player_result(player_id)
-        {player_id, player, kills}
+        Map.put(player, :kills, kills)
       end)
-      |> Enum.sort_by(fn {_player_id, _player, kills} -> kills end, :desc)
 
-    {winner_id, winner, _kills} = Enum.at(players, 0)
+    {winner_team, _team_kills} =
+      players_with_kills
+      |> Enum.group_by(fn player -> player.aditional_info.team end)
+      |> Enum.map(fn {team, players} ->
+        team_kills = Enum.reduce(players, 0, fn player, acc -> player.kills + acc end)
+        {team, team_kills}
+      end)
+      |> Enum.max_by(fn {_team, team_kills} -> team_kills end)
+
+    winners =
+      Enum.filter(state.game_state.players, fn {_player_id, player} -> player.aditional_info.team == winner_team end)
 
     state =
       state
       |> put_in([:game_state, :status], :ENDED)
       |> update_in([:game_state], fn game_state ->
-        players
-        |> Enum.reduce(game_state, fn {player_id, _player, _kills}, game_state_acc ->
-          put_player_position(game_state_acc, player_id)
+        players_with_kills
+        |> Enum.reduce(game_state, fn player, game_state_acc ->
+          put_player_position(game_state_acc, player.id)
         end)
       end)
 
     PubSub.broadcast(Arena.PubSub, state.game_state.game_id, :end_game_state)
-    broadcast_game_ended(winner, state.game_state)
-    GameTracker.finish_tracking(self(), winner_id)
+    broadcast_game_ended(winners, state.game_state)
+    GameTracker.finish_tracking(self(), winner_team)
 
     Process.send_after(self(), :game_ended, state.game_config.game.shutdown_game_wait_ms)
 
