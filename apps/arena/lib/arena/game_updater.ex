@@ -789,7 +789,6 @@ defmodule Arena.GameUpdater do
     }
 
     encoded_state = GameEvent.encode(%GameEvent{event: {:finished, game_state}})
-    decoded_state = GameEvent.decode(encoded_state)
     PubSub.broadcast(Arena.PubSub, state.game_id, {:game_finished, encoded_state})
   end
 
