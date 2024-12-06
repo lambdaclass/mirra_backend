@@ -333,16 +333,17 @@ defmodule Arena.GameUpdater do
         {player_id, player, kills}
       end)
       |> Enum.sort_by(fn {_player_id, _player, kills} -> kills end, :desc)
+      |> Enum.with_index(1)
 
-    {winner_id, winner, _kills} = Enum.at(players, 0)
+    {{winner_id, winner, _kills}, _position} = Enum.at(players, 0)
 
     state =
       state
       |> put_in([:game_state, :status], :ENDED)
       |> update_in([:game_state], fn game_state ->
         players
-        |> Enum.reduce(game_state, fn {player_id, _player, _kills}, game_state_acc ->
-          put_player_position(game_state_acc, player_id)
+        |> Enum.reduce(game_state, fn {{player_id, _player, _kills}, position}, game_state_acc ->
+          put_player_position(game_state_acc, player_id, position)
         end)
       end)
 
@@ -555,7 +556,13 @@ defmodule Arena.GameUpdater do
       |> update_in([:killfeed], fn killfeed -> [entry | killfeed] end)
       |> maybe_add_kill_to_player(killer_id)
       |> grant_power_up_to_killer(game_config, killer_id, victim_id)
-      |> put_player_position(victim_id)
+
+    game_state =
+      if game_config.game.game_mode != :DEATHMATCH do
+        put_player_position(game_state, victim_id)
+      else
+        game_state
+      end
 
     broadcast_player_dead(state.game_state.game_id, victim_id)
 
@@ -1842,7 +1849,18 @@ defmodule Arena.GameUpdater do
     {client_id, _player_id} =
       Enum.find(game_state.client_to_player_map, fn {_, map_player_id} -> map_player_id == player_id end)
 
-    update_in(game_state, [:positions], fn positions -> Map.put(positions, client_id, "#{next_position}") end)
+    game_state
+    |> update_in([:players, player_id, :aditional_info, :match_position], fn _ -> next_position end)
+    |> update_in([:positions], fn positions -> Map.put(positions, client_id, "#{next_position}") end)
+  end
+
+  defp put_player_position(game_state, player_id, next_position) do
+    {client_id, _player_id} =
+      Enum.find(game_state.client_to_player_map, fn {_, map_player_id} -> map_player_id == player_id end)
+
+    game_state
+    |> update_in([:players, player_id, :aditional_info, :match_position], fn _ -> next_position end)
+    |> update_in([:positions], fn positions -> Map.put(positions, client_id, "#{next_position}") end)
   end
 
   defp maybe_add_kill_to_player(%{players: players} = game_state, player_id) do
@@ -1952,9 +1970,16 @@ defmodule Arena.GameUpdater do
       Enum.reduce(players_to_respawn, {game_state, game_state.respawn_queue}, fn {player_id, _time},
                                                                                  {game_state, respawn_queue} ->
         new_position = Enum.random(game_config.map.initial_positions)
-        player = Map.get(game_state.players, player_id) |> Player.respawn_player(new_position)
+
+        player =
+          Map.get(game_state.players, player_id)
+          |> Player.respawn_player(new_position)
+
+        game_state =
+          Effect.put_effect_to_entity(game_state, player, player_id, Effect.invincible_effect())
+
         broadcast_player_respawn(game_state.game_id, player_id)
-        {put_in(game_state, [:players, player_id], player), Map.delete(respawn_queue, player_id)}
+        {game_state, Map.delete(respawn_queue, player_id)}
       end)
 
     Map.put(game_state, :respawn_queue, respawn_queue)

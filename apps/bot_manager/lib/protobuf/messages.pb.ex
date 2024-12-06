@@ -551,6 +551,8 @@ defmodule BotManager.Protobuf.Player do
     type: :uint32,
     json_name: "currentBasicAnimation"
   )
+
+  field(:match_position, 19, proto3_optional: true, type: :uint32, json_name: "matchPosition")
 end
 
 defmodule BotManager.Protobuf.Effect do
