@@ -789,6 +789,7 @@ defmodule Arena.GameUpdater do
     }
 
     encoded_state = GameEvent.encode(%GameEvent{event: {:finished, game_state}})
+    decoded_state = GameEvent.decode(encoded_state)
     PubSub.broadcast(Arena.PubSub, state.game_id, {:game_finished, encoded_state})
   end
 
@@ -1849,14 +1850,18 @@ defmodule Arena.GameUpdater do
     {client_id, _player_id} =
       Enum.find(game_state.client_to_player_map, fn {_, map_player_id} -> map_player_id == player_id end)
 
-    update_in(game_state, [:positions], fn positions -> Map.put(positions, client_id, "#{next_position}") end)
+    game_state
+    |> update_in([:players, player_id, :aditional_info, :match_position], fn _ -> next_position end)
+    |> update_in([:positions], fn positions -> Map.put(positions, client_id, "#{next_position}") end)
   end
 
   defp put_player_position(game_state, player_id, next_position) do
     {client_id, _player_id} =
       Enum.find(game_state.client_to_player_map, fn {_, map_player_id} -> map_player_id == player_id end)
 
-    update_in(game_state, [:positions], fn positions -> Map.put(positions, client_id, "#{next_position}") end)
+    game_state
+    |> update_in([:players, player_id, :aditional_info, :match_position], fn _ -> next_position end)
+    |> update_in([:positions], fn positions -> Map.put(positions, client_id, "#{next_position}") end)
   end
 
   defp maybe_add_kill_to_player(%{players: players} = game_state, player_id) do

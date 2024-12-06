@@ -66,7 +66,8 @@ defmodule Arena.Entities do
         selected_bounty: nil,
         bounty_completed: false,
         current_basic_animation: 0,
-        item_effects_expires_at: now
+        item_effects_expires_at: now,
+        position: nil
       },
       collides_with: []
     }
@@ -395,7 +396,8 @@ defmodule Arena.Entities do
        forced_movement: get_in(entity, [:aditional_info, :forced_movement]),
        bounty_completed: get_in(entity, [:aditional_info, :bounty_completed]),
        mana: get_in(entity, [:aditional_info, :mana]),
-       current_basic_animation: get_in(entity, [:aditional_info, :current_basic_animation])
+       current_basic_animation: get_in(entity, [:aditional_info, :current_basic_animation]),
+       match_position: get_in(entity, [:aditional_info, :match_position])
      }}
   end
 
