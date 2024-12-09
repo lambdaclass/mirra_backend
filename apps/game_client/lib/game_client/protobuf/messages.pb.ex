@@ -168,6 +168,15 @@ defmodule GameClient.Protobuf.BountySelected do
   field(:bounty, 1, type: GameClient.Protobuf.BountyInfo)
 end
 
+defmodule GameClient.Protobuf.GameFinished.WinnersEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: GameClient.Protobuf.Entity)
+end
+
 defmodule GameClient.Protobuf.GameFinished.PlayersEntry do
   @moduledoc false
 
@@ -182,7 +191,11 @@ defmodule GameClient.Protobuf.GameFinished do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  field(:winner, 1, type: GameClient.Protobuf.Entity)
+  field(:winners, 1,
+    repeated: true,
+    type: GameClient.Protobuf.GameFinished.WinnersEntry,
+    map: true
+  )
 
   field(:players, 2,
     repeated: true,
@@ -553,6 +566,7 @@ defmodule GameClient.Protobuf.Player do
   )
 
   field(:match_position, 19, proto3_optional: true, type: :uint32, json_name: "matchPosition")
+  field(:team, 20, proto3_optional: true, type: :uint32)
 end
 
 defmodule GameClient.Protobuf.Effect do
