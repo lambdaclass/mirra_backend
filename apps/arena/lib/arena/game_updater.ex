@@ -329,38 +329,40 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info(:deathmatch_end_game_check, state) do
-    players_with_kills =
+    teams_with_kills =
       state.game_state.players
       |> Enum.map(fn {player_id, player} ->
         %{kills: kills} = GameTracker.get_player_result(player_id)
         Map.put(player, :kills, kills)
       end)
-
-    {winner_team, _team_kills} =
-      players_with_kills
       |> Enum.group_by(fn player -> player.aditional_info.team end)
       |> Enum.map(fn {team, players} ->
         team_kills = Enum.reduce(players, 0, fn player, acc -> player.kills + acc end)
-        {team, team_kills}
-      end)
-      |> Enum.max_by(fn {_team, team_kills} -> team_kills end)
 
-    winners =
-      Enum.filter(state.game_state.players, fn {_player_id, player} -> player.aditional_info.team == winner_team end)
+        %{team: team, players: players, team_kills: team_kills}
+      end)
+      |> Enum.sort_by(fn %{team_kills: team_kills} -> team_kills end, :desc)
+      |> Enum.with_index(1)
+
+    {winner_team, _position} = Enum.at(teams_with_kills, 0)
+    winner_team_players = Enum.map(winner_team.players, fn player -> {player.id, player} end)
 
     state =
       state
       |> put_in([:game_state, :status], :ENDED)
       |> update_in([:game_state], fn game_state ->
-        players_with_kills
-        |> Enum.reduce(game_state, fn player, game_state_acc ->
-          put_player_position(game_state_acc, player.id)
+        teams_with_kills
+        |> Enum.reduce(game_state, fn {team, position}, game_state_acc ->
+          Enum.reduce(team.players, game_state_acc, fn player, game_state_acc ->
+            put_player_position(game_state_acc, player.id, position)
+          end)
         end)
       end)
 
     PubSub.broadcast(Arena.PubSub, state.game_state.game_id, :end_game_state)
-    broadcast_game_ended(winners, state.game_state)
-    GameTracker.finish_tracking(self(), winner_team)
+    broadcast_game_ended(winner_team_players, state.game_state)
+
+    GameTracker.finish_tracking(self(), winner_team.team)
 
     Process.send_after(self(), :game_ended, state.game_config.game.shutdown_game_wait_ms)
 
@@ -570,7 +572,13 @@ defmodule Arena.GameUpdater do
       |> update_in([:killfeed], fn killfeed -> [entry | killfeed] end)
       |> maybe_add_kill_to_player(killer_id)
       |> grant_power_up_to_killer(game_config, killer_id, victim_id)
-      |> put_player_position(victim_id)
+
+    game_state =
+      if game_config.game.game_mode != :DEATHMATCH do
+        put_player_position(game_state, victim_id)
+      else
+        game_state
+      end
 
     broadcast_player_dead(state.game_state.game_id, victim_id)
 
@@ -1863,7 +1871,18 @@ defmodule Arena.GameUpdater do
     {client_id, _player_id} =
       Enum.find(game_state.client_to_player_map, fn {_, map_player_id} -> map_player_id == player_id end)
 
-    update_in(game_state, [:positions], fn positions -> Map.put(positions, client_id, "#{next_position}") end)
+    game_state
+    |> update_in([:players, player_id, :aditional_info, :match_position], fn _ -> next_position end)
+    |> update_in([:positions], fn positions -> Map.put(positions, client_id, "#{next_position}") end)
+  end
+
+  defp put_player_position(game_state, player_id, next_position) do
+    {client_id, _player_id} =
+      Enum.find(game_state.client_to_player_map, fn {_, map_player_id} -> map_player_id == player_id end)
+
+    game_state
+    |> update_in([:players, player_id, :aditional_info, :match_position], fn _ -> next_position end)
+    |> update_in([:positions], fn positions -> Map.put(positions, client_id, "#{next_position}") end)
   end
 
   defp maybe_add_kill_to_player(%{players: players} = game_state, player_id) do
@@ -1973,9 +1992,16 @@ defmodule Arena.GameUpdater do
       Enum.reduce(players_to_respawn, {game_state, game_state.respawn_queue}, fn {player_id, _time},
                                                                                  {game_state, respawn_queue} ->
         new_position = Enum.random(game_config.map.initial_positions)
-        player = Map.get(game_state.players, player_id) |> Player.respawn_player(new_position)
+
+        player =
+          Map.get(game_state.players, player_id)
+          |> Player.respawn_player(new_position)
+
+        game_state =
+          Effect.put_effect_to_entity(game_state, player, player_id, Effect.invincible_effect())
+
         broadcast_player_respawn(game_state.game_id, player_id)
-        {put_in(game_state, [:players, player_id], player), Map.delete(respawn_queue, player_id)}
+        {game_state, Map.delete(respawn_queue, player_id)}
       end)
 
     Map.put(game_state, :respawn_queue, respawn_queue)

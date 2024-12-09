@@ -176,7 +176,7 @@ end
 defmodule ArenaLoadTest.Serialization.GameFinished.WinnersEntry do
   @moduledoc false
 
-  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:key, 1, type: :uint64)
   field(:value, 2, type: ArenaLoadTest.Serialization.Entity)
@@ -618,7 +618,8 @@ defmodule ArenaLoadTest.Serialization.Player do
     json_name: "currentBasicAnimation"
   )
 
-  field(:team, 19, proto3_optional: true, type: :uint32)
+  field(:match_position, 19, proto3_optional: true, type: :uint32, json_name: "matchPosition")
+  field(:team, 20, proto3_optional: true, type: :uint32)
 end
 
 defmodule ArenaLoadTest.Serialization.Effect do
