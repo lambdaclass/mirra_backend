@@ -329,37 +329,40 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info(:deathmatch_end_game_check, state) do
-    players_with_kills =
+    teams_with_kills =
       state.game_state.players
       |> Enum.map(fn {player_id, player} ->
         %{kills: kills} = GameTracker.get_player_result(player_id)
-        {player_id, Map.put(player, :kills, kills)}
+        Map.put(player, :kills, kills)
       end)
-      |> Enum.group_by(fn {_player_id, player} -> player.aditional_info.team end)
+      |> Enum.group_by(fn player -> player.aditional_info.team end)
       |> Enum.map(fn {team, players} ->
-        team_kills = Enum.reduce(players, 0, fn {_, player}, acc -> player.kills + acc end)
-        {team, players, team_kills}
+        team_kills = Enum.reduce(players, 0, fn player, acc -> player.kills + acc end)
+
+        %{team: team, players: players, team_kills: team_kills}
       end)
-      |> Enum.sort_by(fn {_, _, team_kills} -> team_kills end, :desc)
+      |> Enum.sort_by(fn %{team_kills: team_kills} -> team_kills end, :desc)
       |> Enum.with_index(1)
 
-    {{winner_team, winners, _kills}, _position} = Enum.at(players_with_kills, 0)
+    {winner_team, _position} = Enum.at(teams_with_kills, 0)
+    winner_team_players = Enum.map(winner_team.players, fn player -> {player.id, player} end)
 
     state =
       state
       |> put_in([:game_state, :status], :ENDED)
       |> update_in([:game_state], fn game_state ->
-        players_with_kills
-        |> Enum.reduce(game_state, fn {{_team, players, _kills}, position}, game_state_acc ->
-          Enum.reduce(players, game_state_acc, fn {player_id, _player}, game_state_acc ->
-            put_player_position(game_state_acc, player_id, position)
+        teams_with_kills
+        |> Enum.reduce(game_state, fn {team, position}, game_state_acc ->
+          Enum.reduce(team.players, game_state_acc, fn player, game_state_acc ->
+            put_player_position(game_state_acc, player.id, position)
           end)
         end)
       end)
 
     PubSub.broadcast(Arena.PubSub, state.game_state.game_id, :end_game_state)
-    broadcast_game_ended(winners, state.game_state)
-    GameTracker.finish_tracking(self(), winner_team)
+    broadcast_game_ended(winner_team_players, state.game_state)
+
+    GameTracker.finish_tracking(self(), winner_team.team)
 
     Process.send_after(self(), :game_ended, state.game_config.game.shutdown_game_wait_ms)
 
