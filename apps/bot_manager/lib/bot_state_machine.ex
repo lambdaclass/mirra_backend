@@ -43,7 +43,10 @@ defmodule BotManager.BotStateMachine do
 
   defp map_directions_to_players(game_state, bot_player) do
     Map.delete(game_state.players, bot_player.id)
-    |> Map.filter(fn {_player_id, player} -> Utils.player_alive?(player) end)
+    |> Map.filter(fn {player_id, player} ->
+      Utils.player_alive?(player) && is_player_within_visible_players(bot_player, player_id)
+    end)
+    |> IO.inspect(label: :wea)
     |> Enum.map(fn {_player_id, player} ->
       player_info =
         get_distance_and_direction_to_positions(bot_player.position, player.position)
@@ -61,5 +64,10 @@ defmodule BotManager.BotStateMachine do
       direction: direction,
       distance: distance
     }
+  end
+
+  defp is_player_within_visible_players(bot_player, player_id) do
+    {:player, aditiona_info} = bot_player.aditional_info
+    Enum.member?(aditiona_info.visible_players, player_id)
   end
 end
