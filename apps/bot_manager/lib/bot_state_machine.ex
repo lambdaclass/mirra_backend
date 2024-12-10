@@ -46,7 +46,6 @@ defmodule BotManager.BotStateMachine do
     |> Map.filter(fn {player_id, player} ->
       Utils.player_alive?(player) && is_player_within_visible_players(bot_player, player_id)
     end)
-    |> IO.inspect(label: :wea)
     |> Enum.map(fn {_player_id, player} ->
       player_info =
         get_distance_and_direction_to_positions(bot_player.position, player.position)
