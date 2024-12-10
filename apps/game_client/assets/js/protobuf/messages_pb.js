@@ -1033,8 +1033,8 @@ proto.Direction.prototype.toObject = function(opt_includeInstance) {
  */
 proto.Direction.toObject = function(includeInstance, msg) {
   var f, obj = {
-    x: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
-    y: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0)
+x: (f = jspb.Message.getOptionalFloatingPointField(msg, 1)) == null ? undefined : f,
+y: (f = jspb.Message.getOptionalFloatingPointField(msg, 2)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -1229,8 +1229,8 @@ proto.Position.prototype.toObject = function(opt_includeInstance) {
  */
 proto.Position.toObject = function(includeInstance, msg) {
   var f, obj = {
-    x: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
-    y: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0)
+x: (f = jspb.Message.getOptionalFloatingPointField(msg, 1)) == null ? undefined : f,
+y: (f = jspb.Message.getOptionalFloatingPointField(msg, 2)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -1432,7 +1432,7 @@ proto.ListPositionPB.prototype.toObject = function(opt_includeInstance) {
  */
 proto.ListPositionPB.toObject = function(includeInstance, msg) {
   var f, obj = {
-    positionsList: jspb.Message.toObjectList(msg.getPositionsList(),
+positionsList: jspb.Message.toObjectList(msg.getPositionsList(),
     proto.Position.toObject, includeInstance)
   };
 
@@ -1613,10 +1613,10 @@ proto.LobbyEvent.prototype.toObject = function(opt_includeInstance) {
  */
 proto.LobbyEvent.toObject = function(includeInstance, msg) {
   var f, obj = {
-    leave: (f = msg.getLeave()) && proto.LeaveLobby.toObject(includeInstance, f),
-    left: (f = msg.getLeft()) && proto.LeftLobby.toObject(includeInstance, f),
-    joined: (f = msg.getJoined()) && proto.JoinedLobby.toObject(includeInstance, f),
-    game: (f = msg.getGame()) && proto.GameState.toObject(includeInstance, f)
+leave: (f = msg.getLeave()) && proto.LeaveLobby.toObject(includeInstance, f),
+left: (f = msg.getLeft()) && proto.LeftLobby.toObject(includeInstance, f),
+joined: (f = msg.getJoined()) && proto.JoinedLobby.toObject(includeInstance, f),
+game: (f = msg.getGame()) && proto.GameState.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -2249,11 +2249,11 @@ proto.GameEvent.prototype.toObject = function(opt_includeInstance) {
  */
 proto.GameEvent.toObject = function(includeInstance, msg) {
   var f, obj = {
-    joined: (f = msg.getJoined()) && proto.GameJoined.toObject(includeInstance, f),
-    update: (f = msg.getUpdate()) && proto.GameState.toObject(includeInstance, f),
-    finished: (f = msg.getFinished()) && proto.GameFinished.toObject(includeInstance, f),
-    toggleBots: (f = msg.getToggleBots()) && proto.ToggleBots.toObject(includeInstance, f),
-    bountySelected: (f = msg.getBountySelected()) && proto.BountySelected.toObject(includeInstance, f)
+joined: (f = msg.getJoined()) && proto.GameJoined.toObject(includeInstance, f),
+update: (f = msg.getUpdate()) && proto.GameState.toObject(includeInstance, f),
+finished: (f = msg.getFinished()) && proto.GameFinished.toObject(includeInstance, f),
+toggleBots: (f = msg.getToggleBots()) && proto.ToggleBots.toObject(includeInstance, f),
+bountySelected: (f = msg.getBountySelected()) && proto.BountySelected.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -2604,7 +2604,7 @@ proto.BountySelected.prototype.toObject = function(opt_includeInstance) {
  */
 proto.BountySelected.toObject = function(includeInstance, msg) {
   var f, obj = {
-    bounty: (f = msg.getBounty()) && proto.BountyInfo.toObject(includeInstance, f)
+bounty: (f = msg.getBounty()) && proto.BountyInfo.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -2755,8 +2755,8 @@ proto.GameFinished.prototype.toObject = function(opt_includeInstance) {
  */
 proto.GameFinished.toObject = function(includeInstance, msg) {
   var f, obj = {
-    winnersMap: (f = msg.getWinnersMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
-    playersMap: (f = msg.getPlayersMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : []
+winnersMap: (f = msg.getWinnersMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
+playersMap: (f = msg.getPlayersMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : []
   };
 
   if (includeInstance) {
@@ -2930,9 +2930,9 @@ proto.GameJoined.prototype.toObject = function(opt_includeInstance) {
  */
 proto.GameJoined.toObject = function(includeInstance, msg) {
   var f, obj = {
-    playerId: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    config: (f = msg.getConfig()) && proto.Configuration.toObject(includeInstance, f),
-    bountiesList: jspb.Message.toObjectList(msg.getBountiesList(),
+playerId: jspb.Message.getFieldWithDefault(msg, 1, 0),
+config: (f = msg.getConfig()) && proto.Configuration.toObject(includeInstance, f),
+bountiesList: jspb.Message.toObjectList(msg.getBountiesList(),
     proto.BountyInfo.toObject, includeInstance)
   };
 
@@ -3171,11 +3171,11 @@ proto.Configuration.prototype.toObject = function(opt_includeInstance) {
  */
 proto.Configuration.toObject = function(includeInstance, msg) {
   var f, obj = {
-    game: (f = msg.getGame()) && proto.ConfigGame.toObject(includeInstance, f),
-    map: (f = msg.getMap()) && proto.ConfigMap.toObject(includeInstance, f),
-    charactersList: jspb.Message.toObjectList(msg.getCharactersList(),
+game: (f = msg.getGame()) && proto.ConfigGame.toObject(includeInstance, f),
+map: (f = msg.getMap()) && proto.ConfigMap.toObject(includeInstance, f),
+charactersList: jspb.Message.toObjectList(msg.getCharactersList(),
     proto.ConfigCharacter.toObject, includeInstance),
-    clientConfig: (f = msg.getClientConfig()) && proto.ClientConfig.toObject(includeInstance, f)
+clientConfig: (f = msg.getClientConfig()) && proto.ClientConfig.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -3477,10 +3477,10 @@ proto.ConfigGame.prototype.toObject = function(opt_includeInstance) {
  */
 proto.ConfigGame.toObject = function(includeInstance, msg) {
   var f, obj = {
-    tickRateMs: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
-    bountyPickTimeMs: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
-    startGameTimeMs: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0),
-    gameMode: jspb.Message.getFieldWithDefault(msg, 4, 0)
+tickRateMs: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
+bountyPickTimeMs: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
+startGameTimeMs: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0),
+gameMode: jspb.Message.getFieldWithDefault(msg, 4, 0)
   };
 
   if (includeInstance) {
@@ -3697,8 +3697,8 @@ proto.ConfigMap.prototype.toObject = function(opt_includeInstance) {
  */
 proto.ConfigMap.toObject = function(includeInstance, msg) {
   var f, obj = {
-    radius: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
-    name: jspb.Message.getFieldWithDefault(msg, 2, "")
+radius: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
+name: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -3857,14 +3857,14 @@ proto.ConfigCharacter.prototype.toObject = function(opt_includeInstance) {
  */
 proto.ConfigCharacter.toObject = function(includeInstance, msg) {
   var f, obj = {
-    name: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    active: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
-    baseSpeed: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0),
-    baseSize: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
-    baseHealth: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    maxInventorySize: jspb.Message.getFieldWithDefault(msg, 6, 0),
-    skillsMap: (f = msg.getSkillsMap()) ? f.toObject(includeInstance, proto.ConfigSkill.toObject) : [],
-    baseMana: jspb.Message.getFieldWithDefault(msg, 8, 0)
+name: jspb.Message.getFieldWithDefault(msg, 1, ""),
+active: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
+baseSpeed: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0),
+baseSize: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
+baseHealth: jspb.Message.getFieldWithDefault(msg, 5, 0),
+maxInventorySize: jspb.Message.getFieldWithDefault(msg, 6, 0),
+skillsMap: (f = msg.getSkillsMap()) ? f.toObject(includeInstance, proto.ConfigSkill.toObject) : [],
+baseMana: jspb.Message.getFieldWithDefault(msg, 8, 0)
   };
 
   if (includeInstance) {
@@ -4201,7 +4201,7 @@ proto.ClientConfig.prototype.toObject = function(opt_includeInstance) {
  */
 proto.ClientConfig.toObject = function(includeInstance, msg) {
   var f, obj = {
-    serverUpdate: (f = msg.getServerUpdate()) && proto.ConfigServerUpdate.toObject(includeInstance, f)
+serverUpdate: (f = msg.getServerUpdate()) && proto.ConfigServerUpdate.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -4352,12 +4352,12 @@ proto.ConfigServerUpdate.prototype.toObject = function(opt_includeInstance) {
  */
 proto.ConfigServerUpdate.toObject = function(includeInstance, msg) {
   var f, obj = {
-    timestampDifferenceSamplesToCheckWarning: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    timestampDifferencesSamplesMaxLength: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    showWarningThreshold: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    stopWarningThreshold: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    msWithoutUpdateShowWarning: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    msWithoutUpdateDisconnect: jspb.Message.getFieldWithDefault(msg, 6, 0)
+timestampDifferenceSamplesToCheckWarning: jspb.Message.getFieldWithDefault(msg, 1, 0),
+timestampDifferencesSamplesMaxLength: jspb.Message.getFieldWithDefault(msg, 2, 0),
+showWarningThreshold: jspb.Message.getFieldWithDefault(msg, 3, 0),
+stopWarningThreshold: jspb.Message.getFieldWithDefault(msg, 4, 0),
+msWithoutUpdateShowWarning: jspb.Message.getFieldWithDefault(msg, 5, 0),
+msWithoutUpdateDisconnect: jspb.Message.getFieldWithDefault(msg, 6, 0)
   };
 
   if (includeInstance) {
@@ -4632,16 +4632,16 @@ proto.ConfigSkill.prototype.toObject = function(opt_includeInstance) {
  */
 proto.ConfigSkill.toObject = function(includeInstance, msg) {
   var f, obj = {
-    name: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    cooldownMs: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    executionDurationMs: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    targettingRadius: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
-    targettingAngle: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0),
-    targettingRange: jspb.Message.getFloatingPointFieldWithDefault(msg, 6, 0.0),
-    staminaCost: jspb.Message.getFieldWithDefault(msg, 7, 0),
-    targettingOffset: jspb.Message.getFloatingPointFieldWithDefault(msg, 8, 0.0),
-    manaCost: jspb.Message.getFieldWithDefault(msg, 9, 0),
-    isCombo: jspb.Message.getBooleanFieldWithDefault(msg, 10, false)
+name: jspb.Message.getFieldWithDefault(msg, 1, ""),
+cooldownMs: jspb.Message.getFieldWithDefault(msg, 2, 0),
+executionDurationMs: jspb.Message.getFieldWithDefault(msg, 3, 0),
+targettingRadius: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
+targettingAngle: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0),
+targettingRange: jspb.Message.getFloatingPointFieldWithDefault(msg, 6, 0.0),
+staminaCost: jspb.Message.getFieldWithDefault(msg, 7, 0),
+targettingOffset: jspb.Message.getFloatingPointFieldWithDefault(msg, 8, 0.0),
+manaCost: jspb.Message.getFieldWithDefault(msg, 9, 0),
+isCombo: jspb.Message.getBooleanFieldWithDefault(msg, 10, false)
   };
 
   if (includeInstance) {
@@ -5039,26 +5039,26 @@ proto.GameState.prototype.toObject = function(opt_includeInstance) {
  */
 proto.GameState.toObject = function(includeInstance, msg) {
   var f, obj = {
-    gameId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    playersMap: (f = msg.getPlayersMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
-    projectilesMap: (f = msg.getProjectilesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
-    playerTimestampsMap: (f = msg.getPlayerTimestampsMap()) ? f.toObject(includeInstance, undefined) : [],
-    serverTimestamp: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    zone: (f = msg.getZone()) && proto.Zone.toObject(includeInstance, f),
-    killfeedList: jspb.Message.toObjectList(msg.getKillfeedList(),
+gameId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+playersMap: (f = msg.getPlayersMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
+projectilesMap: (f = msg.getProjectilesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
+playerTimestampsMap: (f = msg.getPlayerTimestampsMap()) ? f.toObject(includeInstance, undefined) : [],
+serverTimestamp: jspb.Message.getFieldWithDefault(msg, 5, 0),
+zone: (f = msg.getZone()) && proto.Zone.toObject(includeInstance, f),
+killfeedList: jspb.Message.toObjectList(msg.getKillfeedList(),
     proto.KillEntry.toObject, includeInstance),
-    damageTakenMap: (f = msg.getDamageTakenMap()) ? f.toObject(includeInstance, undefined) : [],
-    damageDoneMap: (f = msg.getDamageDoneMap()) ? f.toObject(includeInstance, undefined) : [],
-    powerUpsMap: (f = msg.getPowerUpsMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
-    status: jspb.Message.getFieldWithDefault(msg, 11, 0),
-    startGameTimestamp: jspb.Message.getFieldWithDefault(msg, 12, 0),
-    itemsMap: (f = msg.getItemsMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
-    obstaclesMap: (f = msg.getObstaclesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
-    poolsMap: (f = msg.getPoolsMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
-    cratesMap: (f = msg.getCratesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
-    bushesMap: (f = msg.getBushesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
-    trapsMap: (f = msg.getTrapsMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
-    externalWall: (f = msg.getExternalWall()) && proto.Entity.toObject(includeInstance, f)
+damageTakenMap: (f = msg.getDamageTakenMap()) ? f.toObject(includeInstance, undefined) : [],
+damageDoneMap: (f = msg.getDamageDoneMap()) ? f.toObject(includeInstance, undefined) : [],
+powerUpsMap: (f = msg.getPowerUpsMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
+status: jspb.Message.getFieldWithDefault(msg, 11, 0),
+startGameTimestamp: jspb.Message.getFieldWithDefault(msg, 12, 0),
+itemsMap: (f = msg.getItemsMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
+obstaclesMap: (f = msg.getObstaclesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
+poolsMap: (f = msg.getPoolsMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
+cratesMap: (f = msg.getCratesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
+bushesMap: (f = msg.getBushesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
+trapsMap: (f = msg.getTrapsMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
+externalWall: (f = msg.getExternalWall()) && proto.Entity.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -5862,26 +5862,26 @@ proto.Entity.prototype.toObject = function(opt_includeInstance) {
  */
 proto.Entity.toObject = function(includeInstance, msg) {
   var f, obj = {
-    id: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    category: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    shape: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    name: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    position: (f = msg.getPosition()) && proto.Position.toObject(includeInstance, f),
-    radius: jspb.Message.getFloatingPointFieldWithDefault(msg, 6, 0.0),
-    vertices: (f = msg.getVertices()) && proto.ListPositionPB.toObject(includeInstance, f),
-    collidesWithList: (f = jspb.Message.getRepeatedField(msg, 8)) == null ? undefined : f,
-    speed: jspb.Message.getFloatingPointFieldWithDefault(msg, 9, 0.0),
-    direction: (f = msg.getDirection()) && proto.Direction.toObject(includeInstance, f),
-    isMoving: jspb.Message.getBooleanFieldWithDefault(msg, 11, false),
-    player: (f = msg.getPlayer()) && proto.Player.toObject(includeInstance, f),
-    projectile: (f = msg.getProjectile()) && proto.Projectile.toObject(includeInstance, f),
-    obstacle: (f = msg.getObstacle()) && proto.Obstacle.toObject(includeInstance, f),
-    powerUp: (f = msg.getPowerUp()) && proto.PowerUp.toObject(includeInstance, f),
-    item: (f = msg.getItem()) && proto.Item.toObject(includeInstance, f),
-    pool: (f = msg.getPool()) && proto.Pool.toObject(includeInstance, f),
-    crate: (f = msg.getCrate()) && proto.Crate.toObject(includeInstance, f),
-    bush: (f = msg.getBush()) && proto.Bush.toObject(includeInstance, f),
-    trap: (f = msg.getTrap()) && proto.Trap.toObject(includeInstance, f)
+id: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+category: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+shape: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
+name: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
+position: (f = msg.getPosition()) && proto.Position.toObject(includeInstance, f),
+radius: (f = jspb.Message.getOptionalFloatingPointField(msg, 6)) == null ? undefined : f,
+vertices: (f = msg.getVertices()) && proto.ListPositionPB.toObject(includeInstance, f),
+collidesWithList: (f = jspb.Message.getRepeatedField(msg, 8)) == null ? undefined : f,
+speed: (f = jspb.Message.getOptionalFloatingPointField(msg, 9)) == null ? undefined : f,
+direction: (f = msg.getDirection()) && proto.Direction.toObject(includeInstance, f),
+isMoving: (f = jspb.Message.getBooleanField(msg, 11)) == null ? undefined : f,
+player: (f = msg.getPlayer()) && proto.Player.toObject(includeInstance, f),
+projectile: (f = msg.getProjectile()) && proto.Projectile.toObject(includeInstance, f),
+obstacle: (f = msg.getObstacle()) && proto.Obstacle.toObject(includeInstance, f),
+powerUp: (f = msg.getPowerUp()) && proto.PowerUp.toObject(includeInstance, f),
+item: (f = msg.getItem()) && proto.Item.toObject(includeInstance, f),
+pool: (f = msg.getPool()) && proto.Pool.toObject(includeInstance, f),
+crate: (f = msg.getCrate()) && proto.Crate.toObject(includeInstance, f),
+bush: (f = msg.getBush()) && proto.Bush.toObject(includeInstance, f),
+trap: (f = msg.getTrap()) && proto.Trap.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -6968,27 +6968,28 @@ proto.Player.prototype.toObject = function(opt_includeInstance) {
  */
 proto.Player.toObject = function(includeInstance, msg) {
   var f, obj = {
-    health: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    killCount: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    currentActionsList: jspb.Message.toObjectList(msg.getCurrentActionsList(),
+health: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+killCount: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+currentActionsList: jspb.Message.toObjectList(msg.getCurrentActionsList(),
     proto.PlayerAction.toObject, includeInstance),
-    availableStamina: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    maxStamina: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    staminaInterval: jspb.Message.getFieldWithDefault(msg, 6, 0),
-    rechargingStamina: jspb.Message.getBooleanFieldWithDefault(msg, 7, false),
-    characterName: jspb.Message.getFieldWithDefault(msg, 8, ""),
-    powerUps: jspb.Message.getFieldWithDefault(msg, 9, 0),
-    effectsList: jspb.Message.toObjectList(msg.getEffectsList(),
+availableStamina: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f,
+maxStamina: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f,
+staminaInterval: (f = jspb.Message.getField(msg, 6)) == null ? undefined : f,
+rechargingStamina: (f = jspb.Message.getBooleanField(msg, 7)) == null ? undefined : f,
+characterName: (f = jspb.Message.getField(msg, 8)) == null ? undefined : f,
+powerUps: (f = jspb.Message.getField(msg, 9)) == null ? undefined : f,
+effectsList: jspb.Message.toObjectList(msg.getEffectsList(),
     proto.Effect.toObject, includeInstance),
-    inventory: (f = msg.getInventory()) && proto.Item.toObject(includeInstance, f),
-    cooldownsMap: (f = msg.getCooldownsMap()) ? f.toObject(includeInstance, undefined) : [],
-    visiblePlayersList: (f = jspb.Message.getRepeatedField(msg, 13)) == null ? undefined : f,
-    onBush: jspb.Message.getBooleanFieldWithDefault(msg, 14, false),
-    forcedMovement: jspb.Message.getBooleanFieldWithDefault(msg, 15, false),
-    bountyCompleted: jspb.Message.getBooleanFieldWithDefault(msg, 16, false),
-    mana: jspb.Message.getFieldWithDefault(msg, 17, 0),
-    currentBasicAnimation: jspb.Message.getFieldWithDefault(msg, 18, 0),
-    team: jspb.Message.getFieldWithDefault(msg, 19, 0)
+inventory: (f = msg.getInventory()) && proto.Item.toObject(includeInstance, f),
+cooldownsMap: (f = msg.getCooldownsMap()) ? f.toObject(includeInstance, undefined) : [],
+visiblePlayersList: (f = jspb.Message.getRepeatedField(msg, 13)) == null ? undefined : f,
+onBush: (f = jspb.Message.getBooleanField(msg, 14)) == null ? undefined : f,
+forcedMovement: (f = jspb.Message.getBooleanField(msg, 15)) == null ? undefined : f,
+bountyCompleted: (f = jspb.Message.getBooleanField(msg, 16)) == null ? undefined : f,
+mana: (f = jspb.Message.getField(msg, 17)) == null ? undefined : f,
+currentBasicAnimation: (f = jspb.Message.getField(msg, 18)) == null ? undefined : f,
+matchPosition: (f = jspb.Message.getField(msg, 19)) == null ? undefined : f,
+team: (f = jspb.Message.getField(msg, 20)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -7105,6 +7106,10 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
       msg.setCurrentBasicAnimation(value);
       break;
     case 19:
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setMatchPosition(value);
+      break;
+    case 20:
       var value = /** @type {number} */ (reader.readUint32());
       msg.setTeam(value);
       break;
@@ -7267,6 +7272,13 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeUint32(
       19,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 20));
+  if (f != null) {
+    writer.writeUint32(
+      20,
       f
     );
   }
@@ -7915,10 +7927,10 @@ proto.Player.prototype.hasCurrentBasicAnimation = function() {
 
 
 /**
- * optional uint32 team = 19;
+ * optional uint32 match_position = 19;
  * @return {number}
  */
-proto.Player.prototype.getTeam = function() {
+proto.Player.prototype.getMatchPosition = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 19, 0));
 };
 
@@ -7927,7 +7939,7 @@ proto.Player.prototype.getTeam = function() {
  * @param {number} value
  * @return {!proto.Player} returns this
  */
-proto.Player.prototype.setTeam = function(value) {
+proto.Player.prototype.setMatchPosition = function(value) {
   return jspb.Message.setField(this, 19, value);
 };
 
@@ -7936,7 +7948,7 @@ proto.Player.prototype.setTeam = function(value) {
  * Clears the field making it undefined.
  * @return {!proto.Player} returns this
  */
-proto.Player.prototype.clearTeam = function() {
+proto.Player.prototype.clearMatchPosition = function() {
   return jspb.Message.setField(this, 19, undefined);
 };
 
@@ -7945,8 +7957,44 @@ proto.Player.prototype.clearTeam = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Player.prototype.hasTeam = function() {
+proto.Player.prototype.hasMatchPosition = function() {
   return jspb.Message.getField(this, 19) != null;
+};
+
+
+/**
+ * optional uint32 team = 20;
+ * @return {number}
+ */
+proto.Player.prototype.getTeam = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 20, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setTeam = function(value) {
+  return jspb.Message.setField(this, 20, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.clearTeam = function() {
+  return jspb.Message.setField(this, 20, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.Player.prototype.hasTeam = function() {
+  return jspb.Message.getField(this, 20) != null;
 };
 
 
@@ -7982,9 +8030,9 @@ proto.Effect.prototype.toObject = function(opt_includeInstance) {
  */
 proto.Effect.toObject = function(includeInstance, msg) {
   var f, obj = {
-    name: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    durationMs: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    id: jspb.Message.getFieldWithDefault(msg, 3, 0)
+name: jspb.Message.getFieldWithDefault(msg, 1, ""),
+durationMs: jspb.Message.getFieldWithDefault(msg, 2, 0),
+id: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -8172,7 +8220,7 @@ proto.Item.prototype.toObject = function(opt_includeInstance) {
  */
 proto.Item.toObject = function(includeInstance, msg) {
   var f, obj = {
-    name: jspb.Message.getFieldWithDefault(msg, 2, "")
+name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -8320,10 +8368,10 @@ proto.Projectile.prototype.toObject = function(opt_includeInstance) {
  */
 proto.Projectile.toObject = function(includeInstance, msg) {
   var f, obj = {
-    damage: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    ownerId: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    status: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    skillKey: jspb.Message.getFieldWithDefault(msg, 4, "")
+damage: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+ownerId: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+status: jspb.Message.getFieldWithDefault(msg, 3, 0),
+skillKey: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -8594,10 +8642,10 @@ proto.Obstacle.prototype.toObject = function(opt_includeInstance) {
  */
 proto.Obstacle.toObject = function(includeInstance, msg) {
   var f, obj = {
-    color: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    collisionable: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
-    status: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    type: jspb.Message.getFieldWithDefault(msg, 4, "")
+color: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+collisionable: (f = jspb.Message.getBooleanField(msg, 2)) == null ? undefined : f,
+status: (f = jspb.Message.getField(msg, 3)) == null ? undefined : f,
+type: (f = jspb.Message.getField(msg, 4)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -8886,8 +8934,8 @@ proto.PowerUp.prototype.toObject = function(opt_includeInstance) {
  */
 proto.PowerUp.toObject = function(includeInstance, msg) {
   var f, obj = {
-    ownerId: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    status: jspb.Message.getFieldWithDefault(msg, 2, 0)
+ownerId: jspb.Message.getFieldWithDefault(msg, 1, 0),
+status: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
   if (includeInstance) {
@@ -9046,9 +9094,9 @@ proto.Crate.prototype.toObject = function(opt_includeInstance) {
  */
 proto.Crate.toObject = function(includeInstance, msg) {
   var f, obj = {
-    health: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    amountOfPowerUps: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    status: jspb.Message.getFieldWithDefault(msg, 3, 0)
+health: (f = jspb.Message.getField(msg, 1)) == null ? undefined : f,
+amountOfPowerUps: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+status: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -9279,11 +9327,11 @@ proto.Pool.prototype.toObject = function(opt_includeInstance) {
  */
 proto.Pool.toObject = function(includeInstance, msg) {
   var f, obj = {
-    ownerId: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    status: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    effectsList: jspb.Message.toObjectList(msg.getEffectsList(),
+ownerId: jspb.Message.getFieldWithDefault(msg, 1, 0),
+status: jspb.Message.getFieldWithDefault(msg, 2, 0),
+effectsList: jspb.Message.toObjectList(msg.getEffectsList(),
     proto.Effect.toObject, includeInstance),
-    skillKey: jspb.Message.getFieldWithDefault(msg, 4, "")
+skillKey: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -9623,9 +9671,9 @@ proto.Trap.prototype.toObject = function(opt_includeInstance) {
  */
 proto.Trap.toObject = function(includeInstance, msg) {
   var f, obj = {
-    ownerId: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    name: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    status: jspb.Message.getFieldWithDefault(msg, 3, 0)
+ownerId: jspb.Message.getFieldWithDefault(msg, 1, 0),
+name: jspb.Message.getFieldWithDefault(msg, 2, ""),
+status: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -9813,10 +9861,10 @@ proto.PlayerAction.prototype.toObject = function(opt_includeInstance) {
  */
 proto.PlayerAction.toObject = function(includeInstance, msg) {
   var f, obj = {
-    action: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    duration: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    destination: (f = msg.getDestination()) && proto.Position.toObject(includeInstance, f),
-    direction: (f = msg.getDirection()) && proto.Position.toObject(includeInstance, f)
+action: jspb.Message.getFieldWithDefault(msg, 1, 0),
+duration: jspb.Message.getFieldWithDefault(msg, 2, 0),
+destination: (f = msg.getDestination()) && proto.Position.toObject(includeInstance, f),
+direction: (f = msg.getDirection()) && proto.Position.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -10075,7 +10123,7 @@ proto.Move.prototype.toObject = function(opt_includeInstance) {
  */
 proto.Move.toObject = function(includeInstance, msg) {
   var f, obj = {
-    direction: (f = msg.getDirection()) && proto.Direction.toObject(includeInstance, f)
+direction: (f = msg.getDirection()) && proto.Direction.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -10226,8 +10274,8 @@ proto.Attack.prototype.toObject = function(opt_includeInstance) {
  */
 proto.Attack.toObject = function(includeInstance, msg) {
   var f, obj = {
-    skill: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    parameters: (f = msg.getParameters()) && proto.AttackParameters.toObject(includeInstance, f)
+skill: jspb.Message.getFieldWithDefault(msg, 1, ""),
+parameters: (f = msg.getParameters()) && proto.AttackParameters.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -10407,7 +10455,7 @@ proto.AttackParameters.prototype.toObject = function(opt_includeInstance) {
  */
 proto.AttackParameters.toObject = function(includeInstance, msg) {
   var f, obj = {
-    target: (f = msg.getTarget()) && proto.Direction.toObject(includeInstance, f)
+target: (f = msg.getTarget()) && proto.Direction.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -10558,7 +10606,7 @@ proto.UseItem.prototype.toObject = function(opt_includeInstance) {
  */
 proto.UseItem.toObject = function(includeInstance, msg) {
   var f, obj = {
-    item: jspb.Message.getFieldWithDefault(msg, 1, 0)
+item: jspb.Message.getFieldWithDefault(msg, 1, 0)
   };
 
   if (includeInstance) {
@@ -10688,7 +10736,7 @@ proto.SelectBounty.prototype.toObject = function(opt_includeInstance) {
  */
 proto.SelectBounty.toObject = function(includeInstance, msg) {
   var f, obj = {
-    bountyQuestId: jspb.Message.getFieldWithDefault(msg, 1, "")
+bountyQuestId: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -11020,7 +11068,7 @@ proto.ChangeTickrate.prototype.toObject = function(opt_includeInstance) {
  */
 proto.ChangeTickrate.toObject = function(includeInstance, msg) {
   var f, obj = {
-    tickrate: jspb.Message.getFieldWithDefault(msg, 1, 0)
+tickrate: jspb.Message.getFieldWithDefault(msg, 1, 0)
   };
 
   if (includeInstance) {
@@ -11181,14 +11229,14 @@ proto.GameAction.prototype.toObject = function(opt_includeInstance) {
  */
 proto.GameAction.toObject = function(includeInstance, msg) {
   var f, obj = {
-    move: (f = msg.getMove()) && proto.Move.toObject(includeInstance, f),
-    attack: (f = msg.getAttack()) && proto.Attack.toObject(includeInstance, f),
-    useItem: (f = msg.getUseItem()) && proto.UseItem.toObject(includeInstance, f),
-    selectBounty: (f = msg.getSelectBounty()) && proto.SelectBounty.toObject(includeInstance, f),
-    toggleZone: (f = msg.getToggleZone()) && proto.ToggleZone.toObject(includeInstance, f),
-    toggleBots: (f = msg.getToggleBots()) && proto.ToggleBots.toObject(includeInstance, f),
-    changeTickrate: (f = msg.getChangeTickrate()) && proto.ChangeTickrate.toObject(includeInstance, f),
-    timestamp: jspb.Message.getFieldWithDefault(msg, 3, 0)
+move: (f = msg.getMove()) && proto.Move.toObject(includeInstance, f),
+attack: (f = msg.getAttack()) && proto.Attack.toObject(includeInstance, f),
+useItem: (f = msg.getUseItem()) && proto.UseItem.toObject(includeInstance, f),
+selectBounty: (f = msg.getSelectBounty()) && proto.SelectBounty.toObject(includeInstance, f),
+toggleZone: (f = msg.getToggleZone()) && proto.ToggleZone.toObject(includeInstance, f),
+toggleBots: (f = msg.getToggleBots()) && proto.ToggleBots.toObject(includeInstance, f),
+changeTickrate: (f = msg.getChangeTickrate()) && proto.ChangeTickrate.toObject(includeInstance, f),
+timestamp: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -11668,10 +11716,10 @@ proto.Zone.prototype.toObject = function(opt_includeInstance) {
  */
 proto.Zone.toObject = function(includeInstance, msg) {
   var f, obj = {
-    radius: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
-    enabled: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
-    nextZoneChangeTimestamp: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    shrinking: jspb.Message.getBooleanFieldWithDefault(msg, 4, false)
+radius: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
+enabled: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
+nextZoneChangeTimestamp: jspb.Message.getFieldWithDefault(msg, 3, 0),
+shrinking: jspb.Message.getBooleanFieldWithDefault(msg, 4, false)
   };
 
   if (includeInstance) {
@@ -11888,8 +11936,8 @@ proto.KillEntry.prototype.toObject = function(opt_includeInstance) {
  */
 proto.KillEntry.toObject = function(includeInstance, msg) {
   var f, obj = {
-    killerId: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    victimId: jspb.Message.getFieldWithDefault(msg, 2, 0)
+killerId: jspb.Message.getFieldWithDefault(msg, 1, 0),
+victimId: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
   if (includeInstance) {
@@ -12048,10 +12096,10 @@ proto.BountyInfo.prototype.toObject = function(opt_includeInstance) {
  */
 proto.BountyInfo.toObject = function(includeInstance, msg) {
   var f, obj = {
-    id: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    description: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    questType: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    reward: (f = msg.getReward()) && proto.CurrencyReward.toObject(includeInstance, f)
+id: jspb.Message.getFieldWithDefault(msg, 1, ""),
+description: jspb.Message.getFieldWithDefault(msg, 2, ""),
+questType: jspb.Message.getFieldWithDefault(msg, 3, ""),
+reward: (f = msg.getReward()) && proto.CurrencyReward.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -12289,8 +12337,8 @@ proto.CurrencyReward.prototype.toObject = function(opt_includeInstance) {
  */
 proto.CurrencyReward.toObject = function(includeInstance, msg) {
   var f, obj = {
-    currency: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    amount: jspb.Message.getFieldWithDefault(msg, 2, 0)
+currency: jspb.Message.getFieldWithDefault(msg, 1, ""),
+amount: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
   if (includeInstance) {
