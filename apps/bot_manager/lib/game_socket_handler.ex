@@ -143,7 +143,7 @@ defmodule BotManager.GameSocketHandler do
     end
   end
 
-  def terminate(close_reason, state) do
+  def terminate(close_reason, _state) do
     Logger.error("Terminating bot with reason: #{inspect(close_reason)}")
   end
 end
