@@ -142,4 +142,8 @@ defmodule BotManager.GameSocketHandler do
       "wss://#{arena_host}/play/#{game_id}/#{bot_client}"
     end
   end
+
+  def terminate(close_reason, state) do
+    Logger.error("Terminating bot with reason: #{inspect(close_reason)}")
+  end
 end
