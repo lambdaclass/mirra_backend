@@ -575,8 +575,8 @@ otix_carbonthrow_mechanic = %{
 
 otix_magma_rush_mechanic = %{
   "type" => "dash",
-  "speed" => 4.0,
-  "duration_ms" => 250
+  "speed" => 2.0,
+  "duration_ms" => 750
 }
 
 ## Skills
@@ -953,7 +953,7 @@ skills = [
     "type" => "dash",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 5500,
-    "execution_duration_ms" => 250,
+    "execution_duration_ms" => 750,
     "activation_delay_ms" => 0,
     "is_passive" => false,
     "autoaim" => false,
