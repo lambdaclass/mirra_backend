@@ -307,9 +307,12 @@ defmodule GameBackend.Configuration do
 
   """
   def create_version(attrs \\ %{}) do
+    attrs |> IO.inspect(label: :aver_attrs)
+
     %Version{}
     |> Version.changeset(attrs)
     |> Repo.insert()
+    |> dbg(label: :aver_dbg)
   end
 
   @doc """
@@ -429,7 +432,7 @@ defmodule GameBackend.Configuration do
         where: v.current,
         preload: [
           [consumable_items: ^consumable_items_preload],
-          :skills,
+          [skills: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics]]],
           :map_configurations,
           :game_configuration,
           characters: [

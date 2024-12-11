@@ -14,7 +14,7 @@ defmodule Arena.Configuration do
     |> Map.put(:client_config, client_config)
   end
 
-  defp get_current_game_configuration do
+  def get_current_game_configuration do
     gateway_url = Application.get_env(:arena, :gateway_url)
 
     {:ok, payload} =

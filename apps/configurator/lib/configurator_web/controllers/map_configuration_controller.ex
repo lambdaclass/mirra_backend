@@ -156,7 +156,7 @@ defmodule ConfiguratorWeb.MapConfigurationController do
     end
   end
 
-  defp parse_json_params(map_configuration_params) do
+  def parse_json_params(map_configuration_params) do
     map_configuration_params
     |> Map.update("initial_positions", "", &parse_json/1)
     |> Map.update("obstacles", "", &parse_json/1)

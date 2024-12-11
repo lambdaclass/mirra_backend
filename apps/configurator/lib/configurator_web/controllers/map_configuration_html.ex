@@ -28,7 +28,7 @@ defmodule ConfiguratorWeb.MapConfigurationHTML do
   end
 
   def embed_to_string(%Ecto.Changeset{} = changeset) do
-    changeset.params
+    changeset.params |> Map.delete("id")
   end
 
   def embed_to_string(struct) when is_map(struct) do

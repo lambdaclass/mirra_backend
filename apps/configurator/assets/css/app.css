@@ -2,4 +2,28 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+
+.form-container {
+    display: flex; /* Make the container a flex container */
+    flex-wrap: wrap; /* Allow items to wrap to the next line if needed */
+    align-items: center;
+    justify-content: center;
+}
+
+.form-container > div {
+    padding: 10px;
+}
+
+.input-item {
+    border-bottom: 1px solid #ccc; /* Adjust the border style and color as needed */
+    margin-bottom: 10px; /* Add some bottom margin for spacing */
+    align-items: center;
+    flex-wrap: wrap; /* Allow items to wrap to the next line if needed */
+}
+
+.input-item > div {
+    padding: 10px; /* Add some bottom margin for spacing */
+    flex: 0 0 150px;
+}
+
 /* This file is for your main application CSS */
