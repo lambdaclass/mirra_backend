@@ -5,6 +5,7 @@ defmodule BotManager.GameSocketHandler do
   """
 
   alias BotManager.BotStateMachine
+  alias BotManager.BotStateMachineChecker
 
   use WebSockex, restart: :temporary
   require Logger
@@ -28,7 +29,14 @@ defmodule BotManager.GameSocketHandler do
   def handle_connect(_conn, state) do
     send(self(), :decide_action)
     send(self(), :perform_action)
-    {:ok, Map.put(state, :bots_enabled?, true) |> Map.put(:attack_blocked, false)}
+
+    state =
+      state
+      |> Map.put(:bots_enabled?, true)
+      |> Map.put(:attack_blocked, false)
+      |> Map.put(:bot_state_machine, BotStateMachineChecker.new())
+
+    {:ok, state}
   end
 
   def handle_frame({:binary, frame}, state) do
@@ -60,9 +68,10 @@ defmodule BotManager.GameSocketHandler do
   def handle_info(:decide_action, state) do
     Process.send_after(self(), :decide_action, @decision_delay_ms)
 
-    action = BotStateMachine.decide_action(state)
+    %{action: action, bot_state_machine: bot_state_machine} = BotStateMachine.decide_action(state)
 
-    {:ok, Map.put(state, :current_action, action)}
+    state = state |> Map.put(:current_action, action) |> Map.put(:bot_state_machine, bot_state_machine)
+    {:ok, state}
   end
 
   def handle_info(:unblock_attack, state) do
@@ -75,8 +84,8 @@ defmodule BotManager.GameSocketHandler do
     {:ok, update_block_attack_state(state)}
   end
 
-  defp update_block_attack_state(%{current_action: {:attack, _}} = state) do
-    Process.send_after(self(), :unblock_attack, Enum.random(2000..4000))
+  defp update_block_attack_state(%{current_action: {:use_skill, _, _}} = state) do
+    Process.send_after(self(), :unblock_attack, Enum.random(500..1000))
     Map.put(state, :attack_blocked, true)
   end
 
@@ -143,7 +152,8 @@ defmodule BotManager.GameSocketHandler do
     end
   end
 
-  def terminate(close_reason, _state) do
+  def terminate(close_reason, state) do
     Logger.error("Terminating bot with reason: #{inspect(close_reason)}")
+    Logger.error("Terminating bot with state: #{inspect(state)}")
   end
 end
