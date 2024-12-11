@@ -1,5 +1,6 @@
 defmodule ConfiguratorWeb.VersionController do
   use ConfiguratorWeb, :controller
+  import Ecto.Query
 
   alias GameBackend.Configuration
   alias GameBackend.Configuration.Version
@@ -10,8 +11,25 @@ defmodule ConfiguratorWeb.VersionController do
   end
 
   def new(conn, _params) do
-    changeset = Configuration.change_version(%Version{})
-    render(conn, :new, changeset: changeset)
+    _changeset = Configuration.change_version(%Version{})
+    # list_all_version_settings
+    # version_q = from v in GameBackend.Configuration.Version, order_by: [{:desc, :inserted_at}], limit: 1, select: v.id
+    version_q = from v in GameBackend.Configuration.Version, order_by: [{:desc, :inserted_at}], limit: 1, preload: [:characters, :consumable_items, :skills, :game_configuration, :map_configurations]
+    last_version = GameBackend.Repo.one(version_q)
+    changeset = Configuration.change_version(last_version)
+    # characters_q = from c in GameBackend.Units.Characters.Character, where: c.version_id == ^last_version_id
+    # characters = GameBackend.Repo.all(characters_q)
+    # consumable_items_q = from ci in GameBackend.Items.ConsumableItem, where: ci.version_id == ^last_version_id
+    # consumable_items = GameBackend.Repo.all(consumable_items_q)
+    # skills_q = from s in GameBackend.Units.Skills.Skill, where: s.version_id == ^last_version_id
+    # skills = GameBackend.Repo.all(skills_q)
+    # game_configurations_q = from gc in GameBackend.CurseOfMirra.GameConfiguration, where: gc.version_id == ^last_version_id
+    # game_configurations = GameBackend.Repo.all(game_configurations_q)
+    # map_configurations_q = from mc in GameBackend.CurseOfMirra.MapConfiguration, where: mc.version_id == ^last_version_id
+    # map_configurations = GameBackend.Repo.all(map_configurations_q)
+
+    render(conn, :new, changeset: changeset, last_version: last_version)
+    # render(conn, :new, changeset: changeset, characters: characters, consumable_items: consumable_items, skills: skills, game_configurations: game_configurations, map_configurations: map_configurations)
   end
 
   def create(conn, %{"version" => version_params}) do

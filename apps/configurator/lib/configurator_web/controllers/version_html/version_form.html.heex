@@ -3,6 +3,23 @@
     Oops, something went wrong! Please check the errors below.
   </.error>
   <.input field={f[:name]} type="text" label="Name" />
+  <.inputs_for :let={fc} field={f[:characters]}>
+    <.table id="characters" rows={@last_version.characters}>
+    
+  
+    <:col label="hola"><.input field={fc[:name]} type="text" label="Character Name" /></:col>
+    <:col label="hola"><.input field={fc[:active]} type="checkbox" label="Active" /></:col>
+    <:col label="hola"><.input field={fc[:base_speed]} type="number" label="Base speed" step="any" /></:col>
+    <:col label="hola"><.input field={fc[:base_size]} type="number" label="Base size" step="any" lang="en" /></:col>
+    <:col label="hola"><.input field={fc[:base_health]} type="number" label="Base health" /></:col>
+    <:col label="hola"><.input field={fc[:base_stamina]} type="number" label="Base stamina" /></:col>
+    <:col label="hola"><.input field={fc[:stamina_interval]} type="number" label="Stamina Interval" /></:col>
+    <:col label="hola"><.input field={fc[:base_mana]} type="number" label="Base mana" /></:col>
+    <:col label="hola"><.input field={fc[:initial_mana]} type="number" label="Initial mana when spawning" /></:col>
+</.table>
+    
+  </.inputs_for>
+
   <:actions>
     <.button>Save Version</.button>
   </:actions>
