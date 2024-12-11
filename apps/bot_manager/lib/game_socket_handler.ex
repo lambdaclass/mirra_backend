@@ -105,6 +105,28 @@ defmodule BotManager.GameSocketHandler do
     WebSockex.cast(self(), {:send, {:binary, game_action}})
   end
 
+  defp send_current_action(%{current_action: {:dash, direction}}) do
+    timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
+    game_action =
+      BotManager.Protobuf.GameAction.encode(%BotManager.Protobuf.GameAction{
+        action_type:
+          {:attack,
+           %BotManager.Protobuf.Attack{
+             skill: "3",
+             parameters: %BotManager.Protobuf.AttackParameters{
+               target: %BotManager.Protobuf.Direction{
+                 x: direction.x,
+                 y: direction.y
+               }
+             }
+           }},
+        timestamp: timestamp
+      })
+
+    WebSockex.cast(self(), {:send, {:binary, game_action}})
+  end
+
   defp send_current_action(%{current_action: {:attack, direction}, attack_blocked: false}) do
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
