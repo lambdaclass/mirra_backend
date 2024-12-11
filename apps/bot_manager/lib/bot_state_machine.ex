@@ -34,6 +34,7 @@ defmodule BotManager.BotStateMachine do
         {:move, create_random_direction()}
 
       closest_player.distance <= random_distance ->
+        detemine_player_attack(bot_player, closest_player, config)
         {:attack, closest_player.direction}
 
       true ->
@@ -82,17 +83,36 @@ defmodule BotManager.BotStateMachine do
     if Map.has_key?(aditional_info.cooldowns, @dash_skill_key) do
       {:move, maybe_run_away(aditional_info, direction)}
     else
-      {:dash, maybe_run_away(aditional_info, direction)}
+      {:use_skill, @dash_skill_key, maybe_run_away(aditional_info, direction)}
     end
   end
 
-  def maybe_run_away(bot_player_info, direction) do
+  defp maybe_run_away(bot_player_info, direction) do
     health_percentage = bot_player_info.health * 100 / bot_player_info.max_health
 
     if health_percentage < 30 do
       Vector.mult(direction, -1)
     else
       direction
+    end
+  end
+
+  defp detemine_player_attack(bot_player, closest_player, config) do
+    {:player, aditional_info} = bot_player.aditional_info
+
+    character = Enum.find(config.characters, fn character -> character.name == aditional_info.character_name end)
+    skill_1 = Map.get(character.skills, @skill_1_key)
+    skill_2 = Map.get(character.skills, @skill_2_key)
+
+    cond do
+      aditional_info.available_stamina != 0 and closest_player.distance <= skill_1.targetting_radius ->
+        {:use_skill_1, @skill_1_key, closest_player.direction}
+
+      not Map.has_key?(aditional_info.cooldowns, @skill_2_key) and closest_player.distance <= skill_2.targetting_radius ->
+        {:use_skill_2, @skill_2_key, closest_player.direction}
+
+      true ->
+        {:attack, closest_player.direction}
     end
   end
 end
