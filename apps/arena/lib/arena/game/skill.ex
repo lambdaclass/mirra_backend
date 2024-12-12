@@ -16,7 +16,15 @@ defmodule Arena.Game.Skill do
     end)
   end
 
-  def do_mechanic(
+  def do_mechanic(game_state, entity, mechanic, skill_params) do
+    if entity.category == :player and not Player.alive?(entity) do
+      game_state
+    else
+      execute_mechanic(game_state, entity, mechanic, skill_params)
+    end
+  end
+
+  def execute_mechanic(
         game_state,
         entity,
         %{type: "circle_hit"} = circle_hit,
@@ -37,7 +45,7 @@ defmodule Arena.Game.Skill do
     |> maybe_move_player(entity, circle_hit[:move_by])
   end
 
-  def do_mechanic(
+  def execute_mechanic(
         game_state,
         entity,
         %{type: "cone_hit"} = cone_hit,
@@ -58,7 +66,7 @@ defmodule Arena.Game.Skill do
     |> maybe_move_player(entity, cone_hit[:move_by])
   end
 
-  def do_mechanic(game_state, entity, %{type: "multi_cone_hit"} = multi_cone_hit, skill_params) do
+  def execute_mechanic(game_state, entity, %{type: "multi_cone_hit"} = multi_cone_hit, skill_params) do
     Enum.each(1..(multi_cone_hit.amount - 1), fn i ->
       mechanic = %{multi_cone_hit | type: "cone_hit"}
 
@@ -69,15 +77,15 @@ defmodule Arena.Game.Skill do
       )
     end)
 
-    do_mechanic(game_state, entity, %{multi_cone_hit | type: "cone_hit"}, skill_params)
+    execute_mechanic(game_state, entity, %{multi_cone_hit | type: "cone_hit"}, skill_params)
   end
 
-  def do_mechanic(game_state, entity, %{type: "multi_circle_hit", amount: nil} = multi_circle_hit, skill_params) do
+  def execute_mechanic(game_state, entity, %{type: "multi_circle_hit", amount: nil} = multi_circle_hit, skill_params) do
     amount = div(multi_circle_hit.duration_ms, multi_circle_hit.interval_ms)
-    do_mechanic(game_state, entity, Map.put(multi_circle_hit, :amount, amount), skill_params)
+    execute_mechanic(game_state, entity, Map.put(multi_circle_hit, :amount, amount), skill_params)
   end
 
-  def do_mechanic(game_state, entity, %{type: "multi_circle_hit"} = multi_circle_hit, skill_params) do
+  def execute_mechanic(game_state, entity, %{type: "multi_circle_hit"} = multi_circle_hit, skill_params) do
     Enum.each(1..(multi_circle_hit.amount - 1), fn i ->
       mechanic = %{multi_circle_hit | type: "circle_hit"}
 
@@ -88,10 +96,10 @@ defmodule Arena.Game.Skill do
       )
     end)
 
-    do_mechanic(game_state, entity, %{multi_circle_hit | type: "circle_hit"}, skill_params)
+    execute_mechanic(game_state, entity, %{multi_circle_hit | type: "circle_hit"}, skill_params)
   end
 
-  def do_mechanic(
+  def execute_mechanic(
         game_state,
         entity,
         %{type: "dash", speed: speed, duration_ms: duration_ms},
@@ -113,7 +121,7 @@ defmodule Arena.Game.Skill do
     %{game_state | players: players}
   end
 
-  def do_mechanic(game_state, entity, %{type: "repeated_shot"} = repeated_shot, skill_params) do
+  def execute_mechanic(game_state, entity, %{type: "repeated_shot"} = repeated_shot, skill_params) do
     remaining_amount = repeated_shot.amount - 1
 
     if remaining_amount > 0 do
@@ -152,7 +160,7 @@ defmodule Arena.Game.Skill do
     |> put_in([:projectiles, projectile.id], projectile)
   end
 
-  def do_mechanic(
+  def execute_mechanic(
         game_state,
         entity,
         %{type: "multi_shoot"} = multishot,
@@ -187,7 +195,7 @@ defmodule Arena.Game.Skill do
     end)
   end
 
-  def do_mechanic(
+  def execute_mechanic(
         game_state,
         entity,
         %{type: "simple_shoot"} = simple_shoot,
@@ -233,7 +241,7 @@ defmodule Arena.Game.Skill do
     |> put_in([:projectiles, projectile.id], projectile)
   end
 
-  def do_mechanic(
+  def execute_mechanic(
         game_state,
         entity,
         %{type: "simple_shoot"} = simple_shoot,
@@ -264,7 +272,7 @@ defmodule Arena.Game.Skill do
     |> put_in([:projectiles, projectile.id], projectile)
   end
 
-  def do_mechanic(game_state, entity, %{type: "leap"} = leap, %{execution_duration: execution_duration}) do
+  def execute_mechanic(game_state, entity, %{type: "leap"} = leap, %{execution_duration: execution_duration}) do
     Process.send_after(
       self(),
       {:stop_leap, entity.id, entity.aditional_info.base_speed, leap.on_arrival_mechanic},
@@ -283,7 +291,7 @@ defmodule Arena.Game.Skill do
     put_in(game_state, [:players, player.id], player)
   end
 
-  def do_mechanic(game_state, entity, %{type: "teleport"}, %{skill_destination: skill_destination}) do
+  def execute_mechanic(game_state, entity, %{type: "teleport"}, %{skill_destination: skill_destination}) do
     entity =
       entity
       |> Map.put(:aditional_info, entity.aditional_info)
@@ -292,7 +300,7 @@ defmodule Arena.Game.Skill do
     put_in(game_state, [:players, entity.id], entity)
   end
 
-  def do_mechanic(game_state, %{category: :projectile} = entity, %{type: "spawn_pool"} = pool_params, skill_params) do
+  def execute_mechanic(game_state, %{category: :projectile} = entity, %{type: "spawn_pool"} = pool_params, skill_params) do
     last_id = game_state.last_id + 1
     entity_player_owner = get_entity_player_owner(game_state, entity)
 
@@ -324,7 +332,7 @@ defmodule Arena.Game.Skill do
     |> put_in([:last_id], last_id)
   end
 
-  def do_mechanic(game_state, player, %{type: "spawn_pool"} = pool_params, skill_params) do
+  def execute_mechanic(game_state, player, %{type: "spawn_pool"} = pool_params, skill_params) do
     last_id = game_state.last_id + 1
     entity_player_owner = get_entity_player_owner(game_state, player)
 
@@ -356,7 +364,7 @@ defmodule Arena.Game.Skill do
     |> put_in([:last_id], last_id)
   end
 
-  def do_mechanic(game_state, entity, {:polygon_hit, polygon_hit}, _skill_params) do
+  def execute_mechanic(game_state, entity, {:polygon_hit, polygon_hit}, _skill_params) do
     polygon_damage_area = Entities.make_polygon_area(entity.id, polygon_hit.vertices)
 
     entity_player_owner = get_entity_player_owner(game_state, entity)
