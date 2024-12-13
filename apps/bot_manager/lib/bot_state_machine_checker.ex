@@ -1,6 +1,6 @@
 defmodule BotManager.BotStateMachineChecker do
   defstruct [
-    # The bot state, these are the possible states: [:idling, :moving, :attacking, :running_away]
+    # The bot state, these are the possible states: [:idling, :moving, :aggresive, :running_away]
     :state,
     :previous_position,
     :current_position,
@@ -24,5 +24,25 @@ defmodule BotManager.BotStateMachineChecker do
       previous_position: nil,
       current_position: nil
     }
+  end
+
+  def move_to_next_state(bot_player, bot_state_machine) do
+    cond do
+      bot_health_low?(bot_player) -> :running_away
+      bot_can_turn_aggresive?(bot_state_machine) -> :aggresive
+      true -> :moving
+    end
+  end
+
+  def bot_health_low?(bot_player) do
+    {:player, bot_player_info} = bot_player.aditional_info
+    health_percentage = bot_player_info.health * 100 / bot_player_info.max_health
+
+    (health_percentage <= 20)
+  end
+
+  def bot_can_turn_aggresive?(bot_state_machine) do
+    (bot_state_machine.progress_for_basic_skill >= bot_state_machine.cap_for_basic_skill ||
+       bot_state_machine.progress_for_ultimate_skill >= bot_state_machine.cap_for_ultimate_skill)
   end
 end
