@@ -38,11 +38,11 @@ defmodule BotManager.BotStateMachineChecker do
     {:player, bot_player_info} = bot_player.aditional_info
     health_percentage = bot_player_info.health * 100 / bot_player_info.max_health
 
-    (health_percentage <= 20)
+    health_percentage <= 20
   end
 
   def bot_can_turn_aggresive?(bot_state_machine) do
-    (bot_state_machine.progress_for_basic_skill >= bot_state_machine.cap_for_basic_skill ||
-       bot_state_machine.progress_for_ultimate_skill >= bot_state_machine.cap_for_ultimate_skill)
+    bot_state_machine.progress_for_basic_skill >= bot_state_machine.cap_for_basic_skill ||
+      bot_state_machine.progress_for_ultimate_skill >= bot_state_machine.cap_for_ultimate_skill
   end
 end

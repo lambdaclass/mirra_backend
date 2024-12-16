@@ -73,48 +73,52 @@ defmodule BotManager.BotStateMachine do
       }) do
     players_with_distances = map_directions_to_players(game_state, bot_player, @vision_range)
 
-    cond do
-      bot_state_machine.progress_for_ultimate_skill >= bot_state_machine.cap_for_ultimate_skill ->
-        bot_state_machine =
-          Map.put(
-            bot_state_machine,
-            :progress_for_ultimate_skill,
-            bot_state_machine.progress_for_ultimate_skill - bot_state_machine.cap_for_ultimate_skill
-          )
-          |> Map.put(:state, :attacking)
+    if Enum.empty?(players_with_distances) do
+      %{action: {:move, maybe_switch_direction(bot_player, bot_state_machine)}, bot_state_machine: bot_state_machine}
+    else
+      cond do
+        bot_state_machine.progress_for_ultimate_skill >= bot_state_machine.cap_for_ultimate_skill ->
+          bot_state_machine =
+            Map.put(
+              bot_state_machine,
+              :progress_for_ultimate_skill,
+              bot_state_machine.progress_for_ultimate_skill - bot_state_machine.cap_for_ultimate_skill
+            )
+            |> Map.put(:state, :attacking)
 
-        direction =
-          if Enum.empty?(players_with_distances) do
-            create_random_direction()
-          else
-            closest_player = Enum.min_by(players_with_distances, & &1.distance)
-            closest_player.direction
-          end
+          direction =
+            if Enum.empty?(players_with_distances) do
+              create_random_direction()
+            else
+              closest_player = Enum.min_by(players_with_distances, & &1.distance)
+              closest_player.direction
+            end
 
-        %{action: {:use_skill, @skill_2_key, direction}, bot_state_machine: bot_state_machine}
+          %{action: {:use_skill, @skill_2_key, direction}, bot_state_machine: bot_state_machine}
 
-      bot_state_machine.progress_for_basic_skill >= bot_state_machine.cap_for_basic_skill ->
-        bot_state_machine =
-          Map.put(
-            bot_state_machine,
-            :progress_for_basic_skill,
-            bot_state_machine.progress_for_basic_skill - bot_state_machine.cap_for_basic_skill
-          )
-          |> Map.put(:progress_for_ultimate_skill, bot_state_machine.progress_for_ultimate_skill + 1)
-          |> Map.put(:state, :attacking)
+        bot_state_machine.progress_for_basic_skill >= bot_state_machine.cap_for_basic_skill ->
+          bot_state_machine =
+            Map.put(
+              bot_state_machine,
+              :progress_for_basic_skill,
+              bot_state_machine.progress_for_basic_skill - bot_state_machine.cap_for_basic_skill
+            )
+            |> Map.put(:progress_for_ultimate_skill, bot_state_machine.progress_for_ultimate_skill + 1)
+            |> Map.put(:state, :attacking)
 
-        direction =
-          if Enum.empty?(players_with_distances) do
-            create_random_direction()
-          else
-            closest_player = Enum.min_by(players_with_distances, & &1.distance)
-            closest_player.direction
-          end
+          direction =
+            if Enum.empty?(players_with_distances) do
+              create_random_direction()
+            else
+              closest_player = Enum.min_by(players_with_distances, & &1.distance)
+              closest_player.direction
+            end
 
-        %{action: {:use_skill, @skill_1_key, direction}, bot_state_machine: bot_state_machine}
+          %{action: {:use_skill, @skill_1_key, direction}, bot_state_machine: bot_state_machine}
 
-      true ->
-        %{action: {:move, bot_player.direction}, bot_state_machine: bot_state_machine}
+        true ->
+          %{action: {:move, maybe_switch_direction(bot_player, bot_state_machine)}, bot_state_machine: bot_state_machine}
+      end
     end
   end
 
@@ -172,11 +176,11 @@ defmodule BotManager.BotStateMachine do
   end
 
   defp maybe_switch_direction(bot_player, bot_state_machine) do
-    x_distance = bot_state_machine.current_position.x - bot_state_machine.previous_position.x
-    y_distance = bot_state_machine.current_position.y - bot_state_machine.previous_position.y
+    x_distance = abs(bot_state_machine.current_position.x - bot_state_machine.previous_position.x)
+    y_distance = abs(bot_state_machine.current_position.y - bot_state_machine.previous_position.y)
 
-    if x_distance < 5 or y_distance < 5 do
-      create_random_direction()
+    if x_distance < 10 || y_distance < 10 do
+      Vector.mult(bot_player.direction, -1)
     else
       bot_player.direction
     end
