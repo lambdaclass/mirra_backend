@@ -11,7 +11,7 @@ defmodule BotManager.BotStateMachine do
   @skill_1_key "1"
   @skill_2_key "2"
   @dash_skill_key "3"
-  @vision_range 1500
+  @vision_range 600
 
   def decide_action(%{bots_enabled?: false}) do
     {:move, %{x: 0, y: 0}}
@@ -45,7 +45,11 @@ defmodule BotManager.BotStateMachine do
     case next_state do
       :moving ->
         direction = maybe_switch_direction(bot_player, bot_state_machine)
-        %{action: determine_player_move_action(bot_player, direction), bot_state_machine: bot_state_machine}
+
+        %{
+          action: determine_player_move_action(bot_player, bot_state_machine, direction),
+          bot_state_machine: bot_state_machine
+        }
 
       :aggresive ->
         use_skill(%{
@@ -56,15 +60,20 @@ defmodule BotManager.BotStateMachine do
         })
 
       :running_away ->
-        %{action: determine_player_move_action(bot_player, bot_player.direction), bot_state_machine: bot_state_machine}
+        direction = maybe_switch_direction(bot_player, bot_state_machine)
+
+        %{
+          action: determine_player_move_action(bot_player, bot_state_machine, direction),
+          bot_state_machine: bot_state_machine
+        }
     end
   end
 
   def decide_action(%{bot_state_machine: bot_state_machine}),
     do: %{action: :stand, bot_state_machine: bot_state_machine}
 
-  def use_skill(%{attack_blocked: true, bot_state_machine: bot_state_machine}),
-    do: %{action: {:move, create_random_direction()}, bot_state_machine: bot_state_machine}
+  def use_skill(%{attack_blocked: true, bot_player: bot_player, bot_state_machine: bot_state_machine}),
+    do: %{action: {:move, bot_player.direction}, bot_state_machine: bot_state_machine}
 
   def use_skill(%{
         game_state: game_state,
@@ -74,7 +83,12 @@ defmodule BotManager.BotStateMachine do
     players_with_distances = map_directions_to_players(game_state, bot_player, @vision_range)
 
     if Enum.empty?(players_with_distances) do
-      %{action: {:move, maybe_switch_direction(bot_player, bot_state_machine)}, bot_state_machine: bot_state_machine}
+      direction = maybe_switch_direction(bot_player, bot_state_machine)
+
+      %{
+        action: determine_player_move_action(bot_player, bot_state_machine, direction),
+        bot_state_machine: bot_state_machine
+      }
     else
       cond do
         bot_state_machine.progress_for_ultimate_skill >= bot_state_machine.cap_for_ultimate_skill ->
@@ -88,7 +102,7 @@ defmodule BotManager.BotStateMachine do
 
           direction =
             if Enum.empty?(players_with_distances) do
-              create_random_direction()
+              bot_player.direction
             else
               closest_player = Enum.min_by(players_with_distances, & &1.distance)
               closest_player.direction
@@ -108,7 +122,7 @@ defmodule BotManager.BotStateMachine do
 
           direction =
             if Enum.empty?(players_with_distances) do
-              create_random_direction()
+              bot_player.direction
             else
               closest_player = Enum.min_by(players_with_distances, & &1.distance)
               closest_player.direction
@@ -117,13 +131,14 @@ defmodule BotManager.BotStateMachine do
           %{action: {:use_skill, @skill_1_key, direction}, bot_state_machine: bot_state_machine}
 
         true ->
-          %{action: {:move, maybe_switch_direction(bot_player, bot_state_machine)}, bot_state_machine: bot_state_machine}
+          direction = maybe_switch_direction(bot_player, bot_state_machine)
+
+          %{
+            action: determine_player_move_action(bot_player, bot_state_machine, direction),
+            bot_state_machine: bot_state_machine
+          }
       end
     end
-  end
-
-  defp create_random_direction() do
-    %{x: Enum.random(1..200) / 100 - 1, y: Enum.random(1..200) / 100 - 1}
   end
 
   defp map_directions_to_players(game_state, bot_player, max_distance) do
@@ -165,8 +180,15 @@ defmodule BotManager.BotStateMachine do
     Enum.member?(bot_player_info.visible_players, player_id)
   end
 
-  defp determine_player_move_action(bot_player, direction) do
+  defp determine_player_move_action(bot_player, bot_state_machine, direction) do
     {:player, bot_player_info} = bot_player.aditional_info
+
+    direction =
+      if BotStateMachineChecker.should_bot_rotate_its_direction?(bot_state_machine) do
+        Vector.rotate_by_degrees(direction, :rand.uniform() * 360)
+      else
+        direction
+      end
 
     if Map.has_key?(bot_player_info.cooldowns, @dash_skill_key) do
       {:move, direction}
@@ -179,10 +201,17 @@ defmodule BotManager.BotStateMachine do
     x_distance = abs(bot_state_machine.current_position.x - bot_state_machine.previous_position.x)
     y_distance = abs(bot_state_machine.current_position.y - bot_state_machine.previous_position.y)
 
-    if x_distance < 10 || y_distance < 10 do
-      Vector.mult(bot_player.direction, -1)
-    else
-      bot_player.direction
+    if x_distance < 10 and y_distance < 10, do: switch_based_on_position(bot_player), else: bot_player.direction
+  end
+
+  defp switch_based_on_position(bot_player) do
+    position = bot_player.position
+
+    cond do
+      position.x < 0 && position.y < 0 -> Vector.rotate_by_degrees(bot_player.direction, 90)
+      position.x < 0 && position.y > 0 -> Vector.rotate_by_degrees(bot_player.direction, 180)
+      position.x > 0 && position.y > 0 -> Vector.rotate_by_degrees(bot_player.direction, 270)
+      true -> bot_player.direction
     end
   end
 end

@@ -30,4 +30,16 @@ defmodule BotManager.Math.Vector do
       y: first_vector.y * second_vector.y
     }
   end
+
+  # Using the rotation matrix
+  def rotate_by_degrees(%{x: x, y: y}, angle_in_degrees) do
+    angle_in_radians = Math.deg2rad(angle_in_degrees)
+    x = x * Math.cos(angle_in_radians) - y * Math.sin(angle_in_radians)
+    y = x * Math.sin(angle_in_radians) + y * Math.cos(angle_in_radians)
+
+    %{
+      x: x,
+      y: y
+    }
+  end
 end
