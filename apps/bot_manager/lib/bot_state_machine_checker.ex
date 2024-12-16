@@ -1,4 +1,7 @@
 defmodule BotManager.BotStateMachineChecker do
+  @moduledoc """
+  This module will take care of deciding what the bot will do on each deciding step
+  """
   defstruct [
     # The bot state, these are the possible states: [:idling, :moving, :aggresive, :running_away]
     :state,
