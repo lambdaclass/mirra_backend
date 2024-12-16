@@ -60,12 +60,7 @@ defmodule BotManager.BotStateMachine do
         })
 
       :running_away ->
-        direction = maybe_switch_direction(bot_player, bot_state_machine)
-
-        %{
-          action: determine_player_move_action(bot_player, bot_state_machine, direction),
-          bot_state_machine: bot_state_machine
-        }
+        ran_away(bot_player, game_state, bot_state_machine)
     end
   end
 
@@ -212,6 +207,29 @@ defmodule BotManager.BotStateMachine do
       position.x < 0 && position.y > 0 -> Vector.rotate_by_degrees(bot_player.direction, 180)
       position.x > 0 && position.y > 0 -> Vector.rotate_by_degrees(bot_player.direction, 270)
       true -> bot_player.direction
+    end
+  end
+
+  defp ran_away(bot_player, game_state, bot_state_machine) do
+    players_with_distances = map_directions_to_players(game_state, bot_player, @vision_range)
+
+    if Enum.empty?(players_with_distances) do
+      direction = maybe_switch_direction(bot_player, bot_state_machine)
+
+      %{
+        action: determine_player_move_action(bot_player, bot_state_machine, direction),
+        bot_state_machine: bot_state_machine
+      }
+    else
+      closest_player = Enum.min_by(players_with_distances, & &1.distance)
+
+      direction =
+        Vector.rotate_by_degrees(closest_player.direction, 180) |> Vector.normalize() |> Vector.rotate_by_degrees(180)
+
+      %{
+        action: determine_player_move_action(bot_player, bot_state_machine, direction),
+        bot_state_machine: bot_state_machine
+      }
     end
   end
 end
