@@ -429,7 +429,7 @@ defmodule GameBackend.Configuration do
         where: v.current,
         preload: [
           [consumable_items: ^consumable_items_preload],
-          :skills,
+          [skills: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics]]],
           :map_configurations,
           :game_configuration,
           characters: [

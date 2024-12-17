@@ -79,6 +79,14 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
     |> cast_embed(:power_ups_per_kill)
   end
 
+  @doc false
+  def assoc_changeset(game_configuration, attrs) do
+    game_configuration
+    |> cast(attrs, @required)
+    |> validate_required(@required -- [:version_id])
+    |> cast_embed(:power_ups_per_kill)
+  end
+
   defmodule PowerUpPerKillAmount do
     @moduledoc """
     Position embedded schema to be used by MapConfiguration

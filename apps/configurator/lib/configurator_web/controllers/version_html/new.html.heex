@@ -3,7 +3,7 @@
   <:subtitle>Use this form to manage version records in your database.</:subtitle>
 </.header>
 
-<.version_form changeset={@changeset} last_version={@last_version} action={~p"/versions"} />
+<.version_form changeset={@changeset} last_version={@last_version} action={~p"/versions"} skills={@skills}/>
 
 <%!-- <%= for character <- @characters do %> --%>
 <%!-- <.character_form for={character} changeset={changeset} /> --%>
