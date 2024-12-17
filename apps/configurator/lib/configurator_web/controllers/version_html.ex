@@ -18,6 +18,7 @@ defmodule ConfiguratorWeb.VersionHTML do
   attr :field, Phoenix.HTML.FormField, required: true
   attr :label, :string, required: true
   attr :skills, :list, required: true
+
   def skill_select(assigns) do
     ~H"""
     <.input

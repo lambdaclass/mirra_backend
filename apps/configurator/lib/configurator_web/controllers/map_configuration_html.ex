@@ -13,7 +13,6 @@ defmodule ConfiguratorWeb.MapConfigurationHTML do
 
   def embed_to_string(embeds) when is_list(embeds) do
     embeds
-    |> IO.inspect(label: :aver_embeds)
     |> Enum.map(&embed_to_string/1)
     |> Enum.reject(&(&1 == nil))
     |> Jason.encode!()
@@ -29,10 +28,10 @@ defmodule ConfiguratorWeb.MapConfigurationHTML do
   end
 
   def embed_to_string(%Ecto.Changeset{} = changeset) do
-    changeset.params |> Map.delete("id") |> IO.inspect(label: :aver_params)
+    changeset.params |> Map.delete("id")
   end
 
   def embed_to_string(struct) when is_map(struct) do
-    struct |> IO.inspect(label: :aver_structs)
+    struct
   end
 end

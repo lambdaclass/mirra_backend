@@ -307,9 +307,12 @@ defmodule GameBackend.Configuration do
 
   """
   def create_version(attrs \\ %{}) do
+    attrs |> IO.inspect(label: :aver_attrs)
+
     %Version{}
     |> Version.changeset(attrs)
     |> Repo.insert()
+    |> dbg(label: :aver_dbg)
   end
 
   @doc """

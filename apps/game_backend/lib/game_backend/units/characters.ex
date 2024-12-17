@@ -130,7 +130,13 @@ defmodule GameBackend.Units.Characters do
       Repo.one(from(c in Character, where: c.name == ^name and c.game_id == ^game_id, select: c.id))
     else
       current_version_id = Repo.one(from(v in Version, where: v.current, select: v.id))
-      Repo.one(from(c in Character, where: c.name == ^name and c.game_id == ^game_id and c.version_id == ^current_version_id, select: c.id))
+
+      Repo.one(
+        from(c in Character,
+          where: c.name == ^name and c.game_id == ^game_id and c.version_id == ^current_version_id,
+          select: c.id
+        )
+      )
     end
   end
 

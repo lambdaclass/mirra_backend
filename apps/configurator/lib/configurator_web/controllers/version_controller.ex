@@ -1,6 +1,7 @@
 defmodule ConfiguratorWeb.VersionController do
   use ConfiguratorWeb, :controller
   # import Ecto.Query
+  alias ConfiguratorWeb.MapConfigurationController
 
   alias GameBackend.Configuration
   alias GameBackend.Configuration.Version
@@ -20,16 +21,20 @@ defmodule ConfiguratorWeb.VersionController do
     # version_q = from v in GameBackend.Configuration.Version, order_by: [{:desc, :inserted_at}], limit: 1, preload: [:characters, :consumable_items, :game_configuration, :map_configurations, skills: [:effect_to_apply, mechanics: [:on_arrival_mechanic, :on_explode_mechanics]]]
     # last_version = GameBackend.Repo.one(version_q)
     last_version = GameBackend.Configuration.get_current_version()
+
     params =
       Map.from_struct(last_version)
-      |> Map.put(:characters, schema_to_map(last_version.characters))#Enum.map(last_version.characters, fn c -> Map.from_struct(c) end))
-      |> Map.put(:consumable_items, schema_to_map(last_version.consumable_items))#Enum.map(last_version.consumable_items, fn c -> Map.from_struct(c) end))
+      # Enum.map(last_version.characters, fn c -> Map.from_struct(c) end))
+      |> Map.put(:characters, schema_to_map(last_version.characters))
+      # Enum.map(last_version.consumable_items, fn c -> Map.from_struct(c) end))
+      |> Map.put(:consumable_items, schema_to_map(last_version.consumable_items))
       |> Map.put(:game_configuration, schema_to_map(last_version.game_configuration))
-      |> Map.put(:map_configurations, [map_params] |> IO.inspect(label: :aver_map_params_config))#Enum.map(last_version.map_configurations, fn c -> Map.from_struct(c) end))
-      |> Map.put(:skills, schema_to_map(last_version.skills))#Enum.map(last_version.skills, fn c -> Map.from_struct(c) end))
+      # Enum.map(last_version.map_configurations, fn c -> Map.from_struct(c) end))
+      |> Map.put(:map_configurations, [map_params])
+      # Enum.map(last_version.skills, fn c -> Map.from_struct(c) end))
+      |> Map.put(:skills, schema_to_map(last_version.skills))
 
     changeset = Configuration.change_version(%Version{}, params)
-    IO.inspect(changeset, label: :aver_changeset)
     # characters_q = from c in GameBackend.Units.Characters.Character, where: c.version_id == ^last_version_id
     # characters = GameBackend.Repo.all(characters_q)
     # consumable_items_q = from ci in GameBackend.Items.ConsumableItem, where: ci.version_id == ^last_version_id
@@ -42,14 +47,15 @@ defmodule ConfiguratorWeb.VersionController do
     # map_configurations = GameBackend.Repo.all(map_configurations_q)
 
     render(conn, :new, changeset: changeset, last_version: last_version, skills: skills)
+
     # render(conn, :new, changeset: changeset, characters: characters, consumable_items: consumable_items, skills: skills, game_configurations: game_configurations, map_configurations: map_configurations)
   end
 
   def schema_to_map(%{
-    __cardinality__: :many,
-    __field__: _,
-    __owner__: _
-  }) do
+        __cardinality__: :many,
+        __field__: _,
+        __owner__: _
+      }) do
     []
   end
 
@@ -57,9 +63,11 @@ defmodule ConfiguratorWeb.VersionController do
 
   def schema_to_map(%_struct{} = schema) do
     schema
-    |> Map.from_struct() # Convert the struct to a map
+    # Convert the struct to a map
+    |> Map.from_struct()
     |> Enum.map(fn {key, value} -> {key, schema_to_map(value)} end)
-    |> Enum.into(%{}) # Convert back into a map
+    # Convert back into a map
+    |> Enum.into(%{})
   end
 
   def schema_to_map(map) when is_map(map) do
@@ -75,8 +83,18 @@ defmodule ConfiguratorWeb.VersionController do
   def schema_to_map(value), do: value
 
   def create(conn, %{"version" => version_params} = params) do
-    version_params |> IO.inspect(label: :aver_params)
-    params |> IO.inspect(label: :aver_params)
+    version_params =
+      Map.put(
+        version_params,
+        "map_configurations",
+        Enum.map(version_params["map_configurations"], fn {k, map} ->
+          %{k => MapConfigurationController.parse_json_params(map)}
+          # Enum.map(map, fn {k, v} ->
+          #   %{k => MapConfigurationController.parse_json_params(v)}
+          # end)
+        end)
+        |> hd()
+      )
 
     case Configuration.create_version(version_params) do
       {:ok, version} ->
@@ -85,12 +103,11 @@ defmodule ConfiguratorWeb.VersionController do
         |> redirect(to: ~p"/versions/#{version}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        IO.inspect(changeset, label: :aver_error)
-    last_version = GameBackend.Configuration.get_current_version()
-    skills = GameBackend.Units.Skills.list_curse_skills() |> Enum.group_by(& &1.type)
+        last_version = GameBackend.Configuration.get_current_version()
+        skills = GameBackend.Units.Skills.list_curse_skills() |> Enum.group_by(& &1.type)
 
-    render(conn, :new, changeset: changeset, last_version: last_version, skills: skills)
-    # render(conn, :new, changeset: changeset)
+        render(conn, :new, changeset: changeset, last_version: last_version, skills: skills)
+        # render(conn, :new, changeset: changeset)
     end
   end
 
