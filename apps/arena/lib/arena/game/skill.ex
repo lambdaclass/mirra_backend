@@ -25,11 +25,11 @@ defmodule Arena.Game.Skill do
   end
 
   defp execute_mechanic(
-        game_state,
-        entity,
-        %{type: "circle_hit"} = circle_hit,
-        %{skill_direction: skill_direction} = _skill_params
-      ) do
+         game_state,
+         entity,
+         %{type: "circle_hit"} = circle_hit,
+         %{skill_direction: skill_direction} = _skill_params
+       ) do
     circle_center_position = get_position_with_offset(entity.position, skill_direction, circle_hit.offset)
     circular_damage_area = Entities.make_circular_area(entity.id, circle_center_position, circle_hit.range)
 
@@ -46,11 +46,11 @@ defmodule Arena.Game.Skill do
   end
 
   defp execute_mechanic(
-        game_state,
-        entity,
-        %{type: "cone_hit"} = cone_hit,
-        %{skill_direction: skill_direction} = _skill_params
-      ) do
+         game_state,
+         entity,
+         %{type: "cone_hit"} = cone_hit,
+         %{skill_direction: skill_direction} = _skill_params
+       ) do
     triangle_points =
       Physics.calculate_triangle_vertices(
         entity.position,
@@ -100,11 +100,11 @@ defmodule Arena.Game.Skill do
   end
 
   defp execute_mechanic(
-        game_state,
-        entity,
-        %{type: "dash", speed: speed, duration_ms: duration_ms},
-        %{skill_direction: skill_direction} = _skill_params
-      ) do
+         game_state,
+         entity,
+         %{type: "dash", speed: speed, duration_ms: duration_ms},
+         %{skill_direction: skill_direction} = _skill_params
+       ) do
     Process.send_after(self(), {:stop_dash, entity.id, entity.aditional_info.base_speed}, duration_ms)
 
     ## Modifying base_speed rather than speed because effects will reset the speed on game tick
@@ -161,11 +161,11 @@ defmodule Arena.Game.Skill do
   end
 
   defp execute_mechanic(
-        game_state,
-        entity,
-        %{type: "multi_shoot"} = multishot,
-        %{skill_direction: skill_direction} = skill_params
-      ) do
+         game_state,
+         entity,
+         %{type: "multi_shoot"} = multishot,
+         %{skill_direction: skill_direction} = skill_params
+       ) do
     entity_player_owner = get_entity_player_owner(game_state, entity)
 
     calculate_angle_directions(multishot.amount, multishot.angle_between, skill_direction)
@@ -196,11 +196,11 @@ defmodule Arena.Game.Skill do
   end
 
   defp execute_mechanic(
-        game_state,
-        entity,
-        %{type: "simple_shoot"} = simple_shoot,
-        %{skill_direction: skill_direction, can_pick_destination: true} = skill_params
-      ) do
+         game_state,
+         entity,
+         %{type: "simple_shoot"} = simple_shoot,
+         %{skill_direction: skill_direction, can_pick_destination: true} = skill_params
+       ) do
     last_id = game_state.last_id + 1
     entity_player_owner = get_entity_player_owner(game_state, entity)
 
@@ -242,11 +242,11 @@ defmodule Arena.Game.Skill do
   end
 
   defp execute_mechanic(
-        game_state,
-        entity,
-        %{type: "simple_shoot"} = simple_shoot,
-        %{skill_direction: skill_direction} = skill_params
-      ) do
+         game_state,
+         entity,
+         %{type: "simple_shoot"} = simple_shoot,
+         %{skill_direction: skill_direction} = skill_params
+       ) do
     last_id = game_state.last_id + 1
     entity_player_owner = get_entity_player_owner(game_state, entity)
 
@@ -300,7 +300,12 @@ defmodule Arena.Game.Skill do
     put_in(game_state, [:players, entity.id], entity)
   end
 
-  defp execute_mechanic(game_state, %{category: :projectile} = entity, %{type: "spawn_pool"} = pool_params, skill_params) do
+  defp execute_mechanic(
+         game_state,
+         %{category: :projectile} = entity,
+         %{type: "spawn_pool"} = pool_params,
+         skill_params
+       ) do
     last_id = game_state.last_id + 1
     entity_player_owner = get_entity_player_owner(game_state, entity)
 
