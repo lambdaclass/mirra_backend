@@ -30,8 +30,9 @@ defmodule ConfiguratorWeb.CharacterController do
         |> redirect(to: ~p"/versions/#{character.version_id}/characters/#{character}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
+        version = Configuration.get_version!(character_params["version_id"])
         skills = get_curse_skills_by_type()
-        render(conn, :new, changeset: changeset, skills: skills)
+        render(conn, :new, changeset: changeset, skills: skills, version: version)
     end
   end
 
@@ -59,8 +60,9 @@ defmodule ConfiguratorWeb.CharacterController do
         |> redirect(to: ~p"/versions/#{character.version_id}/characters/#{character}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
+        version = Configuration.get_version!(character.version_id)
         skills = get_curse_skills_by_type()
-        render(conn, :edit, character: character, changeset: changeset, skills: skills)
+        render(conn, :edit, character: character, changeset: changeset, skills: skills, version: version)
     end
   end
 
