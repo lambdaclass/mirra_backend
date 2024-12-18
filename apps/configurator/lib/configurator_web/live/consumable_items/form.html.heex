@@ -3,26 +3,24 @@
     Oops, something went wrong! Please check the errors below.
   </.error>
 
-  <.input
-    field={f[:version_id]}
-    type="select"
-    options={Enum.map(GameBackend.Configuration.list_versions(), fn version -> {version.name, version.id} end)}
-    label="Version"
-  />
+  <p class="font-semibold"><%= "Version: #{@version.name}" %></p>
+  <.input type="hidden" field={f[:version_id]} value={@version.id} />
   <.input field={f[:name]} type="text" label="Name" />
   <.input field={f[:radius]} type="number" label="Radius" step="any" />
   <.input field={f[:active]} type="checkbox" label="Active" />
 
-  <%= if @consumable_item.effect do %>
-    <.effect_form form={f} field={:effect} />
-  <% end %>
+  <.effect_form form={f} field={:effect} />
+
   <:actions>
     <.button>Save Consumable item</.button>
   </:actions>
 </.simple_form>
 
 <div class="mt-16">
-  <.link href="/consumable_items" class="text-sm font-semibold leading-6 text-zinc-900 hover:text-zinc-700">
+  <.link
+    href={"/versions/#{@version.id}/consumable_items"}
+    class="text-sm font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
+  >
     <.icon name="hero-arrow-left-solid" class="h-3 w-3" /> Back to consumable_items
   </.link>
 </div>

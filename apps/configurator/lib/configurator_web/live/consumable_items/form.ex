@@ -3,27 +3,28 @@ defmodule ConfiguratorWeb.ConsumableItemsLive.Form do
 
   alias GameBackend.Items
   alias GameBackend.Items.ConsumableItem
+  alias GameBackend.Configuration
 
   def mount(
         _params,
-        %{"consumable_item" => consumable_item},
+        %{"consumable_item" => consumable_item, "version" => version},
         socket
       ) do
     changeset = Items.change_consumable_item(consumable_item)
 
     socket =
-      socket |> assign(:changeset, changeset) |> assign(:action, "update") |> assign(:consumable_item, consumable_item)
+      assign(socket, changeset: changeset, action: "update", consumable_item: consumable_item, version: version)
 
     {:ok, socket}
   end
 
   def mount(
         _params,
-        _session,
+        %{"version" => version},
         socket
       ) do
     changeset = Items.change_consumable_item(%ConsumableItem{})
-    socket = socket |> assign(:changeset, changeset) |> assign(:action, "save")
+    socket = assign(socket, changeset: changeset, action: "save", version: version, consumable_item: %{})
     {:ok, socket}
   end
 
@@ -40,12 +41,14 @@ defmodule ConfiguratorWeb.ConsumableItemsLive.Form do
         {:ok, consumable_item} ->
           socket
           |> put_flash(:info, "Consumable item created successfully.")
-          |> redirect(to: ~p"/consumable_items/#{consumable_item.id}")
+          |> redirect(to: ~p"/versions/#{consumable_item.version_id}/consumable_items/#{consumable_item.id}")
 
         {:error, %Ecto.Changeset{} = changeset} ->
+          version = Configuration.get_version!(consumable_item_params["version_id"])
+
           socket
           |> put_flash(:error, "Please correct the errors below.")
-          |> assign(:changeset, changeset)
+          |> assign(changeset: changeset, version: version)
       end
 
     {:noreply, socket}
@@ -59,12 +62,14 @@ defmodule ConfiguratorWeb.ConsumableItemsLive.Form do
         {:ok, consumable_item} ->
           socket
           |> put_flash(:info, "Consumable item updated successfully.")
-          |> redirect(to: ~p"/consumable_items/#{consumable_item.id}")
+          |> redirect(to: ~p"/versions/#{consumable_item.version_id}/consumable_items/#{consumable_item.id}")
 
         {:error, %Ecto.Changeset{} = changeset} ->
+          version = Configuration.get_version!(consumable_item.version_id)
+
           socket
           |> put_flash(:error, "Please correct the errors below.")
-          |> assign(:changeset, changeset)
+          |> assign(changeset: changeset, version: version)
       end
 
     {:noreply, socket}

@@ -285,8 +285,8 @@ defmodule GameBackend.Items do
       [%ConsumableItem{}, ...]
 
   """
-  def list_consumable_items do
-    Repo.all(ConsumableItem)
+  def list_consumable_items_by_version(version_id) do
+    Repo.all(from(ci in ConsumableItem, where: ci.version_id == ^version_id))
   end
 
   @doc """
