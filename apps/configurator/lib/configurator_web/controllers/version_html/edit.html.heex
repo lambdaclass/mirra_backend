@@ -3,6 +3,13 @@
   <:subtitle>Use this form to manage version records in your database.</:subtitle>
 </.header>
 
-<.version_form changeset={@changeset} action={~p"/versions/#{@version}"} />
+<.list>
+  <:item title="Character settings"><.link href={~p"/versions/#{@version}/characters"}>Link</.link></:item>
+  <:item title="Game settings"><.link href={~p"/versions/#{@version}/game_configurations"}>Link</.link></:item>
+  <:item title="Map settings"><.link href={~p"/versions/#{@version}/map_configurations"}>Link</.link></:item>
+  <:item title="Skill settings"><.link href={~p"/versions/#{@version}/skills"}>Link</.link></:item>
+  <:item title="Consumable Items"><.link href={~p"/versions/#{@version}/consumable_items"}>Link</.link></:item>
+  <:item title="Arena servers"><.link href={~p"/versions/#{@version}/arena_servers"}>Link</.link></:item>
+</.list>
 
 <.back navigate={~p"/versions"}>Back to versions</.back>

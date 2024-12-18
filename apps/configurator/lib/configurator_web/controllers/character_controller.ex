@@ -5,15 +5,16 @@ defmodule ConfiguratorWeb.CharacterController do
   alias GameBackend.Units.Characters.Character
   alias GameBackend.Configuration
 
-  def index(conn, _params) do
-    characters = Characters.get_curse_characters()
-    render(conn, :index, characters: characters)
+  def index(conn, %{"id" => version_id}) do
+    characters = Characters.get_curse_characters_by_version(version_id)
+    render(conn, :index, characters: characters, version_id: version_id)
   end
 
-  def new(conn, _params) do
+  def new(conn, %{"id" => version_id}) do
     changeset = Ecto.Changeset.change(%Character{})
+    version = Configuration.get_version!(version_id)
     skills = get_curse_skills_by_type()
-    render(conn, :new, changeset: changeset, skills: skills)
+    render(conn, :new, changeset: changeset, skills: skills, version: version)
   end
 
   def create(conn, %{"character" => character_params}) do
@@ -26,7 +27,7 @@ defmodule ConfiguratorWeb.CharacterController do
       {:ok, character} ->
         conn
         |> put_flash(:success, "Character created successfully.")
-        |> redirect(to: ~p"/characters/#{character}")
+        |> redirect(to: ~p"/versions/#{character.version_id}/characters/#{character}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
         skills = get_curse_skills_by_type()
@@ -43,8 +44,9 @@ defmodule ConfiguratorWeb.CharacterController do
   def edit(conn, %{"id" => id}) do
     character = Characters.get_character(id)
     changeset = Ecto.Changeset.change(character)
+    version = Configuration.get_version!(character.version_id)
     skills = get_curse_skills_by_type()
-    render(conn, :edit, character: character, changeset: changeset, skills: skills)
+    render(conn, :edit, character: character, changeset: changeset, skills: skills, version: version)
   end
 
   def update(conn, %{"id" => id, "character" => character_params}) do
@@ -54,7 +56,7 @@ defmodule ConfiguratorWeb.CharacterController do
       {:ok, character} ->
         conn
         |> put_flash(:success, "Character updated successfully.")
-        |> redirect(to: ~p"/characters/#{character}")
+        |> redirect(to: ~p"/versions/#{character.version_id}/characters/#{character}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
         skills = get_curse_skills_by_type()
@@ -64,11 +66,12 @@ defmodule ConfiguratorWeb.CharacterController do
 
   def delete(conn, %{"id" => id}) do
     character = Characters.get_character(id)
+    version_id = character.version_id
     {:ok, _character} = Characters.delete_character(character)
 
     conn
     |> put_flash(:success, "Character deleted successfully.")
-    |> redirect(to: ~p"/characters")
+    |> redirect(to: ~p"/versions/#{version_id}/characters")
   end
 
   defp get_curse_skills_by_type() do
