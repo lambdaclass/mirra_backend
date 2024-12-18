@@ -184,12 +184,12 @@ defmodule GameBackend.Units.Characters do
   iex> get_curse_characters()
   [%Character%{game_id: 1, name: "Muflus"}, ...]
   """
-  def get_curse_characters() do
+  def get_curse_characters_by_version(version_id) do
     curse_id = GameBackend.Utils.get_game_id(:curse_of_mirra)
 
     q =
       from(c in Character,
-        where: ^curse_id == c.game_id,
+        where: ^curse_id == c.game_id and ^version_id == c.version_id,
         preload: [
           basic_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]],
           ultimate_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]],

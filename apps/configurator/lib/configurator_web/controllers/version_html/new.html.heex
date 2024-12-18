@@ -5,36 +5,4 @@
 
 <.version_form changeset={@changeset} last_version={@last_version} action={~p"/versions"} skills={@skills} />
 
-<%!-- <%= for character <- @characters do %> --%>
-<%!-- <.character_form for={character} changeset={changeset} /> --%>
-
-<%!-- <%= render(@conn, ConfiguratorWeb.CharacterHTML, character: character) %> --%>
-<%!-- 
-<.inputs_for 
-<.list>
-  <:item title="Name"><%= @character.name %></:item>
-  <:item title="Active"><%= @character.active %></:item>
-  <:item title="Base speed"><%= @character.base_speed %></:item>
-  <:item title="Base size"><%= @character.base_size %></:item>
-  <:item title="Base health"><%= @character.base_health %></:item>
-  <:item title="Base stamina"><%= @character.base_stamina %></:item>
-  <:item title="Stamina Interval"><%= @character.stamina_interval %></:item>
-  <:item title="Base mana"><%= @character.base_mana %></:item>
-  <:item title="Initial mana"><%= @character.initial_mana %></:item>
-  <:item title="Mana recovery strategy"><%= @character.mana_recovery_strategy %></:item>
-  <:item title="Time based mana recovery interval"><%= @character.mana_recovery_time_interval_ms %></:item>
-  <:item title="Time based mana recovery amount"><%= @character.mana_recovery_time_amount %></:item>
-  <:item title="Damage based mana recovery multiplier amount"><%= @character.mana_recovery_damage_multiplier %></:item>
-  <:item title="Max inventory size"><%= @character.max_inventory_size %></:item>
-  <:item title="Natural healing interval"><%= @character.natural_healing_interval %></:item>
-  <:item title="Natural healing damage interval"><%= @character.natural_healing_damage_interval %></:item>
-  <:item title="Basic skill"><%= if @character.basic_skill, do: @character.basic_skill.name %></:item>
-  <:item title="Dash skill"><%= if @character.dash_skill, do: @character.dash_skill.name %></:item>
-  <:item title="Ultimate skill"><%= if @character.ultimate_skill, do: @character.ultimate_skill.name %></:item>
-</.list>
-  <.character_form character={character} />
-  <.link navigate={~p"/characters/#{character}"}><%= character.name %></.link>
-  <.link navigate={~p"/characters/#{character}/edit"}>Edit</.link> --%>
-<%!-- <% end %> --%>
-
 <.back navigate={~p"/versions"}>Back to versions</.back>
