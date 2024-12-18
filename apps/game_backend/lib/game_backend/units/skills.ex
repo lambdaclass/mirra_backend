@@ -54,12 +54,12 @@ defmodule GameBackend.Units.Skills do
     end)
   end
 
-  def list_curse_skills() do
+  def list_curse_skills_by_version(version_id) do
     curse_id = GameBackend.Utils.get_game_id(:curse_of_mirra)
 
     q =
       from(s in Skill,
-        where: ^curse_id == s.game_id,
+        where: ^curse_id == s.game_id and ^version_id == s.version_id,
         preload: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics]]
       )
 
