@@ -12,6 +12,9 @@
     </script>
   </head>
   <body class="bg-white antialiased">
+    <div class="absolute top-0 left-0 p-4">
+      <.back navigate={~p"/"}>Back to Home</.back>
+    </div>
     <ul class="relative z-10 flex items-center gap-4 px-4 sm:px-6 lg:px-8 justify-end">
       <%= if @current_user do %>
         <li class="text-[0.8125rem] leading-6 text-zinc-900">
