@@ -9,6 +9,7 @@ defmodule ConfiguratorWeb.SkillHTML do
   """
   attr :changeset, Ecto.Changeset, required: true
   attr :action, :string, required: true
+  attr :version, GameBackend.Configuration.Version, required: true
 
   def skill_form(assigns)
 

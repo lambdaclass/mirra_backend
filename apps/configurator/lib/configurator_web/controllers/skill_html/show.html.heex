@@ -9,7 +9,7 @@
     <% end %>
   </:subtitle>
   <:actions>
-    <.link href={~p"/skills/#{@skill}/edit"}>
+    <.link href={~p"/versions/#{@version}/skills/#{@skill}/edit"}>
       <.button>Edit skill</.button>
     </.link>
     <.effect_show effect={@skill.effect_to_apply} />
@@ -60,4 +60,4 @@
   </.modal>
 <% end %>
 
-<.back navigate={~p"/skills"}>Back to skills</.back>
+<.back navigate={~p"/versions/#{@version}/skills"}>Back to skills</.back>
