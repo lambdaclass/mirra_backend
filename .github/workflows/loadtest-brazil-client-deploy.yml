@@ -20,7 +20,7 @@ on:
 jobs:
   build-deploy:
     name: Build and deploy to Brazil Loadtest Client
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     environment:
       name: testing-brazil
       url: https://loadtest-brazil-client.championsofmirra.com/
