@@ -52,8 +52,7 @@ defmodule BotManager.Math.Vector do
     }
   end
 
-
   def deg2rad(deg) do
-    deg * :math.pi / 180
+    deg * :math.pi() / 180
   end
 end
