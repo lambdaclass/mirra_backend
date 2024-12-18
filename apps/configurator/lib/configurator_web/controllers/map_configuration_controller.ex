@@ -5,14 +5,15 @@ defmodule ConfiguratorWeb.MapConfigurationController do
   alias GameBackend.CurseOfMirra.MapConfiguration
   alias GameBackend.Configuration
 
-  def index(conn, _params) do
-    map_configurations = Configuration.list_map_configurations()
-    render(conn, :index, map_configurations: map_configurations)
+  def index(conn, %{"id" => version_id}) do
+    map_configurations = Configuration.list_map_configurations_by_version(version_id)
+    render(conn, :index, map_configurations: map_configurations, version_id: version_id)
   end
 
-  def new(conn, _params) do
+  def new(conn, %{"id" => version_id}) do
     changeset = Configuration.change_map_configuration(%MapConfiguration{})
-    render(conn, :new, changeset: changeset)
+    version = Configuration.get_version!(version_id)
+    render(conn, :new, changeset: changeset, version: version)
   end
 
   def create(conn, %{"map_configuration" => map_configuration_params}) do
@@ -22,10 +23,11 @@ defmodule ConfiguratorWeb.MapConfigurationController do
       {:ok, map_configuration} ->
         conn
         |> put_flash(:info, "Map configuration created successfully.")
-        |> redirect(to: ~p"/map_configurations/#{map_configuration}")
+        |> redirect(to: ~p"/versions/#{map_configuration.version_id}/map_configurations/#{map_configuration}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :new, changeset: changeset)
+        version = Configuration.get_version!(map_configuration_params["version_id"])
+        render(conn, :new, changeset: changeset, version: version)
     end
   end
 
@@ -37,9 +39,9 @@ defmodule ConfiguratorWeb.MapConfigurationController do
 
   def edit(conn, %{"id" => id}) do
     map_configuration = Configuration.get_map_configuration!(id)
-
+    version = Configuration.get_version!(map_configuration.version_id)
     changeset = Configuration.change_map_configuration(map_configuration)
-    render(conn, :edit, map_configuration: map_configuration, changeset: changeset)
+    render(conn, :edit, map_configuration: map_configuration, changeset: changeset, version: version)
   end
 
   def update(conn, %{"id" => id, "map_configuration" => map_configuration_params}) do
@@ -50,31 +52,32 @@ defmodule ConfiguratorWeb.MapConfigurationController do
       {:ok, map_configuration} ->
         conn
         |> put_flash(:info, "Map configuration updated successfully.")
-        |> redirect(to: ~p"/map_configurations/#{map_configuration}")
+        |> redirect(to: ~p"/versions/#{map_configuration.version_id}/map_configurations/#{map_configuration}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :edit, map_configuration: map_configuration, changeset: changeset)
+        version = Configuration.get_version!(map_configuration.version_id)
+        render(conn, :edit, map_configuration: map_configuration, changeset: changeset, version: version)
     end
   end
 
   def delete(conn, %{"id" => id}) do
     map_configuration = Configuration.get_map_configuration!(id)
+    version_id = map_configuration.version_id
     {:ok, _map_configuration} = Configuration.delete_map_configuration(map_configuration)
 
     conn
     |> put_flash(:info, "Map configuration deleted successfully.")
-    |> redirect(to: ~p"/map_configurations")
+    |> redirect(to: ~p"/versions/#{version_id}/map_configurations")
   end
 
   def edit_obstacles(conn, %{"id" => id}) do
     map_configuration = Configuration.get_map_configuration!(id)
-
     changeset = Configuration.change_map_configuration(map_configuration)
 
     render(conn, :edit_obstacles,
       map_configuration: map_configuration,
       changeset: changeset,
-      action: ~p"/map_configurations/#{map_configuration}/update_obstacles"
+      action: ~p"/versions/#{map_configuration.version_id}/map_configurations/#{map_configuration}/update_obstacles"
     )
   end
 
@@ -85,26 +88,25 @@ defmodule ConfiguratorWeb.MapConfigurationController do
       {:ok, map_configuration} ->
         conn
         |> put_flash(:info, "Map configuration updated successfully.")
-        |> redirect(to: ~p"/map_configurations/#{map_configuration}")
+        |> redirect(to: ~p"/versions/#{map_configuration.version_id}/map_configurations/#{map_configuration}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, :edit_obstacles,
           map_configuration: map_configuration,
           changeset: changeset,
-          action: ~p"/map_configurations/#{map_configuration}/update_obstacles"
+          action: ~p"/versions/#{map_configuration.version_id}/map_configurations/#{map_configuration}/update_obstacles"
         )
     end
   end
 
   def edit_pools(conn, %{"id" => id}) do
     map_configuration = Configuration.get_map_configuration!(id)
-
     changeset = Configuration.change_map_configuration(map_configuration)
 
     render(conn, :edit_pools,
       map_configuration: map_configuration,
       changeset: changeset,
-      action: ~p"/map_configurations/#{map_configuration}/update_pools"
+      action: ~p"/versions/#{map_configuration.version_id}/map_configurations/#{map_configuration}/update_pools"
     )
   end
 
@@ -115,26 +117,25 @@ defmodule ConfiguratorWeb.MapConfigurationController do
       {:ok, map_configuration} ->
         conn
         |> put_flash(:info, "Map configuration updated successfully.")
-        |> redirect(to: ~p"/map_configurations/#{map_configuration}")
+        |> redirect(to: ~p"/versions/#{map_configuration.version_id}/map_configurations/#{map_configuration}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, :edit_pools,
           map_configuration: map_configuration,
           changeset: changeset,
-          action: ~p"/map_configurations/#{map_configuration}/update_obstacles"
+          action: ~p"/versions/#{map_configuration.version_id}/map_configurations/#{map_configuration}/update_obstacles"
         )
     end
   end
 
   def edit_crates(conn, %{"id" => id}) do
     map_configuration = Configuration.get_map_configuration!(id)
-
     changeset = Configuration.change_map_configuration(map_configuration)
 
     render(conn, :edit_crates,
       map_configuration: map_configuration,
       changeset: changeset,
-      action: ~p"/map_configurations/#{map_configuration}/update_crates"
+      action: ~p"/versions/#{map_configuration.version_id}/map_configurations/#{map_configuration}/update_crates"
     )
   end
 
@@ -145,13 +146,13 @@ defmodule ConfiguratorWeb.MapConfigurationController do
       {:ok, map_configuration} ->
         conn
         |> put_flash(:info, "Map configuration updated successfully.")
-        |> redirect(to: ~p"/map_configurations/#{map_configuration}")
+        |> redirect(to: ~p"/versions/#{map_configuration.version_id}/map_configurations/#{map_configuration}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, :edit_crates,
           map_configuration: map_configuration,
           changeset: changeset,
-          action: ~p"/map_configurations/#{map_configuration}/update_obstacles"
+          action: ~p"/versions/#{map_configuration.version_id}/map_configurations/#{map_configuration}/update_obstacles"
         )
     end
   end

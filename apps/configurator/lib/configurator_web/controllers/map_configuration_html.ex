@@ -8,6 +8,7 @@ defmodule ConfiguratorWeb.MapConfigurationHTML do
   """
   attr :changeset, Ecto.Changeset, required: true
   attr :action, :string, required: true
+  attr :version, GameBackend.Configuration.Version, required: true
 
   def map_configuration_form(assigns)
 
