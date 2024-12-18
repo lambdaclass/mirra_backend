@@ -2,12 +2,8 @@
   <.error :if={@changeset.action}>
     Oops, something went wrong! Please check the errors below.
   </.error>
-  <.input
-    field={f[:version_id]}
-    type="select"
-    options={Enum.map(GameBackend.Configuration.list_versions(), fn version -> {version.name, version.id} end)}
-    label="Version"
-  />
+  <p class="font-semibold"><%= "Version: #{@version.name}" %></p>
+  <.input type="hidden" field={f[:version_id]} value={@version.id} />
   <.input field={f[:tick_rate_ms]} type="number" label="Tick rate ms" />
   <.input field={f[:bounty_pick_time_ms]} type="number" label="Bounty pick time ms" />
   <.input field={f[:start_game_time_ms]} type="number" label="Start game time ms" />

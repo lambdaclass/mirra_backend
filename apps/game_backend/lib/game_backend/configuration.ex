@@ -21,8 +21,8 @@ defmodule GameBackend.Configuration do
       [%GameConfiguration{}, ...]
 
   """
-  def list_game_configurations do
-    Repo.all(GameConfiguration)
+  def list_game_configurations_by_version(version_id) do
+    Repo.all(from(gc in GameConfiguration, where: gc.version_id == ^version_id))
   end
 
   @doc """
