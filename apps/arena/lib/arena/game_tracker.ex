@@ -30,6 +30,7 @@ defmodule Arena.GameTracker do
           | {:heal, player_id(), non_neg_integer()}
           | {:kill_by_zone, player_id()}
           | {:select_bounty, player_id(), bounty_quest_id()}
+          | {:deathmatch_position, player_id(), pos_integer()}
 
   @spec push_event(pid(), event()) :: :ok
   def push_event(match_pid, event) do
@@ -134,6 +135,11 @@ defmodule Arena.GameTracker do
     |> put_in([:players, victim_id, :killed_by_bot], false)
     |> put_in([:players, victim_id, :position], data.position_on_death)
     |> put_in([:position_on_death], data.position_on_death - 1)
+  end
+
+  defp update_data(data, {:deathmatch_position, player_id, position}) do
+    data
+    |> put_in([:players, player_id, :position], position)
   end
 
   defp update_data(data, {:damage_taken, player_id, amount}) do

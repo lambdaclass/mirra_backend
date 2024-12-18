@@ -354,6 +354,7 @@ defmodule Arena.GameUpdater do
         teams_with_kills
         |> Enum.reduce(game_state, fn {team, position}, game_state_acc ->
           Enum.reduce(team.players, game_state_acc, fn player, game_state_acc ->
+            GameTracker.push_event(self(), {:deathmatch_position, player.id, position})
             put_player_position(game_state_acc, player.id, position)
           end)
         end)
