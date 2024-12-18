@@ -5,7 +5,7 @@ on:
 jobs:
   build-deploy:
     name: Build and deploy to Chile Loadtest Client
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     environment:
       name: bot-manager
       url: https://bot-manager.championsofmirra.com/
