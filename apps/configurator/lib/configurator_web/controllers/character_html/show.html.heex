@@ -2,7 +2,7 @@
   Character <%= @character.name %>
   <:subtitle>Version: <%= @version.name %></:subtitle>
   <:actions>
-    <.link href={~p"/characters/#{@character}/edit"}>
+    <.link href={~p"/versions/#{@version}/characters/#{@character}/edit"}>
       <.button>Edit character</.button>
     </.link>
   </:actions>
@@ -30,4 +30,4 @@
   <:item title="Ultimate skill"><%= if @character.ultimate_skill, do: @character.ultimate_skill.name %></:item>
 </.list>
 
-<.back navigate={~p"/characters"}>Back to characters</.back>
+<.back navigate={~p"/versions/#{@version}/characters"}>Back to characters</.back>

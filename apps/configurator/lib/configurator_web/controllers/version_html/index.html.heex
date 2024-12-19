@@ -22,7 +22,7 @@
   </:action>
   <:action :let={version}>
     <%= if version.current do %>
-      Current version
+      <a class="bg-red-200 p-2">Current version</a>
     <% else %>
       <.link href={~p"/versions/#{version}/current"} method="put" data-confirm="Are you sure?">
         Mark as current

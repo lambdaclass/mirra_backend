@@ -1,13 +1,13 @@
 <.header>
   Listing Config skills
   <:actions>
-    <.link href={~p"/skills/new"}>
+    <.link href={~p"/versions/#{@version_id}/skills/new"}>
       <.button>New Skill</.button>
     </.link>
   </:actions>
 </.header>
 
-<.table id="skills" rows={@skills} row_click={&JS.navigate(~p"/skills/#{&1}")}>
+<.table id="skills" rows={@skills} row_click={&JS.navigate(~p"/versions/#{@version_id}/skills/#{&1}")}>
   <:col :let={skill} label="Name"><%= skill.name %></:col>
   <:col :let={skill} label="Activation delay (ms)"><%= skill.activation_delay_ms %></:col>
   <:col :let={skill} label="Autoaim"><%= skill.autoaim %></:col>
@@ -55,12 +55,12 @@
   </:action>
   <:action :let={skill}>
     <div class="sr-only">
-      <.link navigate={~p"/skills/#{skill}"}>Show</.link>
+      <.link navigate={~p"/versions/#{@version_id}/skills/#{skill}"}>Show</.link>
     </div>
-    <.link navigate={~p"/skills/#{skill}/edit"}>Edit</.link>
+    <.link navigate={~p"/versions/#{@version_id}/skills/#{skill}/edit"}>Edit</.link>
   </:action>
   <:action :let={skill}>
-    <.link href={~p"/skills/#{skill}"} method="delete" data-confirm="Are you sure?">
+    <.link href={~p"/versions/#{@version_id}/skills/#{skill}"} method="delete" data-confirm="Are you sure?">
       Delete
     </.link>
   </:action>

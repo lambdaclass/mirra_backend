@@ -68,7 +68,44 @@ defmodule GameBackend.Units.Skills.Skill do
       :version_id
     ])
     |> cast_assoc(:mechanics)
-    |> unique_constraint([:game_id, :name])
+    |> unique_constraint([:game_id, :name, :version_id])
+    |> validate_required([:game_id, :name, :version_id])
+    |> foreign_key_constraint(:characters, name: "characters_basic_skill_id_fkey")
+    |> cooldown_mechanism_validation()
+    |> validate_combo_fields()
+    |> cast_embed(:effect_to_apply)
+  end
+
+  @doc false
+  def assoc_changeset(skill, attrs \\ %{}) do
+    skill
+    |> cast(attrs, [
+      :name,
+      :game_id,
+      :cooldown,
+      :energy_regen,
+      :animation_duration,
+      :buff_id,
+      :next_skill_id,
+      :activation_delay_ms,
+      :autoaim,
+      :block_movement,
+      :can_pick_destination,
+      :cooldown_mechanism,
+      :cooldown_ms,
+      :reset_combo_ms,
+      :execution_duration_ms,
+      :inmune_while_executing,
+      :is_passive,
+      :is_combo?,
+      :max_autoaim_range,
+      :stamina_cost,
+      :mana_cost,
+      :type,
+      :version_id
+    ])
+    |> cast_assoc(:mechanics)
+    |> unique_constraint([:game_id, :name, :version_id])
     |> foreign_key_constraint(:characters, name: "characters_basic_skill_id_fkey")
     |> cooldown_mechanism_validation()
     |> validate_combo_fields()

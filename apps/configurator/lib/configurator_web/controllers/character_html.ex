@@ -9,6 +9,7 @@ defmodule ConfiguratorWeb.CharacterHTML do
   attr :changeset, Ecto.Changeset, required: true
   attr :action, :string, required: true
   attr :skills, :list, required: true
+  attr :version, GameBackend.Configuration.Version, required: true
 
   def character_form(assigns)
 

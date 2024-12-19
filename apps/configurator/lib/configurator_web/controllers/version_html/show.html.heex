@@ -8,8 +8,22 @@
   </:actions>
 </.header>
 
+<%= if @version.current do %>
+  <h2 class="text-lg font-semibold leading-8 text-zinc-800 bg-red-200 inline-block p-2">
+    This is the current version
+  </h2>
+<% end %>
+
 <.list>
   <:item title="Name"><%= @version.name %></:item>
+</.list>
+
+<.list>
+  <:item title="Character settings"><.link href={~p"/versions/#{@version}/characters"}>Link</.link></:item>
+  <:item title="Game settings"><.link href={~p"/versions/#{@version}/game_configurations"}>Link</.link></:item>
+  <:item title="Map settings"><.link href={~p"/versions/#{@version}/map_configurations"}>Link</.link></:item>
+  <:item title="Skill settings"><.link href={~p"/versions/#{@version}/skills"}>Link</.link></:item>
+  <:item title="Consumable Items"><.link href={~p"/versions/#{@version}/consumable_items"}>Link</.link></:item>
 </.list>
 
 <.back navigate={~p"/versions"}>Back to versions</.back>
