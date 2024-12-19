@@ -914,20 +914,19 @@ skills = [
     "type" => "dash",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 5000,
-    "execution_duration_ms" => 250,
+    "execution_duration_ms" => 350,
     "activation_delay_ms" => 0,
     "is_passive" => false,
-    "autoaim" => true,
+    "autoaim" => false,
     "max_autoaim_range" => 1300,
-    "can_pick_destination" => true,
+    "can_pick_destination" => false,
     "block_movement" => true,
     "mechanics" => [
       %{
-        "type" => "leap",
-        "range" => 1300.0,
-        "speed" => 1.7,
+        "type" => "dash",
+        "speed" => 3.7,
         "radius" => 600,
-        "on_arrival_mechanic" => %{}
+        "duration_ms" => 350,
       }
     ],
     "version_id" => version.id
