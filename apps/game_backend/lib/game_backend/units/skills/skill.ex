@@ -69,6 +69,7 @@ defmodule GameBackend.Units.Skills.Skill do
     ])
     |> cast_assoc(:mechanics)
     |> unique_constraint([:game_id, :name, :version_id])
+    |> validate_required([:game_id, :name, :version_id])
     |> foreign_key_constraint(:characters, name: "characters_basic_skill_id_fkey")
     |> cooldown_mechanism_validation()
     |> validate_combo_fields()

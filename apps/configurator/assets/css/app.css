@@ -26,4 +26,17 @@
     flex: 0 0 150px;
 }
 
+.left{
+    position: absolute;
+    top: 0px;
+    left: 10px;
+    text-align: left;
+  }
+
+.right{
+    position: absolute;
+    top: 0px;
+    right: 10px;
+  }
+
 /* This file is for your main application CSS */

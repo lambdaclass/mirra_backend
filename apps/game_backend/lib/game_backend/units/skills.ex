@@ -26,10 +26,14 @@ defmodule GameBackend.Units.Skills do
   If another one already exists with the same name, it updates it instead.
   """
   def upsert_skills(attrs_list) do
+    # TODO: Remove this after fixing Autobattler seeds. Did this to mark version_id as required for skills
+    autobattler_id = GameBackend.Utils.get_game_id(:champions_of_mirra)
+    autobattler_version_id = GameBackend.Utils.get_autobattler_version!()
+
     Enum.reduce(attrs_list, Ecto.Multi.new(), fn attrs, multi ->
       # Cannot use Multi.insert because of the embeds_many
       Ecto.Multi.run(multi, attrs.name, fn _, _ ->
-        upsert_skill(attrs)
+        upsert_skill(Map.put(attrs, :version_id, autobattler_version_id) |> Map.put(:game_id, autobattler_id))
       end)
     end)
     |> Repo.transaction()
