@@ -5,7 +5,6 @@ defmodule GameBackend.Configuration do
   import Ecto.Query
   alias Ecto.Multi
   alias GameBackend.CurseOfMirra.GameConfiguration
-  alias GameBackend.Items.ConsumableItem
   alias GameBackend.Units.Characters.Character
   alias GameBackend.CurseOfMirra.MapConfiguration
   alias GameBackend.ArenaServers.ArenaServer
@@ -307,12 +306,9 @@ defmodule GameBackend.Configuration do
 
   """
   def create_version(attrs \\ %{}) do
-    attrs |> IO.inspect(label: :aver_attrs)
-
     %Version{}
     |> Version.changeset(attrs)
     |> Repo.insert()
-    |> dbg(label: :aver_dbg)
   end
 
   @doc """
@@ -466,42 +462,6 @@ defmodule GameBackend.Configuration do
         ]
       )
 
-    Repo.all(q)
-  end
-
-  @doc """
-  Get game configuration by version
-
-  ## Examples
-      iex> get_game_configuration_by_version(version)
-      %GameConfiguration{}
-  """
-  def get_game_configuration_by_version(version) do
-    q =
-      from(g in GameConfiguration,
-        where: g.version_id == ^version.id
-      )
-
-    Repo.one(q)
-  end
-
-  @doc """
-  List all consumable items by version
-
-  ## Examples
-      iex> list_consumable_items_by_version(version)
-      [%ConsumableItem{}, ...]
-  """
-  def list_consumable_items_by_version(version) do
-    q = from(ci in ConsumableItem, where: ci.version_id == ^version.id and ci.active)
-    Repo.all(q)
-  end
-
-  @doc """
-
-  """
-  def list_map_configurations_by_version(version) do
-    q = from(m in MapConfiguration, where: m.version_id == ^version.id)
     Repo.all(q)
   end
 

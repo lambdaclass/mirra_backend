@@ -15,15 +15,28 @@
 }
 
 .input-item {
-    border-bottom: 1px solid #ccc; /* Adjust the border style and color as needed */
-    margin-bottom: 10px; /* Add some bottom margin for spacing */
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 10px;
     align-items: center;
-    flex-wrap: wrap; /* Allow items to wrap to the next line if needed */
+    flex-wrap: wrap;
 }
 
 .input-item > div {
-    padding: 10px; /* Add some bottom margin for spacing */
+    padding: 10px;
     flex: 0 0 150px;
 }
+
+.left{
+    position: absolute;
+    top: 0px;
+    left: 10px;
+    text-align: left;
+  }
+
+.right{
+    position: absolute;
+    top: 0px;
+    right: 10px;
+  }
 
 /* This file is for your main application CSS */

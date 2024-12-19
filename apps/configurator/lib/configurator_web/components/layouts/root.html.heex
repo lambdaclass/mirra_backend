@@ -1,4 +1,32 @@
 <!DOCTYPE html>
+<style>
+  nav {
+      padding: 15px;
+  }
+  nav ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+  }
+
+  nav a {
+      display: block;
+  }
+
+  .nav-left {
+      float: left;
+  }
+
+  .nav-left ul li {
+      float: left;
+  }
+
+  .nav-right ul li {
+      float: right;
+  }
+</style>
+
 <html lang="en" class="[scrollbar-gutter:stable]">
   <head>
     <meta charset="utf-8" />
@@ -12,25 +40,39 @@
     </script>
   </head>
   <body class="bg-white antialiased">
-    <div class="absolute top-0 left-0 p-4">
-      <.back navigate={~p"/"}>Back to Home</.back>
-    </div>
-    <ul class="relative z-10 flex items-center gap-4 px-4 sm:px-6 lg:px-8 justify-end">
-      <%= if @current_user do %>
-        <li class="text-[0.8125rem] leading-6 text-zinc-900">
-          <%= @current_user.email %>
-        </li>
-        <li>
-          <.link
-            href={~p"/users/log_out"}
-            method="delete"
-            class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
-          >
-            Log out
-          </.link>
-        </li>
-      <% end %>
-    </ul>
+    <nav class="nav">
+      <div class="nav-left">
+        <ul>
+          <li>
+            <a>
+              <.link href={~p"/"} class="text-sm font-semibold leading-6 text-zinc-900 hover:text-zinc-700">
+                <.icon name="hero-arrow-left-solid" class="h-3 w-3" /> Back to Home
+              </.link>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="nav-right">
+        <ul>
+          <%= if @current_user do %>
+            <li>
+              <a>
+                <.link
+                  href={~p"/users/log_out"}
+                  method="delete"
+                  class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+                >
+                  Log out
+                </.link>
+              </a>
+            </li>
+            <li class="text-[0.8125rem] leading-6 text-zinc-900 px-4">
+              <a><%= @current_user.email %></a>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </nav>
     <%= @inner_content %>
   </body>
 </html>

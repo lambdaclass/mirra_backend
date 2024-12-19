@@ -14,7 +14,7 @@ defmodule Arena.Configuration do
     |> Map.put(:client_config, client_config)
   end
 
-  def get_current_game_configuration do
+  defp get_current_game_configuration do
     gateway_url = Application.get_env(:arena, :gateway_url)
 
     {:ok, payload} =
@@ -39,6 +39,19 @@ defmodule Arena.Configuration do
     |> Map.update!(:game, fn game ->
       parse_game_config(game)
     end)
+  end
+
+  # TODO: This is a placeholder because the above function needs to retrieve only 1 map params
+  def get_current_map_configuration_for_configurator do
+    gateway_url = Application.get_env(:arena, :gateway_url)
+
+    {:ok, payload} =
+      Finch.build(:get, "#{gateway_url}/curse/configuration/current", [{"content-type", "application/json"}])
+      |> Finch.request(Arena.Finch)
+
+    Jason.decode!(payload.body, [{:keys, :atoms}])
+    |> Map.update!(:map, fn maps -> Enum.map(maps, fn map -> parse_map_config(map) end) end)
+    |> Map.get(:map)
   end
 
   defp get_client_config() do

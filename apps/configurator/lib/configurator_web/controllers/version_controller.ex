@@ -1,6 +1,5 @@
 defmodule ConfiguratorWeb.VersionController do
   use ConfiguratorWeb, :controller
-  # import Ecto.Query
   alias ConfiguratorWeb.MapConfigurationController
 
   alias GameBackend.Configuration
@@ -12,23 +11,25 @@ defmodule ConfiguratorWeb.VersionController do
   end
 
   def new(conn, _params) do
-    config = Arena.Configuration.get_game_config()
-    map_params = config.map
-    skills = GameBackend.Units.Skills.list_curse_skills() |> Enum.group_by(& &1.type)
+    map_params = Arena.Configuration.get_current_map_configuration_for_configurator()
     last_version = GameBackend.Configuration.get_current_version()
+    skills = GameBackend.Units.Skills.list_curse_skills_by_version(last_version.id) |> Enum.group_by(& &1.type)
 
     params =
       Map.from_struct(last_version)
       |> Map.put(:characters, schema_to_map(last_version.characters))
       |> Map.put(:consumable_items, schema_to_map(last_version.consumable_items))
       |> Map.put(:game_configuration, schema_to_map(last_version.game_configuration))
-      |> Map.put(:map_configurations, [map_params])
+      |> Map.put(:map_configurations, map_params)
       |> Map.put(:skills, schema_to_map(last_version.skills))
 
     changeset = Configuration.change_version(%Version{}, params)
     render(conn, :new, changeset: changeset, last_version: last_version, skills: skills)
   end
 
+  # TODO: We have a cycle in our Skill.Mechanic assocs so this is to end that loop.
+  # This replaces the unloaded mechanics assoc by an empty list.
+  # The key is that we preload the necessary steps of the mechanics loop associations.
   def schema_to_map(%{
         __cardinality__: :many,
         __field__: _,
@@ -41,10 +42,8 @@ defmodule ConfiguratorWeb.VersionController do
 
   def schema_to_map(%_struct{} = schema) do
     schema
-    # Convert the struct to a map
     |> Map.from_struct()
     |> Enum.map(fn {key, value} -> {key, schema_to_map(value)} end)
-    # Convert back into a map
     |> Enum.into(%{})
   end
 
@@ -65,13 +64,9 @@ defmodule ConfiguratorWeb.VersionController do
       Map.put(
         version_params,
         "map_configurations",
-        Enum.map(version_params["map_configurations"], fn {k, map} ->
-          %{k => MapConfigurationController.parse_json_params(map)}
-          # Enum.map(map, fn {k, v} ->
-          #   %{k => MapConfigurationController.parse_json_params(v)}
-          # end)
+        Map.new(version_params["map_configurations"], fn {key, map_params} ->
+          {key, MapConfigurationController.parse_json_params(map_params)}
         end)
-        |> hd()
       )
 
     case Configuration.create_version(version_params) do
@@ -82,7 +77,7 @@ defmodule ConfiguratorWeb.VersionController do
 
       {:error, %Ecto.Changeset{} = changeset} ->
         last_version = GameBackend.Configuration.get_current_version()
-        skills = GameBackend.Units.Skills.list_curse_skills() |> Enum.group_by(& &1.type)
+        skills = GameBackend.Units.Skills.list_curse_skills_by_version(last_version.id) |> Enum.group_by(& &1.type)
 
         render(conn, :new, changeset: changeset, last_version: last_version, skills: skills)
     end

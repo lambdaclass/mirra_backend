@@ -2,6 +2,7 @@ defmodule ConfiguratorWeb.VersionHTML do
   use ConfiguratorWeb, :html
   import ConfiguratorWeb.SkillHTML
   import ConfiguratorWeb.MapConfigurationHTML
+  import ConfiguratorWeb.CharacterHTML
 
   embed_templates "version_html/*"
 
@@ -14,20 +15,4 @@ defmodule ConfiguratorWeb.VersionHTML do
   attr :skills, :list
 
   def version_form(assigns)
-
-  attr :field, Phoenix.HTML.FormField, required: true
-  attr :label, :string, required: true
-  attr :skills, :list, required: true
-
-  def skill_select(assigns) do
-    ~H"""
-    <.input
-      field={@field}
-      type="select"
-      label={@label}
-      prompt="Select a skill"
-      options={Enum.map(@skills, &{&1.name, &1.id})}
-    />
-    """
-  end
 end
