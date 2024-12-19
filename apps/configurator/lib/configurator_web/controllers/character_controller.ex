@@ -46,7 +46,7 @@ defmodule ConfiguratorWeb.CharacterController do
     character = Characters.get_character(id)
     changeset = Ecto.Changeset.change(character)
     version = Configuration.get_version!(character.version_id)
-    skills = get_curse_skills_by_type(version.id)
+    skills = get_curse_skills_by_type(version.id) |> IO.inspect(label: :aver_skills)
     render(conn, :edit, character: character, changeset: changeset, skills: skills, version: version)
   end
 

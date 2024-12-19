@@ -210,7 +210,7 @@ defmodule ConfiguratorWeb.CoreComponents do
   end
 
   @doc """
-  Renders a css flex styled form.
+  Renders a css flex container styled simple form.
 
   ## Examples
 

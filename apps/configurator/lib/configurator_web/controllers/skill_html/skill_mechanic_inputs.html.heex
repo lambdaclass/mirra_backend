@@ -30,8 +30,9 @@
   <% end %>
   <.input field={fp[:shape]} type="select" label="Shape of entity to spawn" options={["circle", "polygon"]} />
 
+  <%!-- TODO: Fix this because it breaks if its null --%>
   <.input field={fp[:vertices]} type="text" label="Vertices" value={[]} />
-  <%= fp.data.vertices %>
+  <%!-- END TODO --%>
 
   <.button type="button" phx-click={show_modal("on-arrival-mechanic-modal")}>Edit on arrival mechanic</.button>
   <.modal id="on-arrival-mechanic-modal">

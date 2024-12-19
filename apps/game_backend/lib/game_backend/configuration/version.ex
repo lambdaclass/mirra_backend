@@ -30,7 +30,7 @@ defmodule GameBackend.Configuration.Version do
     |> cast(attrs, [:name, :current])
     |> cast_assoc(:characters)
     |> cast_assoc(:consumable_items)
-    |> cast_assoc(:skills)
+    |> cast_assoc(:skills, with: &Skill.assoc_changeset/2)
     |> cast_assoc(:map_configurations, with: &MapConfiguration.assoc_changeset/2)
     |> cast_assoc(:game_configuration, with: &GameConfiguration.assoc_changeset/2)
 

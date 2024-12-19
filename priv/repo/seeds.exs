@@ -10,15 +10,6 @@ champions_of_mirra_id = Utils.get_game_id(:champions_of_mirra)
 
 ### Champions Currencies
 
-# TODO: Remove this after fixing Autobattler seeds. Did this to mark version_id as required for skills
-default_version_params = %{
-  name: "autobattler",
-  current: false
-}
-
-{:ok, version} =
-  GameBackend.Configuration.create_version(default_version_params)
-
 {:ok, _skills} = Champions.Config.import_skill_config()
 
 {:ok, _characters} = Champions.Config.import_character_config()

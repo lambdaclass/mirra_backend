@@ -21,19 +21,29 @@ defmodule GameBackend.Units.Skills do
     |> Repo.update()
   end
 
+  # TODO: These two functions are placeholders to fix the validations the normal changeset do in the future.
+  # e.g. the version_id constraint.
+  def autobattler_insert_skill(attrs) do
+    %Skill{}
+    |> Skill.assoc_changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def autobattler_update_skill(skill, attrs \\ %{}) do
+    skill
+    |> Skill.assoc_changeset(attrs)
+    |> Repo.update()
+  end
+
   @doc """
   Inserts all skills into the database.
   If another one already exists with the same name, it updates it instead.
   """
   def upsert_skills(attrs_list) do
-    # TODO: Remove this after fixing Autobattler seeds. Did this to mark version_id as required for skills
-    autobattler_id = GameBackend.Utils.get_game_id(:champions_of_mirra)
-    autobattler_version_id = GameBackend.Utils.get_autobattler_version!()
-
     Enum.reduce(attrs_list, Ecto.Multi.new(), fn attrs, multi ->
       # Cannot use Multi.insert because of the embeds_many
       Ecto.Multi.run(multi, attrs.name, fn _, _ ->
-        upsert_skill(Map.put(attrs, :version_id, autobattler_version_id) |> Map.put(:game_id, autobattler_id))
+        upsert_skill(attrs)
       end)
     end)
     |> Repo.transaction()
@@ -47,8 +57,8 @@ defmodule GameBackend.Units.Skills do
 
   def upsert_skill(attrs) do
     case get_skill_by_name(attrs.name) do
-      nil -> insert_skill(attrs)
-      skill -> update_skill(skill, attrs)
+      nil -> autobattler_insert_skill(attrs)
+      skill -> autobattler_update_skill(skill, attrs)
     end
   end
 
