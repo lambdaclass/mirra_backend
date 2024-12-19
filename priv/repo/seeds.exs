@@ -926,7 +926,7 @@ skills = [
         "type" => "dash",
         "speed" => 3.7,
         "radius" => 600,
-        "duration_ms" => 350,
+        "duration_ms" => 350
       }
     ],
     "version_id" => version.id
