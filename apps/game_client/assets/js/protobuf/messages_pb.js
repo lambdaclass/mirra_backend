@@ -6989,7 +6989,8 @@ bountyCompleted: (f = jspb.Message.getBooleanField(msg, 16)) == null ? undefined
 mana: (f = jspb.Message.getField(msg, 17)) == null ? undefined : f,
 currentBasicAnimation: (f = jspb.Message.getField(msg, 18)) == null ? undefined : f,
 matchPosition: (f = jspb.Message.getField(msg, 19)) == null ? undefined : f,
-team: (f = jspb.Message.getField(msg, 20)) == null ? undefined : f
+team: (f = jspb.Message.getField(msg, 20)) == null ? undefined : f,
+maxHealth: (f = jspb.Message.getField(msg, 21)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -7112,6 +7113,10 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
     case 20:
       var value = /** @type {number} */ (reader.readUint32());
       msg.setTeam(value);
+      break;
+    case 21:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setMaxHealth(value);
       break;
     default:
       reader.skipField();
@@ -7279,6 +7284,13 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeUint32(
       20,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 21));
+  if (f != null) {
+    writer.writeUint64(
+      21,
       f
     );
   }
@@ -7995,6 +8007,42 @@ proto.Player.prototype.clearTeam = function() {
  */
 proto.Player.prototype.hasTeam = function() {
   return jspb.Message.getField(this, 20) != null;
+};
+
+
+/**
+ * optional uint64 max_health = 21;
+ * @return {number}
+ */
+proto.Player.prototype.getMaxHealth = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 21, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setMaxHealth = function(value) {
+  return jspb.Message.setField(this, 21, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.clearMaxHealth = function() {
+  return jspb.Message.setField(this, 21, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.Player.prototype.hasMaxHealth = function() {
+  return jspb.Message.getField(this, 21) != null;
 };
 
 
