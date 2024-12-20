@@ -11,7 +11,7 @@ defmodule BotManager.BotStateMachine do
   @skill_1_key "1"
   @skill_2_key "2"
   @dash_skill_key "3"
-  @vision_range 600
+  @vision_range 1200
 
   def decide_action(%{bots_enabled?: false}) do
     {:move, %{x: 0, y: 0}}
