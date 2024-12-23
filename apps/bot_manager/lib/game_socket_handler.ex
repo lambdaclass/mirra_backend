@@ -70,7 +70,11 @@ defmodule BotManager.GameSocketHandler do
 
     %{action: action, bot_state_machine: bot_state_machine} = BotStateMachine.decide_action(state)
 
-    state = state |> Map.put(:current_action, action) |> Map.put(:bot_state_machine, bot_state_machine)
+    state =
+      state
+      |> Map.put(:current_action, %{action: action, sent: false})
+      |> Map.put(:bot_state_machine, bot_state_machine)
+
     {:ok, state}
   end
 
@@ -84,9 +88,11 @@ defmodule BotManager.GameSocketHandler do
     {:ok, update_block_attack_state(state)}
   end
 
-  defp update_block_attack_state(%{current_action: {:use_skill, _, _}} = state) do
+  defp update_block_attack_state(%{current_action: %{action: {:use_skill, _, _}, sent: false}} = state) do
     Process.send_after(self(), :unblock_attack, Enum.random(500..1000))
+
     Map.put(state, :attack_blocked, true)
+    |> Map.put(:current_action, Map.put(state.current_action, :sent, true))
   end
 
   defp update_block_attack_state(state), do: state
@@ -95,7 +101,7 @@ defmodule BotManager.GameSocketHandler do
     {:reply, frame, state}
   end
 
-  defp send_current_action(%{current_action: {:move, direction}}) do
+  defp send_current_action(%{current_action: %{action: {:move, direction}, sent: false}}) do
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
     game_action =
@@ -114,7 +120,7 @@ defmodule BotManager.GameSocketHandler do
     WebSockex.cast(self(), {:send, {:binary, game_action}})
   end
 
-  defp send_current_action(%{current_action: {:use_skill, skill_key, direction}}) do
+  defp send_current_action(%{current_action: %{action: {:use_skill, skill_key, direction}, sent: false}}) do
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
     game_action =
