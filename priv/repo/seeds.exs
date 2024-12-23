@@ -1191,7 +1191,7 @@ valtimer_params = %{
 kenzu_params = %{
   name: "kenzu",
   active: true,
-  base_speed: 1,
+  base_speed: 0.62,
   base_size: 100.0,
   base_health: 400,
   base_stamina: 3,
