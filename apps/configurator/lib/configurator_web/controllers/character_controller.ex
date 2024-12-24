@@ -6,12 +6,12 @@ defmodule ConfiguratorWeb.CharacterController do
   alias GameBackend.Configuration
   alias GameBackend.Utils
 
-  def index(conn, %{"id" => version_id}) do
+  def index(conn, %{"version_id" => version_id}) do
     characters = Characters.get_curse_characters_by_version(version_id)
     render(conn, :index, characters: characters, version_id: version_id)
   end
 
-  def new(conn, %{"id" => version_id}) do
+  def new(conn, %{"version_id" => version_id}) do
     changeset = Ecto.Changeset.change(%Character{})
     version = Configuration.get_version!(version_id)
     skills = Utils.list_curse_skills_by_version_grouped_by_type(version.id)

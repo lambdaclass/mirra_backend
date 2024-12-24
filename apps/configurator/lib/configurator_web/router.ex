@@ -60,7 +60,7 @@ defmodule ConfiguratorWeb.Router do
       resources "/", VersionController
       put "/:id/current", VersionController, :mark_as_current
 
-      scope "/:id" do
+      scope "/:version_id" do
         resources "/characters", CharacterController
         resources "/skills", SkillController
         resources "/game_configurations", GameConfigurationController

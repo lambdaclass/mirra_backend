@@ -12,7 +12,6 @@ defmodule ConfiguratorWeb.VersionController do
   end
 
   def new(conn, _params) do
-    map_params = Arena.Configuration.get_current_map_configuration_for_configurator()
     last_version = GameBackend.Configuration.get_current_version()
     skills = Utils.list_curse_skills_by_version_grouped_by_type(last_version.id)
 
@@ -21,7 +20,7 @@ defmodule ConfiguratorWeb.VersionController do
       |> Map.put(:characters, schema_to_map(last_version.characters))
       |> Map.put(:consumable_items, schema_to_map(last_version.consumable_items))
       |> Map.put(:game_configuration, schema_to_map(last_version.game_configuration))
-      |> Map.put(:map_configurations, map_params)
+      |> Map.put(:map_configurations, schema_to_map(last_version.map_configurations))
       |> Map.put(:skills, schema_to_map(last_version.skills))
 
     changeset = Configuration.change_version(%Version{}, params)

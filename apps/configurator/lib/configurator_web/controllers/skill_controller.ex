@@ -7,12 +7,12 @@ defmodule ConfiguratorWeb.SkillController do
   alias GameBackend.Utils
   alias GameBackend.Configuration
 
-  def index(conn, %{"id" => version_id}) do
+  def index(conn, %{"version_id" => version_id}) do
     skills = Skills.list_curse_skills_by_version(version_id)
     render(conn, :index, skills: skills, version_id: version_id)
   end
 
-  def new(conn, %{"id" => version_id}) do
+  def new(conn, %{"version_id" => version_id}) do
     changeset = Skills.change_skill(%Skill{mechanics: [%Mechanic{}]})
     version = Configuration.get_version!(version_id)
     render(conn, :new, changeset: changeset, version: version)
