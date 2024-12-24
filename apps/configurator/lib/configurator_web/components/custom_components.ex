@@ -52,7 +52,7 @@ defmodule ConfiguratorWeb.CustomComponents do
 
   def effect_form(%{form: %{params: %{"effect" => nil}}} = assigns) do
     ~H"""
-      <h3>No Effect</h3>
+    <h3>No Effect</h3>
     """
   end
 
@@ -80,7 +80,11 @@ defmodule ConfiguratorWeb.CustomComponents do
               />
               <.input field={mechanics_form[:modifier]} type="number" label="Modifier" step="any" />
               <.input field={mechanics_form[:force]} type="number" label="Force" step="any" />
-              <.input field={mechanics_form[:execute_multiple_times]} type="checkbox" label="Execute mechanic multiple times" />
+              <.input
+                field={mechanics_form[:execute_multiple_times]}
+                type="checkbox"
+                label="Execute mechanic multiple times"
+              />
               <.input field={mechanics_form[:damage]} type="number" label="Damage amount" />
               <.input field={mechanics_form[:effect_delay_ms]} type="number" label="Mechanic delay" />
               <.input field={mechanics_form[:additive_duration_add_ms]} type="number" label="Additive duration to add ms" />
