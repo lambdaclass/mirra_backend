@@ -50,8 +50,7 @@ defmodule Arena.Configuration do
       |> Finch.request(Arena.Finch)
 
     Jason.decode!(payload.body, [{:keys, :atoms}])
-    |> Map.update!(:map, fn maps -> Enum.map(maps, fn map -> parse_map_config(map) end)
-    end)
+    |> Map.update!(:map, fn maps -> Enum.map(maps, fn map -> parse_map_config(map) end) end)
     |> Map.get(:map)
   end
 
