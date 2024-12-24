@@ -309,7 +309,6 @@ defmodule GameBackend.Configuration do
     %Version{}
     |> Version.changeset(attrs)
     |> Repo.insert()
-    |> dbg()
   end
 
   @doc """

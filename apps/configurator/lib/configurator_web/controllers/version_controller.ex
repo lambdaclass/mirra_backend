@@ -76,7 +76,6 @@ defmodule ConfiguratorWeb.VersionController do
         |> redirect(to: ~p"/versions/#{version}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        IO.inspect(changeset, label: :aver_changeset)
         last_version = GameBackend.Configuration.get_current_version()
         skills = GameBackend.Units.Skills.list_curse_skills_by_version(last_version.id) |> Enum.group_by(& &1.type)
 
