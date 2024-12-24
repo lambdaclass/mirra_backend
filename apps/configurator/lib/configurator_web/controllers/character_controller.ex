@@ -4,6 +4,7 @@ defmodule ConfiguratorWeb.CharacterController do
   alias GameBackend.Units.Characters
   alias GameBackend.Units.Characters.Character
   alias GameBackend.Configuration
+  alias GameBackend.Utils
 
   def index(conn, %{"id" => version_id}) do
     characters = Characters.get_curse_characters_by_version(version_id)
@@ -13,7 +14,7 @@ defmodule ConfiguratorWeb.CharacterController do
   def new(conn, %{"id" => version_id}) do
     changeset = Ecto.Changeset.change(%Character{})
     version = Configuration.get_version!(version_id)
-    skills = get_curse_skills_by_type(version.id)
+    skills = Utils.list_curse_skills_by_version_grouped_by_type(version.id)
     render(conn, :new, changeset: changeset, skills: skills, version: version)
   end
 
@@ -31,7 +32,7 @@ defmodule ConfiguratorWeb.CharacterController do
 
       {:error, %Ecto.Changeset{} = changeset} ->
         version = Configuration.get_version!(character_params["version_id"])
-        skills = get_curse_skills_by_type(version.id)
+        skills = Utils.list_curse_skills_by_version_grouped_by_type(version.id)
         render(conn, :new, changeset: changeset, skills: skills, version: version)
     end
   end
@@ -46,7 +47,7 @@ defmodule ConfiguratorWeb.CharacterController do
     character = Characters.get_character(id)
     changeset = Ecto.Changeset.change(character)
     version = Configuration.get_version!(character.version_id)
-    skills = get_curse_skills_by_type(version.id)
+    skills = Utils.list_curse_skills_by_version_grouped_by_type(version.id)
     render(conn, :edit, character: character, changeset: changeset, skills: skills, version: version)
   end
 
@@ -61,7 +62,7 @@ defmodule ConfiguratorWeb.CharacterController do
 
       {:error, %Ecto.Changeset{} = changeset} ->
         version = Configuration.get_version!(character.version_id)
-        skills = get_curse_skills_by_type(version.id)
+        skills = Utils.list_curse_skills_by_version_grouped_by_type(version.id)
         render(conn, :edit, character: character, changeset: changeset, skills: skills, version: version)
     end
   end
@@ -74,10 +75,5 @@ defmodule ConfiguratorWeb.CharacterController do
     conn
     |> put_flash(:success, "Character deleted successfully.")
     |> redirect(to: ~p"/versions/#{version_id}/characters")
-  end
-
-  defp get_curse_skills_by_type(version_id) do
-    GameBackend.Units.Skills.list_curse_skills_by_version(version_id)
-    |> Enum.group_by(& &1.type)
   end
 end
