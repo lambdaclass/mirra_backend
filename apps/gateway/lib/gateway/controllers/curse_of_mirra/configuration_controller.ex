@@ -16,7 +16,7 @@ defmodule Gateway.Controllers.CurseOfMirra.ConfigurationController do
       Jason.encode!(%{
         characters: encode_characters(version.characters),
         game: version.game_configuration,
-        items: encode_items(version.consumable_items),
+        items: encode_items(version.consumable_items |> Enum.filter(fn ci -> ci.active end)),
         map: version.map_configurations
       })
 
