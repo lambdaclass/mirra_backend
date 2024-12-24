@@ -31,6 +31,7 @@
   <.input field={fp[:shape]} type="select" label="Shape of entity to spawn" options={["circle", "polygon"]} />
 
   <%!-- TODO: Fix this because it breaks if its null --%>
+  <%!-- https://github.com/lambdaclass/mirra_backend/issues/1028 --%>
   <.input field={fp[:vertices]} type="text" label="Vertices" value={[]} />
   <%!-- END TODO --%>
 
