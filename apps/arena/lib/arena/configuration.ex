@@ -42,6 +42,7 @@ defmodule Arena.Configuration do
   end
 
   # TODO: This is a placeholder because the above function needs to retrieve only 1 map params
+  # https://github.com/lambdaclass/mirra_backend/issues/1028
   def get_current_map_configuration_for_configurator do
     gateway_url = Application.get_env(:arena, :gateway_url)
 

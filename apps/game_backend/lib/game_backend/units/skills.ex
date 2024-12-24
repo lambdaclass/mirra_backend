@@ -23,6 +23,7 @@ defmodule GameBackend.Units.Skills do
 
   # TODO: These two functions are placeholders to fix the validations the normal changeset do in the future.
   # e.g. the version_id constraint.
+  # https://github.com/lambdaclass/mirra_backend/issues/1028
   def autobattler_insert_skill(attrs) do
     %Skill{}
     |> Skill.assoc_changeset(attrs)

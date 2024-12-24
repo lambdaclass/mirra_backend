@@ -30,6 +30,7 @@ defmodule ConfiguratorWeb.VersionController do
   # TODO: We have a cycle in our Skill.Mechanic assocs so this is to end that loop.
   # This replaces the unloaded mechanics assoc by an empty list.
   # The key is that we preload the necessary steps of the mechanics loop associations.
+  # https://github.com/lambdaclass/mirra_backend/issues/1028
   def schema_to_map(%{
         __cardinality__: :many,
         __field__: _,
