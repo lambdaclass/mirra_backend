@@ -33,14 +33,6 @@ defmodule GameBackend.Configuration.Version do
     |> cast_assoc(:skills, with: &Skill.assoc_changeset/2)
     |> cast_assoc(:map_configurations, with: &MapConfiguration.assoc_changeset/2)
     |> cast_assoc(:game_configuration, with: &GameConfiguration.assoc_changeset/2)
-    |> validate_required([
-      :name,
-      :current,
-      :characters,
-      :consumable_items,
-      :skills,
-      :map_configurations,
-      :game_configuration
-    ])
+    |> validate_required([:name, :current])
   end
 end

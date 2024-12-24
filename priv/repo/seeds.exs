@@ -10,7 +10,7 @@ champions_of_mirra_id = Utils.get_game_id(:champions_of_mirra)
 
 ### Champions Currencies
 
-{:ok, _skills} = Champions.Config.import_skill_config()
+{:ok, _skills} = Champions.Config.import_skill_config(champions_of_mirra_id)
 
 {:ok, _characters} = Champions.Config.import_character_config()
 
@@ -1535,8 +1535,7 @@ fake_item_params = %{
   active: false,
   name: "fake_item",
   radius: 200.0,
-  mechanics: [spawn_bomb_mechanic],
-  effects: [],
+  effect_mechanics: [spawn_bomb_mechanic],
   version_id: version.id
 }
 

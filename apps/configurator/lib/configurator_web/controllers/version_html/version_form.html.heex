@@ -52,6 +52,7 @@
           <.input field={fci[:name]} type="text" label="Name" />
           <.input field={fci[:radius]} type="number" label="Radius" step="any" />
           <.input field={fci[:active]} type="checkbox" label="Active" />
+          <.effect_form form={fci} field={:effect} />
         </div>
       </.inputs_for>
     </div>
