@@ -5,7 +5,6 @@ defmodule GameBackend.Configuration do
   import Ecto.Query
   alias Ecto.Multi
   alias GameBackend.CurseOfMirra.GameConfiguration
-  alias GameBackend.Items.ConsumableItem
   alias GameBackend.Units.Characters.Character
   alias GameBackend.CurseOfMirra.MapConfiguration
   alias GameBackend.ArenaServers.ArenaServer
@@ -21,8 +20,8 @@ defmodule GameBackend.Configuration do
       [%GameConfiguration{}, ...]
 
   """
-  def list_game_configurations do
-    Repo.all(GameConfiguration)
+  def list_game_configurations_by_version(version_id) do
+    Repo.all(from(gc in GameConfiguration, where: gc.version_id == ^version_id))
   end
 
   @doc """
@@ -115,8 +114,8 @@ defmodule GameBackend.Configuration do
       [%MapConfiguration{}, ...]
 
   """
-  def list_map_configurations do
-    Repo.all(from(m in MapConfiguration, order_by: [desc: m.inserted_at]))
+  def list_map_configurations_by_version(version_id) do
+    Repo.all(from(m in MapConfiguration, where: m.version_id == ^version_id, order_by: [desc: m.inserted_at]))
   end
 
   @doc """
@@ -418,7 +417,6 @@ defmodule GameBackend.Configuration do
   def get_current_version do
     consumable_items_preload =
       from(ci in GameBackend.Items.ConsumableItem,
-        where: ci.active,
         preload: [
           mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]
         ]
@@ -429,7 +427,7 @@ defmodule GameBackend.Configuration do
         where: v.current,
         preload: [
           [consumable_items: ^consumable_items_preload],
-          :skills,
+          [skills: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics]]],
           :map_configurations,
           :game_configuration,
           characters: [
@@ -463,42 +461,6 @@ defmodule GameBackend.Configuration do
         ]
       )
 
-    Repo.all(q)
-  end
-
-  @doc """
-  Get game configuration by version
-
-  ## Examples
-      iex> get_game_configuration_by_version(version)
-      %GameConfiguration{}
-  """
-  def get_game_configuration_by_version(version) do
-    q =
-      from(g in GameConfiguration,
-        where: g.version_id == ^version.id
-      )
-
-    Repo.one(q)
-  end
-
-  @doc """
-  List all consumable items by version
-
-  ## Examples
-      iex> list_consumable_items_by_version(version)
-      [%ConsumableItem{}, ...]
-  """
-  def list_consumable_items_by_version(version) do
-    q = from(ci in ConsumableItem, where: ci.version_id == ^version.id and ci.active)
-    Repo.all(q)
-  end
-
-  @doc """
-
-  """
-  def list_map_configurations_by_version(version) do
-    q = from(m in MapConfiguration, where: m.version_id == ^version.id)
     Repo.all(q)
   end
 

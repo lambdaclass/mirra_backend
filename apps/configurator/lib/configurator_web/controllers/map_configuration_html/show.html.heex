@@ -2,21 +2,21 @@
   Map configuration <%= @map_configuration.name %>
   <:subtitle>Version: <%= @version.name %></:subtitle>
   <:actions>
-    <.link href={~p"/map_configurations/#{@map_configuration}/edit"}>
+    <.link href={~p"/versions/#{@version}/map_configurations/#{@map_configuration}/edit"}>
       <.button>Edit Map Configuration</.button>
     </.link>
     <%= unless Enum.empty?(@map_configuration.obstacles) do %>
-      <.link href={~p"/map_configurations/#{@map_configuration}/edit_obstacles"}>
+      <.link href={~p"/versions/#{@version}/map_configurations/#{@map_configuration}/edit_obstacles"}>
         <.button>Edit Map Obstacles</.button>
       </.link>
     <% end %>
     <%= unless Enum.empty?(@map_configuration.pools) do %>
-      <.link href={~p"/map_configurations/#{@map_configuration}/edit_pools"}>
+      <.link href={~p"/versions/#{@version}/map_configurations/#{@map_configuration}/edit_pools"}>
         <.button>Edit Map Pools</.button>
       </.link>
     <% end %>
     <%= unless Enum.empty?(@map_configuration.crates) do %>
-      <.link href={~p"/map_configurations/#{@map_configuration}/edit_crates"}>
+      <.link href={~p"/versions/#{@version}/map_configurations/#{@map_configuration}/edit_crates"}>
         <.button>Edit Map Crates</.button>
       </.link>
     <% end %>
@@ -114,4 +114,4 @@
   </div>
 </div>
 
-<.back navigate={~p"/map_configurations"}>Back to Map Configurations</.back>
+<.back navigate={~p"/versions/#{@version}/map_configurations"}>Back to Map Configurations</.back>

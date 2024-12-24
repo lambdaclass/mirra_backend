@@ -1,7 +1,7 @@
 <.header>
   Listing Map configurations
   <:actions>
-    <.link href={~p"/map_configurations/new"}>
+    <.link href={~p"/versions/#{@version_id}/map_configurations/new"}>
       <.button>New Map configuration</.button>
     </.link>
   </:actions>
@@ -73,13 +73,17 @@
     <% end %>
   </:col>
   <:action :let={map_configuration}>
-    <.link navigate={~p"/map_configurations/#{map_configuration}"}>View</.link>
+    <.link navigate={~p"/versions/#{@version_id}/map_configurations/#{map_configuration}"}>View</.link>
   </:action>
   <:action :let={map_configuration}>
-    <.link navigate={~p"/map_configurations/#{map_configuration}/edit"}>Edit</.link>
+    <.link navigate={~p"/versions/#{@version_id}/map_configurations/#{map_configuration}/edit"}>Edit</.link>
   </:action>
   <:action :let={map_configuration}>
-    <.link href={~p"/map_configurations/#{map_configuration}"} method="delete" data-confirm="Are you sure?">
+    <.link
+      href={~p"/versions/#{@version_id}/map_configurations/#{map_configuration}"}
+      method="delete"
+      data-confirm="Are you sure?"
+    >
       Delete
     </.link>
   </:action>
