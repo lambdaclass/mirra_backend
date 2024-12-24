@@ -417,7 +417,6 @@ defmodule GameBackend.Configuration do
   def get_current_version do
     consumable_items_preload =
       from(ci in GameBackend.Items.ConsumableItem,
-        where: ci.active,
         preload: [
           mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]
         ]
