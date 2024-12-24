@@ -24,7 +24,9 @@ defmodule Gateway.Controllers.CurseOfMirra.ConfigurationController do
   end
 
   def get_characters_configuration(conn, _params) do
-    case Characters.get_curse_characters() do
+    version = Configuration.get_current_version()
+
+    case Characters.get_curse_characters_by_version(version.id) do
       [] ->
         {:error, :not_found}
 
@@ -44,12 +46,14 @@ defmodule Gateway.Controllers.CurseOfMirra.ConfigurationController do
   end
 
   def get_map_configurations(conn, _params) do
-    map_configuration = Configuration.list_map_configurations()
+    version = Configuration.get_current_version()
+    map_configuration = Configuration.list_map_configurations_by_version(version.id)
     send_resp(conn, 200, Jason.encode!(map_configuration))
   end
 
   def get_consumable_items_configuration(conn, _params) do
-    consumable_items = Items.list_consumable_items() |> Enum.filter(& &1.active)
+    version = Configuration.get_current_version()
+    consumable_items = Items.list_consumable_items_by_version(version.id) |> Enum.filter(& &1.active)
     send_resp(conn, 200, Jason.encode!(consumable_items))
   end
 

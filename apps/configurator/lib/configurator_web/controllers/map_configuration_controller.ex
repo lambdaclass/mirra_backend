@@ -5,12 +5,12 @@ defmodule ConfiguratorWeb.MapConfigurationController do
   alias GameBackend.CurseOfMirra.MapConfiguration
   alias GameBackend.Configuration
 
-  def index(conn, %{"id" => version_id}) do
+  def index(conn, %{"version_id" => version_id}) do
     map_configurations = Configuration.list_map_configurations_by_version(version_id)
     render(conn, :index, map_configurations: map_configurations, version_id: version_id)
   end
 
-  def new(conn, %{"id" => version_id}) do
+  def new(conn, %{"version_id" => version_id}) do
     changeset = Configuration.change_map_configuration(%MapConfiguration{})
     version = Configuration.get_version!(version_id)
     render(conn, :new, changeset: changeset, version: version)
