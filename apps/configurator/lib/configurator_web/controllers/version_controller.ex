@@ -4,6 +4,7 @@ defmodule ConfiguratorWeb.VersionController do
 
   alias GameBackend.Configuration
   alias GameBackend.Configuration.Version
+  alias GameBackend.Utils
 
   def index(conn, _params) do
     versions = Configuration.list_versions()
@@ -13,7 +14,7 @@ defmodule ConfiguratorWeb.VersionController do
   def new(conn, _params) do
     map_params = Arena.Configuration.get_current_map_configuration_for_configurator()
     last_version = GameBackend.Configuration.get_current_version()
-    skills = GameBackend.Units.Skills.list_curse_skills_by_version(last_version.id) |> Enum.group_by(& &1.type)
+    skills = Utils.list_curse_skills_by_version_grouped_by_type(last_version.id)
 
     params =
       Map.from_struct(last_version)
@@ -78,7 +79,7 @@ defmodule ConfiguratorWeb.VersionController do
 
       {:error, %Ecto.Changeset{} = changeset} ->
         last_version = GameBackend.Configuration.get_current_version()
-        skills = GameBackend.Units.Skills.list_curse_skills_by_version(last_version.id) |> Enum.group_by(& &1.type)
+        skills = Utils.list_curse_skills_by_version_grouped_by_type(last_version.id)
 
         render(conn, :new, changeset: changeset, last_version: last_version, skills: skills)
     end
