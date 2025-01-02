@@ -62,13 +62,19 @@ defmodule ConfiguratorWeb.VersionController do
 
   def create(conn, %{"version" => version_params}) do
     version_params =
-      Map.put(
-        version_params,
-        "map_configurations",
-        Map.new(version_params["map_configurations"], fn {key, map_params} ->
-          {key, MapConfigurationController.parse_json_params(map_params)}
-        end)
-      )
+      case Map.get(version_params, "map_configurations") do
+        nil ->
+          version_params
+
+        map_configurations ->
+          Map.put(
+            version_params,
+            "map_configurations",
+            Map.new(map_configurations, fn {key, map_params} ->
+              {key, MapConfigurationController.parse_json_params(map_params)}
+            end)
+          )
+      end
 
     case Configuration.create_version(version_params) do
       {:ok, version} ->
