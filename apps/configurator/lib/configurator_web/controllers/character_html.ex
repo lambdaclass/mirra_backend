@@ -17,6 +17,12 @@ defmodule ConfiguratorWeb.CharacterHTML do
   attr :label, :string, required: true
   attr :skills, :list, required: true
 
+  def skill_select(%{skills: nil} = assigns) do
+    ~H"""
+    <h3>No skills</h3>
+    """
+  end
+
   def skill_select(assigns) do
     ~H"""
     <.input
