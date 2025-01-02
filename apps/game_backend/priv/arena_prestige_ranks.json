@@ -439,6 +439,136 @@
           "reward": -12
         }
       ]
+    },
+    {
+      "position": 11,
+      "distributions": [
+        {
+          "min": 0,
+          "max": 49,
+          "reward": 0
+        },
+        {
+          "min": 50,
+          "max": 99,
+          "reward": -1
+        },
+        {
+          "min": 100,
+          "max": 199,
+          "reward": -2
+        },
+        {
+          "min": 200,
+          "max": 299,
+          "reward": -3
+        },
+        {
+          "min": 300,
+          "max": 399,
+          "reward": -4
+        },
+        {
+          "min": 400,
+          "max": 499,
+          "reward": -5
+        },
+        {
+          "min": 500,
+          "max": 599,
+          "reward": -6
+        },
+        {
+          "min": 600,
+          "max": 699,
+          "reward": -7
+        },
+        {
+          "min": 700,
+          "max": 799,
+          "reward": -8
+        },
+        {
+          "min": 800,
+          "max": 899,
+          "reward": -9
+        },
+        {
+          "min": 900,
+          "max": 999,
+          "reward": -10
+        },
+        {
+          "min": 1000,
+          "max": 2147483647,
+          "reward": -12
+        }
+      ]
+    },
+    {
+      "position": 12,
+      "distributions": [
+        {
+          "min": 0,
+          "max": 49,
+          "reward": 0
+        },
+        {
+          "min": 50,
+          "max": 99,
+          "reward": -1
+        },
+        {
+          "min": 100,
+          "max": 199,
+          "reward": -2
+        },
+        {
+          "min": 200,
+          "max": 299,
+          "reward": -3
+        },
+        {
+          "min": 300,
+          "max": 399,
+          "reward": -4
+        },
+        {
+          "min": 400,
+          "max": 499,
+          "reward": -5
+        },
+        {
+          "min": 500,
+          "max": 599,
+          "reward": -6
+        },
+        {
+          "min": 600,
+          "max": 699,
+          "reward": -7
+        },
+        {
+          "min": 700,
+          "max": 799,
+          "reward": -8
+        },
+        {
+          "min": 800,
+          "max": 899,
+          "reward": -9
+        },
+        {
+          "min": 900,
+          "max": 999,
+          "reward": -10
+        },
+        {
+          "min": 1000,
+          "max": 2147483647,
+          "reward": -12
+        }
+      ]
     }
   ],
   "ranks": [
