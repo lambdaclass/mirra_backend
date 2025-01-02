@@ -13,8 +13,8 @@ defmodule BotManager.BotStateMachine do
   @dash_skill_key "3"
   @vision_range 1200
 
-  def decide_action(%{bots_enabled?: false}) do
-    {:move, %{x: 0, y: 0}}
+  def decide_action(%{bots_enabled?: false, bot_state_machine: bot_state_machine}) do
+    %{action: {:move, %{x: 0, y: 0}}, bot_state_machine: bot_state_machine}
   end
 
   def decide_action(%{
