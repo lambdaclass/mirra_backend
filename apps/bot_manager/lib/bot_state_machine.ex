@@ -40,9 +40,11 @@ defmodule BotManager.BotStateMachine do
     bot_state_machine =
       Map.put(bot_state_machine, :progress_for_basic_skill, bot_state_machine.progress_for_basic_skill + distance)
 
-    next_state = BotStateMachineChecker.move_to_next_state(bot_player, bot_state_machine)
+    next_state = BotStateMachineChecker.move_to_next_state(bot_player, bot_state_machine, game_state)
 
     case next_state do
+      :run_to_safe_position ->
+        run_to_position(bot_player, bot_state_machine, game_state)
       :moving ->
         direction = maybe_switch_direction(bot_player, bot_state_machine)
 
@@ -231,5 +233,29 @@ defmodule BotManager.BotStateMachine do
         bot_state_machine: bot_state_machine
       }
     end
+  end
+
+  defp run_to_position(bot_player, bot_state_machine, game_state) do
+    bot_state_machine = if is_nil(bot_state_machine.position_to_run_to) do
+      bot_state_machine
+      |> Map.put(:position_to_run_to, Utils.get_random_position_within_radius(game_state.zone.radius))
+    else
+      bot_state_machine
+    end
+
+    {:player, bot_player_info} = bot_player.aditional_info
+
+    %{direction: direction} = get_distance_and_direction_to_positions(bot_state_machine.current_position, bot_state_machine.position_to_run_to) |> IO.inspect(label: :tiene_direction)
+
+    action = if Map.has_key?(bot_player_info.cooldowns, @dash_skill_key) do
+      {:move, direction}
+    else
+      {:use_skill, @dash_skill_key, direction}
+    end
+
+    %{
+      action: action,
+      bot_state_machine: bot_state_machine
+    }
   end
 end

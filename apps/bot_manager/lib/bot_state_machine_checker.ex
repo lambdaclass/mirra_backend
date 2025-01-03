@@ -20,7 +20,9 @@ defmodule BotManager.BotStateMachineChecker do
     # The last time that the bot changed its direction
     :last_time_direction_changed,
     # The time that the bot has been moving in the same direction
-    :current_time_in_direction
+    :current_time_in_direction,
+    # The position that the bot is going to run to
+    :position_to_run_to
   ]
 
   def new do
@@ -34,12 +36,14 @@ defmodule BotManager.BotStateMachineChecker do
       current_position: nil,
       time_to_change_direction: 800,
       last_time_direction_changed: 0,
-      current_time_in_direction: 0
+      current_time_in_direction: 0,
+      position_to_run_to: nil
     }
   end
 
-  def move_to_next_state(bot_player, bot_state_machine) do
+  def move_to_next_state(bot_player, bot_state_machine, game_state) do
     cond do
+      not bot_is_within_the_zone?(bot_player, game_state.zone.radius) -> :run_to_safe_position
       bot_health_low?(bot_player) -> :running_away
       bot_can_turn_aggresive?(bot_state_machine) -> :aggresive
       true -> :moving
@@ -63,5 +67,10 @@ defmodule BotManager.BotStateMachineChecker do
     time_since_last_direction_change = current_time - bot_state_machine.last_time_direction_changed
 
     time_since_last_direction_change >= bot_state_machine.time_to_change_direction
+  end
+
+  def bot_is_within_the_zone?(bot_player, zone_radius) do
+    distance = BotManager.Math.Vector.distance_to(bot_player.position, %{x: 0, y: 0})
+    distance <= zone_radius
   end
 end
