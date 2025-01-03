@@ -22,6 +22,7 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
     embeds_one(:square_wall, __MODULE__.SquareWall, on_replace: :delete)
 
     belongs_to(:version, Version)
+    has_many(:map_mode_params, GameBackend.CurseOfMirra.MapModeParams)
 
     timestamps(type: :utc_datetime)
   end
@@ -38,6 +39,7 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
     |> cast_embed(:crates)
     |> cast_embed(:square_wall)
     |> unique_constraint(:name)
+    |> cast_assoc(:map_mode_params)
   end
 
   @doc false
@@ -52,6 +54,7 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
     |> cast_embed(:crates)
     |> cast_embed(:square_wall)
     |> unique_constraint(:name)
+    |> cast_assoc(:map_mode_params)
   end
 
   defmodule SquareWall do

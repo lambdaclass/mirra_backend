@@ -1,0 +1,22 @@
+<.simple_form :let={f} for={@changeset} action={@action}>
+  <.error :if={@changeset.action}>
+    Oops, something went wrong! Please check the errors below.
+  </.error>
+  <p class="font-semibold"><%= "Version: #{@version.name}" %></p>
+  <.input type="hidden" field={f[:version_id]} value={@version.id} />
+  <.input field={f[:name]} type="text" label="Name" />
+  <.input field={f[:zone_enabled]} type="checkbox" label="Zone enabled" />
+  <.input field={f[:bots_enabled]} type="checkbox" label="Bots enabled" />
+  <.input field={f[:match_duration_ms]} type="number" label="Match duration ms" />
+  <.input field={f[:respawn_time_ms]} type="number" label="Respawn time ms" />
+
+  <.inputs_for :let={fp} field={f[:map_mode_params]}>
+    <%= GameBackend.Configuration.get_map_configuration!(fp[:map_id]) |> Map.get(:name) %>
+    <.input field={fp[:amount_of_players]} type="number" label="Amount of players" />
+    <.input field={fp[:initial_positions]} type="text" label="Initial positions" />
+  </.inputs_for>
+
+  <:actions>
+    <.button>Save Game configuration</.button>
+  </:actions>
+</.simple_form>

@@ -1,0 +1,32 @@
+<.header>
+  Game Mode configuration <%= @game_mode_configuration.id %>
+  <:subtitle>Version: <%= @version.name %></:subtitle>
+  <:actions>
+    <.link href={~p"/versions/#{@version}/game_mode_configurations/#{@game_mode_configuration}/edit"}>
+      <.button>Edit game_mode_configuration</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name"><%= @game_mode_configuration.name %></:item>
+  <:item title="Zone enabled"><%= @game_mode_configuration.zone_enabled %></:item>
+  <:item title="Bots enabled"><%= @game_mode_configuration.bots_enabled %></:item>
+  <:item title="Match duration ms"><%= @game_mode_configuration.match_duration_ms %></:item>
+  <:item title="Respawn time ms"><%= @game_mode_configuration.respawn_time_ms %></:item>
+</.list>
+<%!-- <.button type="button" phx-click={show_modal("show_power_ups_per_kill_config")}>Power up per kill config</.button> --%>
+
+<%!-- <.modal id="show_power_ups_per_kill_config">
+  <.header>
+    Power Up per kill config
+  </.header>
+  <%= for power_ups_per_kill <- @game_mode_configuration.power_ups_per_kill do %>
+    <.list>
+      <:item title="Minimum amount of power ups"><%= power_ups_per_kill.minimum_amount_of_power_ups %></:item>
+      <:item title="Power ups to drop"><%= power_ups_per_kill.amount_of_power_ups_to_drop %></:item>
+    </.list>
+  <% end %>
+</.modal> --%>
+
+<.back navigate={~p"/versions/#{@version}/game_mode_configurations"}>Back to game_mode_configurations</.back>
