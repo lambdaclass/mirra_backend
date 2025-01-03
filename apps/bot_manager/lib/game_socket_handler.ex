@@ -89,7 +89,7 @@ defmodule BotManager.GameSocketHandler do
   end
 
   defp update_block_attack_state(%{current_action: %{action: {:use_skill, _, _}, sent: false}} = state) do
-    Process.send_after(self(), :unblock_attack, Enum.random(500..1000))
+    Process.send_after(self(), :unblock_attack, Enum.random(250..750))
 
     Map.put(state, :attack_blocked, true)
     |> Map.put(:current_action, Map.put(state.current_action, :sent, true))
