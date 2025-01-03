@@ -3,23 +3,27 @@
   <:subtitle>Use this form to manage Map Configuration records in your database.</:subtitle>
   <:actions>
     <%= unless Enum.empty?(@map_configuration.obstacles) do %>
-      <.link href={~p"/map_configurations/#{@map_configuration}/edit_obstacles"}>
+      <.link href={~p"/versions/#{@version}/map_configurations/#{@map_configuration}/edit_obstacles"}>
         <.button>Edit Map Obstacles</.button>
       </.link>
     <% end %>
     <%= unless Enum.empty?(@map_configuration.pools) do %>
-      <.link href={~p"/map_configurations/#{@map_configuration}/edit_pools"}>
+      <.link href={~p"/versions/#{@version}/map_configurations/#{@map_configuration}/edit_pools"}>
         <.button>Edit Map Pools</.button>
       </.link>
     <% end %>
     <%= unless Enum.empty?(@map_configuration.crates) do %>
-      <.link href={~p"/map_configurations/#{@map_configuration}/edit_crates"}>
+      <.link href={~p"/versions/#{@version}/map_configurations/#{@map_configuration}/edit_crates"}>
         <.button>Edit Map Crates</.button>
       </.link>
     <% end %>
   </:actions>
 </.header>
 
-<.map_configuration_form changeset={@changeset} action={~p"/map_configurations/#{@map_configuration}"} />
+<.map_configuration_form
+  changeset={@changeset}
+  action={~p"/versions/#{@version}/map_configurations/#{@map_configuration}"}
+  version={@version}
+/>
 
-<.back navigate={~p"/map_configurations"}>Back to Map Configuration</.back>
+<.back navigate={~p"/versions/#{@version}/map_configurations"}>Back to Map Configuration</.back>

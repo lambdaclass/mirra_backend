@@ -4,6 +4,7 @@ defmodule GameBackend.Units.Characters do
   """
 
   import Ecto.Query
+  alias GameBackend.Configuration.Version
   alias Ecto.Multi
   alias GameBackend.Repo
   alias GameBackend.Units.Characters.Character
@@ -55,7 +56,7 @@ defmodule GameBackend.Units.Characters do
         on_conflict: [
           set: Enum.into(attrs, [])
         ],
-        conflict_target: [:name, :game_id]
+        conflict_target: [:name, :game_id, :version_id]
       )
     end)
     |> Repo.transaction()
@@ -124,8 +125,20 @@ defmodule GameBackend.Units.Characters do
       iex> get_character(wrong_character_name, game_id)
       nil
   """
-  def get_character_id_by_name_and_game_id(name, game_id),
-    do: Repo.one(from(c in Character, where: c.name == ^name and c.game_id == ^game_id, select: c.id))
+  def get_character_id_by_name_and_game_id(name, game_id) do
+    if game_id == GameBackend.Utils.get_game_id(:champions_of_mirra) do
+      Repo.one(from(c in Character, where: c.name == ^name and c.game_id == ^game_id, select: c.id))
+    else
+      current_version_id = Repo.one(from(v in Version, where: v.current, select: v.id))
+
+      Repo.one(
+        from(c in Character,
+          where: c.name == ^name and c.game_id == ^game_id and c.version_id == ^current_version_id,
+          select: c.id
+        )
+      )
+    end
+  end
 
   @doc """
   Delete all Characters from the database.
@@ -171,12 +184,12 @@ defmodule GameBackend.Units.Characters do
   iex> get_curse_characters()
   [%Character%{game_id: 1, name: "Muflus"}, ...]
   """
-  def get_curse_characters() do
+  def get_curse_characters_by_version(version_id) do
     curse_id = GameBackend.Utils.get_game_id(:curse_of_mirra)
 
     q =
       from(c in Character,
-        where: ^curse_id == c.game_id,
+        where: ^curse_id == c.game_id and ^version_id == c.version_id,
         preload: [
           basic_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]],
           ultimate_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]],

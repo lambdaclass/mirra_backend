@@ -2,7 +2,7 @@
   Game configuration <%= @game_configuration.id %>
   <:subtitle>Version: <%= @version.name %></:subtitle>
   <:actions>
-    <.link href={~p"/game_configurations/#{@game_configuration}/edit"}>
+    <.link href={~p"/versions/#{@version}/game_configurations/#{@game_configuration}/edit"}>
       <.button>Edit game_configuration</.button>
     </.link>
   </:actions>
@@ -51,4 +51,4 @@
   <% end %>
 </.modal>
 
-<.back navigate={~p"/game_configurations"}>Back to game_configurations</.back>
+<.back navigate={~p"/versions/#{@version}/game_configurations"}>Back to game_configurations</.back>

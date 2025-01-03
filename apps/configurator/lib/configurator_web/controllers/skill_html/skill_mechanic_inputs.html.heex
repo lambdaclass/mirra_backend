@@ -30,7 +30,10 @@
   <% end %>
   <.input field={fp[:shape]} type="select" label="Shape of entity to spawn" options={["circle", "polygon"]} />
 
-  <.input field={fp[:vertices]} type="text" label="Vertices" value={Jason.encode!(fp.data.vertices)} />
+  <%!-- TODO: Fix this because it breaks if its null --%>
+  <%!-- https://github.com/lambdaclass/mirra_backend/issues/1028 --%>
+  <.input field={fp[:vertices]} type="text" label="Vertices" value={[]} />
+  <%!-- END TODO --%>
 
   <.button type="button" phx-click={show_modal("on-arrival-mechanic-modal")}>Edit on arrival mechanic</.button>
   <.modal id="on-arrival-mechanic-modal">

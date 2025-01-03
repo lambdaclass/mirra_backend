@@ -3,7 +3,23 @@ defmodule Champions.TestUtils do
   Utility functions for tests.
   """
 
+  @doc """
+  Generate a version.
+  """
+  def version_fixture(attrs \\ %{}) do
+    {:ok, version} =
+      attrs
+      |> Enum.into(%{
+        name: "some name"
+      })
+      |> GameBackend.Configuration.create_version()
+
+    version
+  end
+
   def build_character(params \\ %{}) do
+    version = version_fixture()
+
     Map.merge(
       %{
         game_id: 2,
@@ -15,7 +31,8 @@ defmodule Champions.TestUtils do
         base_health: 100,
         base_defense: 0,
         basic_skill: build_skill(%{name: "Default Basic Skill"}),
-        ultimate_skill: build_skill(%{name: "Default Ultimate Skill"})
+        ultimate_skill: build_skill(%{name: "Default Ultimate Skill"}),
+        version_id: version.id
       },
       params
     )
@@ -35,9 +52,14 @@ defmodule Champions.TestUtils do
   end
 
   def build_skill(params \\ %{}) do
+    version = version_fixture()
+    game_id = GameBackend.Utils.get_game_id(:champions_of_mirra)
+
     Map.merge(
       %{
         name: "Default Name",
+        version_id: version.id,
+        game_id: game_id,
         energy_regen: 0,
         animation_duration: 0,
         mechanics: [
