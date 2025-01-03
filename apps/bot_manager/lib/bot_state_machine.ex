@@ -23,6 +23,7 @@ defmodule BotManager.BotStateMachine do
         bot_state_machine: bot_state_machine,
         attack_blocked: attack_blocked
       }) do
+
     bot_state_machine =
       if is_nil(bot_state_machine.previous_position) do
         bot_state_machine
@@ -238,7 +239,7 @@ defmodule BotManager.BotStateMachine do
   defp run_to_position(bot_player, bot_state_machine, game_state) do
     bot_state_machine = if is_nil(bot_state_machine.position_to_run_to) do
       bot_state_machine
-      |> Map.put(:position_to_run_to, Utils.get_random_position_within_radius(game_state.zone.radius))
+      |> Map.put(:position_to_run_to, %{x: 0, y: 0})
     else
       bot_state_machine
     end
