@@ -25,9 +25,13 @@ defmodule GameBackend.CurseOfMirra.GameModeConfiguration do
 
   @doc false
   def changeset(game_mode_configuration, attrs) do
+    IO.inspect(attrs, label: :aver_attrs)
+
+
     game_mode_configuration
     |> cast(attrs, [:name, :zone_enabled, :bots_enabled, :match_duration_ms, :respawn_time_ms, :version_id])
     |> validate_required([:name, :version_id, :bots_enabled, :zone_enabled])
     |> cast_assoc(:map_mode_params)
+    |> dbg()
   end
 end

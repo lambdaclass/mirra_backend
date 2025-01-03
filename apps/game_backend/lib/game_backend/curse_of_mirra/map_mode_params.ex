@@ -13,7 +13,7 @@ defmodule GameBackend.CurseOfMirra.MapModeParams do
 
   schema "map_mode_params" do
     field(:amount_of_players, :integer)
-    embeds_many(:initial_positions, InitialPosition)
+    has_many(:initial_positions, __MODULE__.InitialPosition)
 
     belongs_to(:map, MapConfiguration, foreign_key: :map_id)
     belongs_to(:game_mode, GameModeConfiguration, foreign_key: :game_mode_id)
@@ -26,7 +26,7 @@ defmodule GameBackend.CurseOfMirra.MapModeParams do
     map_mode_params
     |> cast(attrs, [:amount_of_players, :map_id, :game_mode_id])
     |> validate_required([:amount_of_players])
-    |> cast_embed(:initial_positions)
+    |> cast_assoc(:initial_positions)
   end
 
   defmodule InitialPosition do
@@ -37,17 +37,19 @@ defmodule GameBackend.CurseOfMirra.MapModeParams do
     """
     use GameBackend.Schema
 
-    @derive {Jason.Encoder, only: [:type, :positions]}
-    embedded_schema do
-      field(:type, Ecto.Enum, values: [:solo, :team])
-      embeds_many(:positions, Position)
+    @derive {Jason.Encoder, only: [:team_mode, :positions]}
+    schema "initial_positions" do
+      field(:team_mode, Ecto.Enum, values: [:solo, :team])
+      embeds_many(:positions, GameBackend.CurseOfMirra.MapModeParams.Position)
+
+      belongs_to(:map_mode_params, __MODULE__)
     end
 
     def changeset(initial_position, attrs) do
       initial_position
-      |> cast(attrs, [:type])
-      |> validate_required([:type])
-      |> cast_embed(attrs, [:positions])
+      |> cast(attrs, [:team_mode, :map_mode_params_id])
+      |> validate_required([:team_mode])
+      |> cast_embed(:positions)
     end
   end
 

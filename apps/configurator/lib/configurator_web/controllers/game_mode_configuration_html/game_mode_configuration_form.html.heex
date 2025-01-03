@@ -11,9 +11,41 @@
   <.input field={f[:respawn_time_ms]} type="number" label="Respawn time ms" />
 
   <.inputs_for :let={fp} field={f[:map_mode_params]}>
-    <%= GameBackend.Configuration.get_map_configuration!(fp[:map_id]) |> Map.get(:name) %>
-    <.input field={fp[:amount_of_players]} type="number" label="Amount of players" />
-    <.input field={fp[:initial_positions]} type="text" label="Initial positions" />
+    <h3>Map specific params</h3>
+    <div class=" w-full rounded overflow-hidden shadow-lg">
+      <div class="px-6 py-4">
+        <.input
+          field={fp[:map_id]}
+          type="select"
+          label="Map"
+          prompt="Select a map"
+          options={Enum.map(@maps, &{&1.name, &1.id})}
+        />
+    </div>
+    <div class="px-6 py-4">
+      <.input field={fp[:amount_of_players]} type="number" label="Amount of players" />
+    </div>
+    <div class="px-6 py-4">
+      <.inputs_for :let={fm} field={fp[:initial_positions]}>
+      <.input
+      field={fm[:team_mode]}
+      type="select"
+      label="Team Mode"
+      options={Ecto.Enum.values(GameBackend.CurseOfMirra.MapModeParams.InitialPosition, :team_mode)}
+    />
+        <%!-- <.input field={fm[:type]} type="text" label="Type" /> --%>
+        <.input
+          field={fm[:positions]}
+          type="textarea"
+          label="Positions"
+          value={embed_to_string(fm[:positions].value)}
+        />
+      </.inputs_for>
+        <%!-- <.input field={fp[:initial_positions]} type="text" label="Initial positions" /> --%>
+      </div>
+    </div>
+
+    
   </.inputs_for>
 
   <:actions>

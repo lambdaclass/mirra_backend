@@ -21,5 +21,13 @@ defmodule GameBackend.Repo.Migrations.CreateGameModeConfigurationsAndMapModePara
 
       timestamps(type: :utc_datetime)
     end
+
+    create table(:initial_positions) do
+      add :team_mode, :string
+      add :positions, :map
+      add :map_mode_params_id, references(:map_mode_params)
+
+      timestamps(type: :utc_datetime)
+    end
   end
 end
