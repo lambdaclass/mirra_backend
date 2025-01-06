@@ -47,7 +47,7 @@ defmodule BotManager.BotStateMachine do
       :moving ->
         move(bot_player, bot_state_machine)
 
-      :aggresive ->
+      :attacking ->
         use_skill(%{
           bot_player: bot_player,
           bot_state_machine: bot_state_machine,
