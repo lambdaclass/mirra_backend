@@ -45,12 +45,7 @@ defmodule BotManager.BotStateMachine do
 
     case next_state do
       :moving ->
-        direction = maybe_switch_direction(bot_player, bot_state_machine)
-
-        %{
-          action: determine_player_move_action(bot_player, bot_state_machine, direction),
-          bot_state_machine: bot_state_machine
-        }
+        move(bot_player, bot_state_machine)
 
       :aggresive ->
         use_skill(%{
@@ -79,12 +74,7 @@ defmodule BotManager.BotStateMachine do
     players_with_distances = map_directions_to_players(game_state, bot_player, @vision_range)
 
     if Enum.empty?(players_with_distances) do
-      direction = maybe_switch_direction(bot_player, bot_state_machine)
-
-      %{
-        action: determine_player_move_action(bot_player, bot_state_machine, direction),
-        bot_state_machine: bot_state_machine
-      }
+      move(bot_player, bot_state_machine)
     else
       cond do
         bot_state_machine.progress_for_ultimate_skill >= bot_state_machine.cap_for_ultimate_skill ->
@@ -115,12 +105,7 @@ defmodule BotManager.BotStateMachine do
           %{action: {:use_skill, @skill_1_key, direction}, bot_state_machine: bot_state_machine}
 
         true ->
-          direction = maybe_switch_direction(bot_player, bot_state_machine)
-
-          %{
-            action: determine_player_move_action(bot_player, bot_state_machine, direction),
-            bot_state_machine: bot_state_machine
-          }
+          move(bot_player, bot_state_machine)
       end
     end
   end
@@ -233,4 +218,12 @@ defmodule BotManager.BotStateMachine do
     end
   end
 
+  defp move(bot_player, bot_state_machine) do
+    direction = maybe_switch_direction(bot_player, bot_state_machine)
+
+    %{
+      action: determine_player_move_action(bot_player, bot_state_machine, direction),
+      bot_state_machine: bot_state_machine
+    }
+  end
 end
