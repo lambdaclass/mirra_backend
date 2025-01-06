@@ -96,13 +96,7 @@ defmodule BotManager.BotStateMachine do
             )
             |> Map.put(:state, :attacking)
 
-          direction =
-            if Enum.empty?(players_with_distances) do
-              bot_player.direction
-            else
-              closest_player = Enum.min_by(players_with_distances, & &1.distance)
-              closest_player.direction
-            end
+          direction = maybe_aim_to_a_player(bot_player, players_with_distances)
 
           %{action: {:use_skill, @skill_2_key, direction}, bot_state_machine: bot_state_machine}
 
@@ -116,13 +110,7 @@ defmodule BotManager.BotStateMachine do
             |> Map.put(:progress_for_ultimate_skill, bot_state_machine.progress_for_ultimate_skill + 1)
             |> Map.put(:state, :attacking)
 
-          direction =
-            if Enum.empty?(players_with_distances) do
-              bot_player.direction
-            else
-              closest_player = Enum.min_by(players_with_distances, & &1.distance)
-              closest_player.direction
-            end
+          direction = maybe_aim_to_a_player(bot_player, players_with_distances)
 
           %{action: {:use_skill, @skill_1_key, direction}, bot_state_machine: bot_state_machine}
 
@@ -235,4 +223,14 @@ defmodule BotManager.BotStateMachine do
       }
     end
   end
+
+  defp maybe_aim_to_a_player(bot_player, players_with_distances) do
+    if Enum.empty?(players_with_distances) do
+      bot_player.direction
+    else
+      closest_player = Enum.min_by(players_with_distances, & &1.distance)
+      closest_player.direction
+    end
+  end
+
 end
