@@ -12,6 +12,7 @@ defmodule BotManager.BotStateMachine do
   @skill_2_key "2"
   @dash_skill_key "3"
   @vision_range 1200
+  @min_distance_to_switch 10
 
   def decide_action(%{bots_enabled?: false, bot_state_machine: bot_state_machine}) do
     %{action: {:move, %{x: 0, y: 0}}, bot_state_machine: bot_state_machine}
@@ -196,7 +197,9 @@ defmodule BotManager.BotStateMachine do
     x_distance = abs(bot_state_machine.current_position.x - bot_state_machine.previous_position.x)
     y_distance = abs(bot_state_machine.current_position.y - bot_state_machine.previous_position.y)
 
-    if x_distance < 10 and y_distance < 10, do: switch_based_on_position(bot_player), else: bot_player.direction
+    if x_distance < @min_distance_to_switch and y_distance < @min_distance_to_switch,
+      do: switch_based_on_position(bot_player),
+      else: bot_player.direction
   end
 
   defp switch_based_on_position(bot_player) do
