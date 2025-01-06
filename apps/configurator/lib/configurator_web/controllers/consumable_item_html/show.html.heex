@@ -2,7 +2,7 @@
   Consumable item <%= @consumable_item.name %>
   <:subtitle>Version: <%= @version.name %></:subtitle>
   <:actions>
-    <.link href={~p"/consumable_items/#{@consumable_item}/edit"}>
+    <.link href={~p"/versions/#{@version}/consumable_items/#{@consumable_item}/edit"}>
       <.button>Edit Consumable item</.button>
     </.link>
     <.effect_show effect={@consumable_item.effect} />
@@ -24,4 +24,4 @@
   </div>
 </div>
 
-<.back navigate={~p"/consumable_items"}>Back to Consumable Items</.back>
+<.back navigate={~p"/versions/#{@version}/consumable_items"}>Back to Consumable Items</.back>

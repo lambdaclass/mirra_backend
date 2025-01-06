@@ -40,6 +40,20 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
     |> unique_constraint(:name)
   end
 
+  @doc false
+  def assoc_changeset(map_configuration, attrs) do
+    map_configuration
+    |> cast(attrs, [:radius, :name, :active])
+    |> validate_required([:radius, :active])
+    |> cast_embed(:initial_positions)
+    |> cast_embed(:obstacles)
+    |> cast_embed(:bushes)
+    |> cast_embed(:pools)
+    |> cast_embed(:crates)
+    |> cast_embed(:square_wall)
+    |> unique_constraint(:name)
+  end
+
   defmodule SquareWall do
     @moduledoc """
     SquareWall embedded schema to be used by MapConfiguration

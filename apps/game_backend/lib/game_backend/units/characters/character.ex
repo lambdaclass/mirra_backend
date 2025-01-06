@@ -106,6 +106,7 @@ defmodule GameBackend.Units.Characters.Character do
     ])
     |> cast_assoc(:basic_skill)
     |> cast_assoc(:ultimate_skill)
+    |> unique_constraint([:game_id, :name, :version_id])
     |> validate_required([:game_id, :name, :active, :faction])
     |> mana_recovery_strategy_validation()
   end

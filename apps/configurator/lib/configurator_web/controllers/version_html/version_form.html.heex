@@ -1,9 +1,197 @@
-<.simple_form :let={f} for={@changeset} action={@action}>
+<.flex_form :let={f} for={@changeset} action={@action}>
   <.error :if={@changeset.action}>
     Oops, something went wrong! Please check the errors below.
   </.error>
-  <.input field={f[:name]} type="text" label="Name" />
+  <.input field={f[:name]} type="text" label="Version Name" />
+  <div style="text-align: center;">
+    <b>Characters</b>
+    <div class="flex">
+      <.inputs_for :let={fc} field={f[:characters]}>
+        <div class="flex input-item">
+          <.input field={fc[:name]} type="text" label="Character Name" class="input-item" />
+          <.input field={fc[:base_speed]} type="number" label="Base speed" step="any" />
+          <.input field={fc[:base_size]} type="number" label="Base size" step="any" lang="en" />
+          <.input field={fc[:base_health]} type="number" label="Base health" />
+          <.input field={fc[:base_stamina]} type="number" label="Base stamina" />
+          <.input field={fc[:stamina_interval]} type="number" label="Stamina Interval" />
+          <.input field={fc[:base_mana]} type="number" label="Base mana" />
+          <.input field={fc[:initial_mana]} type="number" label="Initial mana when spawning" />
+          <.input
+            field={fc[:mana_recovery_strategy]}
+            type="select"
+            label="Mana recovery strategy"
+            prompt="Select strategy"
+            options={Ecto.Enum.values(GameBackend.Units.Characters.Character, :mana_recovery_strategy)}
+          />
+          <.input field={fc[:mana_recovery_time_interval_ms]} type="number" label="Time based mana recovery interval" />
+          <.input field={fc[:mana_recovery_time_amount]} type="number" label="Time based mana recovery amount" />
+          <.input
+            field={fc[:mana_recovery_damage_multiplier]}
+            type="number"
+            label="Damage based mana recovery multiplier amount"
+            step="any"
+          />
+          <.input field={fc[:max_inventory_size]} type="number" label="Max inventory size" step="any" />
+          <.input field={fc[:natural_healing_interval]} type="number" label="Natural healing interval" />
+          <.input field={fc[:natural_healing_damage_interval]} type="number" label="Natural healing damage interval" />
+          <.skill_select field={fc[:basic_skill_id]} label="Basic skill" skills={@skills[:basic]} />
+          <.skill_select field={fc[:dash_skill_id]} label="Dash skill" skills={@skills[:dash]} />
+          <.skill_select field={fc[:ultimate_skill_id]} label="Ultimate skill" skills={@skills[:ultimate]} />
+          <.input field={fc[:active]} type="checkbox" label="Active" />
+          <.input type="hidden" field={fc[:game_id]} />
+          <.input type="hidden" field={fc[:faction]} />
+        </div>
+      </.inputs_for>
+    </div>
+  </div>
+  <div style="text-align: center;">
+    <b>Consumable Items</b>
+    <div class="flex">
+      <.inputs_for :let={fci} field={f[:consumable_items]}>
+        <div class="flex input-item">
+          <.input field={fci[:name]} type="text" label="Name" />
+          <.input field={fci[:radius]} type="number" label="Radius" step="any" />
+          <.input field={fci[:active]} type="checkbox" label="Active" />
+          <.effect_form form={fci} field={:effect} />
+        </div>
+      </.inputs_for>
+    </div>
+  </div>
+
+  <div style="text-align: center;">
+    <b>Skills</b>
+    <div class="flex-initial">
+      <.inputs_for :let={fs} field={f[:skills]}>
+        <div class="flex input-item">
+          <.input field={fs[:name]} type="text" label="Name" required />
+          <.input
+            field={fs[:type]}
+            type="select"
+            label="Type"
+            prompt="Choose a value"
+            options={Ecto.Enum.values(GameBackend.Units.Skills.Skill, :type)}
+          />
+          <.input field={fs[:activation_delay_ms]} type="number" label="Activation delay (ms)" />
+          <.input field={fs[:autoaim]} type="checkbox" label="Autoaim" />
+          <.input field={fs[:block_movement]} type="checkbox" label="Block movement" />
+          <.input field={fs[:can_pick_destination]} type="checkbox" label="Can pick destination" />
+          <.input
+            field={fs[:cooldown_mechanism]}
+            type="select"
+            label="Cooldown mechanism"
+            prompt="Choose a value"
+            options={Ecto.Enum.values(GameBackend.Units.Skills.Skill, :cooldown_mechanism)}
+          />
+          <.input field={fs[:cooldown_ms]} type="number" label="Cooldown (ms)" />
+          <.input field={fs[:execution_duration_ms]} type="number" label="Execution duration (ms)" />
+          <.input field={fs[:inmune_while_executing]} type="checkbox" label="Inmune while executing" />
+          <.input field={fs[:is_passive]} type="checkbox" label="Is passive" />
+          <.input field={fs[:max_autoaim_range]} type="number" label="Max autoaim range" />
+          <.input field={fs[:stamina_cost]} type="number" label="Stamina cost" />
+          <.input field={fs[:mana_cost]} type="number" label="Mana cost" />
+          <.input type="hidden" field={fs[:game_id]} />
+
+          <.skill_mechanic_inputs skill_form={fs} />
+          <%= if fs.data.effect_to_apply do %>
+            <.effect_form form={fs} field={:effect_to_apply} />
+          <% end %>
+        </div>
+      </.inputs_for>
+    </div>
+  </div>
+
+  <div style="text-align: center;">
+    <b>Game Configuration</b>
+    <div class="flex-initial">
+      <.inputs_for :let={fg} field={f[:game_configuration]}>
+        <div class="flex input-item">
+          <.input field={fg[:tick_rate_ms]} type="number" label="Tick rate ms" />
+          <.input field={fg[:bounty_pick_time_ms]} type="number" label="Bounty pick time ms" />
+          <.input field={fg[:start_game_time_ms]} type="number" label="Start game time ms" />
+          <.input field={fg[:end_game_interval_ms]} type="number" label="End game interval ms" />
+          <.input field={fg[:shutdown_game_wait_ms]} type="number" label="Shutdown game wait ms" />
+          <.input field={fg[:natural_healing_interval_ms]} type="number" label="Natural healing interval ms" />
+          <.input field={fg[:zone_shrink_start_ms]} type="number" label="Zone shrink start ms" />
+          <.input field={fg[:zone_shrink_radius_by]} type="number" label="Zone shrink radius by" />
+          <.input field={fg[:zone_shrink_interval]} type="number" label="Zone shrink interval" />
+          <.input field={fg[:zone_stop_interval_ms]} type="number" label="Zone stop interval ms" />
+          <.input field={fg[:zone_start_interval_ms]} type="number" label="Zone start interval ms" />
+          <.input field={fg[:zone_damage_interval_ms]} type="number" label="Zone damage interval ms" />
+          <.input field={fg[:zone_damage]} type="number" label="Zone damage" />
+          <.input field={fg[:item_spawn_interval_ms]} type="number" label="Item spawn interval ms" />
+          <.input field={fg[:bounties_options_amount]} type="number" label="Bounties options amount" />
+          <.input field={fg[:match_timeout_ms]} type="number" label="Match Timeout ms" />
+          <.input field={fg[:bots_enabled]} type="checkbox" label="Bots enabled" />
+          <.input field={fg[:zone_enabled]} type="checkbox" label="Zone enabled" />
+          <.input field={fg[:field_of_view_inside_bush]} type="number" label="Field of view inside bush" />
+          <.input field={fg[:time_visible_in_bush_after_skill]} type="number" label="Field of view inside bush" />
+
+          <h2>Power Ups</h2>
+          <.input field={fg[:distance_to_power_up]} type="number" label="Power Up spawn range" step="any" />
+          <.input field={fg[:power_up_damage_modifier]} type="number" label="Power Up damage modifier" step="any" />
+          <.input field={fg[:power_up_health_modifier]} type="number" label="Power Up health modifier" step="any" />
+          <.input field={fg[:power_up_radius]} type="number" label="Power Up radius" step="any" />
+          <.input field={fg[:power_up_activation_delay_ms]} type="number" label="Power Up activation delay" step="any" />
+          <.inputs_for :let={power_ups_per_kill_f} field={fg[:power_ups_per_kill]}>
+            <div class=" w-full rounded overflow-hidden shadow-lg">
+              <div class="px-6 py-4">
+                <.input
+                  field={power_ups_per_kill_f[:minimum_amount_of_power_ups]}
+                  type="number"
+                  label="Minimum amount of power ups"
+                  step="any"
+                />
+              </div>
+              <div class="px-6 py-4">
+                <.input
+                  field={power_ups_per_kill_f[:amount_of_power_ups_to_drop]}
+                  type="number"
+                  label="Amount of power ups to drop"
+                  step="any"
+                />
+              </div>
+            </div>
+          </.inputs_for>
+        </div>
+      </.inputs_for>
+    </div>
+  </div>
+
+  <div style="text-align: center;">
+    <b>Map Configurations</b>
+    <div class="flex-initial">
+      <.inputs_for :let={fm} field={f[:map_configurations]}>
+        <div class="flex input-item">
+          <.input field={fm[:active]} type="checkbox" label="Active" />
+          <.input field={fm[:name]} type="text" label="Name" />
+          <.input field={fm[:radius]} type="number" label="Radius" step="any" />
+          <.input
+            field={fm[:initial_positions]}
+            type="textarea"
+            label="Initial positions"
+            value={embed_to_string(fm[:initial_positions].value)}
+          />
+          <.input
+            field={fm[:square_wall]}
+            type="textarea"
+            label="Square Wall"
+            value={embed_to_string(fm[:square_wall].value) |> Jason.encode!() |> Jason.Formatter.pretty_print()}
+          />
+          <.input
+            field={fm[:obstacles]}
+            type="textarea"
+            label="Obstacles"
+            value={embed_to_string(fm[:obstacles].value)}
+          />
+          <.input field={fm[:bushes]} type="textarea" label="Bushes" value={embed_to_string(fm[:bushes].value)} />
+          <.input field={fm[:pools]} type="textarea" label="Pools" value={embed_to_string(fm[:pools].value)} />
+          <.input field={fm[:crates]} type="textarea" label="Crates" value={embed_to_string(fm[:crates].value)} />
+        </div>
+      </.inputs_for>
+    </div>
+  </div>
+
   <:actions>
     <.button>Save Version</.button>
   </:actions>
-</.simple_form>
+</.flex_form>
