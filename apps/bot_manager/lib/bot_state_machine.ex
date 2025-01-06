@@ -1,6 +1,6 @@
 defmodule BotManager.BotStateMachine do
   @moduledoc """
-  This module will take care of deciding what the bot will do on each deciding step
+  This module will take care of the bot state machine logic.
   """
 
   alias BotManager.BotStateMachineChecker
@@ -18,12 +18,16 @@ defmodule BotManager.BotStateMachine do
     %{action: {:move, %{x: 0, y: 0}}, bot_state_machine: bot_state_machine}
   end
 
+  @doc """
+  This function will decide the next action for the bot.
+  """
   def decide_action(%{
         game_state: game_state,
         bot_player: bot_player,
         bot_state_machine: bot_state_machine,
         attack_blocked: attack_blocked
       }) do
+
     bot_state_machine =
       if is_nil(bot_state_machine.previous_position) do
         bot_state_machine
@@ -63,6 +67,10 @@ defmodule BotManager.BotStateMachine do
   def decide_action(%{bot_state_machine: bot_state_machine}),
     do: %{action: :idling, bot_state_machine: bot_state_machine}
 
+  @doc """
+  This function will be in charge of using the bot's skill.
+  Depending on the bot's state, it will use the basic skill, the ultimate skill or move.
+  """
   def use_skill(%{attack_blocked: true, bot_player: bot_player, bot_state_machine: bot_state_machine}),
     do: %{action: {:move, bot_player.direction}, bot_state_machine: bot_state_machine}
 
@@ -110,6 +118,9 @@ defmodule BotManager.BotStateMachine do
     end
   end
 
+  @doc """
+  This function will map the directions and distance from the bot to the players.
+  """
   defp map_directions_to_players(game_state, bot_player, max_distance) do
     Map.delete(game_state.players, bot_player.id)
     |> Map.filter(fn {player_id, player} ->
@@ -149,6 +160,9 @@ defmodule BotManager.BotStateMachine do
     Enum.member?(bot_player_info.visible_players, player_id)
   end
 
+  @doc """
+  This function will determine the direction and action the bot will take.
+  """
   defp determine_player_move_action(bot_player, bot_state_machine, direction) do
     {:player, bot_player_info} = bot_player.aditional_info
 
@@ -166,6 +180,10 @@ defmodule BotManager.BotStateMachine do
     end
   end
 
+  @doc """
+  This function will change the bot’s direction by checking if it has stayed in the same position between the last and current update.
+  If the bot hasn’t moved, it will randomly switch its direction.
+  """
   defp maybe_switch_direction(bot_player, bot_state_machine) do
     x_distance = abs(bot_state_machine.current_position.x - bot_state_machine.previous_position.x)
     y_distance = abs(bot_state_machine.current_position.y - bot_state_machine.previous_position.y)

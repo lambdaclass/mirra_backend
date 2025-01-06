@@ -6,7 +6,9 @@ defmodule BotManager.BotStateMachineChecker do
   defstruct [
     # The bot state, these are the possible states: [:idling, :moving, :attacking, :running_away]
     :state,
+    # The previous position of the bot
     :previous_position,
+    # The current position of the bot
     :current_position,
     # This is going to be charged every time the bot travels 10 units
     :progress_for_basic_skill,
