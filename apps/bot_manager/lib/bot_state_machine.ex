@@ -27,7 +27,6 @@ defmodule BotManager.BotStateMachine do
         bot_state_machine: bot_state_machine,
         attack_blocked: attack_blocked
       }) do
-
     bot_state_machine =
       if is_nil(bot_state_machine.previous_position) do
         bot_state_machine
