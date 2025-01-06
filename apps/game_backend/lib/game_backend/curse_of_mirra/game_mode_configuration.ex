@@ -17,6 +17,7 @@ defmodule GameBackend.CurseOfMirra.GameModeConfiguration do
     field(:bots_enabled, :boolean)
     field(:match_duration_ms, :integer)
     field(:respawn_time_ms, :integer)
+    field(:deleted_at, :naive_datetime)
 
     has_many(:map_mode_params, MapModeParams, foreign_key: :game_mode_id, on_replace: :delete)
     belongs_to(:version, Version)
@@ -30,5 +31,12 @@ defmodule GameBackend.CurseOfMirra.GameModeConfiguration do
     |> cast(attrs, [:name, :zone_enabled, :bots_enabled, :match_duration_ms, :respawn_time_ms, :version_id])
     |> validate_required([:name, :version_id, :bots_enabled, :zone_enabled])
     |> cast_assoc(:map_mode_params, with: &MapModeParams.assoc_changeset/2)
+  end
+
+  @doc false
+  def delete_changeset(game_mode_configuration, attrs) do
+    game_mode_configuration
+    |> cast(attrs, [:deleted_at])
+    |> validate_required([:deleted_at])
   end
 end

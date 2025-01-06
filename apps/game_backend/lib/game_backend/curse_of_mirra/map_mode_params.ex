@@ -14,6 +14,7 @@ defmodule GameBackend.CurseOfMirra.MapModeParams do
 
   schema "map_mode_params" do
     field(:amount_of_players, :integer)
+    field(:deleted_at, :naive_datetime)
     embeds_many(:solo_initial_positions, Position, on_replace: :delete)
     embeds_many(:team_initial_positions, Position, on_replace: :delete)
 
@@ -39,5 +40,12 @@ defmodule GameBackend.CurseOfMirra.MapModeParams do
     |> validate_required([:map_id, :amount_of_players])
     |> cast_embed(:solo_initial_positions)
     |> cast_embed(:team_initial_positions)
+  end
+
+  @doc false
+  def delete_changeset(map_mode_params, attrs) do
+    map_mode_params
+    |> cast(attrs, [:deleted_at])
+    |> validate_required([:deleted_at])
   end
 end

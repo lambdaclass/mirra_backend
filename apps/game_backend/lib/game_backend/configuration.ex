@@ -36,7 +36,11 @@ defmodule GameBackend.Configuration do
 
   """
   def list_game_mode_configurations_by_version(version_id) do
-    Repo.all(from(gm in GameModeConfiguration, where: gm.version_id == ^version_id, preload: [map_mode_params: :map]))
+    from(gm in GameModeConfiguration,
+        where: gm.version_id == ^version_id and is_nil(gm.deleted_at),
+        preload: [map_mode_params: :map]
+    )
+    |> Repo.all()
   end
 
   @doc """
@@ -70,7 +74,7 @@ defmodule GameBackend.Configuration do
 
   """
   def get_game_mode_configuration!(id),
-    do: Repo.get!(GameModeConfiguration, id) |> IO.inspect() |> Repo.preload(map_mode_params: :map)
+    do: Repo.get!(GameModeConfiguration, id) |> Repo.preload(map_mode_params: :map)
 
   @doc """
   Creates a game_configuration.
@@ -173,7 +177,20 @@ defmodule GameBackend.Configuration do
 
   """
   def delete_game_mode_configuration(%GameModeConfiguration{} = game_mode_configuration) do
-    Repo.delete(game_mode_configuration)
+    now = NaiveDateTime.utc_now()
+
+    Enum.reduce(game_mode_configuration.map_mode_params, Multi.new(), fn map_mode_params, multi ->
+      Multi.update(
+        multi,
+        {:map_mode_params, map_mode_params.id},
+        MapModeParams.delete_changeset(map_mode_params, %{deleted_at: now})
+      )
+    end)
+    |> Multi.update(
+      :delete_game_mode_configuration,
+      GameModeConfiguration.delete_changeset(game_mode_configuration, %{deleted_at: now})
+    )
+    |> Repo.transaction()
   end
 
   @doc """

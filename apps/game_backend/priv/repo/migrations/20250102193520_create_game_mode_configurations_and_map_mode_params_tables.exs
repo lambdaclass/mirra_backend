@@ -9,6 +9,7 @@ defmodule GameBackend.Repo.Migrations.CreateGameModeConfigurationsAndMapModePara
       add :match_duration_ms, :integer
       add :respawn_time_ms, :integer
       add :version_id, references(:versions)
+      add :deleted_at, :naive_datetime
 
       timestamps(type: :utc_datetime)
     end
@@ -19,6 +20,7 @@ defmodule GameBackend.Repo.Migrations.CreateGameModeConfigurationsAndMapModePara
       add :amount_of_players, :integer
       add :solo_initial_positions, :map
       add :team_initial_positions, :map
+      add :deleted_at, :naive_datetime
 
       timestamps(type: :utc_datetime)
     end
