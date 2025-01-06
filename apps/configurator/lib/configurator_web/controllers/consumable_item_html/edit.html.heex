@@ -3,4 +3,6 @@
   <:subtitle>Use this form to manage Consumable Item records in your database.</:subtitle>
 </.header>
 
-<%= live_render(@conn, ConfiguratorWeb.ConsumableItemsLive.Form, session: %{"consumable_item" => @consumable_item}) %>
+<%= live_render(@conn, ConfiguratorWeb.ConsumableItemsLive.Form,
+  session: %{"consumable_item" => @consumable_item, "version" => @version}
+) %>

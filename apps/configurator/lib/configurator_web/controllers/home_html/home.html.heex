@@ -3,13 +3,15 @@
     Welcome to Champions of Mirra Configurator
   </.header>
 
+  <.link href={~p"/versions/new"}>
+    <.button>New Version</.button>
+  </.link>
+  <.link href={~p"/versions/show_current_version"}>
+    <.button>See Current Version</.button>
+  </.link>
+
   <.list>
     <:item title="Versions"><.link href={~p"/versions"}>Link</.link></:item>
-    <:item title="Character settings"><.link href={~p"/characters"}>Link</.link></:item>
-    <:item title="Game settings"><.link href={~p"/game_configurations"}>Link</.link></:item>
-    <:item title="Map settings"><.link href={~p"/map_configurations"}>Link</.link></:item>
-    <:item title="Skill settings"><.link href={~p"/skills"}>Link</.link></:item>
-    <:item title="Consumable Items"><.link href={~p"/consumable_items"}>Link</.link></:item>
     <:item title="Arena servers"><.link href={~p"/arena_servers"}>Link</.link></:item>
   </.list>
 <% else %>

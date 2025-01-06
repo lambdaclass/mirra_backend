@@ -22,12 +22,13 @@ defmodule Champions.Config do
   @doc """
   Imports the skills configuration from 'skills.json' in the app's priv folder.
   """
-  def import_skill_config() do
+  def import_skill_config(game_id) do
     {:ok, skills_json} =
       Application.app_dir(:champions, "priv/skills.json")
       |> File.read()
 
     Jason.decode!(skills_json, [{:keys, :atoms}])
+    |> Enum.map(fn skill -> Map.put(skill, :game_id, game_id) end)
     |> Skills.upsert_skills()
   end
 

@@ -2,12 +2,8 @@
   <.error :if={@changeset.action}>
     Oops, something went wrong! Please check the errors below.
   </.error>
-  <.input
-    field={f[:version_id]}
-    type="select"
-    options={Enum.map(GameBackend.Configuration.list_versions(), fn version -> {version.name, version.id} end)}
-    label="Version"
-  />
+  <p class="font-semibold"><%= "Version: #{@version.name}" %></p>
+  <.input type="hidden" field={f[:version_id]} value={@version.id} />
   <.input field={f[:name]} type="text" label="Name" />
   <.input field={f[:active]} type="checkbox" label="Active" />
   <.input field={f[:base_speed]} type="number" label="Base speed" step="any" />

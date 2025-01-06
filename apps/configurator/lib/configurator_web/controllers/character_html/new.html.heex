@@ -3,6 +3,11 @@
   <:subtitle>Use this form to manage character records in your database.</:subtitle>
 </.header>
 
-<.character_form changeset={@changeset} action={~p"/characters"} skills={@skills} />
+<.character_form
+  changeset={@changeset}
+  action={~p"/versions/#{@version}/characters"}
+  skills={@skills}
+  version={@version}
+/>
 
-<.back navigate={~p"/characters"}>Back to characters</.back>
+<.back navigate={~p"/versions/#{@version}/characters"}>Back to characters</.back>

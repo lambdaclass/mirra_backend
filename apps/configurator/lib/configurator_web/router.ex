@@ -53,23 +53,26 @@ defmodule ConfiguratorWeb.Router do
 
   scope "/", ConfiguratorWeb do
     pipe_through [:browser, :require_authenticated_user]
-
-    resources "/characters", CharacterController
-    resources "/skills", SkillController
-    resources "/game_configurations", GameConfigurationController
-    resources "/map_configurations", MapConfigurationController
-    get "/map_configurations/:id/edit_obstacles", MapConfigurationController, :edit_obstacles
-    put "/map_configurations/:id/update_obstacles", MapConfigurationController, :update_obstacles
-    get "/map_configurations/:id/edit_pools", MapConfigurationController, :edit_pools
-    put "/map_configurations/:id/update_pools", MapConfigurationController, :update_pools
-    get "/map_configurations/:id/edit_crates", MapConfigurationController, :edit_crates
-    put "/map_configurations/:id/update_crates", MapConfigurationController, :update_crates
-    resources "/consumable_items", ConsumableItemController
     resources "/arena_servers", ArenaServerController
 
     scope "/versions" do
+      get "/show_current_version", VersionController, :show_current_version
       resources "/", VersionController
       put "/:id/current", VersionController, :mark_as_current
+
+      scope "/:version_id" do
+        resources "/characters", CharacterController
+        resources "/skills", SkillController
+        resources "/game_configurations", GameConfigurationController
+        resources "/map_configurations", MapConfigurationController
+        get "/map_configurations/:id/edit_obstacles", MapConfigurationController, :edit_obstacles
+        put "/map_configurations/:id/update_obstacles", MapConfigurationController, :update_obstacles
+        get "/map_configurations/:id/edit_pools", MapConfigurationController, :edit_pools
+        put "/map_configurations/:id/update_pools", MapConfigurationController, :update_pools
+        get "/map_configurations/:id/edit_crates", MapConfigurationController, :edit_crates
+        put "/map_configurations/:id/update_crates", MapConfigurationController, :update_crates
+        resources "/consumable_items", ConsumableItemController
+      end
     end
   end
 

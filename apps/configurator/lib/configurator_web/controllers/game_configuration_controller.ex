@@ -4,14 +4,15 @@ defmodule ConfiguratorWeb.GameConfigurationController do
   alias GameBackend.Configuration
   alias GameBackend.CurseOfMirra.GameConfiguration
 
-  def index(conn, _params) do
-    game_configurations = Configuration.list_game_configurations()
-    render(conn, :index, game_configurations: game_configurations)
+  def index(conn, %{"version_id" => version_id}) do
+    game_configurations = Configuration.list_game_configurations_by_version(version_id)
+    render(conn, :index, game_configurations: game_configurations, version_id: version_id)
   end
 
-  def new(conn, _params) do
+  def new(conn, %{"version_id" => version_id}) do
     changeset = Configuration.change_game_configuration(%GameConfiguration{})
-    render(conn, :new, changeset: changeset)
+    version = Configuration.get_version!(version_id)
+    render(conn, :new, changeset: changeset, version: version)
   end
 
   def create(conn, %{"game_configuration" => game_configuration_params}) do
@@ -19,10 +20,11 @@ defmodule ConfiguratorWeb.GameConfigurationController do
       {:ok, game_configuration} ->
         conn
         |> put_flash(:info, "Game configuration created successfully.")
-        |> redirect(to: ~p"/game_configurations/#{game_configuration}")
+        |> redirect(to: ~p"/versions/#{game_configuration.version_id}/game_configurations/#{game_configuration}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :new, changeset: changeset)
+        version = Configuration.get_version!(game_configuration_params["version_id"])
+        render(conn, :new, changeset: changeset, version: version)
     end
   end
 
@@ -35,7 +37,8 @@ defmodule ConfiguratorWeb.GameConfigurationController do
   def edit(conn, %{"id" => id}) do
     game_configuration = Configuration.get_game_configuration!(id)
     changeset = Configuration.change_game_configuration(game_configuration)
-    render(conn, :edit, game_configuration: game_configuration, changeset: changeset)
+    version = Configuration.get_version!(game_configuration.version_id)
+    render(conn, :edit, game_configuration: game_configuration, changeset: changeset, version: version)
   end
 
   def update(conn, %{"id" => id, "game_configuration" => game_configuration_params}) do
@@ -45,19 +48,21 @@ defmodule ConfiguratorWeb.GameConfigurationController do
       {:ok, game_configuration} ->
         conn
         |> put_flash(:info, "Game configuration updated successfully.")
-        |> redirect(to: ~p"/game_configurations/#{game_configuration}")
+        |> redirect(to: ~p"/versions/#{game_configuration.version_id}/game_configurations/#{game_configuration}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :edit, game_configuration: game_configuration, changeset: changeset)
+        version = Configuration.get_version!(game_configuration.version_id)
+        render(conn, :edit, game_configuration: game_configuration, changeset: changeset, version: version)
     end
   end
 
   def delete(conn, %{"id" => id}) do
     game_configuration = Configuration.get_game_configuration!(id)
+    version_id = game_configuration.version_id
     {:ok, _game_configuration} = Configuration.delete_game_configuration(game_configuration)
 
     conn
     |> put_flash(:info, "Game configuration deleted successfully.")
-    |> redirect(to: ~p"/game_configurations")
+    |> redirect(to: ~p"/versions/#{version_id}/game_configurations")
   end
 end

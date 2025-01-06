@@ -10,7 +10,7 @@ champions_of_mirra_id = Utils.get_game_id(:champions_of_mirra)
 
 ### Champions Currencies
 
-{:ok, _skills} = Champions.Config.import_skill_config()
+{:ok, _skills} = Champions.Config.import_skill_config(champions_of_mirra_id)
 
 {:ok, _characters} = Champions.Config.import_character_config()
 
@@ -629,7 +629,8 @@ skills = [
           "offset" => 0
         }
       }
-    ]
+    ],
+    "version_id" => version.id
   },
   %{
     "name" => "muflus_dash",
@@ -649,7 +650,8 @@ skills = [
         "speed" => 3.3,
         "duration_ms" => 330
       }
-    ]
+    ],
+    "version_id" => version.id
   },
   %{
     "name" => "h4ck_slingshot",
@@ -684,7 +686,8 @@ skills = [
         "speed" => 4.0,
         "duration_ms" => 250
       }
-    ]
+    ],
+    "version_id" => version.id
   },
   %{
     "name" => "h4ck_denial_of_service",
@@ -757,7 +760,8 @@ skills = [
         "offset" => 0
       }
     ],
-    "effect_to_apply" => invisible_effect
+    "effect_to_apply" => invisible_effect,
+    "version_id" => version.id
   },
   %{
     "name" => "uma_sneak",
@@ -945,7 +949,8 @@ skills = [
     "block_movement" => true,
     "mechanics" => [
       otix_carbonthrow_mechanic
-    ]
+    ],
+    "version_id" => version.id
   },
   %{
     "name" => "otix_magma_rush",
@@ -961,7 +966,8 @@ skills = [
     "block_movement" => true,
     "mechanics" => [
       otix_magma_rush_mechanic
-    ]
+    ],
+    "version_id" => version.id
   },
   %{
     "name" => "otix_inferno",
@@ -977,7 +983,8 @@ skills = [
     "block_movement" => true,
     "mechanics" => [
       inferno
-    ]
+    ],
+    "version_id" => version.id
   },
   %{
     "name" => "shinko_toxic_onion",
@@ -993,7 +1000,8 @@ skills = [
     "block_movement" => true,
     "mechanics" => [
       toxic_onion
-    ]
+    ],
+    "version_id" => version.id
   },
   %{
     "name" => "shinko_spore_dash",
@@ -1009,7 +1017,8 @@ skills = [
     "block_movement" => true,
     "mechanics" => [
       spore_dash
-    ]
+    ],
+    "version_id" => version.id
   },
   %{
     "name" => "shinko_PEB",
@@ -1025,7 +1034,8 @@ skills = [
     "block_movement" => true,
     "mechanics" => [
       putrid_elixir_bomb
-    ]
+    ],
+    "version_id" => version.id
   },
   %{
     "name" => "uren_basic",
@@ -1054,7 +1064,8 @@ skills = [
     "max_autoaim_range" => 1200,
     "can_pick_destination" => false,
     "block_movement" => true,
-    "mechanics" => [multi_piercing_shoot]
+    "mechanics" => [multi_piercing_shoot],
+    "version_id" => version.id
   },
   %{
     "name" => "uren_dash",
@@ -1074,7 +1085,8 @@ skills = [
         "speed" => 4,
         "duration_ms" => 250
       }
-    ]
+    ],
+    "version_id" => version.id
   }
 ]
 
@@ -1523,8 +1535,7 @@ fake_item_params = %{
   active: false,
   name: "fake_item",
   radius: 200.0,
-  mechanics: [spawn_bomb_mechanic],
-  effects: [],
+  effect_mechanics: [spawn_bomb_mechanic],
   version_id: version.id
 }
 
