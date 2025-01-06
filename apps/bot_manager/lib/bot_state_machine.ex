@@ -117,8 +117,7 @@ defmodule BotManager.BotStateMachine do
     end
   end
 
-
-  #This function will map the directions and distance from the bot to the players.
+  # This function will map the directions and distance from the bot to the players.
   defp map_directions_to_players(game_state, bot_player, max_distance) do
     Map.delete(game_state.players, bot_player.id)
     |> Map.filter(fn {player_id, player} ->
@@ -169,16 +168,15 @@ defmodule BotManager.BotStateMachine do
         direction
       end
 
-    if Map.has_key?(bot_player_info.cooldowns, @dash_skill_key) do
+    if Map.has_key?(bot_playegr_info.cooldowns, @dash_skill_key) do
       {:move, direction}
     else
       {:use_skill, @dash_skill_key, direction}
     end
   end
 
-
-  #This function will change the bot’s direction by checking if it has stayed in the same position between the last and current update.
-  #If the bot hasn’t moved, it will randomly switch its direction.
+  # This function will change the bot’s direction by checking if it has stayed in the same position between the last and current update.
+  # If the bot hasn’t moved, it will randomly switch its direction.
   defp maybe_switch_direction(bot_player, bot_state_machine) do
     x_distance = abs(bot_state_machine.current_position.x - bot_state_machine.previous_position.x)
     y_distance = abs(bot_state_machine.current_position.y - bot_state_machine.previous_position.y)
