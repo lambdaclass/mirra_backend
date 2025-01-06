@@ -200,7 +200,7 @@ defmodule BotManager.BotStateMachine do
       closest_player = Enum.min_by(players_with_distances, & &1.distance)
 
       direction =
-        Vector.rotate_by_degrees(closest_player.direction, 180) |> Vector.normalize() |> Vector.rotate_by_degrees(180)
+        closest_player.direction |> Vector.normalize() |> Vector.rotate_by_degrees(180)
 
       %{
         action: determine_player_move_action(bot_player, bot_state_machine, direction),
