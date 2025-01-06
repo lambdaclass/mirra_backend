@@ -56,7 +56,7 @@ defmodule BotManager.BotStateMachine do
         })
 
       :running_away ->
-        ran_away(bot_player, game_state, bot_state_machine)
+        run_away(bot_player, game_state, bot_state_machine)
     end
   end
 
@@ -186,7 +186,7 @@ defmodule BotManager.BotStateMachine do
     end
   end
 
-  defp ran_away(bot_player, game_state, bot_state_machine) do
+  defp run_away(bot_player, game_state, bot_state_machine) do
     players_with_distances = map_directions_to_players(game_state, bot_player, @vision_range)
 
     if Enum.empty?(players_with_distances) do
