@@ -37,8 +37,8 @@ defmodule GameBackend.Configuration do
   """
   def list_game_mode_configurations_by_version(version_id) do
     from(gm in GameModeConfiguration,
-        where: gm.version_id == ^version_id and is_nil(gm.deleted_at),
-        preload: [map_mode_params: :map]
+      where: gm.version_id == ^version_id and is_nil(gm.deleted_at),
+      preload: [map_mode_params: :map]
     )
     |> Repo.all()
   end
