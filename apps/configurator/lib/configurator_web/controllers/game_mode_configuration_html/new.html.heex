@@ -1,6 +1,6 @@
 <.header>
   New Game Mode configuration
-  <:subtitle>Use this form to manage game_mode_configuration records in your database.</:subtitle>
+  <:subtitle>Use this form to manage Game Mode Configuration records in your database.</:subtitle>
 </.header>
 
 <%= live_render(@conn, ConfiguratorWeb.GameModeConfigurationsLive.Form, session: %{"version" => @version}) %>
