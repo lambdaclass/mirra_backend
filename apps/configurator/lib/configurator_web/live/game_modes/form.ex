@@ -58,7 +58,7 @@ defmodule ConfiguratorWeb.GameModeConfigurationsLive.Form do
 
   def handle_event("remove_map_params", _params, socket) do
     changeset = socket.assigns.changeset
-    map_mode_params = Ecto.Changeset.get_field(changeset, :map_mode_params) |> IO.inspect() |> List.delete_at(-1)
+    map_mode_params = Ecto.Changeset.get_field(changeset, :map_mode_params) |> List.delete_at(-1)
     changeset = Ecto.Changeset.put_change(changeset, :map_mode_params, map_mode_params)
 
     {:noreply, assign(socket, :changeset, changeset)}
