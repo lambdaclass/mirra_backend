@@ -72,3 +72,19 @@ Using that as a trigger, we can change its direction.
 Whenever we determine that our bot isn’t moving, we’ll switch its direction by either 90, 180, or 270 degrees. This isn’t a solution, but rather a temporary patch until we implement a pathfinder.
 
 ![BotPath01](bot_path_03.png)
+
+
+### Action blocking
+
+This piece of code is located in apps/bot_manager/lib/game_socket_handler.ex. It may not be intuitive at first glance, but every time we send an action to the backend, we block the action from being sent until the specified time has passed. This can probably be removed, but we should add some time for the bots to 'think' instead.
+
+```elixir
+  defp update_block_attack_state(%{current_action: %{action: {:use_skill, _, _}, sent: false}} = state) do
+    Process.send_after(self(), :unblock_attack, Enum.random(500..1000))
+
+    Map.put(state, :attack_blocked, true)
+    |> Map.put(:current_action, Map.put(state.current_action, :sent, true))
+  end
+
+  defp update_block_attack_state(state), do: state
+```
