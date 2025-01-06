@@ -585,6 +585,7 @@ skills = [
   %{
     "name" => "muflus_crush",
     "type" => "basic",
+    "attack_type" => "melee",
     "cooldown_mechanism" => "stamina",
     "execution_duration_ms" => 450,
     "activation_delay_ms" => 150,
@@ -607,6 +608,7 @@ skills = [
   %{
     "name" => "muflus_leap",
     "type" => "ultimate",
+    "attack_type" => "ranged",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 8000,
     "execution_duration_ms" => 800,
@@ -635,6 +637,7 @@ skills = [
   %{
     "name" => "muflus_dash",
     "type" => "dash",
+    "attack_type" => "melee",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 4500,
     "execution_duration_ms" => 330,
@@ -656,6 +659,7 @@ skills = [
   %{
     "name" => "h4ck_slingshot",
     "type" => "basic",
+    "attack_type" => "ranged",
     "cooldown_mechanism" => "stamina",
     "execution_duration_ms" => 250,
     "activation_delay_ms" => 0,
@@ -671,6 +675,7 @@ skills = [
   %{
     "name" => "h4ck_dash",
     "type" => "dash",
+    "attack_type" => "melee",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 5500,
     "execution_duration_ms" => 250,
@@ -692,6 +697,7 @@ skills = [
   %{
     "name" => "h4ck_denial_of_service",
     "type" => "ultimate",
+    "attack_type" => "ranged",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 9000,
     "execution_duration_ms" => 200,
@@ -719,6 +725,7 @@ skills = [
   %{
     "name" => "uma_avenge",
     "type" => "basic",
+    "attack_type" => "melee",
     "cooldown_mechanism" => "stamina",
     "execution_duration_ms" => 500,
     "activation_delay_ms" => 0,
@@ -743,6 +750,7 @@ skills = [
   %{
     "name" => "uma_veil_radiance",
     "type" => "ultimate",
+    "attack_type" => "melee",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 9000,
     "execution_duration_ms" => 300,
@@ -766,6 +774,7 @@ skills = [
   %{
     "name" => "uma_sneak",
     "type" => "dash",
+    "attack_type" => "melee",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 5000,
     "execution_duration_ms" => 250,
@@ -787,6 +796,7 @@ skills = [
   %{
     "name" => "valt_singularity",
     "type" => "ultimate",
+    "attack_type" => "ranged",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 9000,
     "execution_duration_ms" => 500,
@@ -802,6 +812,7 @@ skills = [
   %{
     "name" => "valt_warp",
     "type" => "dash",
+    "attack_type" => "ranged",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 6000,
     "execution_duration_ms" => 450,
@@ -825,6 +836,7 @@ skills = [
   %{
     "name" => "valt_antimatter",
     "type" => "basic",
+    "attack_type" => "ranged",
     "cooldown_mechanism" => "stamina",
     "execution_duration_ms" => 450,
     "activation_delay_ms" => 150,
@@ -840,6 +852,7 @@ skills = [
   %{
     "name" => "kenzu_quickslash",
     "type" => "basic",
+    "attack_type" => "melee",
     "cooldown_mechanism" => "stamina",
     "reset_combo_ms" => 0,
     "is_combo?" => true,
@@ -857,6 +870,7 @@ skills = [
   %{
     "name" => "kenzu_quickslash_second",
     "type" => "basic",
+    "attack_type" => "melee",
     "cooldown_mechanism" => "stamina",
     "reset_combo_ms" => 800,
     "is_combo?" => true,
@@ -874,6 +888,7 @@ skills = [
   %{
     "name" => "kenzu_quickslash_third",
     "type" => "basic",
+    "attack_type" => "melee",
     "cooldown_mechanism" => "stamina",
     "reset_combo_ms" => 800,
     "is_combo?" => true,
@@ -891,6 +906,7 @@ skills = [
   %{
     "name" => "kenzu_whirlwind",
     "type" => "ultimate",
+    "attack_type" => "melee",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 9000,
     "execution_duration_ms" => 5000,
@@ -916,6 +932,7 @@ skills = [
   %{
     "name" => "kenzu_pounce",
     "type" => "dash",
+    "attack_type" => "melee",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 5000,
     "execution_duration_ms" => 350,
@@ -938,6 +955,7 @@ skills = [
   %{
     "name" => "otix_carbonthrow",
     "type" => "basic",
+    "attack_type" => "ranged",
     "cooldown_mechanism" => "stamina",
     "execution_duration_ms" => 450,
     "activation_delay_ms" => 150,
@@ -955,6 +973,7 @@ skills = [
   %{
     "name" => "otix_magma_rush",
     "type" => "dash",
+    "attack_type" => "melee",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 5500,
     "execution_duration_ms" => 750,
@@ -972,6 +991,7 @@ skills = [
   %{
     "name" => "otix_inferno",
     "type" => "ultimate",
+    "attack_type" => "melee",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 10000,
     "execution_duration_ms" => 1000,
@@ -989,6 +1009,7 @@ skills = [
   %{
     "name" => "shinko_toxic_onion",
     "type" => "basic",
+    "attack_type" => "ranged",
     "cooldown_mechanism" => "stamina",
     "execution_duration_ms" => 450,
     "activation_delay_ms" => 150,
@@ -1006,6 +1027,7 @@ skills = [
   %{
     "name" => "shinko_spore_dash",
     "type" => "dash",
+    "attack_type" => "melee",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 5500,
     "execution_duration_ms" => 250,
@@ -1023,6 +1045,7 @@ skills = [
   %{
     "name" => "shinko_PEB",
     "type" => "ultimate",
+    "attack_type" => "ranged",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 10000,
     "execution_duration_ms" => 525,
@@ -1040,6 +1063,7 @@ skills = [
   %{
     "name" => "uren_basic",
     "type" => "basic",
+    "attack_type" => "ranged",
     "cooldown_mechanism" => "stamina",
     "execution_duration_ms" => 450,
     "activation_delay_ms" => 150,
@@ -1055,6 +1079,7 @@ skills = [
   %{
     "name" => "uren_ultimate",
     "type" => "ultimate",
+    "attack_type" => "ranged",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 10000,
     "execution_duration_ms" => 1000,
@@ -1070,6 +1095,7 @@ skills = [
   %{
     "name" => "uren_dash",
     "type" => "dash",
+    "attack_type" => "melee",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 4000,
     "execution_duration_ms" => 250,
