@@ -2,6 +2,7 @@ defmodule BotManager.BotStateMachineChecker do
   @moduledoc """
   This module will take care of deciding what the bot will do on each deciding step
   """
+  @low_leath_percentage 40
   defstruct [
     # The bot state, these are the possible states: [:idling, :moving, :attacking, :running_away]
     :state,
@@ -50,7 +51,7 @@ defmodule BotManager.BotStateMachineChecker do
     {:player, bot_player_info} = bot_player.aditional_info
     health_percentage = bot_player_info.health * 100 / bot_player_info.max_health
 
-    health_percentage <= 40
+    health_percentage <= @low_leath_percentage
   end
 
   def bot_can_turn_aggresive?(bot_state_machine) do

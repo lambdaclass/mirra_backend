@@ -61,7 +61,7 @@ defmodule BotManager.BotStateMachine do
   end
 
   def decide_action(%{bot_state_machine: bot_state_machine}),
-    do: %{action: :stand, bot_state_machine: bot_state_machine}
+    do: %{action: :idling, bot_state_machine: bot_state_machine}
 
   def use_skill(%{attack_blocked: true, bot_player: bot_player, bot_state_machine: bot_state_machine}),
     do: %{action: {:move, bot_player.direction}, bot_state_machine: bot_state_machine}
