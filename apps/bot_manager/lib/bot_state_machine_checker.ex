@@ -41,7 +41,7 @@ defmodule BotManager.BotStateMachineChecker do
   def move_to_next_state(bot_player, bot_state_machine) do
     cond do
       bot_health_low?(bot_player) -> :running_away
-      bot_can_turn_aggresive?(bot_state_machine) -> :aggresive
+      bot_can_turn_aggresive?(bot_state_machine) -> :attacking
       true -> :moving
     end
   end

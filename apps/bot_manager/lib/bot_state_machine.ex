@@ -171,19 +171,12 @@ defmodule BotManager.BotStateMachine do
     y_distance = abs(bot_state_machine.current_position.y - bot_state_machine.previous_position.y)
 
     if x_distance < @min_distance_to_switch and y_distance < @min_distance_to_switch,
-      do: switch_based_on_position(bot_player),
+      do: switch_direction(bot_player),
       else: bot_player.direction
   end
 
-  defp switch_based_on_position(bot_player) do
-    position = bot_player.position
-
-    cond do
-      position.x < 0 && position.y < 0 -> Vector.rotate_by_degrees(bot_player.direction, 90)
-      position.x < 0 && position.y > 0 -> Vector.rotate_by_degrees(bot_player.direction, 180)
-      position.x > 0 && position.y > 0 -> Vector.rotate_by_degrees(bot_player.direction, 270)
-      true -> bot_player.direction
-    end
+  defp switch_direction(bot_player) do
+    bot_player.direction |> Vector.rotate_by_degrees(Enum.random([90, 180, 270]))
   end
 
   defp run_away(bot_player, game_state, bot_state_machine) do
