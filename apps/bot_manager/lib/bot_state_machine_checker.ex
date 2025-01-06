@@ -32,7 +32,7 @@ defmodule BotManager.BotStateMachineChecker do
       cap_for_ultimate_skill: 3,
       previous_position: nil,
       current_position: nil,
-      time_to_change_direction: 800,
+      time_to_change_direction: 1600,
       last_time_direction_changed: 0,
       current_time_in_direction: 0
     }
