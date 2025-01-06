@@ -9,6 +9,15 @@ defmodule GameClient.Protobuf.GameMode do
   field(:QUICK_GAME, 3)
 end
 
+defmodule GameClient.Protobuf.AttackType do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
+
+  field(:MELEE, 0)
+  field(:RANGED, 1)
+end
+
 defmodule GameClient.Protobuf.GameStatus do
   @moduledoc false
 
@@ -319,6 +328,12 @@ defmodule GameClient.Protobuf.ConfigSkill do
   field(:targetting_offset, 8, type: :float, json_name: "targettingOffset")
   field(:mana_cost, 9, type: :uint64, json_name: "manaCost")
   field(:is_combo, 10, type: :bool, json_name: "isCombo")
+
+  field(:attack_type, 11,
+    type: GameClient.Protobuf.AttackType,
+    json_name: "attackType",
+    enum: true
+  )
 end
 
 defmodule GameClient.Protobuf.GameState.PlayersEntry do
