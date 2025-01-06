@@ -1,5 +1,9 @@
 # Bots
 
+## Bot's flow
+
+![Image showing the workflow of any bot](bots_flow.png)
+
 ## Bot's State Machine
 
 ### What is a State Machine?
@@ -29,8 +33,10 @@ Bots will enter into the attacking mode if they have charged enough energy to us
 - Charging energvy for the Ultimate Skill
     They should've used the basic skill a certain amount of times, for instance, let's say 3.
 
-This is just a gimmick that was added to avoid bots shooting skills everywhere and with no reason.
+This is just a gimmick added to prevent bots from using their shooting skills randomly and without purpose. 
+When attacking, they will focus on the nearest player and won't consider health percentages or other factors, at least for now.
 
 #### Running Away
 
 Bots will transition to this state whenever their health drops below a certain percentage. For now, this threshold is set at 40%. In this state, bots will attempt to escape from players by running in the opposite direction of the closest one. This does not necessarily mean they will run away from the player attacking them.
+
