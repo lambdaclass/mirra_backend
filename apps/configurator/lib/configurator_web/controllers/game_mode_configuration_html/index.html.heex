@@ -1,0 +1,52 @@
+<.header>
+  Listing Game Mode configurations
+  <:actions>
+    <.link href={~p"/versions/#{@version_id}/game_mode_configurations/new"}>
+      <.button>New Game Mode configuration</.button>
+    </.link>
+  </:actions>
+</.header>
+<.table
+  id="game_mode_configurations"
+  rows={@game_mode_configurations}
+  row_click={&JS.navigate(~p"/versions/#{@version_id}/game_mode_configurations/#{&1}")}
+>
+  <:col :let={game_mode_configuration} label="Name"><%= game_mode_configuration.name %></:col>
+  <:col :let={game_mode_configuration} label="Zone enabled"><%= game_mode_configuration.zone_enabled %></:col>
+  <:col :let={game_mode_configuration} label="Bots enabled"><%= game_mode_configuration.bots_enabled %></:col>
+  <:col :let={game_mode_configuration} label="Match duration ms"><%= game_mode_configuration.match_duration_ms %></:col>
+  <:col :let={game_mode_configuration} label="Respawn time ms"><%= game_mode_configuration.respawn_time_ms %></:col>
+
+  <:action :let={game_mode_configuration}>
+    <.button type="button" phx-click={show_modal("map-params-#{game_mode_configuration.id}")}>Map params</.button>
+    <.modal id={"map-params-#{game_mode_configuration.id}"}>
+      <.header>
+        Map params for the game mode
+      </.header>
+      <%= for params <- GameBackend.Configuration.get_map_params_for_game_mode(game_mode_configuration.id) do %>
+        <.list>
+          <:item title="Map"><%= params.map.name %></:item>
+          <:item title="Amount of players"><%= params.amount_of_players %></:item>
+          <:item title="Solo - Initial Positions"><%= Jason.encode!(params.solo_initial_positions) %></:item>
+          <:item title="Team - Initial Positions"><%= Jason.encode!(params.team_initial_positions) %></:item>
+        </.list>
+      <% end %>
+    </.modal>
+  </:action>
+
+  <:action :let={game_mode_configuration}>
+    <div class="sr-only">
+      <.link navigate={~p"/versions/#{@version_id}/game_mode_configurations/#{game_mode_configuration}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/versions/#{@version_id}/game_mode_configurations/#{game_mode_configuration}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={game_mode_configuration}>
+    <.link
+      href={~p"/versions/#{@version_id}/game_mode_configurations/#{game_mode_configuration}"}
+      method="delete"
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
