@@ -190,12 +190,7 @@ defmodule BotManager.BotStateMachine do
     players_with_distances = map_directions_to_players(game_state, bot_player, @vision_range)
 
     if Enum.empty?(players_with_distances) do
-      direction = maybe_switch_direction(bot_player, bot_state_machine)
-
-      %{
-        action: determine_player_move_action(bot_player, bot_state_machine, direction),
-        bot_state_machine: bot_state_machine
-      }
+      move(bot_player, bot_state_machine)
     else
       closest_player = Enum.min_by(players_with_distances, & &1.distance)
 
