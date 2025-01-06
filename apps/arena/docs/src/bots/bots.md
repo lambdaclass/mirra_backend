@@ -40,3 +40,35 @@ When attacking, they will focus on the nearest player and won't consider health 
 
 Bots will transition to this state whenever their health drops below a certain percentage. For now, this threshold is set at 40%. In this state, bots will attempt to escape from players by running in the opposite direction of the closest one. This does not necessarily mean they will run away from the player attacking them.
 
+
+## Bot's gimmicks
+
+### Skills 
+
+As we said above, they use a mechanism of charging energy/cells before using an skill.
+
+
+### Avoiding collisions
+
+Since we don’t have a pathfinding solution yet, we need to implement a partial workaround to prevent bots from doing this.
+
+![Uren Colliding](bots_colliding.gif)
+
+They can't avoid obstacles, so if they're focusing on enemies or trying to move past an obstacle, they won't be able to because there's an obstacle between them and their objective.
+
+In order to address this, we’ve come up with the following approach.
+
+--- 
+
+Let’s assume our bot is stuck in that position.
+
+![BotPath01](bot_path_01.png)
+
+If we let time pass, we’ll realize that the bot is stuck in that position and isn’t moving. 
+Using that as a trigger, we can change its direction.
+
+![BotPath01](bot_path_02.png)
+
+Whenever we determine that our bot isn’t moving, we’ll switch its direction by either 90, 180, or 270 degrees. This isn’t a solution, but rather a temporary patch until we implement a pathfinder.
+
+![BotPath01](bot_path_03.png)
