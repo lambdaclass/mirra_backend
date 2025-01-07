@@ -2,7 +2,7 @@ defmodule BotManager.BotStateMachineChecker do
   @moduledoc """
   This module will take care of deciding what the bot will do on each deciding step
   """
-  @low_leath_percentage 40
+  @low_health_percentage 40
   defstruct [
     # The bot state, these are the possible states: [:idling, :moving, :attacking, :running_away]
     :state,
