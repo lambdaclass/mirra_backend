@@ -23,7 +23,7 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
     embeds_one(:square_wall, __MODULE__.SquareWall, on_replace: :delete)
 
     belongs_to(:version, Version)
-    has_many(:map_mode_params, GameBackend.CurseOfMirra.MapModeParams)
+    has_many(:map_mode_params, GameBackend.CurseOfMirra.MapModeParams, foreign_key: :map_id, on_replace: :delete)
 
     timestamps(type: :utc_datetime)
   end
