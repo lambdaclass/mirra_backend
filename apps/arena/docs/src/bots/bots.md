@@ -30,7 +30,7 @@ Bots will enter into the attacking mode if they have charged enough energy to us
 
 - Charging energy for the Basic Skill
     They should traverse a certain amount of units to gain 1 cell to use the basic skill
-- Charging energvy for the Ultimate Skill
+- Charging energy for the Ultimate Skill
     They should've used the basic skill a certain amount of times, for instance, let's say 3.
 
 This is just a gimmick added to prevent bots from using their shooting skills randomly and without purpose. 
