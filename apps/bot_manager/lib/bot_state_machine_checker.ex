@@ -53,7 +53,7 @@ defmodule BotManager.BotStateMachineChecker do
     {:player, bot_player_info} = bot_player.aditional_info
     health_percentage = bot_player_info.health * 100 / bot_player_info.max_health
 
-    health_percentage <= @low_leath_percentage
+    health_percentage <= @low_health_percentage
   end
 
   def bot_can_turn_aggresive?(bot_state_machine) do
