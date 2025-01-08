@@ -379,6 +379,8 @@ defmodule Arena.GameUpdater do
           state.game_config.game.end_game_interval_ms
         )
 
+        {:noreply, state}
+
       {:ended, winner_team} ->
         winner_team_ids = Enum.map(winner_team, fn {id, _player} -> id end)
         winner_team_number = Enum.random(winner_team) |> elem(1) |> get_in([:aditional_info, :team])
@@ -395,9 +397,8 @@ defmodule Arena.GameUpdater do
         ## sending messages, this way we give some time before making them crash
         ## (sending to inexistant process will cause them to crash)
         Process.send_after(self(), :game_ended, state.game_config.game.shutdown_game_wait_ms)
+        {:noreply, state}
     end
-
-    {:noreply, state}
   end
 
   # Shutdown
@@ -1867,7 +1868,7 @@ defmodule Arena.GameUpdater do
   end
 
   defp put_player_position(%{positions: positions} = game_state, player_id) do
-    next_position = Application.get_env(:arena, :players_needed_in_match) - Enum.count(positions)
+    next_position = Enum.count(game_state.players) - Enum.count(positions)
 
     {client_id, _player_id} =
       Enum.find(game_state.client_to_player_map, fn {_, map_player_id} -> map_player_id == player_id end)
