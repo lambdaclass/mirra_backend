@@ -32,8 +32,8 @@
   <.input field={f[:mana_cost]} type="number" label="Mana cost" />
 
   <.skill_mechanic_inputs skill_form={f} />
-  <%= if f.data.effect_to_apply do %>
-    <.effect_form form={f} field={:effect_to_apply} />
+  <%= if f.data.on_owner_effect do %>
+    <.effect_form form={f} field={:on_owner_effect} />
   <% end %>
 
   <:actions>

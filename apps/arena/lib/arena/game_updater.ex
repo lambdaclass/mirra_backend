@@ -464,17 +464,15 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info(
-        {:delayed_effect_application, _player_id, nil, _execution_duration_ms},
+        {:delayed_effect_application, _player_id, %{on_owner_effect: nil}},
         state
       ) do
     {:noreply, state}
   end
 
-  def handle_info({:delayed_effect_application, player_id, effect_to_apply, execution_duration_ms}, state) do
+  def handle_info({:delayed_effect_application, player_id, skill}, state) do
     player = Map.get(state.game_state.players, player_id)
-
-    game_state =
-      Skill.handle_skill_effects(state.game_state, player, effect_to_apply, execution_duration_ms)
+    game_state = Skill.handle_on_owner_effect(state.game_state, player, skill)
 
     {:noreply, %{state | game_state: game_state}}
   end
@@ -1689,7 +1687,7 @@ defmodule Arena.GameUpdater do
     if entity.id == pool.aditional_info.owner_id do
       game_state
     else
-      Effect.put_effect_to_entity(game_state, entity, pool.id, pool.aditional_info.effect_to_apply)
+      Effect.put_effect_to_entity(game_state, entity, pool.id, pool.aditional_info.effect)
     end
   end
 

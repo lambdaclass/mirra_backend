@@ -437,7 +437,7 @@ simple_shoot = %{
       "offset" => 0
     }
   ],
-  "on_collide_effects" => %{
+  "on_collide_effect" => %{
     "apply_effect_to_entity_type" => [
       "pool"
     ],
@@ -760,7 +760,7 @@ skills = [
         "offset" => 0
       }
     ],
-    "effect_to_apply" => invisible_effect,
+    "on_owner_effect" => invisible_effect,
     "version_id" => version.id
   },
   %{
@@ -910,7 +910,7 @@ skills = [
         "offset" => 0
       }
     ],
-    "effect_to_apply" => whirlwind_effect,
+    "on_owner_effect" => whirlwind_effect,
     "version_id" => version.id
   },
   %{

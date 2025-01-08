@@ -269,11 +269,7 @@ defmodule Arena.Game.Player do
           skill.activation_delay_ms
         )
 
-        Process.send_after(
-          self(),
-          {:delayed_effect_application, player.id, Map.get(skill, :effect_to_apply), skill.execution_duration_ms},
-          skill.activation_delay_ms
-        )
+        Process.send_after(self(), {:delayed_effect_application, player.id, skill}, skill.activation_delay_ms)
 
         player =
           add_action(player, action)

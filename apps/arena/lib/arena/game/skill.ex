@@ -377,8 +377,8 @@ defmodule Arena.Game.Skill do
     apply_damage_and_effects_to_entities(game_state, entity_player_owner, polygon_damage_area, polygon_hit.damage)
   end
 
-  def handle_skill_effects(game_state, player, effect, execution_duration_ms) do
-    Effect.put_effect_to_entity(game_state, player, player.id, execution_duration_ms, effect)
+  def handle_on_owner_effect(game_state, player, skill) do
+    Effect.put_effect_to_entity(game_state, player, player.id, skill.execution_duration_ms, skill.on_owner_effect)
   end
 
   defp calculate_angle_directions(amount, angle_between, base_direction) do
