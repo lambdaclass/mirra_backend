@@ -620,6 +620,7 @@ defmodule ArenaLoadTest.Serialization.Player do
 
   field(:match_position, 19, proto3_optional: true, type: :uint32, json_name: "matchPosition")
   field(:team, 20, proto3_optional: true, type: :uint32)
+  field(:max_health, 21, proto3_optional: true, type: :uint64, json_name: "maxHealth")
 end
 
 defmodule ArenaLoadTest.Serialization.Effect do

@@ -419,6 +419,7 @@ defmodule Arena.Entities do
     {:player,
      %Arena.Serialization.Player{
        health: get_in(entity, [:aditional_info, :health]),
+       max_health: get_in(entity, [:aditional_info, :max_health]),
        current_actions: get_in(entity, [:aditional_info, :current_actions]),
        kill_count: get_in(entity, [:aditional_info, :kill_count]),
        available_stamina: get_in(entity, [:aditional_info, :available_stamina]),
