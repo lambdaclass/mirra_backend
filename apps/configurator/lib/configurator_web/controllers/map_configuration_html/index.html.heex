@@ -8,7 +8,8 @@
 </.header>
 
 <.table id="map_configurations" rows={@map_configurations}>
-  <:col :let={map_configuration} label="name"><%= map_configuration.name %></:col>
+  <:col :let={map_configuration} label="Name"><%= map_configuration.name %></:col>
+  <:col :let={map_configuration} label="Active"><%= map_configuration.active %></:col>
   <:col :let={map_configuration} label="Radius"><%= map_configuration.radius %></:col>
   <:col :let={map_configuration} label="Initial positions">
     <%= if (Enum.empty?(map_configuration.initial_positions)) do %>
