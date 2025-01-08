@@ -1535,7 +1535,7 @@ fake_item_params = %{
   active: false,
   name: "fake_item",
   radius: 200.0,
-  effect_mechanics: [spawn_bomb_mechanic],
+  mechanics: [spawn_bomb_mechanic],
   version_id: version.id
 }
 
