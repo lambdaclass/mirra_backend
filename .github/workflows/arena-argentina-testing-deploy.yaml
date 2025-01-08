@@ -1,6 +1,9 @@
 name: "[TESTING-ARGENTINA-OFFICE] Deploy to Argentina Office Arena Testing"
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - deploy-fix
 
 jobs:
   build-deploy:
