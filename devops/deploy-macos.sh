@@ -76,7 +76,7 @@ export LOADTEST_CHILE_HOST=$LOADTEST_CHILE_HOST
 export NEWRELIC_APP_NAME=$NEWRELIC_APP_NAME
 export NEWRELIC_KEY=$NEWRELIC_KEY
 
-/Users/lambdaclass/arena/mirra_backend/_build/prod/rel/arena/bin/arena stop
+/Users/lambdaclass/arena/mirra_backend/_build/prod/rel/arena/bin/arena stop || true
 
 rm -rf ${HOME}/arena/mirra_backend
 mv /tmp/mirra_backend ${HOME}/arena/
