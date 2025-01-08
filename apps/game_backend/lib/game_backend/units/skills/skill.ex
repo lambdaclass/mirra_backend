@@ -63,7 +63,8 @@ defmodule GameBackend.Units.Skills.Skill do
     :stamina_cost,
     :mana_cost,
     :type,
-    :version_id
+    :version_id,
+    :attack_type
   ]
 
   @doc false
