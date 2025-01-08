@@ -18,6 +18,16 @@ defmodule BotManager.Protobuf.AttackType do
   field(:RANGED, 1)
 end
 
+defmodule BotManager.Protobuf.SkillType do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
+
+  field(:BASIC, 0)
+  field(:ULTIMATE, 1)
+  field(:DASH, 2)
+end
+
 defmodule BotManager.Protobuf.GameStatus do
   @moduledoc false
 
@@ -334,6 +344,8 @@ defmodule BotManager.Protobuf.ConfigSkill do
     json_name: "attackType",
     enum: true
   )
+
+  field(:skill_type, 12, type: BotManager.Protobuf.SkillType, json_name: "skillType", enum: true)
 end
 
 defmodule BotManager.Protobuf.GameState.PlayersEntry do

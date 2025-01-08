@@ -124,11 +124,18 @@ message ConfigSkill {
   uint64 mana_cost = 9;
   bool is_combo = 10;
   AttackType attack_type = 11;
+  SkillType skill_type = 12;
 }
 
 enum AttackType {
   MELEE = 0;
   RANGED = 1;
+}
+
+enum SkillType{
+  BASIC = 0;
+  ULTIMATE = 1;
+  DASH = 2;
 }
 
 

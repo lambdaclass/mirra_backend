@@ -18,6 +18,16 @@ defmodule Arena.Serialization.AttackType do
   field(:RANGED, 1)
 end
 
+defmodule Arena.Serialization.SkillType do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
+
+  field(:BASIC, 0)
+  field(:ULTIMATE, 1)
+  field(:DASH, 2)
+end
+
 defmodule Arena.Serialization.GameStatus do
   @moduledoc false
 
@@ -334,6 +344,8 @@ defmodule Arena.Serialization.ConfigSkill do
     json_name: "attackType",
     enum: true
   )
+
+  field(:skill_type, 12, type: Arena.Serialization.SkillType, json_name: "skillType", enum: true)
 end
 
 defmodule Arena.Serialization.GameState.PlayersEntry do

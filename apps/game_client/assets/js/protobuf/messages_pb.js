@@ -72,6 +72,7 @@ goog.exportSymbol('proto.PowerUpstatus', null, global);
 goog.exportSymbol('proto.Projectile', null, global);
 goog.exportSymbol('proto.ProjectileStatus', null, global);
 goog.exportSymbol('proto.SelectBounty', null, global);
+goog.exportSymbol('proto.SkillType', null, global);
 goog.exportSymbol('proto.ToggleBots', null, global);
 goog.exportSymbol('proto.ToggleZone', null, global);
 goog.exportSymbol('proto.Trap', null, global);
@@ -4643,7 +4644,8 @@ staminaCost: jspb.Message.getFieldWithDefault(msg, 7, 0),
 targettingOffset: jspb.Message.getFloatingPointFieldWithDefault(msg, 8, 0.0),
 manaCost: jspb.Message.getFieldWithDefault(msg, 9, 0),
 isCombo: jspb.Message.getBooleanFieldWithDefault(msg, 10, false),
-attackType: jspb.Message.getFieldWithDefault(msg, 11, 0)
+attackType: jspb.Message.getFieldWithDefault(msg, 11, 0),
+skillType: jspb.Message.getFieldWithDefault(msg, 12, 0)
   };
 
   if (includeInstance) {
@@ -4723,6 +4725,10 @@ proto.ConfigSkill.deserializeBinaryFromReader = function(msg, reader) {
     case 11:
       var value = /** @type {!proto.AttackType} */ (reader.readEnum());
       msg.setAttackType(value);
+      break;
+    case 12:
+      var value = /** @type {!proto.SkillType} */ (reader.readEnum());
+      msg.setSkillType(value);
       break;
     default:
       reader.skipField();
@@ -4827,6 +4833,13 @@ proto.ConfigSkill.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0.0) {
     writer.writeEnum(
       11,
+      f
+    );
+  }
+  f = message.getSkillType();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      12,
       f
     );
   }
@@ -5028,6 +5041,24 @@ proto.ConfigSkill.prototype.getAttackType = function() {
  */
 proto.ConfigSkill.prototype.setAttackType = function(value) {
   return jspb.Message.setProto3EnumField(this, 11, value);
+};
+
+
+/**
+ * optional SkillType skill_type = 12;
+ * @return {!proto.SkillType}
+ */
+proto.ConfigSkill.prototype.getSkillType = function() {
+  return /** @type {!proto.SkillType} */ (jspb.Message.getFieldWithDefault(this, 12, 0));
+};
+
+
+/**
+ * @param {!proto.SkillType} value
+ * @return {!proto.ConfigSkill} returns this
+ */
+proto.ConfigSkill.prototype.setSkillType = function(value) {
+  return jspb.Message.setProto3EnumField(this, 12, value);
 };
 
 
@@ -12560,6 +12591,15 @@ proto.GameMode = {
 proto.AttackType = {
   MELEE: 0,
   RANGED: 1
+};
+
+/**
+ * @enum {number}
+ */
+proto.SkillType = {
+  BASIC: 0,
+  ULTIMATE: 1,
+  DASH: 2
 };
 
 /**
