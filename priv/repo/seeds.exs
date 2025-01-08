@@ -1045,7 +1045,7 @@ skills = [
   %{
     "name" => "shinko_PEB",
     "type" => "ultimate",
-    "attack_type" => "ranged",
+    "attack_type" => "melee",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 10000,
     "execution_duration_ms" => 525,
