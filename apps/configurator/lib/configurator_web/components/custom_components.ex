@@ -7,8 +7,10 @@ defmodule ConfiguratorWeb.CustomComponents do
   use Phoenix.Component
 
   def effect_show(%{effect: nil} = assigns) do
+    label = Map.get(assigns, :label, "Show Effect")
+
     ~H"""
-    <.button type="button" phx-click={show_modal("no-effect")}>Show effect</.button>
+    <.button type="button" phx-click={show_modal("no-effect")}><%= label %></.button>
     <.modal id="no-effect">
       <h3>No Effect</h3>
     </.modal>
@@ -16,15 +18,17 @@ defmodule ConfiguratorWeb.CustomComponents do
   end
 
   def effect_show(assigns) do
+    label = Map.get(assigns, :label, "Show Effect")
+
     ~H"""
-    <.button type="button" phx-click={show_modal("effect-show-#{@effect.id}")}>Show effect</.button>
+    <.button type="button" phx-click={show_modal("effect-show-#{@effect.id}")}><%= label %></.button>
     <.modal id={"effect-show-#{@effect.id}"}>
       <.list>
         <:item title="Name"><%= @effect.name %></:item>
         <:item title="Duration ms"><%= @effect.duration_ms %></:item>
         <:item title="Remove on action"><%= @effect.remove_on_action %></:item>
         <:item title="Apply effect once"><%= @effect.one_time_application %></:item>
-        <:item title="Allow more that one effect instance"><%= @effect.allow_multiple_effects %></:item>
+        <:item title="Allow multiple instances"><%= @effect.allow_multiple_effects %></:item>
         <:item title="Consume projectile"><%= @effect.consume_projectile %></:item>
       </.list>
       <%= for effect_mechanic <- @effect.effect_mechanics do %>
@@ -58,7 +62,7 @@ defmodule ConfiguratorWeb.CustomComponents do
 
   def effect_form(assigns) do
     ~H"""
-    <.button type="button" phx-click={show_modal("effect-form")}>Edit effect</.button>
+    <.button type="button" phx-click={show_modal("effect-form")}><%= "Edit #{@field}" %></.button>
     <.modal id="effect-form">
       <.inputs_for :let={effect_f} field={@form[@field]}>
         <.input field={effect_f[:name]} type="text" label="Name" />
