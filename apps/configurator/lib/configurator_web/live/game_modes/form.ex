@@ -65,20 +65,7 @@ defmodule ConfiguratorWeb.GameModeConfigurationsLive.Form do
   end
 
   def handle_event("save", %{"game_mode_configuration" => game_mode_configuration_params}, socket) do
-    game_mode_configuration_params =
-      case Map.get(game_mode_configuration_params, "map_mode_params") do
-        nil ->
-          game_mode_configuration_params
-
-        map_mode_params ->
-          Map.put(
-            game_mode_configuration_params,
-            "map_mode_params",
-            Map.new(map_mode_params, fn {key, params} ->
-              {key, Utils.parse_json_params(params)}
-            end)
-          )
-      end
+    game_mode_configuration_params = parse_game_mode_params(game_mode_configuration_params)
 
     socket =
       case Configuration.create_game_mode_configuration(game_mode_configuration_params) do
@@ -103,6 +90,7 @@ defmodule ConfiguratorWeb.GameModeConfigurationsLive.Form do
 
   def handle_event("update", %{"game_mode_configuration" => game_mode_configuration_params}, socket) do
     game_mode_configuration = socket.assigns.game_mode_configuration
+    game_mode_configuration_params = parse_game_mode_params(game_mode_configuration_params)
 
     socket =
       case Configuration.update_game_mode_configuration(game_mode_configuration, game_mode_configuration_params) do
@@ -123,5 +111,21 @@ defmodule ConfiguratorWeb.GameModeConfigurationsLive.Form do
       end
 
     {:noreply, socket}
+  end
+
+  defp parse_game_mode_params(game_mode_params) do
+    case Map.get(game_mode_params, "map_mode_params") do
+      nil ->
+        game_mode_params
+
+      map_mode_params ->
+        Map.put(
+          game_mode_params,
+          "map_mode_params",
+          Map.new(map_mode_params, fn {key, params} ->
+            {key, Utils.parse_json_params(params)}
+          end)
+        )
+    end
   end
 end
