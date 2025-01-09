@@ -7,10 +7,10 @@ defmodule ConfiguratorWeb.CustomComponents do
   use Phoenix.Component
 
   def effect_show(%{effect: nil} = assigns) do
-    label = Map.get(assigns, :label, "Show Effect")
+    assigns = assign(assigns, :label, Map.get(assigns, :label, "Show Effect"))
 
     ~H"""
-    <.button type="button" phx-click={show_modal("no-effect")}><%= label %></.button>
+    <.button type="button" phx-click={show_modal("no-effect")}><%= @label %></.button>
     <.modal id="no-effect">
       <h3>No Effect</h3>
     </.modal>
@@ -18,10 +18,10 @@ defmodule ConfiguratorWeb.CustomComponents do
   end
 
   def effect_show(assigns) do
-    label = Map.get(assigns, :label, "Show Effect")
+    assigns = assign(assigns, :label, Map.get(assigns, :label, "Show Effect"))
 
     ~H"""
-    <.button type="button" phx-click={show_modal("effect-show-#{@effect.id}")}><%= label %></.button>
+    <.button type="button" phx-click={show_modal("effect-show-#{@effect.id}")}><%= @label %></.button>
     <.modal id={"effect-show-#{@effect.id}"}>
       <.list>
         <:item title="Name"><%= @effect.name %></:item>
