@@ -3,8 +3,10 @@ defmodule GameBackend.Configuration do
   Configuration context for GameBackend
   """
   import Ecto.Query
+  alias GameBackend.CurseOfMirra.MapModeParams
   alias Ecto.Multi
   alias GameBackend.CurseOfMirra.GameConfiguration
+  alias GameBackend.CurseOfMirra.GameModeConfiguration
   alias GameBackend.Units.Characters.Character
   alias GameBackend.CurseOfMirra.MapConfiguration
   alias GameBackend.ArenaServers.ArenaServer
@@ -25,6 +27,23 @@ defmodule GameBackend.Configuration do
   end
 
   @doc """
+  Returns the list of game_mode_configurations.
+
+  ## Examples
+
+      iex> list_game_mode_configurations()
+      [%GameModeConfiguration{}, ...]
+
+  """
+  def list_game_mode_configurations_by_version(version_id) do
+    from(gm in GameModeConfiguration,
+      where: gm.version_id == ^version_id and is_nil(gm.deleted_at),
+      preload: [map_mode_params: :map]
+    )
+    |> Repo.all()
+  end
+
+  @doc """
   Gets a single game_configuration.
 
   Raises `Ecto.NoResultsError` if the Game configuration does not exist.
@@ -41,6 +60,23 @@ defmodule GameBackend.Configuration do
   def get_game_configuration!(id), do: Repo.get!(GameConfiguration, id)
 
   @doc """
+  Gets a single game_mode_configuration.
+
+  Raises `Ecto.NoResultsError` if the GameMode configuration does not exist.
+
+  ## Examples
+
+      iex> get_game_mode_configuration!(123)
+      %GameConfiguration{}
+
+      iex> get_game_mode_configuration!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_game_mode_configuration!(id),
+    do: Repo.get!(GameModeConfiguration, id) |> Repo.preload(map_mode_params: :map)
+
+  @doc """
   Creates a game_configuration.
 
   ## Examples
@@ -55,6 +91,24 @@ defmodule GameBackend.Configuration do
   def create_game_configuration(attrs \\ %{}) do
     %GameConfiguration{}
     |> GameConfiguration.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Creates a game_mode_configuration.
+
+  ## Examples
+
+      iex> create_game_mode_configuration(%{field: value})
+      {:ok, %GameConfiguration{}}
+
+      iex> create_game_mode_configuration(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_game_mode_configuration(attrs \\ %{}) do
+    %GameModeConfiguration{}
+    |> GameModeConfiguration.changeset(attrs)
     |> Repo.insert()
   end
 
@@ -77,6 +131,24 @@ defmodule GameBackend.Configuration do
   end
 
   @doc """
+  Updates a game_mode_configuration.
+
+  ## Examples
+
+      iex> update_game_mode_configuration(game_configuration, %{field: new_value})
+      {:ok, %GameConfiguration{}}
+
+      iex> update_game_mode_configuration(game_configuration, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_game_mode_configuration(%GameModeConfiguration{} = game_mode_configuration, attrs) do
+    game_mode_configuration
+    |> GameModeConfiguration.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
   Deletes a game_configuration.
 
   ## Examples
@@ -93,6 +165,35 @@ defmodule GameBackend.Configuration do
   end
 
   @doc """
+  Deletes a game_mode_configuration.
+
+  ## Examples
+
+      iex> delete_game_mode_configuration(game_configuration)
+      {:ok, %GameConfiguration{}}
+
+      iex> delete_game_mode_configuration(game_configuration)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_game_mode_configuration(%GameModeConfiguration{} = game_mode_configuration) do
+    now = NaiveDateTime.utc_now()
+
+    Enum.reduce(game_mode_configuration.map_mode_params, Multi.new(), fn map_mode_params, multi ->
+      Multi.update(
+        multi,
+        {:map_mode_params, map_mode_params.id},
+        MapModeParams.delete_changeset(map_mode_params, %{deleted_at: now})
+      )
+    end)
+    |> Multi.update(
+      :delete_game_mode_configuration,
+      GameModeConfiguration.delete_changeset(game_mode_configuration, %{deleted_at: now})
+    )
+    |> Repo.transaction()
+  end
+
+  @doc """
   Returns an `%Ecto.Changeset{}` for tracking game_configuration changes.
 
   ## Examples
@@ -103,6 +204,19 @@ defmodule GameBackend.Configuration do
   """
   def change_game_configuration(%GameConfiguration{} = game_configuration, attrs \\ %{}) do
     GameConfiguration.changeset(game_configuration, attrs)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking game_mode_configuration changes.
+
+  ## Examples
+
+      iex> change_game_mode_configuration(game_mode_configuration)
+      %Ecto.Changeset{data: %GameModeConfiguration{}}
+
+  """
+  def change_game_mode_configuration(%GameModeConfiguration{} = game_mode_configuration, attrs \\ %{}) do
+    GameModeConfiguration.changeset(game_mode_configuration, attrs)
   end
 
   @doc """
@@ -502,5 +616,9 @@ defmodule GameBackend.Configuration do
   """
   def get_latest_game_configuration do
     Repo.one(from(g in GameConfiguration, order_by: [desc: g.inserted_at], limit: 1))
+  end
+
+  def get_map_params_for_game_mode(game_mode_id) do
+    Repo.all(from(m in MapModeParams, where: m.game_mode_id == ^game_mode_id, preload: :map))
   end
 end

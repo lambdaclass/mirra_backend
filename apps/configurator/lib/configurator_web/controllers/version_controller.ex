@@ -1,10 +1,9 @@
 defmodule ConfiguratorWeb.VersionController do
   use ConfiguratorWeb, :controller
-  alias ConfiguratorWeb.MapConfigurationController
 
   alias GameBackend.Configuration
   alias GameBackend.Configuration.Version
-  alias GameBackend.Utils
+  alias Configurator.Utils
 
   def index(conn, _params) do
     versions = Configuration.list_versions()
@@ -71,7 +70,7 @@ defmodule ConfiguratorWeb.VersionController do
             version_params,
             "map_configurations",
             Map.new(map_configurations, fn {key, map_params} ->
-              {key, MapConfigurationController.parse_json_params(map_params)}
+              {key, Utils.parse_json_params(map_params)}
             end)
           )
       end

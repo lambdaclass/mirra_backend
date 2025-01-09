@@ -4,7 +4,7 @@ defmodule ConfiguratorWeb.CharacterController do
   alias GameBackend.Units.Characters
   alias GameBackend.Units.Characters.Character
   alias GameBackend.Configuration
-  alias GameBackend.Utils
+  alias Configurator.Utils
 
   def index(conn, %{"version_id" => version_id}) do
     characters = Characters.get_curse_characters_by_version(version_id)

@@ -1,0 +1,82 @@
+<.simple_form :let={f} for={@changeset} action={@action} phx-submit={@action} phx-change="validate">
+  <.error :if={@changeset.action}>
+    Oops, something went wrong! Please check the errors below.
+  </.error>
+  <p class="font-semibold"><%= "Version: #{@version.name}" %></p>
+  <.input type="hidden" field={f[:version_id]} value={@version.id} />
+  <.input
+    field={f[:name]}
+    type="select"
+    label="Game Mode"
+    options={Ecto.Enum.values(GameBackend.CurseOfMirra.GameModeConfiguration, :name)}
+  />
+  <.input field={f[:zone_enabled]} type="checkbox" label="Zone enabled" />
+  <.input field={f[:bots_enabled]} type="checkbox" label="Bots enabled" />
+  <.input field={f[:match_duration_ms]} type="number" label="Match duration ms" />
+  <.input field={f[:respawn_time_ms]} type="number" label="Respawn time ms" />
+
+  <div class="flex items-center justify-between gap-6">
+    <span
+      phx-click="add_map_params"
+      class="relative phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3 text-sm font-semibold leading-6 text-white active:text-white/80"
+    >
+      Add Map Params
+    </span>
+  </div>
+
+  <div class="flex items-center justify-between gap-6">
+    <span
+      phx-click="remove_map_params"
+      class="relative phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3 text-sm font-semibold leading-6 text-white active:text-white/80"
+    >
+      Remove Map Params
+    </span>
+  </div>
+
+  <.inputs_for :let={fp} field={f[:map_mode_params]}>
+    <h3>Map specific params</h3>
+    <div class=" w-full rounded overflow-hidden shadow-lg">
+      <div class="px-6 py-4">
+        <.input
+          field={fp[:map_id]}
+          type="select"
+          label="Map"
+          prompt="Select a map"
+          options={Enum.map(@maps, &{&1.name, &1.id})}
+        />
+      </div>
+      <div class="px-6 py-4">
+        <.input field={fp[:amount_of_players]} type="number" label="Amount of players" />
+      </div>
+      <div class="px-6 py-4">
+        <.input
+          field={fp[:solo_initial_positions]}
+          type="textarea"
+          label="Solo mode positions"
+          value={Configurator.Utils.embed_to_string(fp[:solo_initial_positions].value)}
+        />
+      </div>
+      <div class="px-6 py-4">
+        <.input
+          field={fp[:team_initial_positions]}
+          type="textarea"
+          label="Team mode Positions"
+          value={Configurator.Utils.embed_to_string(fp[:team_initial_positions].value)}
+        />
+      </div>
+    </div>
+  </.inputs_for>
+
+  <:actions>
+    <.button>Save Game configuration</.button>
+  </:actions>
+</.simple_form>
+
+<div class="mt-16">
+  <.link
+    href={~p"/versions/#{@version}/game_mode_configurations"}
+    class="text-sm font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
+  >
+    <.icon name="hero-arrow-left-solid" class="h-3 w-3" /> Back to Game Mode Configurations
+  </.link>
+</div>
