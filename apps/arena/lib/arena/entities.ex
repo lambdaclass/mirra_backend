@@ -137,7 +137,7 @@ defmodule Arena.Entities do
         remove_on_collision: config_params.remove_on_collision,
         on_explode_mechanics: Map.get(config_params, :on_explode_mechanics),
         pull_immunity: true,
-        on_collide_effect: Map.get(config_params, :on_collide_effects)
+        on_collide_effect: Map.get(config_params, :on_collide_effect)
       },
       collides_with: []
     }
@@ -215,7 +215,7 @@ defmodule Arena.Entities do
       },
       is_moving: false,
       aditional_info: %{
-        effect_to_apply: pool_params.effect,
+        effect: pool_params.effect,
         owner_id: pool_params.owner.id,
         owner_team: pool_params.owner.aditional_info.team,
         effects: [],

@@ -92,8 +92,8 @@
           <.input type="hidden" field={fs[:game_id]} />
 
           <.skill_mechanic_inputs skill_form={fs} />
-          <%= if fs.data.effect_to_apply do %>
-            <.effect_form form={fs} field={:effect_to_apply} />
+          <%= if fs.data.on_owner_effect do %>
+            <.effect_form form={fs} field={:on_owner_effect} />
           <% end %>
         </div>
       </.inputs_for>

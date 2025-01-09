@@ -34,7 +34,7 @@ defmodule GameBackend.Units.Skills.Skill do
     belongs_to(:next_skill, __MODULE__)
     has_many(:mechanics, Mechanic, on_replace: :delete)
     belongs_to(:version, Version)
-    embeds_one(:effect_to_apply, GameBackend.CurseOfMirra.Effect)
+    embeds_one(:on_owner_effect, GameBackend.CurseOfMirra.Effect)
 
     timestamps()
   end
@@ -75,7 +75,7 @@ defmodule GameBackend.Units.Skills.Skill do
     |> foreign_key_constraint(:characters, name: "characters_basic_skill_id_fkey")
     |> cooldown_mechanism_validation()
     |> validate_combo_fields()
-    |> cast_embed(:effect_to_apply)
+    |> cast_embed(:on_owner_effect)
   end
 
   @doc false
@@ -88,7 +88,7 @@ defmodule GameBackend.Units.Skills.Skill do
     |> foreign_key_constraint(:characters, name: "characters_basic_skill_id_fkey")
     |> cooldown_mechanism_validation()
     |> validate_combo_fields()
-    |> cast_embed(:effect_to_apply)
+    |> cast_embed(:on_owner_effect)
   end
 
   defp cooldown_mechanism_validation(changeset) do

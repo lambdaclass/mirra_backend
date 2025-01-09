@@ -1,4 +1,4 @@
-defmodule GameBackend.Units.Skills.Mechanics.OnCollideEffects do
+defmodule GameBackend.Units.Skills.Mechanics.OnCollideEffect do
   @moduledoc """
   A schema that defines the strategy for how a mechanic will choose its targets.
   """
