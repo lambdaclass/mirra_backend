@@ -25,6 +25,10 @@
   <.input field={fp[:range]} type="number" label="Range" />
   <.input field={fp[:remove_on_collision]} type="checkbox" label="Remove on collision" />
   <.input field={fp[:speed]} type="number" label="speed" />
+  <.input field={fp[:activation_delay]} type="number" label="Pool activation delay" />
+  <.input field={fp[:activation_delay_ms]} type="number" label="Activation delay ms" />
+  <.input field={fp[:preparation_delay_ms]} type="number" label="Preparation delay ms" />
+  <.input field={fp[:activate_on_proximity]} type="checkbox" label="Activate on proximity" />
   <%= if fp.data.effect do %>
     <.effect_form form={fp} field={:effect} />
   <% end %>
