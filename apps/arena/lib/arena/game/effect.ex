@@ -18,6 +18,7 @@ defmodule Arena.Game.Effect do
     %{aditional_info: effects: [effect]}
 
   """
+  def put_effect_to_entity(game_state, _entity, _owner_id, nil), do: game_state
 
   def put_effect_to_entity(game_state, entity, owner_id, effect) do
     put_effect_to_entity(game_state, entity, owner_id, 0, effect)

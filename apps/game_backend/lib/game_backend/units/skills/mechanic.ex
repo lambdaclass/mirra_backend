@@ -41,7 +41,8 @@ defmodule GameBackend.Units.Skills.Mechanic do
         :teleport,
         :simple_shoot,
         :spawn_bomb,
-        :destination_shoot
+        :destination_shoot,
+        :heal
       ]
     )
 
