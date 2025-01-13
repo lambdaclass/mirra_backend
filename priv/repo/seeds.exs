@@ -1542,6 +1542,24 @@ fake_item_params = %{
 {:ok, _fake_item} =
   GameBackend.Items.create_consumable_item(fake_item_params)
 
+heal_mechanic =
+  %{
+    name: "heal_mechanic",
+    type: "heal",
+    amount: 200
+  }
+
+health_item_params = %{
+  active: true,
+  name: "health_item",
+  radius: 200.0,
+  mechanics: [heal_mechanic],
+  version_id: version.id
+}
+
+{:ok, _heal_item} =
+  GameBackend.Items.create_consumable_item(health_item_params)
+
 _slow_field_effect = %{
   name: "slow_field_effect",
   duration_ms: 9000,
