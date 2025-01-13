@@ -114,11 +114,11 @@ defmodule Arena.Matchmaking.GameLauncher do
     game_params = Map.put(game_params, :game_mode, :BATTLE)
 
     # We spawn bots only if there is one player
-    bot_clients =
-      case Enum.count(clients) do
-        1 -> get_bot_clients(Application.get_env(:arena, :players_needed_in_match) - Enum.count(clients))
-        _ -> []
-      end
+    bot_clients = []
+    # case Enum.count(clients) do
+    #   1 -> get_bot_clients(Application.get_env(:arena, :players_needed_in_match) - Enum.count(clients))
+    #   _ -> []
+    # end
 
     players = Utils.assign_teams_to_players(clients ++ bot_clients, :solo)
 

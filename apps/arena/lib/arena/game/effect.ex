@@ -276,6 +276,10 @@ defmodule Arena.Game.Effect do
     Entities.refresh_cooldowns(entity)
   end
 
+  defp do_effect_mechanics(_game_state, entity, effect, %{name: "silence"} = silence) do
+    Entities.silence(entity, effect.duration_ms)
+  end
+
   ## Sink for mechanics that don't do anything
   defp do_effect_mechanics(_game_state, entity, _effect, _mechanic) do
     entity

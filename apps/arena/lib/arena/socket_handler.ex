@@ -19,15 +19,16 @@ defmodule Arena.SocketHandler do
     # TODO: We need to mock user_id validation for bots (loadtests are broken).
     # Ideally we could have JWT that says "Bot Server".
     # https://github.com/lambdaclass/mirra_backend/issues/765
+    # if System.get_env("OVERRIDE_JWT") == "true" do
     user_id =
-      if System.get_env("OVERRIDE_JWT") == "true" do
-        :cowboy_req.binding(:client_id, req)
-      else
-        [{"gateway_jwt", jwt}] = :cowboy_req.parse_qs(req)
-        signer = GatewaySigner.get_signer()
-        {:ok, %{"sub" => user_id}} = GatewayTokenManager.verify_and_validate(jwt, signer)
-        user_id
-      end
+      :cowboy_req.binding(:client_id, req)
+
+    # else
+    #   [{"gateway_jwt", jwt}] = :cowboy_req.parse_qs(req)
+    #   signer = GatewaySigner.get_signer()
+    #   {:ok, %{"sub" => user_id}} = GatewayTokenManager.verify_and_validate(jwt, signer)
+    #   user_id
+    # end
 
     matchmaking_queue = Matchmaking.get_queue(:cowboy_req.binding(:mode, req))
     character_name = :cowboy_req.binding(:character_name, req)

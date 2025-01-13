@@ -91,7 +91,8 @@ defmodule Arena.Entities do
         bounty_completed: false,
         current_basic_animation: 0,
         item_effects_expires_at: now,
-        position: nil
+        position: nil,
+        blocked_actions: false
       },
       collides_with: []
     }
@@ -577,6 +578,12 @@ defmodule Arena.Entities do
 
   def refresh_cooldowns(%{category: :player} = entity) do
     put_in(entity, [:aditional_info, :cooldowns], %{})
+  end
+
+  def silence(%{category: :player} = entity, duration) do
+    Process.send(self(), {:block_actions, entity.id, true}, [])
+    Process.send_after(self(), {:block_actions, entity.id, false}, duration)
+    put_in(entity, [:aditional_info, :blocked_actions], true)
   end
 
   def obstacle_collisionable?(%{type: "dynamic"} = params) do

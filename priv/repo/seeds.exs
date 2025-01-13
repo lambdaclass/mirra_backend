@@ -235,6 +235,24 @@ default_version_params = %{
 {:ok, version} =
   GameBackend.Configuration.create_version(default_version_params)
 
+silence_effect =
+  %{
+    name: "silence_effect",
+    duration_ms: 9000,
+    remove_on_action: false,
+    one_time_application: true,
+    disabled_outside_pool: false,
+    allow_multiple_effects: true,
+    effect_mechanics: [
+      %{
+        name: "silence",
+        execute_multiple_times: true,
+        effect_delay_ms: 0
+      }
+    ],
+    version_id: version.id
+  }
+
 singularity_effect = %{
   name: "singularity",
   remove_on_action: false,
@@ -760,7 +778,7 @@ skills = [
         "offset" => 0
       }
     ],
-    "on_owner_effect" => invisible_effect,
+    "on_owner_effect" => silence_effect,
     "version_id" => version.id
   },
   %{
@@ -1370,7 +1388,7 @@ golden_clock_effect = %{
 }
 
 golden_clock_params = %{
-  active: true,
+  active: false,
   name: "golden_clock",
   radius: 200.0,
   mechanics: %{},
@@ -1400,7 +1418,7 @@ magic_boots_effect =
   }
 
 magic_boots_params = %{
-  active: true,
+  active: false,
   name: "magic_boots",
   radius: 200.0,
   mechanics: %{},
@@ -1429,7 +1447,7 @@ mirra_blessing_effect =
   }
 
 mirra_blessing_params = %{
-  active: true,
+  active: false,
   name: "mirra_blessing",
   radius: 200.0,
   mechanics: %{},
@@ -1477,7 +1495,7 @@ giant_effect =
   }
 
 giant_fruit_params = %{
-  active: true,
+  active: false,
   name: "giant",
   radius: 200.0,
   mechanics: %{},
@@ -1550,7 +1568,7 @@ heal_mechanic =
   }
 
 health_item_params = %{
-  active: true,
+  active: false,
   name: "health_item",
   radius: 200.0,
   mechanics: [heal_mechanic],
@@ -1559,6 +1577,28 @@ health_item_params = %{
 
 {:ok, _heal_item} =
   GameBackend.Items.create_consumable_item(health_item_params)
+
+silence_item_mechanic =
+  %{
+    name: "silence_item_mechanic",
+    type: "circle_hit",
+    damage: 0,
+    range: 800,
+    offset: 0,
+    effect: silence_effect,
+    version_id: version.id
+  }
+
+silence_item_params = %{
+  active: true,
+  name: "silence_item",
+  radius: 200.0,
+  mechanics: [silence_item_mechanic],
+  version_id: version.id
+}
+
+{:ok, _silence_item} =
+  GameBackend.Items.create_consumable_item(silence_item_params)
 
 _slow_field_effect = %{
   name: "slow_field_effect",

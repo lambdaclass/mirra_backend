@@ -675,6 +675,7 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info({:block_actions, player_id, value}, state) do
+    state = put_in(state, [:game_state, :players, player_id, :aditional_info, :blocked_actions], value)
     broadcast_player_block_actions(state.game_state.game_id, player_id, value)
     {:noreply, state}
   end
@@ -1440,11 +1441,15 @@ defmodule Arena.GameUpdater do
         ## TODO: We probably should have a better tiebraker (e.g. most kills, less deaths, etc),
         ##    but for now a random between the ones that were alive last is enough
         random_team = Map.get(players, Enum.random(last_players_ids)) |> list_same_team_players(players)
-        {:ended, random_team}
+        {:ongoing, Enum.map(players_alive, & &1.id)}
+
+      # {:ended, random_team}
 
       Enum.uniq(teams_alive) |> Enum.count() == 1 ->
         random_alive_player = Enum.random(players_alive)
-        {:ended, list_same_team_players(random_alive_player, players)}
+        {:ongoing, Enum.map(players_alive, & &1.id)}
+
+      # {:ended, list_same_team_players(random_alive_player, players)}
 
       true ->
         {:ongoing, Enum.map(players_alive, & &1.id)}

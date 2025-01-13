@@ -81,7 +81,8 @@ defmodule GameBackend.CurseOfMirra.Effect do
           :buff_pool,
           :refresh_stamina,
           :refresh_cooldowns,
-          :invisible
+          :invisible,
+          :silence
         ]
       )
 

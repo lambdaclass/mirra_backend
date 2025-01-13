@@ -19,16 +19,17 @@ defmodule Arena.GameSocketHandler do
     ## TODO: The only reason we need this is because bots are broken, we should fix bots in a way that
     ##  we don't need to pass a real user_id (or none at all). Ideally we could have JWT that says "Bot Server".
     client_id =
-      case :cowboy_req.parse_qs(req) do
-        [{"gateway_jwt", jwt}] ->
-          signer = GatewaySigner.get_signer()
-          {:ok, %{"sub" => user_id}} = GatewayTokenManager.verify_and_validate(jwt, signer)
-          user_id
+      :cowboy_req.binding(:client_id, req)
 
-        _ ->
-          :cowboy_req.binding(:client_id, req)
-      end
-      |> maybe_override_jwt(System.get_env("OVERRIDE_JWT"), req)
+    # case :cowboy_req.parse_qs(req) do
+    #   [{"gateway_jwt", jwt}] ->
+    #     signer = GatewaySigner.get_signer()
+    #     {:ok, %{"sub" => user_id}} = GatewayTokenManager.verify_and_validate(jwt, signer)
+    #     user_id
+
+    #   _ ->
+    # end
+    # |> maybe_override_jwt(System.get_env("OVERRIDE_JWT"), req)
 
     game_id = :cowboy_req.binding(:game_id, req)
     game_pid = game_id |> Base58.decode() |> :erlang.binary_to_term([:safe])
@@ -231,6 +232,8 @@ defmodule Arena.GameSocketHandler do
          %{block_movement: false} = state
        )
        when action in [:move] do
+    Logger.info("MOVING")
+
     case message do
       %{action_type: {:move, %{direction: direction}}, timestamp: timestamp} ->
         GameUpdater.move(
@@ -263,7 +266,10 @@ defmodule Arena.GameSocketHandler do
   end
 
   # We don't do anything in these messages, we already handle these actions when we have to in previous functions.
-  defp handle_decoded_message(%{action_type: {action, _}}, _state) when action in [:move, :attack, :use_item], do: nil
+  defp handle_decoded_message(%{action_type: {action, _}}, _state) when action in [:move, :attack, :use_item] do
+    Logger.info("BLOCKED ACTIONS")
+    nil
+  end
 
   defp handle_decoded_message(message, _) do
     Logger.info("Unexpected message: #{inspect(message)}")
