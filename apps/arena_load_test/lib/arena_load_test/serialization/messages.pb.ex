@@ -582,7 +582,7 @@ defmodule ArenaLoadTest.Serialization.Player.InventoryEntry do
 
   use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  field(:key, 1, type: :uint64)
+  field(:key, 1, type: :uint32)
   field(:value, 2, type: ArenaLoadTest.Serialization.Item)
 end
 
@@ -770,7 +770,7 @@ defmodule ArenaLoadTest.Serialization.UseItem do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  field(:item, 1, type: :uint64)
+  field(:item_position, 1, type: :uint64, json_name: "itemPosition")
 end
 
 defmodule ArenaLoadTest.Serialization.SelectBounty do

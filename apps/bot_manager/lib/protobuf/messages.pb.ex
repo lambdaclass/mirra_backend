@@ -535,7 +535,7 @@ defmodule BotManager.Protobuf.Player.InventoryEntry do
 
   use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  field(:key, 1, type: :uint64)
+  field(:key, 1, type: :uint32)
   field(:value, 2, type: BotManager.Protobuf.Item)
 end
 
@@ -712,7 +712,7 @@ defmodule BotManager.Protobuf.UseItem do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  field(:item, 1, type: :uint64)
+  field(:item_position, 1, type: :uint64, json_name: "itemPosition")
 end
 
 defmodule BotManager.Protobuf.SelectBounty do

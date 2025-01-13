@@ -7116,7 +7116,7 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
     case 21:
       var value = msg.getInventoryMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Item.deserializeBinaryFromReader, 0, new proto.Item());
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint32, jspb.BinaryReader.prototype.readMessage, proto.Item.deserializeBinaryFromReader, 0, new proto.Item());
          });
       break;
     default:
@@ -7289,7 +7289,7 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
   }
   f = message.getInventoryMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(21, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Item.serializeBinaryToWriter);
+    f.serializeBinary(21, writer, jspb.BinaryWriter.prototype.writeUint32, jspb.BinaryWriter.prototype.writeMessage, proto.Item.serializeBinaryToWriter);
   }
 };
 
@@ -8007,7 +8007,7 @@ proto.Player.prototype.hasMaxHealth = function() {
 
 
 /**
- * map<uint64, Item> inventory = 21;
+ * map<uint32, Item> inventory = 21;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<number,!proto.Item>}
@@ -10637,7 +10637,7 @@ proto.UseItem.prototype.toObject = function(opt_includeInstance) {
  */
 proto.UseItem.toObject = function(includeInstance, msg) {
   var f, obj = {
-item: jspb.Message.getFieldWithDefault(msg, 1, 0)
+itemPosition: jspb.Message.getFieldWithDefault(msg, 1, 0)
   };
 
   if (includeInstance) {
@@ -10676,7 +10676,7 @@ proto.UseItem.deserializeBinaryFromReader = function(msg, reader) {
     switch (field) {
     case 1:
       var value = /** @type {number} */ (reader.readUint64());
-      msg.setItem(value);
+      msg.setItemPosition(value);
       break;
     default:
       reader.skipField();
@@ -10707,7 +10707,7 @@ proto.UseItem.prototype.serializeBinary = function() {
  */
 proto.UseItem.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getItem();
+  f = message.getItemPosition();
   if (f !== 0) {
     writer.writeUint64(
       1,
@@ -10718,10 +10718,10 @@ proto.UseItem.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional uint64 item = 1;
+ * optional uint64 item_position = 1;
  * @return {number}
  */
-proto.UseItem.prototype.getItem = function() {
+proto.UseItem.prototype.getItemPosition = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
@@ -10730,7 +10730,7 @@ proto.UseItem.prototype.getItem = function() {
  * @param {number} value
  * @return {!proto.UseItem} returns this
  */
-proto.UseItem.prototype.setItem = function(value) {
+proto.UseItem.prototype.setItemPosition = function(value) {
   return jspb.Message.setProto3IntField(this, 1, value);
 };
 
