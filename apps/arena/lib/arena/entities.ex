@@ -77,7 +77,7 @@ defmodule Arena.Entities do
         forced_movement: false,
         power_ups: 0,
         power_up_damage_modifier: config.game.power_up_damage_modifier,
-        inventory: [],
+        inventory: %{},
         damage_immunity: false,
         pull_immunity: false,
         effects: [],
@@ -429,7 +429,7 @@ defmodule Arena.Entities do
        character_name: get_in(entity, [:aditional_info, :character_name]),
        effects: get_in(entity, [:aditional_info, :effects]),
        power_ups: get_in(entity, [:aditional_info, :power_ups]),
-       inventory: maybe_send_first_item(get_in(entity, [:aditional_info, :inventory])),
+       inventory: get_in(entity, [:aditional_info, :inventory]),
        cooldowns: get_in(entity, [:aditional_info, :cooldowns]),
        visible_players: get_in(entity, [:aditional_info, :visible_players]),
        on_bush: get_in(entity, [:aditional_info, :on_bush]),
@@ -598,13 +598,5 @@ defmodule Arena.Entities do
 
   def obstacle_collide_with_projectiles?(_params) do
     true
-  end
-
-  defp maybe_send_first_item(items) do
-    case items do
-      nil -> nil
-      [] -> nil
-      [item | _] -> item
-    end
   end
 end

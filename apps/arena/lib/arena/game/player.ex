@@ -355,25 +355,37 @@ defmodule Arena.Game.Player do
   end
 
   def store_item(player, item) do
-    items = get_in(player, [:aditional_info, :inventory]) ++ [item]
-    put_in(player, [:aditional_info, :inventory], items)
+    inventory = player.aditional_info.inventory
+
+    cond do
+      not Map.has_key?(inventory, 1) ->
+        put_in(player, [:aditional_info, :inventory, 1], item)
+
+      not Map.has_key?(inventory, 2) ->
+        put_in(player, [:aditional_info, :inventory, 2], item)
+
+      not Map.has_key?(inventory, 3) ->
+        put_in(player, [:aditional_info, :inventory, 3], item)
+    end
   end
 
   def inventory_full?(player) do
-    player.aditional_info.inventory != nil &&
-      length(player.aditional_info.inventory) >= 3
+    Enum.count(player.aditional_info.inventory) == 3
   end
 
-  def use_item(player, game_state) do
-    case player.aditional_info.inventory do
-      [] ->
+  def use_item(player, item_position, game_state) do
+    case Map.get(player.aditional_info.inventory, item_position) do
+      nil ->
         game_state
 
-      [item | items] ->
+      item ->
         game_state =
           Effect.put_effect_to_entity(game_state, player, player.id, item.effect)
           |> maybe_update_player_item_effects_expires_at(player, item.effect)
-          |> put_in([:players, player.id, :aditional_info, :inventory], items)
+          |> put_in(
+            [:players, player.id, :aditional_info, :inventory],
+            Map.delete(player.aditional_info.inventory, item_position)
+          )
 
         Item.do_mechanics(game_state, player, item.mechanics)
     end

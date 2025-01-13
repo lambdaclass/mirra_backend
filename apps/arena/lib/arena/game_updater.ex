@@ -35,8 +35,8 @@ defmodule Arena.GameUpdater do
     GenServer.cast(game_pid, {:attack, player_id, skill, skill_params, timestamp})
   end
 
-  def use_item(game_pid, player_id, timestamp) do
-    GenServer.cast(game_pid, {:use_item, player_id, timestamp})
+  def use_item(game_pid, player_id, item_position, timestamp) do
+    GenServer.cast(game_pid, {:use_item, player_id, item_position, timestamp})
   end
 
   def select_bounty(game_pid, player_id, bounty_quest_id) do
@@ -159,10 +159,10 @@ defmodule Arena.GameUpdater do
     {:noreply, %{state | game_state: game_state}}
   end
 
-  def handle_cast({:use_item, player_id, _timestamp}, state) do
+  def handle_cast({:use_item, player_id, item_position, _timestamp}, state) do
     game_state =
       get_in(state, [:game_state, :players, player_id])
-      |> Player.use_item(state.game_state)
+      |> Player.use_item(item_position, state.game_state)
 
     {:noreply, %{state | game_state: game_state}}
   end
