@@ -355,23 +355,25 @@ defmodule Arena.Game.Player do
   end
 
   def store_item(player, item) do
-    put_in(player, [:aditional_info, :inventory], item)
+    items = get_in(player, [:aditional_info, :inventory]) ++ [item]
+    put_in(player, [:aditional_info, :inventory], items)
   end
 
   def inventory_full?(player) do
-    player.aditional_info.inventory != nil
+    player.aditional_info.inventory != nil &&
+      length(player.aditional_info.inventory) >= 3
   end
 
   def use_item(player, game_state) do
     case player.aditional_info.inventory do
-      nil ->
+      [] ->
         game_state
 
-      item ->
+      [item | items] ->
         game_state =
           Effect.put_effect_to_entity(game_state, player, player.id, item.effect)
           |> maybe_update_player_item_effects_expires_at(player, item.effect)
-          |> put_in([:players, player.id, :aditional_info, :inventory], nil)
+          |> put_in([:players, player.id, :aditional_info, :inventory], items)
 
         Item.do_mechanics(game_state, player, item.mechanics)
     end
