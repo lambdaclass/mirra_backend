@@ -5,6 +5,7 @@ defmodule Arena.GameUpdater do
   """
 
   use GenServer
+  require Logger
   alias Arena.Game.Obstacle
   alias Arena.Game.Bounties
   alias Arena.GameBountiesFetcher
@@ -676,6 +677,7 @@ defmodule Arena.GameUpdater do
 
   def handle_info({:block_actions, player_id, value}, state) do
     state = put_in(state, [:game_state, :players, player_id, :aditional_info, :blocked_actions], value)
+    Logger.info("Blocked actions: #{value}")
     broadcast_player_block_actions(state.game_state.game_id, player_id, value)
     {:noreply, state}
   end

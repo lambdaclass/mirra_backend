@@ -246,7 +246,7 @@ silence_effect =
     effect_mechanics: [
       %{
         name: "silence",
-        execute_multiple_times: true,
+        execute_multiple_times: false,
         effect_delay_ms: 0
       }
     ],

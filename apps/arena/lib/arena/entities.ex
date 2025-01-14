@@ -439,7 +439,8 @@ defmodule Arena.Entities do
        mana: get_in(entity, [:aditional_info, :mana]),
        current_basic_animation: get_in(entity, [:aditional_info, :current_basic_animation]),
        match_position: get_in(entity, [:aditional_info, :match_position]),
-       team: get_in(entity, [:aditional_info, :team])
+       team: get_in(entity, [:aditional_info, :team]),
+       blocked_actions: get_in(entity, [:aditional_info, :blocked_actions])
      }}
   end
 
@@ -580,9 +581,11 @@ defmodule Arena.Entities do
     put_in(entity, [:aditional_info, :cooldowns], %{})
   end
 
-  def silence(%{category: :player} = entity, duration) do
+  def block_actions_for_duration(%{category: :player} = entity, duration) do
     Process.send(self(), {:block_actions, entity.id, true}, [])
+    IO.inspect("blocked_actions true", label: :aver_true)
     Process.send_after(self(), {:block_actions, entity.id, false}, duration)
+    IO.inspect("enqueue blocked_actions false", label: :aver_enqueue_false)
     put_in(entity, [:aditional_info, :blocked_actions], true)
   end
 

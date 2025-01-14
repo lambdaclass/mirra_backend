@@ -240,10 +240,18 @@ defmodule Arena.Game.Player do
 
         execution_duration = calculate_duration(skill, player.position, skill_direction, auto_aim?)
 
+        effect_name =
+          if is_nil(skill.on_owner_effect) do
+            "falopa"
+          else
+            skill.on_owner_effect.name
+          end
+
         # For dash and leaps, we rely the unblock action message to their stop action callbacks
-        is_dash_or_leap? = Enum.any?(skill.mechanics, fn mechanic -> mechanic.type in ["leap", "dash"] end)
+        is_dash_or_leap? = Enum.any?(skill.mechanics, fn mechanic -> mechanic.type in ["leap", "dash"] end) or effect_name == "silence_effect"
 
         unless is_dash_or_leap? do
+          IO.inspect("mande un block actions false por la skill")
           Process.send_after(self(), {:block_actions, player.id, false}, execution_duration)
         end
 
