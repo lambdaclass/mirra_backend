@@ -2030,7 +2030,7 @@ defmodule Arena.GameUpdater do
                 item = put_in(item, [:aditional_info, :pick_up_time], now + @standing_time)
                 {players_acc, Map.put(items_acc, item.id, item)}
 
-              item.aditional_info.pick_up_time < now ->
+              item.aditional_info.pick_up_time < now and not Player.inventory_full?(player) ->
                 player = Player.store_item(player, item.aditional_info)
                 {Map.put(players_acc, player.id, player), Map.delete(items_acc, item.id)}
 
@@ -2046,18 +2046,23 @@ defmodule Arena.GameUpdater do
   end
 
   defp remove_pickup_time_for_items(game_state) do
-    items = Enum.reduce(game_state.items, %{}, fn {item_id, item}, acc ->
-      players_colliding = Physics.check_collisions(item, game_state.players)
-      item = if Enum.empty?(players_colliding) do
-        put_in(item, [:aditional_info, :pick_up_time], nil)
-      else
-        item
-      end
+    items =
+      Enum.reduce(game_state.items, %{}, fn {item_id, item}, acc ->
+        players_colliding = Physics.check_collisions(item, game_state.players)
 
-      Map.put(acc, item_id, item)
-    end)
+        item =
+          if Enum.empty?(players_colliding) do
+            put_in(item, [:aditional_info, :pick_up_time], nil)
+          else
+            item
+          end
+
+        Map.put(acc, item_id, item)
+      end)
+
     put_in(game_state, [:items], items)
   end
+
   ##########################
   # End Helpers
   ##########################

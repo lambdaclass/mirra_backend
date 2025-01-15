@@ -371,6 +371,9 @@ defmodule Arena.Game.Player do
 
       not Map.has_key?(inventory, 3) ->
         put_in(player, [:aditional_info, :inventory, 3], item)
+
+      true ->
+        player
     end
   end
 
@@ -393,7 +396,6 @@ defmodule Arena.Game.Player do
           )
 
         Item.do_mechanics(game_state, player, item.mechanics)
-        |> put_in([:players, player.id, :aditional_info, :inventory], nil)
     end
   end
 
