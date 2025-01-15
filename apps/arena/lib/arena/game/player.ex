@@ -390,12 +390,12 @@ defmodule Arena.Game.Player do
         game_state =
           Effect.put_effect_to_entity(game_state, player, player.id, item.effect)
           |> maybe_update_player_item_effects_expires_at(player, item.effect)
-          |> put_in(
-            [:players, player.id, :aditional_info, :inventory],
-            Map.delete(player.aditional_info.inventory, item_position)
-          )
 
         Item.do_mechanics(game_state, player, item.mechanics)
+        |> put_in(
+          [:players, player.id, :aditional_info, :inventory],
+          Map.delete(player.aditional_info.inventory, item_position)
+        )
     end
   end
 
