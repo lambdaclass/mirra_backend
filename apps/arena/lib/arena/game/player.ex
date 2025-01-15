@@ -138,6 +138,11 @@ defmodule Arena.Game.Player do
     put_in(player, [:aditional_info, :stamina_interval], stamina_interval)
   end
 
+  def add_health(player, heal_amount) do
+    new_health = min(player.aditional_info.health + heal_amount, player.aditional_info.max_health)
+    Map.update(player, :aditional_info, player, fn info -> %{info | health: new_health} end)
+  end
+
   def recover_mana(player) do
     now = System.monotonic_time(:millisecond)
     time_since_last = now - player.aditional_info.mana_recovery_time_last_at
@@ -388,6 +393,7 @@ defmodule Arena.Game.Player do
           )
 
         Item.do_mechanics(game_state, player, item.mechanics)
+        |> put_in([:players, player.id, :aditional_info, :inventory], nil)
     end
   end
 
