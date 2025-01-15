@@ -20,6 +20,8 @@ defmodule Arena.GameUpdater do
   alias Phoenix.PubSub
   alias Arena.Game.Trap
 
+  @standing_time 3000
+
   ##########################
   # API
   ##########################
@@ -246,9 +248,10 @@ defmodule Arena.GameUpdater do
       |> Effect.apply_effect_mechanic_to_entities()
       # Players
       |> move_players()
+      |> update_pick_up_time_for_items()
       |> reduce_players_cooldowns(delta_time)
       |> recover_mana()
-      |> resolve_players_collisions_with_items()
+      # |> resolve_players_collisions_with_items()
       |> resolve_projectiles_effects_on_collisions()
       |> apply_zone_damage_to_players(state.game_config.game)
       |> update_visible_players(state.game_config)
@@ -273,6 +276,8 @@ defmodule Arena.GameUpdater do
       # Deathmatch
       |> add_players_to_respawn_queue(state.game_config)
       |> respawn_players(state.game_config)
+      # Items
+      |> remove_pickup_time_for_items()
 
     {:ok, state_diff} = diff(state.last_broadcasted_game_state, game_state)
 
@@ -2009,6 +2014,50 @@ defmodule Arena.GameUpdater do
 
   defp respawn_players(game_state, _game_config), do: game_state
 
+  defp update_pick_up_time_for_items(game_state) do
+    {players, items} =
+      Enum.reduce(game_state.players, {game_state.players, game_state.items}, fn {_player_id, player},
+                                                                                 {players_acc, items_acc} ->
+        case find_collided_item(player.collides_with, items_acc) do
+          nil ->
+            {players_acc, items_acc}
+
+          item ->
+            now = System.monotonic_time(:millisecond)
+
+            cond do
+              is_nil(item.aditional_info.pick_up_time) ->
+                item = put_in(item, [:aditional_info, :pick_up_time], now + @standing_time)
+                {players_acc, Map.put(items_acc, item.id, item)}
+
+              item.aditional_info.pick_up_time < now ->
+                player = Player.store_item(player, item.aditional_info)
+                {Map.put(players_acc, player.id, player), Map.delete(items_acc, item.id)}
+
+              true ->
+                {players_acc, items_acc}
+            end
+        end
+      end)
+
+    game_state
+    |> Map.put(:players, players)
+    |> Map.put(:items, items)
+  end
+
+  defp remove_pickup_time_for_items(game_state) do
+    items = Enum.reduce(game_state.items, %{}, fn {item_id, item}, acc ->
+      players_colliding = Physics.check_collisions(item, game_state.players)
+      item = if Enum.empty?(players_colliding) do
+        put_in(item, [:aditional_info, :pick_up_time], nil)
+      else
+        item
+      end
+
+      Map.put(acc, item_id, item)
+    end)
+    put_in(game_state, [:items], items)
+  end
   ##########################
   # End Helpers
   ##########################

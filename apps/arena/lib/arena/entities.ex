@@ -246,7 +246,8 @@ defmodule Arena.Entities do
         name: config.name,
         effect: config.effect,
         mechanics: config.mechanics,
-        pull_immunity: true
+        pull_immunity: true,
+        pick_up_time: nil
       }
     }
   end
