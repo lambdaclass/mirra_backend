@@ -248,7 +248,9 @@ defmodule Arena.Game.Player do
           end
 
         # For dash and leaps, we rely the unblock action message to their stop action callbacks
-        is_dash_or_leap? = Enum.any?(skill.mechanics, fn mechanic -> mechanic.type in ["leap", "dash"] end) or effect_name == "silence_effect"
+        is_dash_or_leap? =
+          Enum.any?(skill.mechanics, fn mechanic -> mechanic.type in ["leap", "dash"] end) or
+            effect_name == "silence_effect"
 
         unless is_dash_or_leap? do
           IO.inspect("mande un block actions false por la skill")

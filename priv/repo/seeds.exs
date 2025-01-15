@@ -235,24 +235,6 @@ default_version_params = %{
 {:ok, version} =
   GameBackend.Configuration.create_version(default_version_params)
 
-silence_effect =
-  %{
-    name: "silence_effect",
-    duration_ms: 9000,
-    remove_on_action: false,
-    one_time_application: true,
-    disabled_outside_pool: false,
-    allow_multiple_effects: true,
-    effect_mechanics: [
-      %{
-        name: "silence",
-        execute_multiple_times: false,
-        effect_delay_ms: 0
-      }
-    ],
-    version_id: version.id
-  }
-
 singularity_effect = %{
   name: "singularity",
   remove_on_action: false,
@@ -778,7 +760,7 @@ skills = [
         "offset" => 0
       }
     ],
-    "on_owner_effect" => silence_effect,
+    "on_owner_effect" => invisible_effect,
     "version_id" => version.id
   },
   %{
@@ -1322,7 +1304,7 @@ game_configuration_1 = %{
   zone_start_interval_ms: 20000,
   zone_damage_interval_ms: 1000,
   zone_damage: 40,
-  item_spawn_interval_ms: 5000,
+  item_spawn_interval_ms: 250,
   bots_enabled: true,
   zone_enabled: true,
   bounties_options_amount: 3,
@@ -1577,6 +1559,24 @@ health_item_params = %{
 
 {:ok, _heal_item} =
   GameBackend.Items.create_consumable_item(health_item_params)
+
+silence_effect =
+  %{
+    name: "silence_effect",
+    duration_ms: 9000,
+    remove_on_action: false,
+    one_time_application: true,
+    disabled_outside_pool: false,
+    allow_multiple_effects: true,
+    effect_mechanics: [
+      %{
+        name: "silence",
+        execute_multiple_times: false,
+        effect_delay_ms: 0
+      }
+    ],
+    version_id: version.id
+  }
 
 silence_item_mechanic =
   %{

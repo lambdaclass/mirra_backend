@@ -245,12 +245,16 @@ defmodule Arena.Entities do
       is_moving: false,
       aditional_info: %{
         name: config.name,
+        mechanic_radius: get_range_from_mechanic(config.mechanics),
         effect: config.effect,
         mechanics: config.mechanics,
         pull_immunity: true
       }
     }
   end
+
+  defp get_range_from_mechanic([]), do: nil
+  defp get_range_from_mechanic([mechanic | _]), do: mechanic.range
 
   def new_obstacle(id, %{position: position, radius: radius, shape: shape, vertices: vertices} = params) do
     %{
@@ -485,7 +489,8 @@ defmodule Arena.Entities do
   def maybe_add_custom_info(entity) when entity.category == :item do
     {:item,
      %Arena.Serialization.Item{
-       name: get_in(entity, [:aditional_info, :name])
+       name: get_in(entity, [:aditional_info, :name]),
+       mechanic_radius: get_in(entity, [:aditional_info, :mechanic_radius])
      }}
   end
 
