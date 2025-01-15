@@ -20,7 +20,7 @@ defmodule Arena.GameUpdater do
   alias Phoenix.PubSub
   alias Arena.Game.Trap
 
-  @standing_time 3000
+  @standing_time 2500
 
   ##########################
   # API
