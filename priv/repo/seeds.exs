@@ -1583,7 +1583,7 @@ silence_item_mechanic =
     name: "silence_item_mechanic",
     type: "circle_hit",
     damage: 0,
-    range: 800,
+    range: 1_000,
     offset: 0,
     effect: silence_effect,
     version_id: version.id
