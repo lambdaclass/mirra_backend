@@ -640,6 +640,7 @@ defmodule ArenaLoadTest.Serialization.Item do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:name, 2, proto3_optional: true, type: :string)
+  field(:mechanic_radius, 3, proto3_optional: true, type: :float, json_name: "mechanicRadius")
 end
 
 defmodule ArenaLoadTest.Serialization.Projectile do

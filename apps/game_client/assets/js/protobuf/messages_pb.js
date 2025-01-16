@@ -8316,7 +8316,8 @@ proto.Item.prototype.toObject = function(opt_includeInstance) {
  */
 proto.Item.toObject = function(includeInstance, msg) {
   var f, obj = {
-name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+mechanicRadius: (f = jspb.Message.getOptionalFloatingPointField(msg, 3)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -8357,6 +8358,10 @@ proto.Item.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setName(value);
       break;
+    case 3:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setMechanicRadius(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -8390,6 +8395,13 @@ proto.Item.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeString(
       2,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeFloat(
+      3,
       f
     );
   }
@@ -8429,6 +8441,42 @@ proto.Item.prototype.clearName = function() {
  */
 proto.Item.prototype.hasName = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional float mechanic_radius = 3;
+ * @return {number}
+ */
+proto.Item.prototype.getMechanicRadius = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 3, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.Item} returns this
+ */
+proto.Item.prototype.setMechanicRadius = function(value) {
+  return jspb.Message.setField(this, 3, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.Item} returns this
+ */
+proto.Item.prototype.clearMechanicRadius = function() {
+  return jspb.Message.setField(this, 3, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.Item.prototype.hasMechanicRadius = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 

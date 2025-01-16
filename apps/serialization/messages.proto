@@ -230,6 +230,7 @@ message Effect {
 
 message Item {
   optional string name = 2;
+  optional float mechanic_radius = 3;
 }
 
 message Projectile {
