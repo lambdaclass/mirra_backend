@@ -1560,6 +1560,46 @@ health_item_params = %{
 {:ok, _heal_item} =
   GameBackend.Items.create_consumable_item(health_item_params)
 
+silence_effect =
+  %{
+    name: "silence_effect",
+    duration_ms: 9000,
+    remove_on_action: false,
+    one_time_application: true,
+    disabled_outside_pool: false,
+    allow_multiple_effects: true,
+    effect_mechanics: [
+      %{
+        name: "silence",
+        execute_multiple_times: false,
+        effect_delay_ms: 0
+      }
+    ],
+    version_id: version.id
+  }
+
+silence_item_mechanic =
+  %{
+    name: "silence_item_mechanic",
+    type: "circle_hit",
+    damage: 0,
+    range: 1_000,
+    offset: 0,
+    effect: silence_effect,
+    version_id: version.id
+  }
+
+silence_item_params = %{
+  active: true,
+  name: "silence_item",
+  radius: 200.0,
+  mechanics: [silence_item_mechanic],
+  version_id: version.id
+}
+
+{:ok, _silence_item} =
+  GameBackend.Items.create_consumable_item(silence_item_params)
+
 _slow_field_effect = %{
   name: "slow_field_effect",
   duration_ms: 9000,
