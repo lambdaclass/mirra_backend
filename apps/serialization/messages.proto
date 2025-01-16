@@ -219,6 +219,7 @@ message Player {
   optional uint32 match_position = 19;
   optional uint32 team = 20;
   optional uint64 max_health = 21;
+  optional bool blocked_actions = 22;
 }
 
 message Effect {

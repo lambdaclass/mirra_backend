@@ -675,6 +675,7 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info({:block_actions, player_id, value}, state) do
+    state = put_in(state, [:game_state, :players, player_id, :aditional_info, :blocked_actions], value)
     broadcast_player_block_actions(state.game_state.game_id, player_id, value)
     {:noreply, state}
   end

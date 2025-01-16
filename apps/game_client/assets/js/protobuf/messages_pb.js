@@ -6990,7 +6990,8 @@ mana: (f = jspb.Message.getField(msg, 17)) == null ? undefined : f,
 currentBasicAnimation: (f = jspb.Message.getField(msg, 18)) == null ? undefined : f,
 matchPosition: (f = jspb.Message.getField(msg, 19)) == null ? undefined : f,
 team: (f = jspb.Message.getField(msg, 20)) == null ? undefined : f,
-maxHealth: (f = jspb.Message.getField(msg, 21)) == null ? undefined : f
+maxHealth: (f = jspb.Message.getField(msg, 21)) == null ? undefined : f,
+blockedActions: (f = jspb.Message.getBooleanField(msg, 22)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -7117,6 +7118,10 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
     case 21:
       var value = /** @type {number} */ (reader.readUint64());
       msg.setMaxHealth(value);
+      break;
+    case 22:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setBlockedActions(value);
       break;
     default:
       reader.skipField();
@@ -7291,6 +7296,13 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeUint64(
       21,
+      f
+    );
+  }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 22));
+  if (f != null) {
+    writer.writeBool(
+      22,
       f
     );
   }
@@ -8043,6 +8055,42 @@ proto.Player.prototype.clearMaxHealth = function() {
  */
 proto.Player.prototype.hasMaxHealth = function() {
   return jspb.Message.getField(this, 21) != null;
+};
+
+
+/**
+ * optional bool blocked_actions = 22;
+ * @return {boolean}
+ */
+proto.Player.prototype.getBlockedActions = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 22, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setBlockedActions = function(value) {
+  return jspb.Message.setField(this, 22, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.clearBlockedActions = function() {
+  return jspb.Message.setField(this, 22, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.Player.prototype.hasBlockedActions = function() {
+  return jspb.Message.getField(this, 22) != null;
 };
 
 

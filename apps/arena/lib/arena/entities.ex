@@ -91,7 +91,8 @@ defmodule Arena.Entities do
         bounty_completed: false,
         current_basic_animation: 0,
         item_effects_expires_at: now,
-        position: nil
+        position: nil,
+        blocked_actions: false
       },
       collides_with: []
     }
@@ -438,7 +439,8 @@ defmodule Arena.Entities do
        mana: get_in(entity, [:aditional_info, :mana]),
        current_basic_animation: get_in(entity, [:aditional_info, :current_basic_animation]),
        match_position: get_in(entity, [:aditional_info, :match_position]),
-       team: get_in(entity, [:aditional_info, :team])
+       team: get_in(entity, [:aditional_info, :team]),
+       blocked_actions: get_in(entity, [:aditional_info, :blocked_actions])
      }}
   end
 
@@ -577,6 +579,12 @@ defmodule Arena.Entities do
 
   def refresh_cooldowns(%{category: :player} = entity) do
     put_in(entity, [:aditional_info, :cooldowns], %{})
+  end
+
+  def block_actions_for_duration(%{category: :player} = entity, duration) do
+    Process.send(self(), {:block_actions, entity.id, true}, [])
+    Process.send_after(self(), {:block_actions, entity.id, false}, duration)
+    put_in(entity, [:aditional_info, :blocked_actions], true)
   end
 
   def obstacle_collisionable?(%{type: "dynamic"} = params) do
