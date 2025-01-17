@@ -6935,7 +6935,7 @@ proto.Entity.prototype.hasTrap = function() {
  * @private {!Array<number>}
  * @const
  */
-proto.Player.repeatedFields_ = [3,10,13];
+proto.Player.repeatedFields_ = [3,10,12];
 
 
 
@@ -6980,17 +6980,17 @@ characterName: (f = jspb.Message.getField(msg, 8)) == null ? undefined : f,
 powerUps: (f = jspb.Message.getField(msg, 9)) == null ? undefined : f,
 effectsList: jspb.Message.toObjectList(msg.getEffectsList(),
     proto.Effect.toObject, includeInstance),
-inventory: (f = msg.getInventory()) && proto.Item.toObject(includeInstance, f),
 cooldownsMap: (f = msg.getCooldownsMap()) ? f.toObject(includeInstance, undefined) : [],
-visiblePlayersList: (f = jspb.Message.getRepeatedField(msg, 13)) == null ? undefined : f,
-onBush: (f = jspb.Message.getBooleanField(msg, 14)) == null ? undefined : f,
-forcedMovement: (f = jspb.Message.getBooleanField(msg, 15)) == null ? undefined : f,
-bountyCompleted: (f = jspb.Message.getBooleanField(msg, 16)) == null ? undefined : f,
-mana: (f = jspb.Message.getField(msg, 17)) == null ? undefined : f,
-currentBasicAnimation: (f = jspb.Message.getField(msg, 18)) == null ? undefined : f,
-matchPosition: (f = jspb.Message.getField(msg, 19)) == null ? undefined : f,
-team: (f = jspb.Message.getField(msg, 20)) == null ? undefined : f,
-maxHealth: (f = jspb.Message.getField(msg, 21)) == null ? undefined : f
+visiblePlayersList: (f = jspb.Message.getRepeatedField(msg, 12)) == null ? undefined : f,
+onBush: (f = jspb.Message.getBooleanField(msg, 13)) == null ? undefined : f,
+forcedMovement: (f = jspb.Message.getBooleanField(msg, 14)) == null ? undefined : f,
+bountyCompleted: (f = jspb.Message.getBooleanField(msg, 15)) == null ? undefined : f,
+mana: (f = jspb.Message.getField(msg, 16)) == null ? undefined : f,
+currentBasicAnimation: (f = jspb.Message.getField(msg, 17)) == null ? undefined : f,
+matchPosition: (f = jspb.Message.getField(msg, 18)) == null ? undefined : f,
+team: (f = jspb.Message.getField(msg, 19)) == null ? undefined : f,
+maxHealth: (f = jspb.Message.getField(msg, 20)) == null ? undefined : f,
+inventoryMap: (f = msg.getInventoryMap()) ? f.toObject(includeInstance, proto.Item.toObject) : []
   };
 
   if (includeInstance) {
@@ -7070,53 +7070,54 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
       msg.addEffects(value);
       break;
     case 11:
-      var value = new proto.Item;
-      reader.readMessage(value,proto.Item.deserializeBinaryFromReader);
-      msg.setInventory(value);
-      break;
-    case 12:
       var value = msg.getCooldownsMap();
       reader.readMessage(value, function(message, reader) {
         jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readUint64, null, "", 0);
          });
       break;
-    case 13:
+    case 12:
       var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedUint64() : [reader.readUint64()]);
       for (var i = 0; i < values.length; i++) {
         msg.addVisiblePlayers(values[i]);
       }
       break;
-    case 14:
+    case 13:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setOnBush(value);
       break;
-    case 15:
+    case 14:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setForcedMovement(value);
       break;
-    case 16:
+    case 15:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setBountyCompleted(value);
       break;
-    case 17:
+    case 16:
       var value = /** @type {number} */ (reader.readUint64());
       msg.setMana(value);
       break;
-    case 18:
+    case 17:
       var value = /** @type {number} */ (reader.readUint32());
       msg.setCurrentBasicAnimation(value);
       break;
-    case 19:
+    case 18:
       var value = /** @type {number} */ (reader.readUint32());
       msg.setMatchPosition(value);
       break;
-    case 20:
+    case 19:
       var value = /** @type {number} */ (reader.readUint32());
       msg.setTeam(value);
       break;
-    case 21:
+    case 20:
       var value = /** @type {number} */ (reader.readUint64());
       msg.setMaxHealth(value);
+      break;
+    case 21:
+      var value = msg.getInventoryMap();
+      reader.readMessage(value, function(message, reader) {
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint32, jspb.BinaryReader.prototype.readMessage, proto.Item.deserializeBinaryFromReader, 0, new proto.Item());
+         });
       break;
     default:
       reader.skipField();
@@ -7219,21 +7220,20 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
       proto.Effect.serializeBinaryToWriter
     );
   }
-  f = message.getInventory();
-  if (f != null) {
-    writer.writeMessage(
-      11,
-      f,
-      proto.Item.serializeBinaryToWriter
-    );
-  }
   f = message.getCooldownsMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(12, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeUint64);
+    f.serializeBinary(11, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeUint64);
   }
   f = message.getVisiblePlayersList();
   if (f.length > 0) {
     writer.writePackedUint64(
+      12,
+      f
+    );
+  }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 13));
+  if (f != null) {
+    writer.writeBool(
       13,
       f
     );
@@ -7252,16 +7252,16 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 16));
+  f = /** @type {number} */ (jspb.Message.getField(message, 16));
   if (f != null) {
-    writer.writeBool(
+    writer.writeUint64(
       16,
       f
     );
   }
   f = /** @type {number} */ (jspb.Message.getField(message, 17));
   if (f != null) {
-    writer.writeUint64(
+    writer.writeUint32(
       17,
       f
     );
@@ -7282,17 +7282,14 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
   }
   f = /** @type {number} */ (jspb.Message.getField(message, 20));
   if (f != null) {
-    writer.writeUint32(
+    writer.writeUint64(
       20,
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 21));
-  if (f != null) {
-    writer.writeUint64(
-      21,
-      f
-    );
+  f = message.getInventoryMap(true);
+  if (f && f.getLength() > 0) {
+    f.serializeBinary(21, writer, jspb.BinaryWriter.prototype.writeUint32, jspb.BinaryWriter.prototype.writeMessage, proto.Item.serializeBinaryToWriter);
   }
 };
 
@@ -7662,51 +7659,14 @@ proto.Player.prototype.clearEffectsList = function() {
 
 
 /**
- * optional Item inventory = 11;
- * @return {?proto.Item}
- */
-proto.Player.prototype.getInventory = function() {
-  return /** @type{?proto.Item} */ (
-    jspb.Message.getWrapperField(this, proto.Item, 11));
-};
-
-
-/**
- * @param {?proto.Item|undefined} value
- * @return {!proto.Player} returns this
-*/
-proto.Player.prototype.setInventory = function(value) {
-  return jspb.Message.setWrapperField(this, 11, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.Player} returns this
- */
-proto.Player.prototype.clearInventory = function() {
-  return this.setInventory(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.Player.prototype.hasInventory = function() {
-  return jspb.Message.getField(this, 11) != null;
-};
-
-
-/**
- * map<string, uint64> cooldowns = 12;
+ * map<string, uint64> cooldowns = 11;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<string,number>}
  */
 proto.Player.prototype.getCooldownsMap = function(opt_noLazyCreate) {
   return /** @type {!jspb.Map<string,number>} */ (
-      jspb.Message.getMapField(this, 12, opt_noLazyCreate,
+      jspb.Message.getMapField(this, 11, opt_noLazyCreate,
       null));
 };
 
@@ -7722,11 +7682,11 @@ proto.Player.prototype.clearCooldownsMap = function() {
 
 
 /**
- * repeated uint64 visible_players = 13;
+ * repeated uint64 visible_players = 12;
  * @return {!Array<number>}
  */
 proto.Player.prototype.getVisiblePlayersList = function() {
-  return /** @type {!Array<number>} */ (jspb.Message.getRepeatedField(this, 13));
+  return /** @type {!Array<number>} */ (jspb.Message.getRepeatedField(this, 12));
 };
 
 
@@ -7735,7 +7695,7 @@ proto.Player.prototype.getVisiblePlayersList = function() {
  * @return {!proto.Player} returns this
  */
 proto.Player.prototype.setVisiblePlayersList = function(value) {
-  return jspb.Message.setField(this, 13, value || []);
+  return jspb.Message.setField(this, 12, value || []);
 };
 
 
@@ -7745,7 +7705,7 @@ proto.Player.prototype.setVisiblePlayersList = function(value) {
  * @return {!proto.Player} returns this
  */
 proto.Player.prototype.addVisiblePlayers = function(value, opt_index) {
-  return jspb.Message.addToRepeatedField(this, 13, value, opt_index);
+  return jspb.Message.addToRepeatedField(this, 12, value, opt_index);
 };
 
 
@@ -7759,11 +7719,11 @@ proto.Player.prototype.clearVisiblePlayersList = function() {
 
 
 /**
- * optional bool on_bush = 14;
+ * optional bool on_bush = 13;
  * @return {boolean}
  */
 proto.Player.prototype.getOnBush = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 14, false));
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 13, false));
 };
 
 
@@ -7772,7 +7732,7 @@ proto.Player.prototype.getOnBush = function() {
  * @return {!proto.Player} returns this
  */
 proto.Player.prototype.setOnBush = function(value) {
-  return jspb.Message.setField(this, 14, value);
+  return jspb.Message.setField(this, 13, value);
 };
 
 
@@ -7781,7 +7741,7 @@ proto.Player.prototype.setOnBush = function(value) {
  * @return {!proto.Player} returns this
  */
 proto.Player.prototype.clearOnBush = function() {
-  return jspb.Message.setField(this, 14, undefined);
+  return jspb.Message.setField(this, 13, undefined);
 };
 
 
@@ -7790,16 +7750,16 @@ proto.Player.prototype.clearOnBush = function() {
  * @return {boolean}
  */
 proto.Player.prototype.hasOnBush = function() {
-  return jspb.Message.getField(this, 14) != null;
+  return jspb.Message.getField(this, 13) != null;
 };
 
 
 /**
- * optional bool forced_movement = 15;
+ * optional bool forced_movement = 14;
  * @return {boolean}
  */
 proto.Player.prototype.getForcedMovement = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 15, false));
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 14, false));
 };
 
 
@@ -7808,7 +7768,7 @@ proto.Player.prototype.getForcedMovement = function() {
  * @return {!proto.Player} returns this
  */
 proto.Player.prototype.setForcedMovement = function(value) {
-  return jspb.Message.setField(this, 15, value);
+  return jspb.Message.setField(this, 14, value);
 };
 
 
@@ -7817,7 +7777,7 @@ proto.Player.prototype.setForcedMovement = function(value) {
  * @return {!proto.Player} returns this
  */
 proto.Player.prototype.clearForcedMovement = function() {
-  return jspb.Message.setField(this, 15, undefined);
+  return jspb.Message.setField(this, 14, undefined);
 };
 
 
@@ -7826,16 +7786,16 @@ proto.Player.prototype.clearForcedMovement = function() {
  * @return {boolean}
  */
 proto.Player.prototype.hasForcedMovement = function() {
-  return jspb.Message.getField(this, 15) != null;
+  return jspb.Message.getField(this, 14) != null;
 };
 
 
 /**
- * optional bool bounty_completed = 16;
+ * optional bool bounty_completed = 15;
  * @return {boolean}
  */
 proto.Player.prototype.getBountyCompleted = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 16, false));
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 15, false));
 };
 
 
@@ -7844,7 +7804,7 @@ proto.Player.prototype.getBountyCompleted = function() {
  * @return {!proto.Player} returns this
  */
 proto.Player.prototype.setBountyCompleted = function(value) {
-  return jspb.Message.setField(this, 16, value);
+  return jspb.Message.setField(this, 15, value);
 };
 
 
@@ -7853,7 +7813,7 @@ proto.Player.prototype.setBountyCompleted = function(value) {
  * @return {!proto.Player} returns this
  */
 proto.Player.prototype.clearBountyCompleted = function() {
-  return jspb.Message.setField(this, 16, undefined);
+  return jspb.Message.setField(this, 15, undefined);
 };
 
 
@@ -7862,16 +7822,16 @@ proto.Player.prototype.clearBountyCompleted = function() {
  * @return {boolean}
  */
 proto.Player.prototype.hasBountyCompleted = function() {
-  return jspb.Message.getField(this, 16) != null;
+  return jspb.Message.getField(this, 15) != null;
 };
 
 
 /**
- * optional uint64 mana = 17;
+ * optional uint64 mana = 16;
  * @return {number}
  */
 proto.Player.prototype.getMana = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 17, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 16, 0));
 };
 
 
@@ -7880,7 +7840,7 @@ proto.Player.prototype.getMana = function() {
  * @return {!proto.Player} returns this
  */
 proto.Player.prototype.setMana = function(value) {
-  return jspb.Message.setField(this, 17, value);
+  return jspb.Message.setField(this, 16, value);
 };
 
 
@@ -7889,7 +7849,7 @@ proto.Player.prototype.setMana = function(value) {
  * @return {!proto.Player} returns this
  */
 proto.Player.prototype.clearMana = function() {
-  return jspb.Message.setField(this, 17, undefined);
+  return jspb.Message.setField(this, 16, undefined);
 };
 
 
@@ -7898,16 +7858,16 @@ proto.Player.prototype.clearMana = function() {
  * @return {boolean}
  */
 proto.Player.prototype.hasMana = function() {
-  return jspb.Message.getField(this, 17) != null;
+  return jspb.Message.getField(this, 16) != null;
 };
 
 
 /**
- * optional uint32 current_basic_animation = 18;
+ * optional uint32 current_basic_animation = 17;
  * @return {number}
  */
 proto.Player.prototype.getCurrentBasicAnimation = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 18, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 17, 0));
 };
 
 
@@ -7916,7 +7876,7 @@ proto.Player.prototype.getCurrentBasicAnimation = function() {
  * @return {!proto.Player} returns this
  */
 proto.Player.prototype.setCurrentBasicAnimation = function(value) {
-  return jspb.Message.setField(this, 18, value);
+  return jspb.Message.setField(this, 17, value);
 };
 
 
@@ -7925,7 +7885,7 @@ proto.Player.prototype.setCurrentBasicAnimation = function(value) {
  * @return {!proto.Player} returns this
  */
 proto.Player.prototype.clearCurrentBasicAnimation = function() {
-  return jspb.Message.setField(this, 18, undefined);
+  return jspb.Message.setField(this, 17, undefined);
 };
 
 
@@ -7934,16 +7894,16 @@ proto.Player.prototype.clearCurrentBasicAnimation = function() {
  * @return {boolean}
  */
 proto.Player.prototype.hasCurrentBasicAnimation = function() {
-  return jspb.Message.getField(this, 18) != null;
+  return jspb.Message.getField(this, 17) != null;
 };
 
 
 /**
- * optional uint32 match_position = 19;
+ * optional uint32 match_position = 18;
  * @return {number}
  */
 proto.Player.prototype.getMatchPosition = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 19, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 18, 0));
 };
 
 
@@ -7952,7 +7912,7 @@ proto.Player.prototype.getMatchPosition = function() {
  * @return {!proto.Player} returns this
  */
 proto.Player.prototype.setMatchPosition = function(value) {
-  return jspb.Message.setField(this, 19, value);
+  return jspb.Message.setField(this, 18, value);
 };
 
 
@@ -7961,7 +7921,7 @@ proto.Player.prototype.setMatchPosition = function(value) {
  * @return {!proto.Player} returns this
  */
 proto.Player.prototype.clearMatchPosition = function() {
-  return jspb.Message.setField(this, 19, undefined);
+  return jspb.Message.setField(this, 18, undefined);
 };
 
 
@@ -7970,16 +7930,16 @@ proto.Player.prototype.clearMatchPosition = function() {
  * @return {boolean}
  */
 proto.Player.prototype.hasMatchPosition = function() {
-  return jspb.Message.getField(this, 19) != null;
+  return jspb.Message.getField(this, 18) != null;
 };
 
 
 /**
- * optional uint32 team = 20;
+ * optional uint32 team = 19;
  * @return {number}
  */
 proto.Player.prototype.getTeam = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 20, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 19, 0));
 };
 
 
@@ -7988,7 +7948,7 @@ proto.Player.prototype.getTeam = function() {
  * @return {!proto.Player} returns this
  */
 proto.Player.prototype.setTeam = function(value) {
-  return jspb.Message.setField(this, 20, value);
+  return jspb.Message.setField(this, 19, value);
 };
 
 
@@ -7997,7 +7957,7 @@ proto.Player.prototype.setTeam = function(value) {
  * @return {!proto.Player} returns this
  */
 proto.Player.prototype.clearTeam = function() {
-  return jspb.Message.setField(this, 20, undefined);
+  return jspb.Message.setField(this, 19, undefined);
 };
 
 
@@ -8006,16 +7966,16 @@ proto.Player.prototype.clearTeam = function() {
  * @return {boolean}
  */
 proto.Player.prototype.hasTeam = function() {
-  return jspb.Message.getField(this, 20) != null;
+  return jspb.Message.getField(this, 19) != null;
 };
 
 
 /**
- * optional uint64 max_health = 21;
+ * optional uint64 max_health = 20;
  * @return {number}
  */
 proto.Player.prototype.getMaxHealth = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 21, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 20, 0));
 };
 
 
@@ -8024,7 +7984,7 @@ proto.Player.prototype.getMaxHealth = function() {
  * @return {!proto.Player} returns this
  */
 proto.Player.prototype.setMaxHealth = function(value) {
-  return jspb.Message.setField(this, 21, value);
+  return jspb.Message.setField(this, 20, value);
 };
 
 
@@ -8033,7 +7993,7 @@ proto.Player.prototype.setMaxHealth = function(value) {
  * @return {!proto.Player} returns this
  */
 proto.Player.prototype.clearMaxHealth = function() {
-  return jspb.Message.setField(this, 21, undefined);
+  return jspb.Message.setField(this, 20, undefined);
 };
 
 
@@ -8042,7 +8002,30 @@ proto.Player.prototype.clearMaxHealth = function() {
  * @return {boolean}
  */
 proto.Player.prototype.hasMaxHealth = function() {
-  return jspb.Message.getField(this, 21) != null;
+  return jspb.Message.getField(this, 20) != null;
+};
+
+
+/**
+ * map<uint32, Item> inventory = 21;
+ * @param {boolean=} opt_noLazyCreate Do not create the map if
+ * empty, instead returning `undefined`
+ * @return {!jspb.Map<number,!proto.Item>}
+ */
+proto.Player.prototype.getInventoryMap = function(opt_noLazyCreate) {
+  return /** @type {!jspb.Map<number,!proto.Item>} */ (
+      jspb.Message.getMapField(this, 21, opt_noLazyCreate,
+      proto.Item));
+};
+
+
+/**
+ * Clears values from the map. The map will be non-null.
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.clearInventoryMap = function() {
+  this.getInventoryMap().clear();
+  return this;
 };
 
 
@@ -8268,7 +8251,8 @@ proto.Item.prototype.toObject = function(opt_includeInstance) {
  */
 proto.Item.toObject = function(includeInstance, msg) {
   var f, obj = {
-name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+pickUpTimeElapsedMap: (f = msg.getPickUpTimeElapsedMap()) ? f.toObject(includeInstance, undefined) : []
   };
 
   if (includeInstance) {
@@ -8309,6 +8293,12 @@ proto.Item.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setName(value);
       break;
+    case 3:
+      var value = msg.getPickUpTimeElapsedMap();
+      reader.readMessage(value, function(message, reader) {
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint32, jspb.BinaryReader.prototype.readUint32, null, 0, 0);
+         });
+      break;
     default:
       reader.skipField();
       break;
@@ -8344,6 +8334,10 @@ proto.Item.serializeBinaryToWriter = function(message, writer) {
       2,
       f
     );
+  }
+  f = message.getPickUpTimeElapsedMap(true);
+  if (f && f.getLength() > 0) {
+    f.serializeBinary(3, writer, jspb.BinaryWriter.prototype.writeUint32, jspb.BinaryWriter.prototype.writeUint32);
   }
 };
 
@@ -8381,6 +8375,29 @@ proto.Item.prototype.clearName = function() {
  */
 proto.Item.prototype.hasName = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * map<uint32, uint32> pick_up_time_elapsed = 3;
+ * @param {boolean=} opt_noLazyCreate Do not create the map if
+ * empty, instead returning `undefined`
+ * @return {!jspb.Map<number,number>}
+ */
+proto.Item.prototype.getPickUpTimeElapsedMap = function(opt_noLazyCreate) {
+  return /** @type {!jspb.Map<number,number>} */ (
+      jspb.Message.getMapField(this, 3, opt_noLazyCreate,
+      null));
+};
+
+
+/**
+ * Clears values from the map. The map will be non-null.
+ * @return {!proto.Item} returns this
+ */
+proto.Item.prototype.clearPickUpTimeElapsedMap = function() {
+  this.getPickUpTimeElapsedMap().clear();
+  return this;
 };
 
 
@@ -10654,7 +10671,7 @@ proto.UseItem.prototype.toObject = function(opt_includeInstance) {
  */
 proto.UseItem.toObject = function(includeInstance, msg) {
   var f, obj = {
-item: jspb.Message.getFieldWithDefault(msg, 1, 0)
+itemPosition: jspb.Message.getFieldWithDefault(msg, 1, 0)
   };
 
   if (includeInstance) {
@@ -10693,7 +10710,7 @@ proto.UseItem.deserializeBinaryFromReader = function(msg, reader) {
     switch (field) {
     case 1:
       var value = /** @type {number} */ (reader.readUint64());
-      msg.setItem(value);
+      msg.setItemPosition(value);
       break;
     default:
       reader.skipField();
@@ -10724,7 +10741,7 @@ proto.UseItem.prototype.serializeBinary = function() {
  */
 proto.UseItem.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getItem();
+  f = message.getItemPosition();
   if (f !== 0) {
     writer.writeUint64(
       1,
@@ -10735,10 +10752,10 @@ proto.UseItem.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional uint64 item = 1;
+ * optional uint64 item_position = 1;
  * @return {number}
  */
-proto.UseItem.prototype.getItem = function() {
+proto.UseItem.prototype.getItemPosition = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
@@ -10747,7 +10764,7 @@ proto.UseItem.prototype.getItem = function() {
  * @param {number} value
  * @return {!proto.UseItem} returns this
  */
-proto.UseItem.prototype.setItem = function(value) {
+proto.UseItem.prototype.setItemPosition = function(value) {
   return jspb.Message.setProto3IntField(this, 1, value);
 };
 

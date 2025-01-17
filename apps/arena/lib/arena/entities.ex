@@ -77,7 +77,7 @@ defmodule Arena.Entities do
         forced_movement: false,
         power_ups: 0,
         power_up_damage_modifier: config.game.power_up_damage_modifier,
-        inventory: nil,
+        inventory: %{},
         damage_immunity: false,
         pull_immunity: false,
         effects: [],
@@ -246,7 +246,10 @@ defmodule Arena.Entities do
         name: config.name,
         effect: config.effect,
         mechanics: config.mechanics,
-        pull_immunity: true
+        pick_up_time_elapsed: %{},
+        pick_up_time_initial_timestamp: %{},
+        pull_immunity: true,
+        pick_up_time: nil
       }
     }
   end
@@ -483,7 +486,8 @@ defmodule Arena.Entities do
   def maybe_add_custom_info(entity) when entity.category == :item do
     {:item,
      %Arena.Serialization.Item{
-       name: get_in(entity, [:aditional_info, :name])
+       name: get_in(entity, [:aditional_info, :name]),
+       pick_up_time_elapsed: get_in(entity, [:aditional_info, :pick_up_time_elapsed])
      }}
   end
 
