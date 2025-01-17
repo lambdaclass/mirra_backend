@@ -251,7 +251,6 @@ defmodule Arena.GameUpdater do
       |> update_pickup_time_for_items()
       |> reduce_players_cooldowns(delta_time)
       |> recover_mana()
-      # |> resolve_players_collisions_with_items()
       |> resolve_projectiles_effects_on_collisions()
       |> apply_zone_damage_to_players(state.game_config.game)
       |> update_visible_players(state.game_config)
@@ -1213,24 +1212,6 @@ defmodule Arena.GameUpdater do
     %{game_state | projectiles: moved_projectiles}
   end
 
-  defp resolve_players_collisions_with_items(game_state) do
-    {players, items} =
-      Enum.reduce(game_state.players, {game_state.players, game_state.items}, fn {_player_id, player},
-                                                                                 {players_acc, items_acc} ->
-        case find_collided_item(player.collides_with, items_acc) do
-          nil ->
-            {players_acc, items_acc}
-
-          item ->
-            process_item(player, item, players_acc, items_acc)
-        end
-      end)
-
-    game_state
-    |> Map.put(:players, players)
-    |> Map.put(:items, items)
-  end
-
   # This method will decide what to do when a projectile has collided with something in the map
   # - If collided with something with the same owner skip that collision
   # - If collided with external wall or obstacle explode projectile
@@ -1693,15 +1674,6 @@ defmodule Arena.GameUpdater do
       game_state
     else
       Effect.put_effect_to_entity(game_state, entity, pool.id, pool.aditional_info.effect)
-    end
-  end
-
-  defp process_item(player, item, players_acc, items_acc) do
-    if Player.inventory_full?(player) do
-      {players_acc, items_acc}
-    else
-      player = Player.store_item(player, item.aditional_info)
-      {Map.put(players_acc, player.id, player), Map.delete(items_acc, item.id)}
     end
   end
 
