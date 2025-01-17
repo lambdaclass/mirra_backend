@@ -589,12 +589,28 @@ defmodule GameClient.Protobuf.Effect do
   field(:id, 3, type: :uint64)
 end
 
+defmodule GameClient.Protobuf.Item.PickUpTimeElapsedEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
+
+  field(:key, 1, type: :uint32)
+  field(:value, 2, type: :uint32)
+end
+
 defmodule GameClient.Protobuf.Item do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:name, 2, proto3_optional: true, type: :string)
+
+  field(:pick_up_time_elapsed, 3,
+    repeated: true,
+    type: GameClient.Protobuf.Item.PickUpTimeElapsedEntry,
+    json_name: "pickUpTimeElapsed",
+    map: true
+  )
 end
 
 defmodule GameClient.Protobuf.Projectile do

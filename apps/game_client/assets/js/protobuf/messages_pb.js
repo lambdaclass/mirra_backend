@@ -8251,7 +8251,8 @@ proto.Item.prototype.toObject = function(opt_includeInstance) {
  */
 proto.Item.toObject = function(includeInstance, msg) {
   var f, obj = {
-name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f
+name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
+pickUpTimeElapsedMap: (f = msg.getPickUpTimeElapsedMap()) ? f.toObject(includeInstance, undefined) : []
   };
 
   if (includeInstance) {
@@ -8292,6 +8293,12 @@ proto.Item.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setName(value);
       break;
+    case 3:
+      var value = msg.getPickUpTimeElapsedMap();
+      reader.readMessage(value, function(message, reader) {
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint32, jspb.BinaryReader.prototype.readUint32, null, 0, 0);
+         });
+      break;
     default:
       reader.skipField();
       break;
@@ -8327,6 +8334,10 @@ proto.Item.serializeBinaryToWriter = function(message, writer) {
       2,
       f
     );
+  }
+  f = message.getPickUpTimeElapsedMap(true);
+  if (f && f.getLength() > 0) {
+    f.serializeBinary(3, writer, jspb.BinaryWriter.prototype.writeUint32, jspb.BinaryWriter.prototype.writeUint32);
   }
 };
 
@@ -8364,6 +8375,29 @@ proto.Item.prototype.clearName = function() {
  */
 proto.Item.prototype.hasName = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * map<uint32, uint32> pick_up_time_elapsed = 3;
+ * @param {boolean=} opt_noLazyCreate Do not create the map if
+ * empty, instead returning `undefined`
+ * @return {!jspb.Map<number,number>}
+ */
+proto.Item.prototype.getPickUpTimeElapsedMap = function(opt_noLazyCreate) {
+  return /** @type {!jspb.Map<number,number>} */ (
+      jspb.Message.getMapField(this, 3, opt_noLazyCreate,
+      null));
+};
+
+
+/**
+ * Clears values from the map. The map will be non-null.
+ * @return {!proto.Item} returns this
+ */
+proto.Item.prototype.clearPickUpTimeElapsedMap = function() {
+  this.getPickUpTimeElapsedMap().clear();
+  return this;
 };
 
 

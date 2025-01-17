@@ -229,6 +229,7 @@ message Effect {
 
 message Item {
   optional string name = 2;
+  map<uint32, uint32> pick_up_time_elapsed = 3;
 }
 
 message Projectile {

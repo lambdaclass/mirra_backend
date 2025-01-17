@@ -589,12 +589,28 @@ defmodule Arena.Serialization.Effect do
   field(:id, 3, type: :uint64)
 end
 
+defmodule Arena.Serialization.Item.PickUpTimeElapsedEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
+
+  field(:key, 1, type: :uint32)
+  field(:value, 2, type: :uint32)
+end
+
 defmodule Arena.Serialization.Item do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:name, 2, proto3_optional: true, type: :string)
+
+  field(:pick_up_time_elapsed, 3,
+    repeated: true,
+    type: Arena.Serialization.Item.PickUpTimeElapsedEntry,
+    json_name: "pickUpTimeElapsed",
+    map: true
+  )
 end
 
 defmodule Arena.Serialization.Projectile do
