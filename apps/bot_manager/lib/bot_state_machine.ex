@@ -121,7 +121,8 @@ defmodule BotManager.BotStateMachine do
   defp map_directions_to_players(game_state, bot_player, max_distance) do
     Map.delete(game_state.players, bot_player.id)
     |> Map.filter(fn {player_id, player} ->
-      Utils.player_alive?(player) && player_within_visible_players?(bot_player, player_id) && not bot_belongs_to_the_same_team?(bot_player, player)
+      Utils.player_alive?(player) && player_within_visible_players?(bot_player, player_id) &&
+        not bot_belongs_to_the_same_team?(bot_player, player)
     end)
     |> Enum.map(fn {_player_id, player} ->
       player_info =
