@@ -121,7 +121,8 @@ defmodule BotManager.BotStateMachine do
   defp map_directions_to_players(game_state, bot_player, max_distance) do
     Map.delete(game_state.players, bot_player.id)
     |> Map.filter(fn {player_id, player} ->
-      Utils.player_alive?(player) && player_within_visible_players?(bot_player, player_id)
+      Utils.player_alive?(player) && player_within_visible_players?(bot_player, player_id) &&
+        not bot_belongs_to_the_same_team?(bot_player, player)
     end)
     |> Enum.map(fn {_player_id, player} ->
       player_info =
@@ -155,6 +156,13 @@ defmodule BotManager.BotStateMachine do
   defp player_within_visible_players?(bot_player, player_id) do
     {:player, bot_player_info} = bot_player.aditional_info
     Enum.member?(bot_player_info.visible_players, player_id)
+  end
+
+  defp bot_belongs_to_the_same_team?(bot_player, player) do
+    {:player, bot_player_info} = bot_player.aditional_info
+    {:player, player_info} = player.aditional_info
+
+    bot_player_info.team == player_info.team
   end
 
   # This function will determine the direction and action the bot will take.
