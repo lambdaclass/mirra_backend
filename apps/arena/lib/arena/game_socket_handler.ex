@@ -254,8 +254,8 @@ defmodule Arena.GameSocketHandler do
       %{action_type: {:attack, %{skill: skill, parameters: params}}, timestamp: timestamp} ->
         GameUpdater.attack(state.game_pid, state.player_id, skill, params, timestamp)
 
-      %{action_type: {:use_item, _}, timestamp: timestamp} ->
-        GameUpdater.use_item(state.game_pid, state.player_id, timestamp)
+      %{action_type: {:use_item, %{item_position: item_position}}, timestamp: timestamp} ->
+        GameUpdater.use_item(state.game_pid, state.player_id, item_position, timestamp)
 
       _ ->
         nil
