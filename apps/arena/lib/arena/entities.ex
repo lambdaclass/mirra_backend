@@ -246,6 +246,8 @@ defmodule Arena.Entities do
         name: config.name,
         effect: config.effect,
         mechanics: config.mechanics,
+        pick_up_time_elapsed: %{},
+        pick_up_time_initial_timestamp: %{},
         pull_immunity: true,
         pick_up_time: nil
       }
@@ -484,7 +486,8 @@ defmodule Arena.Entities do
   def maybe_add_custom_info(entity) when entity.category == :item do
     {:item,
      %Arena.Serialization.Item{
-       name: get_in(entity, [:aditional_info, :name])
+       name: get_in(entity, [:aditional_info, :name]),
+       pick_up_time_elapsed: get_in(entity, [:aditional_info, :pick_up_time_elapsed])
      }}
   end
 

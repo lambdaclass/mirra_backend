@@ -248,7 +248,7 @@ defmodule Arena.GameUpdater do
       |> Effect.apply_effect_mechanic_to_entities()
       # Players
       |> move_players()
-      |> update_pick_up_time_for_items()
+      |> update_pickup_time_for_items()
       |> reduce_players_cooldowns(delta_time)
       |> recover_mana()
       # |> resolve_players_collisions_with_items()
@@ -2014,9 +2014,9 @@ defmodule Arena.GameUpdater do
 
   defp respawn_players(game_state, _game_config), do: game_state
 
-  defp update_pick_up_time_for_items(game_state) do
+  defp update_pickup_time_for_items(game_state) do
     {players, items} =
-      Enum.reduce(game_state.players, {game_state.players, game_state.items}, fn {_player_id, player},
+      Enum.reduce(game_state.players, {game_state.players, game_state.items}, fn {player_id, player},
                                                                                  {players_acc, items_acc} ->
         case find_collided_item(player.collides_with, items_acc) do
           nil ->
@@ -2026,11 +2026,21 @@ defmodule Arena.GameUpdater do
             now = System.monotonic_time(:millisecond)
 
             cond do
-              is_nil(item.aditional_info.pick_up_time) ->
-                item = put_in(item, [:aditional_info, :pick_up_time], now + @standing_time)
+              not Map.has_key?(item.aditional_info.pick_up_time_elapsed, player_id) ->
+                item =
+                  put_in(item, [:aditional_info, :pick_up_time_elapsed, player_id], 0)
+                  |> put_in([:aditional_info, :pick_up_time_initial_timestamp, player_id], now)
+
                 {players_acc, Map.put(items_acc, item.id, item)}
 
-              item.aditional_info.pick_up_time < now and not Player.inventory_full?(player) ->
+              item.aditional_info.pick_up_time_elapsed[player_id] < @standing_time ->
+                elapsed_time = min(now - item.aditional_info.pick_up_time_initial_timestamp[player_id], @standing_time)
+
+                item = put_in(item, [:aditional_info, :pick_up_time_elapsed, player_id], elapsed_time)
+
+                {players_acc, Map.put(items_acc, item.id, item)}
+
+              not Player.inventory_full?(player) ->
                 player = Player.store_item(player, item.aditional_info)
                 {Map.put(players_acc, player.id, player), Map.delete(items_acc, item.id)}
 
@@ -2051,11 +2061,15 @@ defmodule Arena.GameUpdater do
         players_colliding = Physics.check_collisions(item, game_state.players)
 
         item =
-          if Enum.empty?(players_colliding) do
-            put_in(item, [:aditional_info, :pick_up_time], nil)
-          else
-            item
-          end
+          put_in(
+            item,
+            [:aditional_info, :pick_up_time_elapsed],
+            Map.take(item.aditional_info.pick_up_time_elapsed, players_colliding)
+          )
+          |> put_in(
+            [:aditional_info, :pick_up_time_initial_timestamp],
+            Map.take(item.aditional_info.pick_up_time_initial_timestamp, players_colliding)
+          )
 
         Map.put(acc, item_id, item)
       end)
