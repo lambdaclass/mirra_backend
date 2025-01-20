@@ -2043,7 +2043,7 @@ defmodule Arena.GameUpdater do
                   {players_acc, Map.put(items_acc, item.id, item)}
 
                 not Player.inventory_full?(player) ->
-                  player = Player.store_item(player, item.aditional_info)
+                  player = Player.store_item(player, item.aditional_info |> Map.put(:id, item.id))
 
                   {Map.put(players_acc, player.id, player),
                    Map.put(items_acc, item.id, put_in(item, [:aditional_info, :status], :ITEM_PICKED_UP))}
