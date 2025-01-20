@@ -60,6 +60,7 @@ message GameJoined {
   uint64 player_id = 1;
   Configuration config = 2;
   repeated BountyInfo bounties = 3;
+  uint32 team = 4;
 }
 
 message Configuration {

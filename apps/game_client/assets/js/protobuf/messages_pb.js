@@ -2933,7 +2933,8 @@ proto.GameJoined.toObject = function(includeInstance, msg) {
 playerId: jspb.Message.getFieldWithDefault(msg, 1, 0),
 config: (f = msg.getConfig()) && proto.Configuration.toObject(includeInstance, f),
 bountiesList: jspb.Message.toObjectList(msg.getBountiesList(),
-    proto.BountyInfo.toObject, includeInstance)
+    proto.BountyInfo.toObject, includeInstance),
+team: jspb.Message.getFieldWithDefault(msg, 4, 0)
   };
 
   if (includeInstance) {
@@ -2983,6 +2984,10 @@ proto.GameJoined.deserializeBinaryFromReader = function(msg, reader) {
       var value = new proto.BountyInfo;
       reader.readMessage(value,proto.BountyInfo.deserializeBinaryFromReader);
       msg.addBounties(value);
+      break;
+    case 4:
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setTeam(value);
       break;
     default:
       reader.skipField();
@@ -3034,6 +3039,13 @@ proto.GameJoined.serializeBinaryToWriter = function(message, writer) {
       3,
       f,
       proto.BountyInfo.serializeBinaryToWriter
+    );
+  }
+  f = message.getTeam();
+  if (f !== 0) {
+    writer.writeUint32(
+      4,
+      f
     );
   }
 };
@@ -3129,6 +3141,24 @@ proto.GameJoined.prototype.addBounties = function(opt_value, opt_index) {
  */
 proto.GameJoined.prototype.clearBountiesList = function() {
   return this.setBountiesList([]);
+};
+
+
+/**
+ * optional uint32 team = 4;
+ * @return {number}
+ */
+proto.GameJoined.prototype.getTeam = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.GameJoined} returns this
+ */
+proto.GameJoined.prototype.setTeam = function(value) {
+  return jspb.Message.setProto3IntField(this, 4, value);
 };
 
 

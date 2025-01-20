@@ -212,6 +212,7 @@ defmodule Arena.Serialization.GameJoined do
   field(:player_id, 1, type: :uint64, json_name: "playerId")
   field(:config, 2, type: Arena.Serialization.Configuration)
   field(:bounties, 3, repeated: true, type: Arena.Serialization.BountyInfo)
+  field(:team, 4, type: :uint32)
 end
 
 defmodule Arena.Serialization.Configuration do
