@@ -51,6 +51,7 @@ goog.exportSymbol('proto.GameMode', null, global);
 goog.exportSymbol('proto.GameState', null, global);
 goog.exportSymbol('proto.GameStatus', null, global);
 goog.exportSymbol('proto.Item', null, global);
+goog.exportSymbol('proto.ItemStatus', null, global);
 goog.exportSymbol('proto.JoinedLobby', null, global);
 goog.exportSymbol('proto.KillEntry', null, global);
 goog.exportSymbol('proto.LeaveLobby', null, global);
@@ -8317,7 +8318,9 @@ proto.Item.prototype.toObject = function(opt_includeInstance) {
 proto.Item.toObject = function(includeInstance, msg) {
   var f, obj = {
 name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-mechanicRadius: (f = jspb.Message.getOptionalFloatingPointField(msg, 3)) == null ? undefined : f
+mechanicRadius: (f = jspb.Message.getOptionalFloatingPointField(msg, 3)) == null ? undefined : f,
+status: jspb.Message.getFieldWithDefault(msg, 4, 0),
+ownerId: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -8362,6 +8365,14 @@ proto.Item.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {number} */ (reader.readFloat());
       msg.setMechanicRadius(value);
       break;
+    case 4:
+      var value = /** @type {!proto.ItemStatus} */ (reader.readEnum());
+      msg.setStatus(value);
+      break;
+    case 5:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setOwnerId(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -8402,6 +8413,20 @@ proto.Item.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeFloat(
       3,
+      f
+    );
+  }
+  f = message.getStatus();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      4,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 5));
+  if (f != null) {
+    writer.writeUint64(
+      5,
       f
     );
   }
@@ -8477,6 +8502,60 @@ proto.Item.prototype.clearMechanicRadius = function() {
  */
 proto.Item.prototype.hasMechanicRadius = function() {
   return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * optional ItemStatus status = 4;
+ * @return {!proto.ItemStatus}
+ */
+proto.Item.prototype.getStatus = function() {
+  return /** @type {!proto.ItemStatus} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/**
+ * @param {!proto.ItemStatus} value
+ * @return {!proto.Item} returns this
+ */
+proto.Item.prototype.setStatus = function(value) {
+  return jspb.Message.setProto3EnumField(this, 4, value);
+};
+
+
+/**
+ * optional uint64 owner_id = 5;
+ * @return {number}
+ */
+proto.Item.prototype.getOwnerId = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.Item} returns this
+ */
+proto.Item.prototype.setOwnerId = function(value) {
+  return jspb.Message.setField(this, 5, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.Item} returns this
+ */
+proto.Item.prototype.clearOwnerId = function() {
+  return jspb.Message.setField(this, 5, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.Item.prototype.hasOwnerId = function() {
+  return jspb.Message.getField(this, 5) != null;
 };
 
 
@@ -12627,6 +12706,17 @@ proto.GameStatus = {
   RUNNING: 1,
   ENDED: 2,
   SELECTING_BOUNTY: 3
+};
+
+/**
+ * @enum {number}
+ */
+proto.ItemStatus = {
+  ITEM_STATUS_UNDEFINED: 0,
+  ITEM_PICKED_UP: 1,
+  ITEM_USED: 2,
+  ITEM_ACTIVE: 3,
+  ITEM_EXPIRED: 4
 };
 
 /**

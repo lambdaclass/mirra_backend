@@ -20,6 +20,18 @@ defmodule BotManager.Protobuf.GameStatus do
   field(:SELECTING_BOUNTY, 3)
 end
 
+defmodule BotManager.Protobuf.ItemStatus do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
+
+  field(:ITEM_STATUS_UNDEFINED, 0)
+  field(:ITEM_PICKED_UP, 1)
+  field(:ITEM_USED, 2)
+  field(:ITEM_ACTIVE, 3)
+  field(:ITEM_EXPIRED, 4)
+end
+
 defmodule BotManager.Protobuf.ProjectileStatus do
   @moduledoc false
 
@@ -588,6 +600,8 @@ defmodule BotManager.Protobuf.Item do
 
   field(:name, 2, proto3_optional: true, type: :string)
   field(:mechanic_radius, 3, proto3_optional: true, type: :float, json_name: "mechanicRadius")
+  field(:status, 4, type: BotManager.Protobuf.ItemStatus, enum: true)
+  field(:owner_id, 5, proto3_optional: true, type: :uint64, json_name: "ownerId")
 end
 
 defmodule BotManager.Protobuf.Projectile do

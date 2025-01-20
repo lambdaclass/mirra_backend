@@ -231,6 +231,16 @@ message Effect {
 message Item {
   optional string name = 2;
   optional float mechanic_radius = 3;
+  ItemStatus status = 4;
+  optional uint64 owner_id = 5;
+}
+
+enum ItemStatus {
+  ITEM_STATUS_UNDEFINED = 0;
+  ITEM_PICKED_UP = 1;
+  ITEM_USED = 2;
+  ITEM_ACTIVE = 3;
+  ITEM_EXPIRED = 4;
 }
 
 message Projectile {
