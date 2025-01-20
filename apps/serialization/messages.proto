@@ -208,17 +208,17 @@ message Player {
   optional string character_name = 8;
   optional uint64 power_ups = 9;
   repeated Effect effects = 10;
-  Item inventory = 11;
-  map<string, uint64> cooldowns = 12;
-  repeated uint64 visible_players = 13;
-  optional bool on_bush = 14;
-  optional bool forced_movement = 15;
-  optional bool bounty_completed = 16;
-  optional uint64 mana = 17;
-  optional uint32 current_basic_animation = 18;
-  optional uint32 match_position = 19;
-  optional uint32 team = 20;
-  optional uint64 max_health = 21;
+  map<string, uint64> cooldowns = 11;
+  repeated uint64 visible_players = 12;
+  optional bool on_bush = 13;
+  optional bool forced_movement = 14;
+  optional bool bounty_completed = 15;
+  optional uint64 mana = 16;
+  optional uint32 current_basic_animation = 17;
+  optional uint32 match_position = 18;
+  optional uint32 team = 19;
+  optional uint64 max_health = 20;
+  map<uint32, Item> inventory = 21;
   optional bool blocked_actions = 22;
 }
 
@@ -230,9 +230,10 @@ message Effect {
 
 message Item {
   optional string name = 2;
-  optional float mechanic_radius = 3;
-  ItemStatus status = 4;
-  optional uint64 owner_id = 5;
+  map<uint32, uint32> pick_up_time_elapsed = 3;
+  optional float mechanic_radius = 4;
+  ItemStatus status = 5;
+  optional uint64 owner_id = 6;
 }
 
 enum ItemStatus {
@@ -348,7 +349,7 @@ message AttackParameters {
 }
 
 message UseItem {
-  uint64 item = 1;
+  uint64 item_position = 1;
 }
 
 message SelectBounty {

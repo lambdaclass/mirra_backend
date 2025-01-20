@@ -77,7 +77,7 @@ defmodule Arena.Entities do
         forced_movement: false,
         power_ups: 0,
         power_up_damage_modifier: config.game.power_up_damage_modifier,
-        inventory: nil,
+        inventory: %{},
         damage_immunity: false,
         pull_immunity: false,
         effects: [],
@@ -250,7 +250,10 @@ defmodule Arena.Entities do
         owner_id: nil,
         effect: config.effect,
         mechanics: config.mechanics,
-        pull_immunity: true
+        pick_up_time_elapsed: %{},
+        pick_up_time_initial_timestamp: %{},
+        pull_immunity: true,
+        pick_up_time: nil
       }
     }
   end
@@ -494,7 +497,8 @@ defmodule Arena.Entities do
        name: get_in(entity, [:aditional_info, :name]),
        mechanic_radius: get_in(entity, [:aditional_info, :mechanic_radius]),
        status: get_in(entity, [:aditional_info, :status]),
-       owner_id: get_in(entity, [:aditional_info, :owner_id])
+       owner_id: get_in(entity, [:aditional_info, :owner_id]),
+       pick_up_time_elapsed: get_in(entity, [:aditional_info, :pick_up_time_elapsed])
      }}
   end
 

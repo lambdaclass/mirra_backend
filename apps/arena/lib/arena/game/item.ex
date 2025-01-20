@@ -35,6 +35,7 @@ defmodule Arena.Game.Item do
 
   def do_mechanic(game_state, entity, %{type: "heal"} = item_params) do
     player = Player.add_health(entity, item_params.amount)
+
     put_in(game_state, [:players, player.id], player)
   end
 

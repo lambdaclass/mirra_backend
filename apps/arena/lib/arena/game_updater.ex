@@ -20,6 +20,8 @@ defmodule Arena.GameUpdater do
   alias Phoenix.PubSub
   alias Arena.Game.Trap
 
+  @standing_time 1900
+
   ##########################
   # API
   ##########################
@@ -35,8 +37,8 @@ defmodule Arena.GameUpdater do
     GenServer.cast(game_pid, {:attack, player_id, skill, skill_params, timestamp})
   end
 
-  def use_item(game_pid, player_id, timestamp) do
-    GenServer.cast(game_pid, {:use_item, player_id, timestamp})
+  def use_item(game_pid, player_id, item_position, timestamp) do
+    GenServer.cast(game_pid, {:use_item, player_id, item_position, timestamp})
   end
 
   def select_bounty(game_pid, player_id, bounty_quest_id) do
@@ -159,10 +161,10 @@ defmodule Arena.GameUpdater do
     {:noreply, %{state | game_state: game_state}}
   end
 
-  def handle_cast({:use_item, player_id, _timestamp}, state) do
+  def handle_cast({:use_item, player_id, item_position, _timestamp}, state) do
     game_state =
       get_in(state, [:game_state, :players, player_id])
-      |> Player.use_item(state.game_state)
+      |> Player.use_item(item_position, state.game_state)
 
     {:noreply, %{state | game_state: game_state}}
   end
@@ -246,9 +248,9 @@ defmodule Arena.GameUpdater do
       |> Effect.apply_effect_mechanic_to_entities()
       # Players
       |> move_players()
+      |> update_pickup_time_for_items()
       |> reduce_players_cooldowns(delta_time)
       |> recover_mana()
-      |> resolve_players_collisions_with_items()
       |> resolve_projectiles_effects_on_collisions()
       |> apply_zone_damage_to_players(state.game_config.game)
       |> update_visible_players(state.game_config)
@@ -275,6 +277,8 @@ defmodule Arena.GameUpdater do
       # Deathmatch
       |> add_players_to_respawn_queue(state.game_config)
       |> respawn_players(state.game_config)
+      # Items
+      |> remove_pickup_time_for_items()
 
     {:ok, state_diff} = diff(state.last_broadcasted_game_state, game_state)
 
@@ -1211,28 +1215,6 @@ defmodule Arena.GameUpdater do
     %{game_state | projectiles: moved_projectiles}
   end
 
-  defp resolve_players_collisions_with_items(game_state) do
-    {players, items} =
-      Enum.reduce(
-        game_state.players,
-        {game_state.players,
-         game_state.items |> Map.filter(fn {_item_id, item} -> item.aditional_info.status == :ITEM_STATUS_UNDEFINED end)},
-        fn {_player_id, player}, {players_acc, items_acc} ->
-          case find_collided_item(player.collides_with, items_acc) do
-            nil ->
-              {players_acc, items_acc}
-
-            item ->
-              process_item(player, item, players_acc, items_acc)
-          end
-        end
-      )
-
-    game_state
-    |> Map.put(:players, players)
-    |> Map.put(:items, Map.merge(game_state.items, items))
-  end
-
   # This method will decide what to do when a projectile has collided with something in the map
   # - If collided with something with the same owner skip that collision
   # - If collided with external wall or obstacle explode projectile
@@ -1721,17 +1703,6 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  defp process_item(player, item, players_acc, items_acc) do
-    if Player.inventory_full?(player) do
-      {players_acc, items_acc}
-    else
-      player = Player.store_item(player, item.aditional_info |> Map.put(:id, item.id))
-
-      {Map.put(players_acc, player.id, player),
-       Map.put(items_acc, item.id, put_in(item, [:aditional_info, :status], :ITEM_PICKED_UP))}
-    end
-  end
-
   defp random_position_in_map(object_radius, external_wall, obstacles, initial_position, available_radius) do
     integer_radius = trunc(available_radius - object_radius)
     x = Enum.random(-integer_radius..integer_radius) / 1.0 + initial_position.x
@@ -2040,6 +2011,76 @@ defmodule Arena.GameUpdater do
   end
 
   defp respawn_players(game_state, _game_config), do: game_state
+
+  defp update_pickup_time_for_items(game_state) do
+    {players, items} =
+      Enum.reduce(
+        game_state.players,
+        {game_state.players,
+         game_state.items |> Map.filter(fn {_item_id, item} -> item.aditional_info.status == :ITEM_STATUS_UNDEFINED end)},
+        fn {player_id, player}, {players_acc, items_acc} ->
+          case find_collided_item(player.collides_with, items_acc) do
+            nil ->
+              {players_acc, items_acc}
+
+            item ->
+              now = System.monotonic_time(:millisecond)
+
+              cond do
+                not Map.has_key?(item.aditional_info.pick_up_time_elapsed, player_id) ->
+                  item =
+                    put_in(item, [:aditional_info, :pick_up_time_elapsed, player_id], 0)
+                    |> put_in([:aditional_info, :pick_up_time_initial_timestamp, player_id], now)
+
+                  {players_acc, Map.put(items_acc, item.id, item)}
+
+                item.aditional_info.pick_up_time_elapsed[player_id] < @standing_time ->
+                  elapsed_time =
+                    min(now - item.aditional_info.pick_up_time_initial_timestamp[player_id], @standing_time)
+
+                  item = put_in(item, [:aditional_info, :pick_up_time_elapsed, player_id], elapsed_time)
+
+                  {players_acc, Map.put(items_acc, item.id, item)}
+
+                not Player.inventory_full?(player) ->
+                  player = Player.store_item(player, item.aditional_info)
+
+                  {Map.put(players_acc, player.id, player),
+                   Map.put(items_acc, item.id, put_in(item, [:aditional_info, :status], :ITEM_PICKED_UP))}
+
+                true ->
+                  {players_acc, items_acc}
+              end
+          end
+        end
+      )
+
+    game_state
+    |> Map.put(:players, players)
+    |> Map.put(:items, Map.merge(game_state.items, items))
+  end
+
+  defp remove_pickup_time_for_items(game_state) do
+    items =
+      Enum.reduce(game_state.items, %{}, fn {item_id, item}, acc ->
+        players_colliding = Physics.check_collisions(item, game_state.players)
+
+        item =
+          put_in(
+            item,
+            [:aditional_info, :pick_up_time_elapsed],
+            Map.take(item.aditional_info.pick_up_time_elapsed, players_colliding)
+          )
+          |> put_in(
+            [:aditional_info, :pick_up_time_initial_timestamp],
+            Map.take(item.aditional_info.pick_up_time_initial_timestamp, players_colliding)
+          )
+
+        Map.put(acc, item_id, item)
+      end)
+
+    put_in(game_state, [:items], items)
+  end
 
   ##########################
   # End Helpers
