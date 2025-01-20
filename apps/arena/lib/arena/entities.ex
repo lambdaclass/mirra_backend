@@ -246,6 +246,8 @@ defmodule Arena.Entities do
       aditional_info: %{
         name: config.name,
         mechanic_radius: get_range_from_mechanic(config.mechanics),
+        status: :ITEM_STATUS_UNDEFINED,
+        owner_id: nil,
         effect: config.effect,
         mechanics: config.mechanics,
         pull_immunity: true
@@ -490,7 +492,9 @@ defmodule Arena.Entities do
     {:item,
      %Arena.Serialization.Item{
        name: get_in(entity, [:aditional_info, :name]),
-       mechanic_radius: get_in(entity, [:aditional_info, :mechanic_radius])
+       mechanic_radius: get_in(entity, [:aditional_info, :mechanic_radius]),
+       status: get_in(entity, [:aditional_info, :status]),
+       owner_id: get_in(entity, [:aditional_info, :owner_id])
      }}
   end
 

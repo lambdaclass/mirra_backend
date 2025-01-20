@@ -379,6 +379,8 @@ defmodule Arena.Game.Player do
 
         Item.do_mechanics(game_state, player, item.mechanics)
         |> put_in([:players, player.id, :aditional_info, :inventory], nil)
+        |> put_in([:items, item.id, :aditional_info, :status], :ITEM_USED)
+        |> put_in([:items, item.id, :aditional_info, :owner_id], player.id)
     end
   end
 

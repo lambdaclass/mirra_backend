@@ -258,6 +258,8 @@ defmodule Arena.GameUpdater do
       |> move_projectiles()
       |> resolve_projectiles_collisions()
       |> explode_projectiles()
+      # Items
+      |> update_items_status()
       # Pools
       |> add_pools_collisions()
       |> handle_pools()
@@ -1211,20 +1213,24 @@ defmodule Arena.GameUpdater do
 
   defp resolve_players_collisions_with_items(game_state) do
     {players, items} =
-      Enum.reduce(game_state.players, {game_state.players, game_state.items}, fn {_player_id, player},
-                                                                                 {players_acc, items_acc} ->
-        case find_collided_item(player.collides_with, items_acc) do
-          nil ->
-            {players_acc, items_acc}
+      Enum.reduce(
+        game_state.players,
+        {game_state.players,
+         game_state.items |> Map.filter(fn {_item_id, item} -> item.aditional_info.status == :ITEM_STATUS_UNDEFINED end)},
+        fn {_player_id, player}, {players_acc, items_acc} ->
+          case find_collided_item(player.collides_with, items_acc) do
+            nil ->
+              {players_acc, items_acc}
 
-          item ->
-            process_item(player, item, players_acc, items_acc)
+            item ->
+              process_item(player, item, players_acc, items_acc)
+          end
         end
-      end)
+      )
 
     game_state
     |> Map.put(:players, players)
-    |> Map.put(:items, items)
+    |> Map.put(:items, Map.merge(game_state.items, items))
   end
 
   # This method will decide what to do when a projectile has collided with something in the map
@@ -1330,6 +1336,29 @@ defmodule Arena.GameUpdater do
         game_state
       end
     end)
+  end
+
+  # Mark used items as active
+  # If items were active already, expire them
+  defp update_items_status(%{items: items} = game_state) do
+    updated_items =
+      Enum.reduce(items, items, fn {item_id, item}, acc ->
+        case item.aditional_info.status do
+          :ITEM_EXPIRED ->
+            Map.delete(acc, item_id)
+
+          :ITEM_USED ->
+            Map.put(acc, item_id, put_in(item, [:aditional_info, :status], :ITEM_ACTIVE))
+
+          :ITEM_ACTIVE ->
+            Map.put(acc, item_id, put_in(item, [:aditional_info, :status], :ITEM_EXPIRED))
+
+          _ ->
+            acc
+        end
+      end)
+
+    %{game_state | items: updated_items}
   end
 
   defp apply_zone_damage_to_players(%{zone: %{enabled: false}} = game_state, _zone_params), do: game_state
@@ -1696,8 +1725,10 @@ defmodule Arena.GameUpdater do
     if Player.inventory_full?(player) do
       {players_acc, items_acc}
     else
-      player = Player.store_item(player, item.aditional_info)
-      {Map.put(players_acc, player.id, player), Map.delete(items_acc, item.id)}
+      player = Player.store_item(player, item.aditional_info |> Map.put(:id, item.id))
+
+      {Map.put(players_acc, player.id, player),
+       Map.put(items_acc, item.id, put_in(item, [:aditional_info, :status], :ITEM_PICKED_UP))}
     end
   end
 
