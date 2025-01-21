@@ -80,6 +80,10 @@ defmodule Arena.Utils do
     %{x: 0, y: 0}
   end
 
+  def normalize(%{x: x, y: y} = direction) when x == 0.0 and y == 0.0 do
+    direction
+  end
+
   def normalize(%{x: x, y: y}) do
     length = :math.sqrt(x * x + y * y)
     %{x: x / length, y: y / length}
