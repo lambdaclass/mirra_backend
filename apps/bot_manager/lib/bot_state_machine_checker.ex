@@ -18,10 +18,6 @@ defmodule BotManager.BotStateMachineChecker do
     :cap_for_basic_skill,
     # This is the maximum value that the progress_for_ultimate_skill can reach
     :cap_for_ultimate_skill,
-    # The time that the bot is going to take to change its direction in milliseconds
-    :time_to_change_direction,
-    # The last time that the bot changed its direction
-    :last_time_direction_changed,
     # The position that the bot is going to move to
     :position_to_move_to,
     # The time that the bot is going to take to change its position in milliseconds
@@ -39,8 +35,6 @@ defmodule BotManager.BotStateMachineChecker do
       cap_for_ultimate_skill: 3,
       previous_position: nil,
       current_position: nil,
-      time_to_change_direction: 1600,
-      last_time_direction_changed: 0,
       position_to_move_to: nil,
       time_amount_to_change_position: 2000,
       last_time_position_changed: 0
@@ -65,13 +59,6 @@ defmodule BotManager.BotStateMachineChecker do
   def bot_can_turn_aggresive?(bot_state_machine) do
     bot_state_machine.progress_for_basic_skill >= bot_state_machine.cap_for_basic_skill ||
       bot_state_machine.progress_for_ultimate_skill >= bot_state_machine.cap_for_ultimate_skill
-  end
-
-  def should_bot_rotate_its_direction?(bot_state_machine) do
-    current_time = :os.system_time(:millisecond)
-    time_since_last_direction_change = current_time - bot_state_machine.last_time_direction_changed
-
-    time_since_last_direction_change >= bot_state_machine.time_to_change_direction
   end
 
   def should_bot_move_to_another_position?(bot_state_machine) do
