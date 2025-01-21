@@ -248,7 +248,6 @@ defmodule Arena.GameUpdater do
       |> Effect.apply_effect_mechanic_to_entities()
       # Players
       |> move_players()
-      |> update_pickup_time_for_items()
       |> reduce_players_cooldowns(delta_time)
       |> recover_mana()
       |> resolve_projectiles_effects_on_collisions()
@@ -260,8 +259,6 @@ defmodule Arena.GameUpdater do
       |> move_projectiles()
       |> resolve_projectiles_collisions()
       |> explode_projectiles()
-      # Items
-      |> update_items_status()
       # Pools
       |> add_pools_collisions()
       |> handle_pools()
@@ -278,6 +275,8 @@ defmodule Arena.GameUpdater do
       |> add_players_to_respawn_queue(state.game_config)
       |> respawn_players(state.game_config)
       # Items
+      |> update_pickup_time_for_items()
+      |> update_items_status()
       |> remove_pickup_time_for_items()
 
     {:ok, state_diff} = diff(state.last_broadcasted_game_state, game_state)
