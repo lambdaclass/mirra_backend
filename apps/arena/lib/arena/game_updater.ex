@@ -2063,18 +2063,30 @@ defmodule Arena.GameUpdater do
   defp remove_pickup_time_for_items(game_state) do
     items =
       Enum.reduce(game_state.items, %{}, fn {item_id, item}, acc ->
-        players_colliding = Physics.check_collisions(item, game_state.players)
-
         item =
-          put_in(
-            item,
-            [:aditional_info, :pick_up_time_elapsed],
-            Map.take(item.aditional_info.pick_up_time_elapsed, players_colliding)
-          )
-          |> put_in(
-            [:aditional_info, :pick_up_time_initial_timestamp],
-            Map.take(item.aditional_info.pick_up_time_initial_timestamp, players_colliding)
-          )
+          if item.aditional_info.status != :ITEM_STATUS_UNDEFINED do
+            put_in(
+              item,
+              [:aditional_info, :pick_up_time_elapsed],
+              %{}
+            )
+            |> put_in(
+              [:aditional_info, :pick_up_time_initial_timestamp],
+              nil
+            )
+          else
+            players_colliding = Physics.check_collisions(item, game_state.players)
+
+            put_in(
+              item,
+              [:aditional_info, :pick_up_time_elapsed],
+              Map.take(item.aditional_info.pick_up_time_elapsed, players_colliding)
+            )
+            |> put_in(
+              [:aditional_info, :pick_up_time_initial_timestamp],
+              Map.take(item.aditional_info.pick_up_time_initial_timestamp, players_colliding)
+            )
+          end
 
         Map.put(acc, item_id, item)
       end)
