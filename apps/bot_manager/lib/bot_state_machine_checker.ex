@@ -22,8 +22,12 @@ defmodule BotManager.BotStateMachineChecker do
     :time_to_change_direction,
     # The last time that the bot changed its direction
     :last_time_direction_changed,
-    # The time that the bot has been moving in the same direction
-    :current_time_in_direction
+    # The position that the bot is going to move to
+    :position_to_move_to,
+    # The time that the bot is going to take to change its position in milliseconds
+    :time_amount_to_change_position,
+    # The last time that the bot changed its position
+    :last_time_position_changed
   ]
 
   def new do
@@ -37,7 +41,9 @@ defmodule BotManager.BotStateMachineChecker do
       current_position: nil,
       time_to_change_direction: 1600,
       last_time_direction_changed: 0,
-      current_time_in_direction: 0
+      position_to_move_to: nil,
+      time_amount_to_change_position: 2000,
+      last_time_position_changed: 0
     }
   end
 
@@ -66,5 +72,12 @@ defmodule BotManager.BotStateMachineChecker do
     time_since_last_direction_change = current_time - bot_state_machine.last_time_direction_changed
 
     time_since_last_direction_change >= bot_state_machine.time_to_change_direction
+  end
+
+  def should_bot_move_to_another_position?(bot_state_machine) do
+    current_time = :os.system_time(:millisecond)
+    time_since_last_position_change = current_time - bot_state_machine.last_time_position_changed
+
+    time_since_last_position_change >= bot_state_machine.time_amount_to_change_position
   end
 end

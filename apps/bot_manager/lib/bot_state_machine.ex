@@ -48,7 +48,7 @@ defmodule BotManager.BotStateMachine do
 
     case next_state do
       :moving ->
-        move(bot_player, bot_state_machine)
+        move(bot_player, bot_state_machine, game_state.zone.radius)
 
       :attacking ->
         use_skill(%{
@@ -81,7 +81,7 @@ defmodule BotManager.BotStateMachine do
     players_with_distances = map_directions_to_players(game_state, bot_player, @vision_range)
 
     if Enum.empty?(players_with_distances) do
-      move(bot_player, bot_state_machine)
+      move(bot_player, bot_state_machine, game_state.zone.radius)
     else
       cond do
         bot_state_machine.progress_for_ultimate_skill >= bot_state_machine.cap_for_ultimate_skill ->
@@ -112,7 +112,7 @@ defmodule BotManager.BotStateMachine do
           %{action: {:use_skill, @skill_1_key, direction}, bot_state_machine: bot_state_machine}
 
         true ->
-          move(bot_player, bot_state_machine)
+          move(bot_player, bot_state_machine, game_state.zone.radius)
       end
     end
   end
@@ -169,13 +169,6 @@ defmodule BotManager.BotStateMachine do
   defp determine_player_move_action(bot_player, bot_state_machine, direction) do
     {:player, bot_player_info} = bot_player.aditional_info
 
-    direction =
-      if BotStateMachineChecker.should_bot_rotate_its_direction?(bot_state_machine) do
-        Vector.rotate_by_degrees(direction, :rand.uniform() * 360)
-      else
-        direction
-      end
-
     if Map.has_key?(bot_player_info.cooldowns, @dash_skill_key) do
       {:move, direction}
     else
@@ -183,26 +176,11 @@ defmodule BotManager.BotStateMachine do
     end
   end
 
-  # This function will change the bot’s direction by checking if it has stayed in the same position between the last and current update.
-  # If the bot hasn’t moved, it will randomly switch its direction.
-  defp maybe_switch_direction(bot_player, bot_state_machine) do
-    x_distance = abs(bot_state_machine.current_position.x - bot_state_machine.previous_position.x)
-    y_distance = abs(bot_state_machine.current_position.y - bot_state_machine.previous_position.y)
-
-    if x_distance < @min_distance_to_switch and y_distance < @min_distance_to_switch,
-      do: switch_direction_randomly(bot_player.direction),
-      else: bot_player.direction
-  end
-
-  defp switch_direction_randomly(direction) do
-    Vector.rotate_by_degrees(direction, Enum.random([90, 180, 270]))
-  end
-
   defp run_away(bot_player, game_state, bot_state_machine) do
     players_with_distances = map_directions_to_players(game_state, bot_player, @vision_range)
 
     if Enum.empty?(players_with_distances) do
-      move(bot_player, bot_state_machine)
+      move(bot_player, bot_state_machine, game_state.zone.radius)
     else
       closest_player = Enum.min_by(players_with_distances, & &1.distance)
 
@@ -225,12 +203,34 @@ defmodule BotManager.BotStateMachine do
     end
   end
 
-  defp move(bot_player, bot_state_machine) do
-    direction = maybe_switch_direction(bot_player, bot_state_machine)
+  defp move(bot_player, bot_state_machine, safe_zone_radius) do
+    bot_state_machine = determine_position_to_move_to(bot_state_machine, safe_zone_radius)
+
+    %{direction: direction} =
+      get_distance_and_direction_to_positions(bot_state_machine.current_position, bot_state_machine.position_to_move_to)
 
     %{
       action: determine_player_move_action(bot_player, bot_state_machine, direction),
       bot_state_machine: bot_state_machine
     }
+  end
+
+  defp determine_position_to_move_to(bot_state_machine, safe_zone_radius) do
+    cond do
+      is_nil(bot_state_machine.position_to_move_to) ->
+        position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
+
+        Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
+        |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
+
+      BotStateMachineChecker.should_bot_move_to_another_position?(bot_state_machine) ->
+        position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
+
+        Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
+        |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
+
+      true ->
+        bot_state_machine
+    end
   end
 end
