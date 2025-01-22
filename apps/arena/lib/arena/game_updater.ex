@@ -126,7 +126,7 @@ defmodule Arena.GameUpdater do
 
         response = %{
           player_id: player_id,
-          team_id: player.aditional_info.team,
+          team: player.aditional_info.team,
           game_config: state.game_config,
           game_status: state.game_state.status,
           bounties: bounties
