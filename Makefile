@@ -70,7 +70,7 @@ generate-bot-manager-protos:
 		messages.proto
 
 ## INFRA
-## Run this as admin
+## Run these as admin
 debian-install-deps:
 	sudo apt update -y
 	sudo apt install -y rsync libssl-dev libncurses5 libsctp1 wget systemd-timesyncd
@@ -84,11 +84,12 @@ debian-install-deps:
 	sudo unzip -d /usr/ /tmp/elixir-otp-26.zip
 	rm /tmp/elixir-otp-26.zip
 
-write-caddyfile:
+setup-caddy:
 	@read -p "Enter the server dns (e.g: 'arena-testing.championsofmirra.com'): " user_input; \
 	sudo sed -i "1i $$user_input {" /etc/caddy/Caddyfile; \
 	sudo sed -i "2i \	reverse_proxy localhost:4000" /etc/caddy/Caddyfile; \
 	sudo sed -i "3i }" /etc/caddy/Caddyfile;
+	sudo systemctl restart caddy
 
 ## Run this as dev
 debian-install-dev-deps:
