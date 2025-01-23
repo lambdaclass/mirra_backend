@@ -68,3 +68,28 @@ generate-bot-manager-protos:
 		--elixir_opt=package_prefix=bot_manager.protobuf \
 		--proto_path=apps/serialization \
 		messages.proto
+
+## INFRA
+## Run this as admin
+debian-install-deps:
+	sudo apt update -y
+	sudo apt install -y rsync libssl-dev libncurses5 libsctp1 wget systemd-timesyncd
+	wget -P /tmp/ http://ftp.de.debian.org/debian/pool/main/o/openssl/libssl1.1_1.1.1w-0+deb11u1_amd64.deb
+	sudo dpkg -i /tmp/libssl1.1_1.1.1w-0+deb11u1_amd64.deb
+	rm /tmp/libssl1.1_1.1.1w-0+deb11u1_amd64.deb
+	wget -P /tmp/ https://binaries2.erlang-solutions.com/debian/pool/contrib/e/esl-erlang/esl-erlang_26.2.3-1~debian~buster_amd64.deb
+	sudo dpkg -i /tmp/esl-erlang_26.2.3-1~debian~buster_amd64.deb
+	rm /tmp/esl-erlang_26.2.3-1~debian~buster_amd64.deb
+	wget -P /tmp/ https://github.com/elixir-lang/elixir/releases/download/v1.16.3/elixir-otp-26.zip
+	sudo unzip -d /usr/ /tmp/elixir-otp-26.zip
+	rm /tmp/elixir-otp-26.zip
+
+write-caddyfile:
+	@read -p "Enter the server dns (e.g: 'arena-testing.championsofmirra.com'): " user_input; \
+	sudo sed -i "1i $$user_input {" /etc/caddy/Caddyfile; \
+	sudo sed -i "2i \	reverse_proxy localhost:4000" /etc/caddy/Caddyfile; \
+	sudo sed -i "3i }" /etc/caddy/Caddyfile;
+
+## Run this as dev
+debian-install-dev-deps:
+	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
