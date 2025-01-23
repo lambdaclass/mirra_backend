@@ -51,6 +51,7 @@ goog.exportSymbol('proto.GameMode', null, global);
 goog.exportSymbol('proto.GameState', null, global);
 goog.exportSymbol('proto.GameStatus', null, global);
 goog.exportSymbol('proto.Item', null, global);
+goog.exportSymbol('proto.ItemStatus', null, global);
 goog.exportSymbol('proto.JoinedLobby', null, global);
 goog.exportSymbol('proto.KillEntry', null, global);
 goog.exportSymbol('proto.LeaveLobby', null, global);
@@ -7020,7 +7021,8 @@ currentBasicAnimation: (f = jspb.Message.getField(msg, 17)) == null ? undefined 
 matchPosition: (f = jspb.Message.getField(msg, 18)) == null ? undefined : f,
 team: (f = jspb.Message.getField(msg, 19)) == null ? undefined : f,
 maxHealth: (f = jspb.Message.getField(msg, 20)) == null ? undefined : f,
-inventoryMap: (f = msg.getInventoryMap()) ? f.toObject(includeInstance, proto.Item.toObject) : []
+inventoryMap: (f = msg.getInventoryMap()) ? f.toObject(includeInstance, proto.Item.toObject) : [],
+blockedActions: (f = jspb.Message.getBooleanField(msg, 22)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -7148,6 +7150,10 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value, function(message, reader) {
         jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint32, jspb.BinaryReader.prototype.readMessage, proto.Item.deserializeBinaryFromReader, 0, new proto.Item());
          });
+      break;
+    case 22:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setBlockedActions(value);
       break;
     default:
       reader.skipField();
@@ -7320,6 +7326,13 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
   f = message.getInventoryMap(true);
   if (f && f.getLength() > 0) {
     f.serializeBinary(21, writer, jspb.BinaryWriter.prototype.writeUint32, jspb.BinaryWriter.prototype.writeMessage, proto.Item.serializeBinaryToWriter);
+  }
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 22));
+  if (f != null) {
+    writer.writeBool(
+      22,
+      f
+    );
   }
 };
 
@@ -8059,6 +8072,42 @@ proto.Player.prototype.clearInventoryMap = function() {
 };
 
 
+/**
+ * optional bool blocked_actions = 22;
+ * @return {boolean}
+ */
+proto.Player.prototype.getBlockedActions = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 22, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setBlockedActions = function(value) {
+  return jspb.Message.setField(this, 22, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.clearBlockedActions = function() {
+  return jspb.Message.setField(this, 22, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.Player.prototype.hasBlockedActions = function() {
+  return jspb.Message.getField(this, 22) != null;
+};
+
+
 
 
 
@@ -8282,7 +8331,10 @@ proto.Item.prototype.toObject = function(opt_includeInstance) {
 proto.Item.toObject = function(includeInstance, msg) {
   var f, obj = {
 name: (f = jspb.Message.getField(msg, 2)) == null ? undefined : f,
-pickUpTimeElapsedMap: (f = msg.getPickUpTimeElapsedMap()) ? f.toObject(includeInstance, undefined) : []
+pickUpTimeElapsedMap: (f = msg.getPickUpTimeElapsedMap()) ? f.toObject(includeInstance, undefined) : [],
+mechanicRadius: (f = jspb.Message.getOptionalFloatingPointField(msg, 4)) == null ? undefined : f,
+status: jspb.Message.getFieldWithDefault(msg, 5, 0),
+ownerId: (f = jspb.Message.getField(msg, 6)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -8329,6 +8381,18 @@ proto.Item.deserializeBinaryFromReader = function(msg, reader) {
         jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint32, jspb.BinaryReader.prototype.readUint32, null, 0, 0);
          });
       break;
+    case 4:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setMechanicRadius(value);
+      break;
+    case 5:
+      var value = /** @type {!proto.ItemStatus} */ (reader.readEnum());
+      msg.setStatus(value);
+      break;
+    case 6:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setOwnerId(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -8368,6 +8432,27 @@ proto.Item.serializeBinaryToWriter = function(message, writer) {
   f = message.getPickUpTimeElapsedMap(true);
   if (f && f.getLength() > 0) {
     f.serializeBinary(3, writer, jspb.BinaryWriter.prototype.writeUint32, jspb.BinaryWriter.prototype.writeUint32);
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 4));
+  if (f != null) {
+    writer.writeFloat(
+      4,
+      f
+    );
+  }
+  f = message.getStatus();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      5,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 6));
+  if (f != null) {
+    writer.writeUint64(
+      6,
+      f
+    );
   }
 };
 
@@ -8428,6 +8513,96 @@ proto.Item.prototype.getPickUpTimeElapsedMap = function(opt_noLazyCreate) {
 proto.Item.prototype.clearPickUpTimeElapsedMap = function() {
   this.getPickUpTimeElapsedMap().clear();
   return this;
+};
+
+
+/**
+ * optional float mechanic_radius = 4;
+ * @return {number}
+ */
+proto.Item.prototype.getMechanicRadius = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 4, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.Item} returns this
+ */
+proto.Item.prototype.setMechanicRadius = function(value) {
+  return jspb.Message.setField(this, 4, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.Item} returns this
+ */
+proto.Item.prototype.clearMechanicRadius = function() {
+  return jspb.Message.setField(this, 4, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.Item.prototype.hasMechanicRadius = function() {
+  return jspb.Message.getField(this, 4) != null;
+};
+
+
+/**
+ * optional ItemStatus status = 5;
+ * @return {!proto.ItemStatus}
+ */
+proto.Item.prototype.getStatus = function() {
+  return /** @type {!proto.ItemStatus} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+};
+
+
+/**
+ * @param {!proto.ItemStatus} value
+ * @return {!proto.Item} returns this
+ */
+proto.Item.prototype.setStatus = function(value) {
+  return jspb.Message.setProto3EnumField(this, 5, value);
+};
+
+
+/**
+ * optional uint64 owner_id = 6;
+ * @return {number}
+ */
+proto.Item.prototype.getOwnerId = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.Item} returns this
+ */
+proto.Item.prototype.setOwnerId = function(value) {
+  return jspb.Message.setField(this, 6, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.Item} returns this
+ */
+proto.Item.prototype.clearOwnerId = function() {
+  return jspb.Message.setField(this, 6, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.Item.prototype.hasOwnerId = function() {
+  return jspb.Message.getField(this, 6) != null;
 };
 
 
@@ -12578,6 +12753,17 @@ proto.GameStatus = {
   RUNNING: 1,
   ENDED: 2,
   SELECTING_BOUNTY: 3
+};
+
+/**
+ * @enum {number}
+ */
+proto.ItemStatus = {
+  ITEM_STATUS_UNDEFINED: 0,
+  ITEM_PICKED_UP: 1,
+  ITEM_USED: 2,
+  ITEM_ACTIVE: 3,
+  ITEM_EXPIRED: 4
 };
 
 /**
