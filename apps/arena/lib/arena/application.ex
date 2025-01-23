@@ -18,7 +18,6 @@ defmodule Arena.Application do
       Arena.Matchmaking.PairMode,
       Arena.Matchmaking.QuickGameMode,
       Arena.Matchmaking.DeathmatchMode,
-      Arena.GameBountiesFetcher,
       Arena.GameTracker,
       Arena.Authentication.GatewaySigner,
       # Start a worker by calling: Arena.Worker.start_link(arg)
