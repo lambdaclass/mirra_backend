@@ -115,9 +115,8 @@ defmodule Arena.GameUpdater do
       nil ->
         {:reply, :not_a_client, state}
 
-      player = Map.get(state.game_state.players, player_id)
-
       player_id ->
+        player = Map.get(state.game_state.players, player_id)
         response = %{
           player_id: player_id,
           team: player.aditional_info.team,
