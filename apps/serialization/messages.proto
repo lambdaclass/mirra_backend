@@ -60,6 +60,7 @@ message GameJoined {
   uint64 player_id = 1;
   Configuration config = 2;
   repeated BountyInfo bounties = 3;
+  uint32 team = 4;
 }
 
 message Configuration {
@@ -219,6 +220,7 @@ message Player {
   optional uint32 team = 19;
   optional uint64 max_health = 20;
   map<uint32, Item> inventory = 21;
+  optional bool blocked_actions = 22;
 }
 
 message Effect {
@@ -230,6 +232,17 @@ message Effect {
 message Item {
   optional string name = 2;
   map<uint32, uint32> pick_up_time_elapsed = 3;
+  optional float mechanic_radius = 4;
+  ItemStatus status = 5;
+  optional uint64 owner_id = 6;
+}
+
+enum ItemStatus {
+  ITEM_STATUS_UNDEFINED = 0;
+  ITEM_PICKED_UP = 1;
+  ITEM_USED = 2;
+  ITEM_ACTIVE = 3;
+  ITEM_EXPIRED = 4;
 }
 
 message Projectile {

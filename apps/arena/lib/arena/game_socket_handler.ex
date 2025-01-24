@@ -41,7 +41,7 @@ defmodule Arena.GameSocketHandler do
     Logger.info("Websocket INIT called")
     Phoenix.PubSub.subscribe(Arena.PubSub, state.game_id)
 
-    {:ok, %{player_id: player_id, game_config: config, game_status: game_status, bounties: bounties}} =
+    {:ok, %{player_id: player_id, team: team, game_config: config, game_status: game_status, bounties: bounties}} =
       GameUpdater.join(state.game_pid, state.client_id)
 
     state =
@@ -54,7 +54,9 @@ defmodule Arena.GameSocketHandler do
 
     encoded_msg =
       GameEvent.encode(%GameEvent{
-        event: {:joined, %GameJoined{player_id: player_id, config: to_broadcast_config(config), bounties: bounties}}
+        event:
+          {:joined,
+           %GameJoined{player_id: player_id, team: team, config: to_broadcast_config(config), bounties: bounties}}
       })
 
     :telemetry.execute([:arena, :clients], %{count: 1})
