@@ -224,6 +224,7 @@ defmodule BotManager.Protobuf.GameJoined do
   field(:player_id, 1, type: :uint64, json_name: "playerId")
   field(:config, 2, type: BotManager.Protobuf.Configuration)
   field(:bounties, 3, repeated: true, type: BotManager.Protobuf.BountyInfo)
+  field(:team, 4, type: :uint32)
 end
 
 defmodule BotManager.Protobuf.Configuration do

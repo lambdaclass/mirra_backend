@@ -122,8 +122,11 @@ defmodule Arena.GameUpdater do
           |> Enum.shuffle()
           |> Enum.take(state.game_config.game.bounties_options_amount)
 
+        player = Map.get(state.game_state.players, player_id)
+
         response = %{
           player_id: player_id,
+          team: player.aditional_info.team,
           game_config: state.game_config,
           game_status: state.game_state.status,
           bounties: bounties

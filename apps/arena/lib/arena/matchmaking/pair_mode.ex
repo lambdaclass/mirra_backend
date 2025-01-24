@@ -114,7 +114,7 @@ defmodule Arena.Matchmaking.PairMode do
     game_params = Map.put(game_params, :game_mode, :PAIR)
 
     bot_clients =
-      if Application.get_env(:arena, :spawn_bots) do
+      if Enum.count(clients) < Application.get_env(:arena, :players_needed_in_match) do
         get_bot_clients(Application.get_env(:arena, :players_needed_in_match) - Enum.count(clients))
       else
         []
