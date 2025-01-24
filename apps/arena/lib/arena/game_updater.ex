@@ -117,6 +117,7 @@ defmodule Arena.GameUpdater do
 
       player_id ->
         player = Map.get(state.game_state.players, player_id)
+
         response = %{
           player_id: player_id,
           team: player.aditional_info.team,
