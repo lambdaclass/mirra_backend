@@ -36,6 +36,14 @@ Bots will enter into the attacking mode if they have charged enough energy to us
 This is just a gimmick added to prevent bots from using their shooting skills randomly and without purpose. 
 When attacking, they will focus on the nearest player and won't consider health percentages or other factors, at least for now.
 
+#### Tracking A Player
+
+This state arises when the bot becomes bloodthirsty, and there are no nearby enemies that can be easily hit. The bot is more likely to start following enemies in order to catch and attack them!
+
+Formally, for a bot to reach this state, players need to be near it but not close enough to be attacked.
+
+![aggresive areas](bots_aggresive_areas.png)
+
 #### Running Away
 
 Bots will transition to this state whenever their health drops below a certain percentage. For now, this threshold is set at 40%. In this state, bots will attempt to escape from players by running in the opposite direction of the closest one. This does not necessarily mean they will run away from the player attacking them.
