@@ -11,8 +11,6 @@ defmodule BotManager.BotStateMachine do
   @skill_1_key "1"
   @skill_2_key "2"
   @dash_skill_key "3"
-  @vision_range 1200
-  @min_distance_to_switch 10
 
   def decide_action(%{bots_enabled?: false, bot_state_machine: bot_state_machine}) do
     %{action: {:move, %{x: 0, y: 0}}, bot_state_machine: bot_state_machine}
@@ -39,12 +37,15 @@ defmodule BotManager.BotStateMachine do
       end
 
     %{distance: distance} =
-      get_distance_and_direction_to_positions(bot_state_machine.previous_position, bot_state_machine.current_position)
+      Utils.get_distance_and_direction_to_positions(
+        bot_state_machine.previous_position,
+        bot_state_machine.current_position
+      )
 
     bot_state_machine =
       Map.put(bot_state_machine, :progress_for_basic_skill, bot_state_machine.progress_for_basic_skill + distance)
 
-    next_state = BotStateMachineChecker.move_to_next_state(bot_player, bot_state_machine)
+    next_state = BotStateMachineChecker.move_to_next_state(bot_player, bot_state_machine, game_state.players)
 
     case next_state do
       :moving ->
@@ -60,6 +61,25 @@ defmodule BotManager.BotStateMachine do
 
       :running_away ->
         run_away(bot_player, game_state, bot_state_machine)
+
+      :tracking_player ->
+        players_with_distances =
+          Utils.map_directions_to_players(
+            game_state.players,
+            bot_player,
+            bot_state_machine.max_vision_range_to_follow_player
+          )
+
+        if Enum.empty?(players_with_distances) do
+          move(bot_player, bot_state_machine, game_state.zone.radius)
+        else
+          closest_player = Enum.min_by(players_with_distances, & &1.distance)
+
+          %{
+            action: determine_player_move_action(bot_player, bot_state_machine, closest_player.direction),
+            bot_state_machine: bot_state_machine
+          }
+        end
     end
   end
 
@@ -78,7 +98,8 @@ defmodule BotManager.BotStateMachine do
         bot_player: bot_player,
         bot_state_machine: bot_state_machine
       }) do
-    players_with_distances = map_directions_to_players(game_state, bot_player, @vision_range)
+    players_with_distances =
+      Utils.map_directions_to_players(game_state.players, bot_player, bot_state_machine.vision_range_to_attack_player)
 
     if Enum.empty?(players_with_distances) do
       move(bot_player, bot_state_machine, game_state.zone.radius)
@@ -117,54 +138,6 @@ defmodule BotManager.BotStateMachine do
     end
   end
 
-  # This function will map the directions and distance from the bot to the players.
-  defp map_directions_to_players(game_state, bot_player, max_distance) do
-    Map.delete(game_state.players, bot_player.id)
-    |> Map.filter(fn {player_id, player} ->
-      Utils.player_alive?(player) && player_within_visible_players?(bot_player, player_id) &&
-        not bot_belongs_to_the_same_team?(bot_player, player)
-    end)
-    |> Enum.map(fn {_player_id, player} ->
-      player_info =
-        get_distance_and_direction_to_positions(bot_player.position, player.position)
-
-      Map.merge(player, player_info)
-    end)
-    |> Enum.filter(fn player_info -> player_info.distance <= max_distance end)
-  end
-
-  defp get_distance_and_direction_to_positions(base_position, base_position) do
-    %{
-      direction: %{x: 0, y: 0},
-      distance: 0
-    }
-  end
-
-  defp get_distance_and_direction_to_positions(base_position, end_position) do
-    %{x: x, y: y} = Vector.sub(end_position, base_position)
-
-    distance = :math.sqrt(:math.pow(x, 2) + :math.pow(y, 2))
-
-    direction = %{x: x / distance, y: y / distance}
-
-    %{
-      direction: direction,
-      distance: distance
-    }
-  end
-
-  defp player_within_visible_players?(bot_player, player_id) do
-    {:player, bot_player_info} = bot_player.aditional_info
-    Enum.member?(bot_player_info.visible_players, player_id)
-  end
-
-  defp bot_belongs_to_the_same_team?(bot_player, player) do
-    {:player, bot_player_info} = bot_player.aditional_info
-    {:player, player_info} = player.aditional_info
-
-    bot_player_info.team == player_info.team
-  end
-
   # This function will determine the direction and action the bot will take.
   defp determine_player_move_action(bot_player, bot_state_machine, direction) do
     {:player, bot_player_info} = bot_player.aditional_info
@@ -177,7 +150,8 @@ defmodule BotManager.BotStateMachine do
   end
 
   defp run_away(bot_player, game_state, bot_state_machine) do
-    players_with_distances = map_directions_to_players(game_state, bot_player, @vision_range)
+    players_with_distances =
+      Utils.map_directions_to_players(game_state, bot_player, bot_state_machine.vision_range_to_attack_player)
 
     if Enum.empty?(players_with_distances) do
       move(bot_player, bot_state_machine, game_state.zone.radius)
@@ -207,7 +181,10 @@ defmodule BotManager.BotStateMachine do
     bot_state_machine = determine_position_to_move_to(bot_state_machine, safe_zone_radius)
 
     %{direction: direction} =
-      get_distance_and_direction_to_positions(bot_state_machine.current_position, bot_state_machine.position_to_move_to)
+      Utils.get_distance_and_direction_to_positions(
+        bot_state_machine.current_position,
+        bot_state_machine.position_to_move_to
+      )
 
     %{
       action: determine_player_move_action(bot_player, bot_state_machine, direction),

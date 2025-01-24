@@ -2,9 +2,10 @@ defmodule BotManager.BotStateMachineChecker do
   @moduledoc """
   This module will take care of deciding what the bot will do on each deciding step
   """
+  alias BotManager.Utils
   @low_health_percentage 40
   defstruct [
-    # The bot state, these are the possible states: [:idling, :moving, :attacking, :running_away]
+    # The bot state, these are the possible states: [:idling, :moving, :attacking, :running_away, :tracking_player]
     :state,
     # The previous position of the bot
     :previous_position,
@@ -23,7 +24,11 @@ defmodule BotManager.BotStateMachineChecker do
     # The time that the bot is going to take to change its position in milliseconds
     :time_amount_to_change_position,
     # The last time that the bot changed its position
-    :last_time_position_changed
+    :last_time_position_changed,
+    # The maximum vision range that the bot can follow a player
+    :max_vision_range_to_follow_player,
+    # The vision range that the bot has to find a player to attack
+    :vision_range_to_attack_player
   ]
 
   def new do
@@ -37,13 +42,16 @@ defmodule BotManager.BotStateMachineChecker do
       current_position: nil,
       position_to_move_to: nil,
       time_amount_to_change_position: 2000,
-      last_time_position_changed: 0
+      last_time_position_changed: 0,
+      max_vision_range_to_follow_player: 1500,
+      vision_range_to_attack_player: 1200
     }
   end
 
-  def move_to_next_state(bot_player, bot_state_machine) do
+  def move_to_next_state(bot_player, bot_state_machine, players) do
     cond do
       bot_health_low?(bot_player) -> :running_away
+      bot_can_follow_a_player?(bot_player, bot_state_machine, players) -> :tracking_player
       bot_can_turn_aggresive?(bot_state_machine) -> :attacking
       true -> :moving
     end
@@ -66,5 +74,16 @@ defmodule BotManager.BotStateMachineChecker do
     time_since_last_position_change = current_time - bot_state_machine.last_time_position_changed
 
     time_since_last_position_change >= bot_state_machine.time_amount_to_change_position
+  end
+
+  def bot_can_follow_a_player?(bot_player, bot_state_machine, players) do
+    players_nearby_to_follow =
+      Utils.map_directions_to_players(players, bot_player, bot_state_machine.max_vision_range_to_follow_player)
+
+    players_nearby_to_attack =
+      Utils.map_directions_to_players(players, bot_player, bot_state_machine.vision_range_to_attack_player)
+
+    Enum.empty?(players_nearby_to_attack) && not Enum.empty?(players_nearby_to_follow) &&
+      bot_can_turn_aggresive?(bot_state_machine)
   end
 end
