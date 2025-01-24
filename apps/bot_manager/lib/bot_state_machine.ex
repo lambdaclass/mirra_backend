@@ -76,7 +76,7 @@ defmodule BotManager.BotStateMachine do
           closest_player = Enum.min_by(players_with_distances, & &1.distance)
 
           %{
-            action: determine_player_move_action(bot_player, bot_state_machine, closest_player.direction),
+            action: determine_player_move_action(bot_player, closest_player.direction),
             bot_state_machine: bot_state_machine
           }
         end
@@ -139,7 +139,7 @@ defmodule BotManager.BotStateMachine do
   end
 
   # This function will determine the direction and action the bot will take.
-  defp determine_player_move_action(bot_player, bot_state_machine, direction) do
+  defp determine_player_move_action(bot_player, direction) do
     {:player, bot_player_info} = bot_player.aditional_info
 
     if Map.has_key?(bot_player_info.cooldowns, @dash_skill_key) do
@@ -162,7 +162,7 @@ defmodule BotManager.BotStateMachine do
         closest_player.direction |> Vector.normalize() |> Vector.rotate_by_degrees(180)
 
       %{
-        action: determine_player_move_action(bot_player, bot_state_machine, direction),
+        action: determine_player_move_action(bot_player, direction),
         bot_state_machine: bot_state_machine
       }
     end
@@ -187,7 +187,7 @@ defmodule BotManager.BotStateMachine do
       )
 
     %{
-      action: determine_player_move_action(bot_player, bot_state_machine, direction),
+      action: determine_player_move_action(bot_player, direction),
       bot_state_machine: bot_state_machine
     }
   end
