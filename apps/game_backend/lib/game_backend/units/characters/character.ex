@@ -104,8 +104,9 @@ defmodule GameBackend.Units.Characters.Character do
       :ultimate_skill_id,
       :version_id
     ])
-    |> cast_assoc(:basic_skill)
-    |> cast_assoc(:ultimate_skill)
+    |> cast_assoc(:basic_skill, with: &Skill.assoc_changeset/2)
+    |> cast_assoc(:dash_skill, with: &Skill.assoc_changeset/2)
+    |> cast_assoc(:ultimate_skill, with: &Skill.assoc_changeset/2)
     |> unique_constraint([:game_id, :name, :version_id])
     |> validate_required([:game_id, :name, :active, :faction])
     |> mana_recovery_strategy_validation()
