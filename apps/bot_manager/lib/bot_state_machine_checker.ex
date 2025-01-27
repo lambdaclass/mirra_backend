@@ -59,7 +59,7 @@ defmodule BotManager.BotStateMachineChecker do
 
   def move_to_next_state(bot_player, bot_state_machine, players) do
     cond do
-      bot_stuck?(bot_state_machine) -> :repositioning
+      bot_stuck?(bot_state_machine) -> :moving
       bot_health_low?(bot_player) -> :running_away
       bot_can_follow_a_player?(bot_player, bot_state_machine, players) -> :tracking_player
       bot_can_turn_aggresive?(bot_state_machine) -> :attacking

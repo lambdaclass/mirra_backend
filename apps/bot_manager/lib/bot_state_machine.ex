@@ -64,9 +64,6 @@ defmodule BotManager.BotStateMachine do
     next_state = BotStateMachineChecker.move_to_next_state(bot_player, bot_state_machine, game_state.players)
 
     case next_state do
-      :repositioning ->
-        move(bot_player, bot_state_machine, game_state.zone.radius)
-
       :moving ->
         move(bot_player, bot_state_machine, game_state.zone.radius)
 

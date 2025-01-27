@@ -44,10 +44,6 @@ Formally, for a bot to reach this state, players need to be near it but not clos
 
 ![aggresive areas](bots_aggresive_areas.png)
 
-#### Repositioning
-
-Bots will enter this state if they are stuck in a position where they cannot move, causing them to change their walking destination.
-
 #### Running Away
 
 Bots will transition to this state whenever their health drops below a certain percentage. For now, this threshold is set at 40%. In this state, bots will attempt to escape from players by running in the opposite direction of the closest one. This does not necessarily mean they will run away from the player attacking them.
