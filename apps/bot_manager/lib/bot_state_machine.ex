@@ -45,9 +45,28 @@ defmodule BotManager.BotStateMachine do
     bot_state_machine =
       Map.put(bot_state_machine, :progress_for_basic_skill, bot_state_machine.progress_for_basic_skill + distance)
 
+    bot_state_machine =
+      cond do
+        Vector.distance(bot_state_machine.previous_position, bot_state_machine.current_position) < 100 &&
+            is_nil(bot_state_machine.start_time_stuck_in_position) ->
+          Map.put(bot_state_machine, :start_time_stuck_in_position, :os.system_time(:millisecond))
+          |> Map.put(:stuck_in_position, bot_state_machine.current_position)
+
+        not is_nil(bot_state_machine.stuck_in_position) &&
+            Vector.distance(bot_state_machine.stuck_in_position, bot_state_machine.current_position) > 100 ->
+          Map.put(bot_state_machine, :start_time_stuck_in_position, nil)
+          |> Map.put(:stuck_in_position, nil)
+
+        true ->
+          bot_state_machine
+      end
+
     next_state = BotStateMachineChecker.move_to_next_state(bot_player, bot_state_machine, game_state.players)
 
     case next_state do
+      :repositioning ->
+        move(bot_player, bot_state_machine, game_state.zone.radius)
+
       :moving ->
         move(bot_player, bot_state_machine, game_state.zone.radius)
 
