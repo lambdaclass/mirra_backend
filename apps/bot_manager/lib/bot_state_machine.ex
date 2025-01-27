@@ -145,7 +145,7 @@ defmodule BotManager.BotStateMachine do
     if Map.has_key?(bot_player_info.cooldowns, @dash_skill_key) do
       {:move, direction}
     else
-      {:use_skill, @dash_skill_key, direction}
+      {:use_skill, @dash_skill_key, bot_player.direction}
     end
   end
 
