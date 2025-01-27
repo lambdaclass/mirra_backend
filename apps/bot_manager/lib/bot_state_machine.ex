@@ -25,41 +25,7 @@ defmodule BotManager.BotStateMachine do
         bot_state_machine: bot_state_machine,
         attack_blocked: attack_blocked
       }) do
-    bot_state_machine =
-      if is_nil(bot_state_machine.previous_position) do
-        bot_state_machine
-        |> Map.put(:previous_position, bot_player.position)
-        |> Map.put(:current_position, bot_player.position)
-      else
-        bot_state_machine
-        |> Map.put(:previous_position, bot_state_machine.current_position)
-        |> Map.put(:current_position, bot_player.position)
-      end
-
-    %{distance: distance} =
-      Utils.get_distance_and_direction_to_positions(
-        bot_state_machine.previous_position,
-        bot_state_machine.current_position
-      )
-
-    bot_state_machine =
-      Map.put(bot_state_machine, :progress_for_basic_skill, bot_state_machine.progress_for_basic_skill + distance)
-
-    bot_state_machine =
-      cond do
-        Vector.distance(bot_state_machine.previous_position, bot_state_machine.current_position) < 100 &&
-            is_nil(bot_state_machine.start_time_stuck_in_position) ->
-          Map.put(bot_state_machine, :start_time_stuck_in_position, :os.system_time(:millisecond))
-          |> Map.put(:stuck_in_position, bot_state_machine.current_position)
-
-        not is_nil(bot_state_machine.stuck_in_position) &&
-            Vector.distance(bot_state_machine.stuck_in_position, bot_state_machine.current_position) > 100 ->
-          Map.put(bot_state_machine, :start_time_stuck_in_position, nil)
-          |> Map.put(:stuck_in_position, nil)
-
-        true ->
-          bot_state_machine
-      end
+    bot_state_machine = preprocess_bot_state(bot_state_machine, bot_player)
 
     next_state = BotStateMachineChecker.move_to_next_state(bot_player, bot_state_machine, game_state.players)
 
@@ -79,23 +45,7 @@ defmodule BotManager.BotStateMachine do
         run_away(bot_player, game_state, bot_state_machine)
 
       :tracking_player ->
-        players_with_distances =
-          Utils.map_directions_to_players(
-            game_state.players,
-            bot_player,
-            bot_state_machine.max_vision_range_to_follow_player
-          )
-
-        if Enum.empty?(players_with_distances) do
-          move(bot_player, bot_state_machine, game_state.zone.radius)
-        else
-          closest_player = Enum.min_by(players_with_distances, & &1.distance)
-
-          %{
-            action: determine_player_move_action(bot_player, closest_player.direction),
-            bot_state_machine: bot_state_machine
-          }
-        end
+        track_player(game_state, bot_player, bot_state_machine)
     end
   end
 
@@ -165,6 +115,63 @@ defmodule BotManager.BotStateMachine do
     end
   end
 
+  defp track_player(game_state, bot_player, bot_state_machine) do
+    players_with_distances =
+      Utils.map_directions_to_players(
+        game_state.players,
+        bot_player,
+        bot_state_machine.max_vision_range_to_follow_player
+      )
+
+    if Enum.empty?(players_with_distances) do
+      move(bot_player, bot_state_machine, game_state.zone.radius)
+    else
+      closest_player = Enum.min_by(players_with_distances, & &1.distance)
+
+      %{
+        action: determine_player_move_action(bot_player, closest_player.direction),
+        bot_state_machine: bot_state_machine
+      }
+    end
+  end
+
+  defp preprocess_bot_state(bot_state_machine, bot_player) do
+    bot_state_machine =
+      if is_nil(bot_state_machine.previous_position) do
+        bot_state_machine
+        |> Map.put(:previous_position, bot_player.position)
+        |> Map.put(:current_position, bot_player.position)
+      else
+        bot_state_machine
+        |> Map.put(:previous_position, bot_state_machine.current_position)
+        |> Map.put(:current_position, bot_player.position)
+      end
+
+    %{distance: distance} =
+      Utils.get_distance_and_direction_to_positions(
+        bot_state_machine.previous_position,
+        bot_state_machine.current_position
+      )
+
+    bot_state_machine =
+      Map.put(bot_state_machine, :progress_for_basic_skill, bot_state_machine.progress_for_basic_skill + distance)
+
+    cond do
+      Vector.distance(bot_state_machine.previous_position, bot_state_machine.current_position) < 100 &&
+          is_nil(bot_state_machine.start_time_stuck_in_position) ->
+        Map.put(bot_state_machine, :start_time_stuck_in_position, :os.system_time(:millisecond))
+        |> Map.put(:stuck_in_position, bot_state_machine.current_position)
+
+      not is_nil(bot_state_machine.stuck_in_position) &&
+          Vector.distance(bot_state_machine.stuck_in_position, bot_state_machine.current_position) > 100 ->
+        Map.put(bot_state_machine, :start_time_stuck_in_position, nil)
+        |> Map.put(:stuck_in_position, nil)
+
+      true ->
+        bot_state_machine
+    end
+  end
+
   defp run_away(bot_player, game_state, bot_state_machine) do
     players_with_distances =
       Utils.map_directions_to_players(game_state, bot_player, bot_state_machine.vision_range_to_attack_player)
@@ -211,7 +218,7 @@ defmodule BotManager.BotStateMachine do
   defp determine_position_to_move_to(bot_state_machine, safe_zone_radius) do
     cond do
       is_nil(bot_state_machine.position_to_move_to) ||
-          not Utils.is_position_within_radius(bot_state_machine.position_to_move_to, safe_zone_radius) ->
+          not Utils.position_within_radius(bot_state_machine.position_to_move_to, safe_zone_radius) ->
         position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
 
         Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)

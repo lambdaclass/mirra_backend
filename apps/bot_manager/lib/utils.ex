@@ -16,7 +16,7 @@ defmodule BotManager.Utils do
     %{x: x, y: y}
   end
 
-  def is_position_within_radius(position, radius) do
+  def position_within_radius(position, radius) do
     Vector.distance(%{x: 0, y: 0}, position) <= radius
   end
 
