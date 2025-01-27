@@ -16,6 +16,10 @@ defmodule BotManager.Utils do
     %{x: x, y: y}
   end
 
+  def is_position_within_radius(position, radius) do
+    Vector.distance(%{x: 0, y: 0}, position) <= radius
+  end
+
   # This function will map the directions and distance from the bot to the players.
   def map_directions_to_players(players, bot_player, max_distance) do
     Map.delete(players, bot_player.id)

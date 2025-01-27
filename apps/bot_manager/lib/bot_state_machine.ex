@@ -210,7 +210,8 @@ defmodule BotManager.BotStateMachine do
 
   defp determine_position_to_move_to(bot_state_machine, safe_zone_radius) do
     cond do
-      is_nil(bot_state_machine.position_to_move_to) ->
+      is_nil(bot_state_machine.position_to_move_to) ||
+          not Utils.is_position_within_radius(bot_state_machine.position_to_move_to, safe_zone_radius) ->
         position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
 
         Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
