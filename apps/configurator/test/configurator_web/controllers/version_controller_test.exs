@@ -17,6 +17,13 @@ defmodule ConfiguratorWeb.VersionControllerTest do
     end
   end
 
+  describe "new version" do
+    test "renders form", %{conn: conn} do
+      conn = get(conn, ~p"/versions/new")
+      assert html_response(conn, 200) =~ "New Version"
+    end
+  end
+
   describe "create version" do
     test "redirects to show when data is valid", %{conn: conn} do
       conn = post(conn, ~p"/versions", version: @create_attrs)
