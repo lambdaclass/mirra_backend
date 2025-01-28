@@ -9,7 +9,7 @@ defmodule GameBackend.CurseOfMirra.GameModeConfiguration do
   alias GameBackend.Configuration.Version
   alias GameBackend.CurseOfMirra.MapModeParams
 
-  @derive {Jason.Encoder, only: [:name, :zone_enabled, :bots_enabled, :match_duration_ms, :respawn_time_ms]}
+  @derive {Jason.Encoder, only: [:type, :name, :zone_enabled, :bots_enabled, :match_duration_ms, :respawn_time_ms, :map_mode_params]}
 
   schema "game_mode_configurations" do
     field(:name, :string)
@@ -29,8 +29,8 @@ defmodule GameBackend.CurseOfMirra.GameModeConfiguration do
     timestamps(type: :utc_datetime)
   end
 
-  @required [:type, :version_id, :bots_enabled, :zone_enabled]
-  @permitted [:type, :zone_enabled, :bots_enabled, :match_duration_ms, :respawn_time_ms, :version_id, :team_size] ++
+  @required [:name, :type, :version_id, :bots_enabled, :zone_enabled]
+  @permitted [:name, :type, :zone_enabled, :bots_enabled, :match_duration_ms, :respawn_time_ms, :version_id, :team_size] ++
                @required
 
   @doc false
