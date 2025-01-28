@@ -4,17 +4,17 @@
   </.error>
   <p class="font-semibold"><%= "Version: #{@version.name}" %></p>
   <.input type="hidden" field={f[:version_id]} value={@version.id} />
+  <.input field={f[:name]} label="Name" />
   <.input
-    field={f[:name]}
+    field={f[:type]}
     type="select"
-    label="Game Mode"
-    options={Ecto.Enum.values(GameBackend.CurseOfMirra.GameModeConfiguration, :name)}
+    label="Game Mode Type"
+    options={Ecto.Enum.values(GameBackend.CurseOfMirra.GameModeConfiguration, :type)}
   />
-  <.input field={f[:zone_enabled]} type="checkbox" label="Zone enabled" />
-  <.input field={f[:bots_enabled]} type="checkbox" label="Bots enabled" />
-  <.input field={f[:match_duration_ms]} type="number" label="Match duration ms" />
-  <.input field={f[:respawn_time_ms]} type="number" label="Respawn time ms" />
 
+  <%= if @game_mode_type == "team" do %>
+    <.input field={f[:team_size]} type="number" label="Team Size" />
+  <% end %>
   <div class="flex items-center justify-between gap-6">
     <span
       phx-click="add_map_params"
@@ -24,6 +24,10 @@
     </span>
   </div>
 
+  <.input field={f[:zone_enabled]} type="checkbox" label="Zone enabled" />
+  <.input field={f[:bots_enabled]} type="checkbox" label="Bots enabled" />
+  <.input field={f[:match_duration_ms]} type="number" label="Match duration ms" />
+  <.input field={f[:respawn_time_ms]} type="number" label="Respawn time ms" />
   <div class="flex items-center justify-between gap-6">
     <span
       phx-click="remove_map_params"

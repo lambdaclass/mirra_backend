@@ -12,7 +12,8 @@ defmodule GameBackend.CurseOfMirra.GameModeConfiguration do
   @derive {Jason.Encoder, only: [:name, :zone_enabled, :bots_enabled, :match_duration_ms, :respawn_time_ms]}
 
   schema "game_mode_configurations" do
-    field(:name, Ecto.Enum, values: [:battle_royale, :deathmatch])
+    field(:name, :string)
+    field(:type, Ecto.Enum, values: [:battle_royale, :deathmatch, :team])
     field(:zone_enabled, :boolean)
     field(:bots_enabled, :boolean)
     field(:match_duration_ms, :integer)
@@ -28,8 +29,8 @@ defmodule GameBackend.CurseOfMirra.GameModeConfiguration do
     timestamps(type: :utc_datetime)
   end
 
-  @required [:name, :version_id, :bots_enabled, :zone_enabled]
-  @permitted [:name, :zone_enabled, :bots_enabled, :match_duration_ms, :respawn_time_ms, :version_id, :team_size] ++
+  @required [:type, :version_id, :bots_enabled, :zone_enabled]
+  @permitted [:type, :zone_enabled, :bots_enabled, :match_duration_ms, :respawn_time_ms, :version_id, :team_size] ++
                @required
 
   @doc false
