@@ -10,10 +10,9 @@ defmodule GameBackend.CurseOfMirra.MapModeParams do
   alias GameBackend.CurseOfMirra.GameModeConfiguration
   alias GameBackend.CurseOfMirra.Position
 
-  @derive {Jason.Encoder, only: [:amount_of_players, :solo_initial_positions, :team_initial_positions]}
+  @derive {Jason.Encoder, only: [:solo_initial_positions, :team_initial_positions]}
 
   schema "map_mode_params" do
-    field(:amount_of_players, :integer)
     field(:deleted_at, :naive_datetime)
     embeds_many(:solo_initial_positions, Position, on_replace: :delete)
     embeds_many(:team_initial_positions, Position, on_replace: :delete)
@@ -27,8 +26,8 @@ defmodule GameBackend.CurseOfMirra.MapModeParams do
   @doc false
   def changeset(map_mode_params, attrs) do
     map_mode_params
-    |> cast(attrs, [:amount_of_players, :map_id, :game_mode_id])
-    |> validate_required([:map_id, :game_mode_id, :amount_of_players])
+    |> cast(attrs, [:map_id, :game_mode_id])
+    |> validate_required([:map_id, :game_mode_id])
     |> cast_embed(:solo_initial_positions)
     |> cast_embed(:team_initial_positions)
   end
@@ -36,8 +35,8 @@ defmodule GameBackend.CurseOfMirra.MapModeParams do
   @doc false
   def assoc_changeset(map_mode_params, attrs) do
     map_mode_params
-    |> cast(attrs, [:amount_of_players, :map_id, :game_mode_id])
-    |> validate_required([:map_id, :amount_of_players])
+    |> cast(attrs, [:map_id, :game_mode_id])
+    |> validate_required([:map_id])
     |> cast_embed(:solo_initial_positions)
     |> cast_embed(:team_initial_positions)
   end
