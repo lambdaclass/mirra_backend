@@ -2,6 +2,7 @@ defmodule Arena.Matchmaking do
   @moduledoc """
   Module that handles matchmaking queues
   """
+  require Logger
 
   def get_queue("battle-royale"), do: Arena.Matchmaking.GameLauncher
   def get_queue("pair"), do: Arena.Matchmaking.PairMode

@@ -57,14 +57,22 @@ defmodule Arena.Matchmaking.GameLauncher do
 
     state =
       if not Map.has_key?(state, :game_mode_configuration) do
-        game_mode_configuration = Arena.Configuration.get_game_mode_configuration("battle", "battle_royale")
-        Map.put(state, :game_mode_configuration, game_mode_configuration)
+        case Arena.Configuration.get_game_mode_configuration("battle", "battle_royale") do
+          {:error, _} ->
+            state
+
+          {:ok, game_mode_configuration} ->
+            # This is needed because we might not want to send a request every 300 seconds to the game backend
+            Process.send_after(self(), :update_params, 5000)
+            Map.put(state, :game_mode_configuration, game_mode_configuration)
+        end
       else
         state
       end
 
-    if length(clients) >= Application.get_env(:arena, :players_needed_in_match) or
-         (diff >= Utils.start_timeout_ms() and length(clients) > 0) do
+    if Map.has_key?(state, :game_mode_configuration) &&
+         (length(clients) >= state.game_mode_configuration.amount_of_players or
+            (diff >= Utils.start_timeout_ms() and length(clients) > 0)) do
       send(self(), :start_game)
     end
 
@@ -72,7 +80,7 @@ defmodule Arena.Matchmaking.GameLauncher do
   end
 
   def handle_info(:start_game, state) do
-    {game_clients, remaining_clients} = Enum.split(state.clients, Application.get_env(:arena, :players_needed_in_match))
+    {game_clients, remaining_clients} = Enum.split(state.clients, state.game_mode_configuration.amount_of_players)
     create_game_for_clients(game_clients)
 
     {:noreply, %{state | clients: remaining_clients}}
@@ -85,6 +93,20 @@ defmodule Arena.Matchmaking.GameLauncher do
     end)
 
     {:noreply, state}
+  end
+
+  def handle_info(:update_params, state) do
+    game_mode_configuration =
+      case Arena.Configuration.get_game_mode_configuration("battle", "battle_royale") do
+        {:error, _} ->
+          state
+
+        {:ok, game_mode_configuration} ->
+          game_mode_configuration
+      end
+
+    Process.send_after(self(), :update_params, 5000)
+    {:noreply, Map.put(state, :game_mode_configuration, game_mode_configuration)}
   end
 
   defp maybe_make_batch_start_at([], _) do
@@ -124,7 +146,7 @@ defmodule Arena.Matchmaking.GameLauncher do
     # We spawn bots only if there is one player
     bot_clients =
       case Enum.count(clients) do
-        1 -> get_bot_clients(Application.get_env(:arena, :players_needed_in_match) - Enum.count(clients))
+        1 -> get_bot_clients(game_params.amount_of_players - Enum.count(clients))
         _ -> []
       end
 

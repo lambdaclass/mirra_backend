@@ -60,14 +60,22 @@ defmodule Arena.Matchmaking.DeathmatchMode do
 
     state =
       if not Map.has_key?(state, :game_mode_configuration) do
-        game_mode_configuration = Arena.Configuration.get_game_mode_configuration("deathmatch", "deathmatch")
-        Map.put(state, :game_mode_configuration, game_mode_configuration)
+        case Arena.Configuration.get_game_mode_configuration("deathmatch", "deathmatch") do
+          {:error, _} ->
+            state
+
+          {:ok, game_mode_configuration} ->
+            # This is needed because we might not want to send a request every 300 seconds to the game backend
+            Process.send_after(self(), :update_params, 5000)
+            Map.put(state, :game_mode_configuration, game_mode_configuration)
+        end
       else
         state
       end
 
-    if length(clients) >= state.game_mode_configuration.amount_of_players or
-         (diff >= Utils.start_timeout_ms() and length(clients) > 0) do
+    if Map.has_key?(state, :game_mode_configuration) &&
+         (length(clients) >= state.game_mode_configuration.amount_of_players or
+            (diff >= Utils.start_timeout_ms() and length(clients) > 0)) do
       send(self(), :start_game)
     end
 
@@ -90,6 +98,20 @@ defmodule Arena.Matchmaking.DeathmatchMode do
     end)
 
     {:noreply, state}
+  end
+
+  def handle_info(:update_params, state) do
+    game_mode_configuration =
+      case Arena.Configuration.get_game_mode_configuration("deathmatch", "deathmatch") do
+        {:error, _} ->
+          state
+
+        {:ok, game_mode_configuration} ->
+          game_mode_configuration
+      end
+
+    Process.send_after(self(), :update_params, 5000)
+    {:noreply, Map.put(state, :game_mode_configuration, game_mode_configuration)}
   end
 
   defp maybe_make_batch_start_at([], _) do

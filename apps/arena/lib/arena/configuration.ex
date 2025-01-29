@@ -19,14 +19,18 @@ defmodule Arena.Configuration do
     query_params = URI.encode_query(%{"name" => name, "type" => type})
     url = "#{gateway_url}/curse/configuration/game_modes?#{query_params}"
 
-    {:ok, payload} =
-      Finch.build(:get, url, [{"content-type", "application/json"}])
-      |> Finch.request(Arena.Finch)
+    case Finch.build(:get, url, [{"content-type", "application/json"}])
+         |> Finch.request(Arena.Finch) do
+      {:ok, payload} ->
+        {:ok,
+         Jason.decode!(payload.body, [{:keys, :atoms}])
+         |> Map.update!(:map_mode_params, fn game_mode_params ->
+           parse_map_mode_params(game_mode_params)
+         end)}
 
-    Jason.decode!(payload.body, [{:keys, :atoms}])
-    |> Map.update!(:map_mode_params, fn map_mode_params ->
-      parse_map_mode_params(map_mode_params)
-    end)
+      {:error, _} ->
+        {:error, %{}}
+    end
   end
 
   defp parse_map_mode_params(map_mode_params) do
