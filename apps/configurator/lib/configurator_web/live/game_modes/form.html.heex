@@ -12,9 +12,14 @@
     options={Ecto.Enum.values(GameBackend.CurseOfMirra.GameModeConfiguration, :type)}
   />
 
-  <%= if @game_mode_type == "team" do %>
+  <.input field={f[:team_enabled]} type="checkbox" label="Enable Teams" phx-update="ignore" />
+
+  <.input field={f[:amount_of_players]} label="Amount of players" />
+
+  <%= if @team_mode do %>
     <.input field={f[:team_size]} type="number" label="Team Size" />
   <% end %>
+
   <div class="flex items-center justify-between gap-6">
     <span
       phx-click="add_map_params"
@@ -28,14 +33,17 @@
   <.input field={f[:bots_enabled]} type="checkbox" label="Bots enabled" />
   <.input field={f[:match_duration_ms]} type="number" label="Match duration ms" />
   <.input field={f[:respawn_time_ms]} type="number" label="Respawn time ms" />
-  <div class="flex items-center justify-between gap-6">
-    <span
-      phx-click="remove_map_params"
-      class="relative phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3 text-sm font-semibold leading-6 text-white active:text-white/80"
-    >
-      Remove Map Params
-    </span>
-  </div>
+
+  <%= if not is_nil(Ecto.Changeset.get_field(@changeset, :map_mode_params)) do %>
+    <div class="flex items-center justify-between gap-6">
+      <span
+        phx-click="remove_map_params"
+        class="relative phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3 text-sm font-semibold leading-6 text-white active:text-white/80"
+      >
+        Remove Map Params
+      </span>
+    </div>
+  <% end %>
 
   <.inputs_for :let={fp} field={f[:map_mode_params]}>
     <h3>Map specific params</h3>
@@ -48,9 +56,6 @@
           prompt="Select a map"
           options={Enum.map(@maps, &{&1.name, &1.id})}
         />
-      </div>
-      <div class="px-6 py-4">
-        <.input field={fp[:amount_of_players]} type="number" label="Amount of players" />
       </div>
       <div class="px-6 py-4">
         <.input
