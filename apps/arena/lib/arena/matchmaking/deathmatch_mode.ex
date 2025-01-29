@@ -7,8 +7,6 @@ defmodule Arena.Matchmaking.DeathmatchMode do
 
   # 3 Mins
   # TODO: add this to the configurator https://github.com/lambdaclass/mirra_backend/issues/985
-  @match_duration 180_000
-  @respawn_time 5000
 
   # API
   def start_link(_) do
@@ -60,7 +58,15 @@ defmodule Arena.Matchmaking.DeathmatchMode do
     Process.send_after(self(), :launch_game?, 300)
     diff = System.monotonic_time(:millisecond) - state.batch_start_at
 
-    if length(clients) >= Application.get_env(:arena, :players_needed_in_match) or
+    state =
+      if not Map.has_key?(state, :game_mode_configuration) do
+        game_mode_configuration = Arena.Configuration.get_game_mode_configuration("deathmatch", "deathmatch")
+        Map.put(state, :game_mode_configuration, game_mode_configuration)
+      else
+        state
+      end
+
+    if length(clients) >= state.game_mode_configuration.amount_of_players or
          (diff >= Utils.start_timeout_ms() and length(clients) > 0) do
       send(self(), :start_game)
     end
@@ -69,8 +75,10 @@ defmodule Arena.Matchmaking.DeathmatchMode do
   end
 
   def handle_info(:start_game, state) do
-    {game_clients, remaining_clients} = Enum.split(state.clients, Application.get_env(:arena, :players_needed_in_match))
-    create_game_for_clients(game_clients)
+    {game_clients, remaining_clients} =
+      Enum.split(state.clients, state.game_mode_configuration.amount_of_players)
+
+    create_game_for_clients(game_clients, state.game_mode_configuration)
 
     {:noreply, %{state | clients: remaining_clients}}
   end
@@ -115,18 +123,16 @@ defmodule Arena.Matchmaking.DeathmatchMode do
 
   # Receives a list of clients.
   # Fills the given list with bots clients, creates a game and tells every client to join that game.
-  defp create_game_for_clients(clients, game_params \\ %{}) do
+  defp create_game_for_clients(clients, game_params) do
     game_params =
       Map.merge(game_params, %{
-        game_mode: :DEATHMATCH,
-        match_duration: @match_duration,
-        respawn_time: @respawn_time
+        game_mode: :DEATHMATCH
       })
 
     # We spawn bots only if there is one player
     bot_clients =
       case Enum.count(clients) do
-        1 -> get_bot_clients(Application.get_env(:arena, :players_needed_in_match) - Enum.count(clients))
+        1 -> get_bot_clients(game_params.amount_of_players - Enum.count(clients))
         _ -> []
       end
 

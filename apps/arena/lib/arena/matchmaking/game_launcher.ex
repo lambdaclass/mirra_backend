@@ -55,6 +55,14 @@ defmodule Arena.Matchmaking.GameLauncher do
     Process.send_after(self(), :launch_game?, 300)
     diff = System.monotonic_time(:millisecond) - state.batch_start_at
 
+    state =
+      if not Map.has_key?(state, :game_mode_configuration) do
+        game_mode_configuration = Arena.Configuration.get_game_mode_configuration("battle", "battle_royale")
+        Map.put(state, :game_mode_configuration, game_mode_configuration)
+      else
+        state
+      end
+
     if length(clients) >= Application.get_env(:arena, :players_needed_in_match) or
          (diff >= Utils.start_timeout_ms() and length(clients) > 0) do
       send(self(), :start_game)

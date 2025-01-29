@@ -53,6 +53,15 @@ defmodule Arena.Matchmaking.PairMode do
   @impl true
   def handle_info(:launch_game?, %{clients: clients} = state) do
     Process.send_after(self(), :launch_game?, 300)
+
+    state =
+      if not Map.has_key?(state, :game_mode_configuration) do
+        game_mode_configuration = Arena.Configuration.get_game_mode_configuration("pair", "battle_royale")
+        Map.put(state, :game_mode_configuration, game_mode_configuration)
+      else
+        state
+      end
+
     diff = System.monotonic_time(:millisecond) - state.batch_start_at
 
     if length(clients) >= Application.get_env(:arena, :players_needed_in_match) or

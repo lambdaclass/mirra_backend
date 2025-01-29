@@ -14,6 +14,29 @@ defmodule Arena.Configuration do
     |> Map.put(:client_config, client_config)
   end
 
+  def get_game_mode_configuration(name, type) do
+    gateway_url = Application.get_env(:arena, :gateway_url)
+    query_params = URI.encode_query(%{"name" => name, "type" => type})
+    url = "#{gateway_url}/curse/configuration/game_modes?#{query_params}"
+
+    {:ok, payload} =
+      Finch.build(:get, url, [{"content-type", "application/json"}])
+      |> Finch.request(Arena.Finch)
+
+    Jason.decode!(payload.body, [{:keys, :atoms}])
+    |> Map.update!(:map_mode_params, fn map_mode_params ->
+      parse_map_mode_params(map_mode_params)
+    end)
+  end
+
+  defp parse_map_mode_params(map_mode_params) do
+    %{
+      map_mode_params
+      | solo_initial_positions: Enum.map(map_mode_params.solo_initial_positions, &parse_position/1),
+        team_initial_positions: Enum.map(map_mode_params.team_initial_positions, &parse_position/1)
+    }
+  end
+
   defp get_current_game_configuration do
     gateway_url = Application.get_env(:arena, :gateway_url)
 

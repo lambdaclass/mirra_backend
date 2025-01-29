@@ -50,7 +50,6 @@ defmodule ConfiguratorWeb.GameModeConfigurationsLive.Form do
   end
 
   def handle_event("validate", %{"_target" => ["game_mode_configuration", "team_enabled"]} = params, socket) do
-    IO.inspect(params)
     {:noreply, assign(socket, :team_mode, params["game_mode_configuration"]["team_enabled"] == "true")}
   end
 
