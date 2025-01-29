@@ -46,9 +46,9 @@ defmodule BotManager.Utils do
   def get_distance_and_direction_to_positions(base_position, end_position) do
     %{x: x, y: y} = Vector.sub(end_position, base_position)
 
-    distance = :math.sqrt(:math.pow(x, 2) + :math.pow(y, 2))
+    distance = Vector.norm(%{x: x, y: y})
 
-    direction = %{x: x / distance, y: y / distance}
+    direction = Vector.normalize(%{x: x, y: y})
 
     %{
       direction: direction,

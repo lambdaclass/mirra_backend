@@ -43,8 +43,12 @@ defmodule BotManager.Math.Vector do
     }
   end
 
+  def norm(%{x: x, y: y}) do
+    :math.sqrt(:math.pow(x, 2) + :math.pow(y, 2))
+  end
+
   def normalize(%{x: x, y: y}) do
-    distance = :math.sqrt(:math.pow(x, 2) + :math.pow(y, 2))
+    distance = norm(%{x: x, y: y})
 
     %{
       x: x / distance,
