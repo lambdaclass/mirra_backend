@@ -1,0 +1,22 @@
+<.simple_form :let={f} for={%{}} action="/versions/create_copy">
+  <.header>
+    Copy version
+    <:subtitle>Use this form to create a new version record in your database.</:subtitle>
+  </.header>
+
+  <.input
+    field={f[:version_id]}
+    type="select"
+    options={Enum.map(@versions, fn version -> {version.name, version.id} end)}
+    label="Version to copy from"
+    value={Enum.find(@versions, %{}, fn version -> version.current end) |> Map.get(:id)}
+  />
+
+  <.input field={f[:name]} type="text" label="New copy version name" />
+
+  <:actions>
+    <.button>Create new copy version</.button>
+  </:actions>
+</.simple_form>
+
+<.back navigate={~p"/versions"}>Back to versions</.back>

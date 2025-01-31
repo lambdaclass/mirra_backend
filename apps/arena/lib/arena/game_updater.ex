@@ -7,7 +7,6 @@ defmodule Arena.GameUpdater do
   use GenServer
   alias Arena.Game.Obstacle
   alias Arena.Game.Bounties
-  alias Arena.GameBountiesFetcher
   alias Arena.GameTracker
   alias Arena.Game.Crate
   alias Arena.Game.Effect
@@ -117,20 +116,18 @@ defmodule Arena.GameUpdater do
         {:reply, :not_a_client, state}
 
       player_id ->
-        bounties =
-          GameBountiesFetcher.get_bounties()
-          |> Enum.shuffle()
-          |> Enum.take(state.game_config.game.bounties_options_amount)
+        player = Map.get(state.game_state.players, player_id)
 
         response = %{
           player_id: player_id,
+          team: player.aditional_info.team,
           game_config: state.game_config,
           game_status: state.game_state.status,
-          bounties: bounties
+          bounties: []
         }
 
         state =
-          put_in(state, [:game_state, :players, player_id, :aditional_info, :bounties], bounties)
+          put_in(state, [:game_state, :players, player_id, :aditional_info, :bounties], [])
 
         {:reply, {:ok, response}, state}
     end
