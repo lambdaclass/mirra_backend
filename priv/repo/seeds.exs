@@ -5931,7 +5931,7 @@ battle_mode_params = %{
   bots_enabled: true,
   match_duration_ms: 180_000,
   amount_of_players: 12,
-  map_mode_params: %{
+  map_mode_params: [%{
     solo_initial_positions: [
       %{x: -4961, y: 5001},
       %{x: -2417, y: 5103},
@@ -5948,7 +5948,7 @@ battle_mode_params = %{
     ],
     team_team_initial_positions: [],
     map_id: merliot_map_configuration.id
-  }
+  }]
 }
 
 deathmatch_mode_params = %{
@@ -5960,7 +5960,7 @@ deathmatch_mode_params = %{
   match_duration_ms: 180_000,
   amount_of_players: 12,
   respawn_time_ms: 5000,
-  map_mode_params: %{
+  map_mode_params: [%{
     solo_initial_positions: [
       %{x: -4961, y: 5001},
       %{x: -2417, y: 5103},
@@ -5977,7 +5977,7 @@ deathmatch_mode_params = %{
     ],
     team_team_initial_positions: [],
     map_id: merliot_map_configuration.id
-  }
+  }]
 }
 
 pair_mode_params = %{
@@ -5989,7 +5989,7 @@ pair_mode_params = %{
   match_duration_ms: 180_000,
   amount_of_players: 12,
   respawn_time_ms: 5000,
-  map_mode_params: %{
+  map_mode_params: [%{
     solo_initial_positions: [],
     team_initial_positions: [
       %{x: -5346, y: 4709},
@@ -6006,7 +6006,7 @@ pair_mode_params = %{
       %{x: -5476, y: -330}
     ],
     map_id: merliot_map_configuration.id
-  },
+  }],
   version_id: version.id
 }
 
