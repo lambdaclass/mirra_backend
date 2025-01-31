@@ -36,7 +36,14 @@ defmodule ConfiguratorWeb.GameModeConfigurationsLive.Form do
     maps = Configuration.list_map_configurations_by_version(version.id)
 
     socket =
-      assign(socket, changeset: changeset, action: "save", maps: maps, version: version, game_mode_configuration: %{}, team_mode: false)
+      assign(socket,
+        changeset: changeset,
+        action: "save",
+        maps: maps,
+        version: version,
+        game_mode_configuration: %{},
+        team_mode: false
+      )
 
     {:ok, socket}
   end
