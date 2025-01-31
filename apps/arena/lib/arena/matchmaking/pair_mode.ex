@@ -55,7 +55,9 @@ defmodule Arena.Matchmaking.PairMode do
     Process.send_after(self(), :launch_game?, 300)
 
     state =
-      if not Map.has_key?(state, :game_mode_configuration) do
+      if Map.has_key?(state, :game_mode_configuration) do
+        state
+      else
         case Arena.Configuration.get_game_mode_configuration("pair", "battle_royale") do
           {:error, _} ->
             state
@@ -65,8 +67,6 @@ defmodule Arena.Matchmaking.PairMode do
             Process.send_after(self(), :update_params, 5000)
             Map.put(state, :game_mode_configuration, game_mode_configuration)
         end
-      else
-        state
       end
 
     diff = System.monotonic_time(:millisecond) - state.batch_start_at
@@ -141,7 +141,7 @@ defmodule Arena.Matchmaking.PairMode do
 
   # Receives a list of clients.
   # Fills the given list with bots clients, creates a game and tells every client to join that game.
-  defp create_game_for_clients(clients, game_params \\ %{}) do
+  defp create_game_for_clients(clients, game_params) do
     game_params = Map.put(game_params, :game_mode, :PAIR)
 
     bot_clients =

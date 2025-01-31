@@ -56,7 +56,9 @@ defmodule Arena.Matchmaking.GameLauncher do
     diff = System.monotonic_time(:millisecond) - state.batch_start_at
 
     state =
-      if not Map.has_key?(state, :game_mode_configuration) do
+      if Map.has_key?(state, :game_mode_configuration) do
+        state
+      else
         case Arena.Configuration.get_game_mode_configuration("battle", "battle_royale") do
           {:error, _} ->
             state
@@ -66,8 +68,6 @@ defmodule Arena.Matchmaking.GameLauncher do
             Process.send_after(self(), :update_params, 5000)
             Map.put(state, :game_mode_configuration, game_mode_configuration)
         end
-      else
-        state
       end
 
     if Map.has_key?(state, :game_mode_configuration) &&
