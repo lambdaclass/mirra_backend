@@ -21,7 +21,6 @@ defmodule ConfiguratorWeb.GameModeConfigurationsLive.Form do
         maps: maps,
         version: version,
         game_mode_configuration: game_mode_configuration,
-        game_mode_type: nil,
         team_mode: game_mode_configuration.team_enabled
       )
 
@@ -33,18 +32,11 @@ defmodule ConfiguratorWeb.GameModeConfigurationsLive.Form do
         %{"version" => version},
         socket
       ) do
-    changeset = Configuration.change_game_mode_configuration(%GameModeConfiguration{map_mode_params: %MapModeParams{}})
+    changeset = Configuration.change_game_mode_configuration(%GameModeConfiguration{})
     maps = Configuration.list_map_configurations_by_version(version.id)
 
     socket =
-      assign(socket,
-        changeset: changeset,
-        action: "save",
-        maps: maps,
-        version: version,
-        game_mode_configuration: %{},
-        team_mode: false
-      )
+      assign(socket, changeset: changeset, action: "save", maps: maps, version: version, game_mode_configuration: %{}, team_mode: false)
 
     {:ok, socket}
   end
@@ -61,20 +53,20 @@ defmodule ConfiguratorWeb.GameModeConfigurationsLive.Form do
   end
 
   def handle_event("add_map_params", _params, socket) do
-    changeset =
-      if is_nil(Ecto.Changeset.get_field(socket.assigns.changeset, :map_mode_params)) do
-        Ecto.Changeset.put_assoc(socket.assigns.changeset, :map_mode_params, %MapModeParams{})
-        new_map_mode_params = MapModeParams.changeset(%MapModeParams{}, %{})
-        Ecto.Changeset.put_assoc(socket.assigns.changeset, :map_mode_params, new_map_mode_params)
-      else
-        socket.assigns.changeset
-      end
+    changeset = socket.assigns.changeset
+    map_mode_params = Ecto.Changeset.get_field(changeset, :map_mode_params) || []
+    new_map_mode_params = MapModeParams.changeset(%MapModeParams{}, %{})
+    changeset = Ecto.Changeset.put_assoc(changeset, :map_mode_params, [new_map_mode_params | map_mode_params])
 
     {:noreply, assign(socket, :changeset, changeset)}
   end
 
   def handle_event("remove_map_params", _params, socket) do
-    {:noreply, assign(socket, :changeset, Ecto.Changeset.put_change(socket.assigns.changeset, :map_mode_params, nil))}
+    changeset = socket.assigns.changeset
+    map_mode_params = Ecto.Changeset.get_field(changeset, :map_mode_params) |> List.delete_at(-1)
+    changeset = Ecto.Changeset.put_change(changeset, :map_mode_params, map_mode_params)
+
+    {:noreply, assign(socket, :changeset, changeset)}
   end
 
   def handle_event("save", %{"game_mode_configuration" => game_mode_configuration_params}, socket) do
@@ -135,7 +127,9 @@ defmodule ConfiguratorWeb.GameModeConfigurationsLive.Form do
         Map.put(
           game_mode_params,
           "map_mode_params",
-          Utils.parse_json_params(map_mode_params)
+          Map.new(map_mode_params, fn {key, params} ->
+            {key, Utils.parse_json_params(params)}
+          end)
         )
     end
   end

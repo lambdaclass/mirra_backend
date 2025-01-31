@@ -38,7 +38,7 @@ defmodule GameBackend.CurseOfMirra.GameModeConfiguration do
     # Deathmatch mode parameters
     field(:respawn_time_ms, :integer)
 
-    has_one(:map_mode_params, MapModeParams, foreign_key: :game_mode_id, on_replace: :delete)
+    has_many(:map_mode_params, MapModeParams, foreign_key: :game_mode_id, on_replace: :delete)
     belongs_to(:version, Version)
 
     timestamps(type: :utc_datetime)
