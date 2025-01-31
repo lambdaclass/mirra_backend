@@ -81,7 +81,7 @@ defmodule Arena.Matchmaking.GameLauncher do
 
   def handle_info(:start_game, state) do
     {game_clients, remaining_clients} = Enum.split(state.clients, state.game_mode_configuration.amount_of_players)
-    create_game_for_clients(game_clients)
+    create_game_for_clients(game_clients, state.game_mode_configuration)
 
     {:noreply, %{state | clients: remaining_clients}}
   end
