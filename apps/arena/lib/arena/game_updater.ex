@@ -65,6 +65,7 @@ defmodule Arena.GameUpdater do
     game_config = Configuration.get_game_config()
     game_config = Map.put(game_config, :game, Map.merge(game_config.game, game_params))
 
+    players = Enum.sort_by(players, fn player -> player.team end)
     game_state = new_game(game_id, players, game_config)
     match_id = Ecto.UUID.generate()
 
@@ -896,9 +897,18 @@ defmodule Arena.GameUpdater do
   defp initialize_players(game_state, players, config) do
     now = System.monotonic_time(:millisecond)
 
+    # Select a random map amongs all the available ones in the current game mode
+    random_map = Enum.random(config.game.map_mode_params)
+
+    initial_positions =
+      if config.game.team_enabled do
+        random_map.team_initial_positions
+      else
+        random_map.solo_initial_positions
+      end
+
     {game_state, _} =
-      Enum.reduce(players, {game_state, config.game.map_mode_params.solo_initial_positions}, fn player,
-                                                                                                {game_acc, positions} ->
+      Enum.reduce(players, {game_state, initial_positions}, fn player, {game_acc, positions} ->
         last_id = game_acc.last_id + 1
         {pos, positions} = get_next_position(positions)
         direction = Physics.get_direction_from_positions(pos, %{x: 0.0, y: 0.0})
