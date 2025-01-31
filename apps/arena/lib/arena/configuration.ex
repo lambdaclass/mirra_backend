@@ -24,8 +24,8 @@ defmodule Arena.Configuration do
       {:ok, payload} ->
         {:ok,
          Jason.decode!(payload.body, [{:keys, :atoms}])
-         |> Map.update!(:map_mode_params, fn game_mode_params ->
-           parse_map_mode_params(game_mode_params)
+         |> Map.update!(:map_mode_params, fn map_mode_params ->
+           Enum.map(map_mode_params, fn map_mode_param -> parse_map_mode_params(map_mode_param) end)
          end)}
 
       {:error, _} ->
