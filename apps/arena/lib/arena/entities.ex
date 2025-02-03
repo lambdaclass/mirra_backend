@@ -573,6 +573,7 @@ defmodule Arena.Entities do
   defp get_team(%{category: :projectile} = entity), do: entity.aditional_info.owner_team
   defp get_team(%{category: :pool} = entity), do: entity.aditional_info.owner_team
   defp get_team(%{category: category} = _entity), do: category
+  defp get_team(%{aditional_info: %{team: :zone}}), do: :zone
 
   def update_entity(%{category: :player} = entity, game_state) do
     put_in(game_state, [:players, entity.id], entity)
