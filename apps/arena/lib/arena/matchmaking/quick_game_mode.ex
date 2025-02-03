@@ -34,16 +34,29 @@ defmodule Arena.Matchmaking.QuickGameMode do
       type: :human
     }
 
-    GameLauncher.create_game_for_clients([client], %{bots_enabled: true, zone_enabled: false})
+    state =
+      if Map.has_key?(state, :game_mode_configuration) do
+        state
+      else
+        case Arena.Configuration.get_game_mode_configuration("quick-game", "battle_royale") do
+          {:error, _} ->
+            state
+
+          {:ok, game_mode_configuration} ->
+            # This is needed because we might not want to send a request every 300 seconds to the game backend
+            Process.send_after(self(), :update_params, 5000)
+            map = Enum.random(game_mode_configuration.map_mode_params)
+
+            Map.put(state, :game_mode_configuration, game_mode_configuration)
+            |> Map.put(:current_map, map)
+        end
+      end
+
+    if Map.has_key?(state, :game_mode_configuration) do
+      GameLauncher.create_game_for_clients([client], state.game_mode_configuration, state.current_map)
+    end
 
     {:reply, :ok, state}
-  end
-
-  def handle_info(:start_game, state) do
-    {game_clients, remaining_clients} = Enum.split(state.clients, Application.get_env(:arena, :players_needed_in_match))
-    GameLauncher.create_game_for_clients(game_clients)
-
-    {:noreply, %{state | clients: remaining_clients}}
   end
 
   @impl true
