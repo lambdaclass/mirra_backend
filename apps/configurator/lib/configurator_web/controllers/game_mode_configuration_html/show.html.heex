@@ -15,7 +15,6 @@
     <:item title="Zone enabled"><%= @game_mode_configuration.zone_enabled %></:item>
     <:item title="Bots enabled"><%= @game_mode_configuration.bots_enabled %></:item>
     <:item title="Match duration ms"><%= @game_mode_configuration.match_duration_ms %></:item>
-    <:item title="Amount of players"><%= @game_mode_configuration.amount_of_players %></:item>
     <:item title="Respawn time ms"><%= @game_mode_configuration.respawn_time_ms %></:item>
     <:item title="Team size"><%= @game_mode_configuration.team_size %></:item>
   </.list>
@@ -30,6 +29,7 @@
   </.header>
   <%= for params <- GameBackend.Configuration.get_map_params_for_game_mode(@game_mode_configuration.id) do %>
     <.list>
+      <:item title="Amount of players"><%= params.amount_of_players %></:item>
       <:item title="Map"><%= params.map.name %></:item>
       <:item title="Solo - Initial Positions"><%= Jason.encode!(params.solo_initial_positions) %></:item>
       <:item title="Team - Initial Positions"><%= Jason.encode!(params.team_initial_positions) %></:item>

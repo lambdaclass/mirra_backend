@@ -14,8 +14,6 @@
 
   <.input field={f[:team_enabled]} type="checkbox" label="Enable Teams" phx-update="ignore" />
 
-  <.input field={f[:amount_of_players]} label="Amount of players" />
-
   <%= if @team_mode do %>
     <.input field={f[:team_size]} type="number" label="Team Size" />
   <% end %>
@@ -56,6 +54,9 @@
           prompt="Select a map"
           options={Enum.map(@maps, &{&1.name, &1.id})}
         />
+      </div>
+      <div class="px-6 py-4">
+        <.input field={f[:amount_of_players]} label="Amount of players" />
       </div>
       <div class="px-6 py-4">
         <.input
