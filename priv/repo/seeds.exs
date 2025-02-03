@@ -315,7 +315,7 @@ whirlwind_effect =
     ]
   }
 
-buff_singularity_effect =
+_buff_singularity_effect =
   %{
     name: "buff_singularity",
     remove_on_action: false,
@@ -436,13 +436,7 @@ simple_shoot = %{
       "range" => 250.0,
       "offset" => 0
     }
-  ],
-  "on_collide_effect" => %{
-    "apply_effect_to_entity_type" => [
-      "pool"
-    ],
-    "effect" => buff_singularity_effect
-  }
+  ]
 }
 
 simple_piercing_shoot = %{
