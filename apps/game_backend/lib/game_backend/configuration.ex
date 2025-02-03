@@ -628,6 +628,9 @@ defmodule GameBackend.Configuration do
             [basic_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]]],
             [ultimate_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]]],
             [dash_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]]]
+          ],
+          game_mode_configurations: [
+            map_mode_params: :map
           ]
         ]
       )
