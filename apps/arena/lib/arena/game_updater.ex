@@ -128,7 +128,7 @@ defmodule Arena.GameUpdater do
           game_config: state.game_config,
           game_status: state.game_state.status,
           bounties: [],
-          map: state.game_state.map_mode_params.map.name
+          map: state.game_config.map_mode_params.map.name
         }
 
         state =
@@ -664,13 +664,23 @@ defmodule Arena.GameUpdater do
     item_config = Enum.random(state.game_config.items)
 
     position =
-      random_position_in_square(
-        item_config.radius,
-        state.game_state.external_wall,
-        state.game_state.obstacles,
-        state.game_state.external_wall.position,
-        state.game_state.square_wall
-      )
+      if is_nil(state.game_state.square_wall) do
+        random_position_in_map(
+          item_config.radius,
+          state.game_state.external_wall,
+          state.game_state.obstacles,
+          state.game_state.external_wall.position,
+          state.game_state.external_wall.radius
+        )
+      else
+        random_position_in_square(
+          item_config.radius,
+          state.game_state.external_wall,
+          state.game_state.obstacles,
+          state.game_state.external_wall.position,
+          state.game_state.square_wall
+        )
+      end
 
     item = Entities.new_item(last_id, position, item_config)
 
@@ -894,8 +904,7 @@ defmodule Arena.GameUpdater do
       start_game_timestamp: initial_timestamp + config.game.start_game_time_ms + config.game.bounty_pick_time_ms,
       positions: %{},
       traps: %{},
-      respawn_queue: %{},
-      map_mode_params: Enum.random(config.game.map_mode_params)
+      respawn_queue: %{}
     }
   end
 
