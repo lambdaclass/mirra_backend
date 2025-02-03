@@ -127,7 +127,8 @@ defmodule Arena.GameUpdater do
           team: player.aditional_info.team,
           game_config: state.game_config,
           game_status: state.game_state.status,
-          bounties: []
+          bounties: [],
+          map: state.game_state.map_mode_params.map.name
         }
 
         state =
@@ -893,7 +894,8 @@ defmodule Arena.GameUpdater do
       start_game_timestamp: initial_timestamp + config.game.start_game_time_ms + config.game.bounty_pick_time_ms,
       positions: %{},
       traps: %{},
-      respawn_queue: %{}
+      respawn_queue: %{},
+      map_mode_params: Enum.random(config.game.map_mode_params)
     }
   end
 
