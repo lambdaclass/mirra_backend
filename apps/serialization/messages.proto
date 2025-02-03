@@ -61,6 +61,7 @@ message GameJoined {
   Configuration config = 2;
   repeated BountyInfo bounties = 3;
   uint32 team = 4;
+  string map = 5;
 }
 
 message Configuration {

@@ -2935,7 +2935,8 @@ playerId: jspb.Message.getFieldWithDefault(msg, 1, 0),
 config: (f = msg.getConfig()) && proto.Configuration.toObject(includeInstance, f),
 bountiesList: jspb.Message.toObjectList(msg.getBountiesList(),
     proto.BountyInfo.toObject, includeInstance),
-team: jspb.Message.getFieldWithDefault(msg, 4, 0)
+team: jspb.Message.getFieldWithDefault(msg, 4, 0),
+map: jspb.Message.getFieldWithDefault(msg, 5, "")
   };
 
   if (includeInstance) {
@@ -2989,6 +2990,10 @@ proto.GameJoined.deserializeBinaryFromReader = function(msg, reader) {
     case 4:
       var value = /** @type {number} */ (reader.readUint32());
       msg.setTeam(value);
+      break;
+    case 5:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setMap(value);
       break;
     default:
       reader.skipField();
@@ -3046,6 +3051,13 @@ proto.GameJoined.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0) {
     writer.writeUint32(
       4,
+      f
+    );
+  }
+  f = message.getMap();
+  if (f.length > 0) {
+    writer.writeString(
+      5,
       f
     );
   }
@@ -3160,6 +3172,24 @@ proto.GameJoined.prototype.getTeam = function() {
  */
 proto.GameJoined.prototype.setTeam = function(value) {
   return jspb.Message.setProto3IntField(this, 4, value);
+};
+
+
+/**
+ * optional string map = 5;
+ * @return {string}
+ */
+proto.GameJoined.prototype.getMap = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.GameJoined} returns this
+ */
+proto.GameJoined.prototype.setMap = function(value) {
+  return jspb.Message.setProto3StringField(this, 5, value);
 };
 
 
