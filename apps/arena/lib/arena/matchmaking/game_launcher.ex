@@ -156,7 +156,8 @@ defmodule Arena.Matchmaking.GameLauncher do
 
     players = Utils.assign_teams_to_players(clients ++ bot_clients, :solo, game_params)
 
-    {:ok, game_pid} = GenServer.start(Arena.GameUpdater, %{players: players, game_params: game_params})
+    {:ok, game_pid} =
+      GenServer.start(Arena.GameUpdater, %{players: players, game_params: game_params, map_mode_params: map})
 
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()
 

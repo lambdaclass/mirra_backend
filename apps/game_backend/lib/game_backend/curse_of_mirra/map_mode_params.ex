@@ -10,7 +10,7 @@ defmodule GameBackend.CurseOfMirra.MapModeParams do
   alias GameBackend.CurseOfMirra.GameModeConfiguration
   alias GameBackend.CurseOfMirra.Position
 
-  @derive {Jason.Encoder, only: [:amount_of_players, :solo_initial_positions, :team_initial_positions]}
+  @derive {Jason.Encoder, only: [:amount_of_players, :solo_initial_positions, :team_initial_positions, :map]}
 
   schema "map_mode_params" do
     field(:amount_of_players, :integer)

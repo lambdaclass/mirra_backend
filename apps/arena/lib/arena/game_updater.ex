@@ -60,10 +60,13 @@ defmodule Arena.GameUpdater do
   # END API
   ##########################
 
-  def init(%{players: players, game_params: game_params}) do
+  def init(%{players: players, game_params: game_params, map_mode_params: map_mode_params}) do
     game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
-    game_config = Configuration.get_game_config()
-    game_config = Map.put(game_config, :game, Map.merge(game_config.game, game_params))
+    game_config = Configuration.get_game_config(map_mode_params.map.name)
+
+    game_config =
+      Map.put(game_config, :game, Map.merge(game_config.game, game_params))
+      |> Map.put(:map_mode_params, map_mode_params)
 
     players = Enum.sort_by(players, fn player -> player.team end)
     game_state = new_game(game_id, players, game_config)
@@ -897,14 +900,11 @@ defmodule Arena.GameUpdater do
   defp initialize_players(game_state, players, config) do
     now = System.monotonic_time(:millisecond)
 
-    # Select a random map amongs all the available ones in the current game mode
-    random_map = Enum.random(config.game.map_mode_params)
-
     initial_positions =
       if config.game.team_enabled do
-        random_map.team_initial_positions
+        config.map_mode_params.team_initial_positions
       else
-        random_map.solo_initial_positions
+        config.map_mode_params.solo_initial_positions
       end
 
     {game_state, _} =
