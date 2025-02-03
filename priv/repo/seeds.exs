@@ -5953,6 +5953,36 @@ battle_mode_params = %{
   ]
 }
 
+quick_game_params = %{
+  version_id: version.id,
+  name: "quick-game",
+  type: "battle_royale",
+  zone_enabled: true,
+  bots_enabled: true,
+  match_duration_ms: 180_000,
+  map_mode_params: [
+    %{
+      amount_of_players: 12,
+      solo_initial_positions: [
+        %{x: -4961, y: 5001},
+        %{x: -2417, y: 5103},
+        %{x: 952, y: 5603},
+        %{x: 4695, y: 4859},
+        %{x: 5632, y: 2753},
+        %{x: 5242, y: -316},
+        %{x: 4908, y: -3698},
+        %{x: 2442, y: -5476},
+        %{x: -897, y: -5296},
+        %{x: -4871, y: -4868},
+        %{x: -4897, y: -2416},
+        %{x: -5047, y: 853}
+      ],
+      team_team_initial_positions: [],
+      map_id: merliot_map_configuration.id
+    }
+  ]
+}
+
 deathmatch_mode_params = %{
   version_id: version.id,
   name: "deathmatch",
@@ -5977,6 +6007,20 @@ deathmatch_mode_params = %{
         %{x: -4871, y: -4868},
         %{x: -4897, y: -2416},
         %{x: -5047, y: 853}
+      ],
+      team_team_initial_positions: [],
+      map_id: merliot_map_configuration.id
+    },
+    %{
+      amount_of_players: 7,
+      solo_initial_positions: [
+        %{x: 5400, y: -400.0},
+        %{x: -5300, y: 400.0},
+        %{x: 1100, y: 5100},
+        %{x: 3200, y: -4300},
+        %{x: -3400, y: 3600},
+        %{x: -1900, y: -5100},
+        %{x: 4200, y: 3200}
       ],
       team_team_initial_positions: [],
       map_id: merliot_map_configuration.id
@@ -6023,6 +6067,8 @@ pair_mode_params = %{
   GameBackend.Configuration.create_game_mode_configuration(deathmatch_mode_params)
 
 {:ok, _pair} = GameBackend.Configuration.create_game_mode_configuration(pair_mode_params)
+
+{:ok, _quick_game} = GameBackend.Configuration.create_game_mode_configuration(quick_game_params)
 
 GameBackend.Configuration.create_arena_server(brazil_arena_server)
 
