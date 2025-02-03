@@ -149,6 +149,24 @@ defmodule GameBackend.Configuration do
   end
 
   @doc """
+  Get a game mode configuration by name and type
+
+  ## Examples
+    iex> get_game_mode_configuration_by_name_and_type("battle", "battle_royale")
+    %GameModeConfiguration{}
+
+    iex> get_game_mode_configuration_by_name_and_type("what a", "nonsense")
+    nil
+  """
+  def get_game_mode_configuration_by_name_and_type(name, type) do
+    from(gm in GameModeConfiguration,
+      where: gm.name == ^name and fragment("type = ?", ^type) and is_nil(gm.deleted_at),
+      preload: [map_mode_params: :map]
+    )
+    |> Repo.one()
+  end
+
+  @doc """
   Deletes a game_configuration.
 
   ## Examples

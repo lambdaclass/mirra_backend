@@ -20,7 +20,8 @@ defmodule ConfiguratorWeb.GameModeConfigurationsLive.Form do
         action: "update",
         maps: maps,
         version: version,
-        game_mode_configuration: game_mode_configuration
+        game_mode_configuration: game_mode_configuration,
+        team_mode: game_mode_configuration.team_enabled
       )
 
     {:ok, socket}
@@ -35,9 +36,20 @@ defmodule ConfiguratorWeb.GameModeConfigurationsLive.Form do
     maps = Configuration.list_map_configurations_by_version(version.id)
 
     socket =
-      assign(socket, changeset: changeset, action: "save", maps: maps, version: version, game_mode_configuration: %{})
+      assign(socket,
+        changeset: changeset,
+        action: "save",
+        maps: maps,
+        version: version,
+        game_mode_configuration: %{},
+        team_mode: false
+      )
 
     {:ok, socket}
+  end
+
+  def handle_event("validate", %{"_target" => ["game_mode_configuration", "team_enabled"]} = params, socket) do
+    {:noreply, assign(socket, :team_mode, params["game_mode_configuration"]["team_enabled"] == "true")}
   end
 
   def handle_event("validate", %{"game_mode_configuration" => game_mode_configuration_params}, socket) do

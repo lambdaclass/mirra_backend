@@ -2,7 +2,6 @@ defmodule Arena.Matchmaking do
   @moduledoc """
   Module that handles matchmaking queues
   """
-
   def get_queue("battle-royale"), do: Arena.Matchmaking.GameLauncher
   def get_queue("pair"), do: Arena.Matchmaking.PairMode
   def get_queue("quick-game"), do: Arena.Matchmaking.QuickGameMode
