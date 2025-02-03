@@ -150,7 +150,7 @@ defmodule Arena.Matchmaking.GameLauncher do
         _ -> []
       end
 
-    players = Utils.assign_teams_to_players(clients ++ bot_clients, :solo)
+    players = Utils.assign_teams_to_players(clients ++ bot_clients, :solo, game_params)
 
     {:ok, game_pid} = GenServer.start(Arena.GameUpdater, %{players: players, game_params: game_params})
 
