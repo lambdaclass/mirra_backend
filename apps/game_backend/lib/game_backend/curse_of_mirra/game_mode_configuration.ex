@@ -19,7 +19,8 @@ defmodule GameBackend.CurseOfMirra.GameModeConfiguration do
              :respawn_time_ms,
              :amount_of_players,
              :map_mode_params,
-             :team_enabled
+             :team_enabled,
+             :team_size
            ]}
 
   schema "game_mode_configurations" do

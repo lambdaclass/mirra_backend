@@ -151,7 +151,7 @@ defmodule Arena.Matchmaking.PairMode do
         []
       end
 
-    players = Utils.assign_teams_to_players(clients ++ bot_clients, :pair)
+    players = Utils.assign_teams_to_players(clients ++ bot_clients, :team, game_params)
 
     {:ok, game_pid} = GenServer.start(Arena.GameUpdater, %{players: players, game_params: game_params})
 
