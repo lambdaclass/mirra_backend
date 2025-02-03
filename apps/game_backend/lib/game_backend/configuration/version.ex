@@ -10,6 +10,7 @@ defmodule GameBackend.Configuration.Version do
   alias GameBackend.Units.Skills.Skill
   alias GameBackend.CurseOfMirra.MapConfiguration
   alias GameBackend.CurseOfMirra.GameConfiguration
+  alias GameBackend.CurseOfMirra.GameModeConfiguration
 
   schema "versions" do
     field(:name, :string)
@@ -20,6 +21,7 @@ defmodule GameBackend.Configuration.Version do
     has_many(:skills, Skill)
     has_many(:map_configurations, MapConfiguration)
     has_one(:game_configuration, GameConfiguration)
+    has_many(:game_mode_configurations, GameModeConfiguration)
 
     timestamps(type: :utc_datetime)
   end
