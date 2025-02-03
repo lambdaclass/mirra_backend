@@ -5930,9 +5930,9 @@ battle_mode_params = %{
   zone_enabled: true,
   bots_enabled: true,
   match_duration_ms: 180_000,
-  amount_of_players: 12,
   map_mode_params: [
     %{
+      amount_of_players: 12,
       solo_initial_positions: [
         %{x: -4961, y: 5001},
         %{x: -2417, y: 5103},
@@ -5960,10 +5960,10 @@ deathmatch_mode_params = %{
   zone_enabled: true,
   bots_enabled: true,
   match_duration_ms: 180_000,
-  amount_of_players: 12,
   respawn_time_ms: 5000,
   map_mode_params: [
     %{
+      amount_of_players: 12,
       solo_initial_positions: [
         %{x: -4961, y: 5001},
         %{x: -2417, y: 5103},
@@ -5991,10 +5991,11 @@ pair_mode_params = %{
   bots_enabled: true,
   team_enabled: true,
   match_duration_ms: 180_000,
-  amount_of_players: 12,
   respawn_time_ms: 5000,
+  team_size: 2,
   map_mode_params: [
     %{
+      amount_of_players: 12,
       solo_initial_positions: [],
       team_initial_positions: [
         %{x: -5346, y: 4709},

@@ -17,7 +17,6 @@ defmodule GameBackend.CurseOfMirra.GameModeConfiguration do
              :bots_enabled,
              :match_duration_ms,
              :respawn_time_ms,
-             :amount_of_players,
              :map_mode_params,
              :team_enabled,
              :team_size
@@ -31,7 +30,6 @@ defmodule GameBackend.CurseOfMirra.GameModeConfiguration do
     field(:team_enabled, :boolean)
     field(:match_duration_ms, :integer)
     field(:deleted_at, :naive_datetime)
-    field(:amount_of_players, :integer)
 
     # Team modes parameters
     field(:team_size, :integer)
@@ -49,7 +47,6 @@ defmodule GameBackend.CurseOfMirra.GameModeConfiguration do
   @permitted [
                :name,
                :type,
-               :amount_of_players,
                :zone_enabled,
                :bots_enabled,
                :match_duration_ms,
