@@ -4348,7 +4348,7 @@ merliot_map_config = %{
   }
 }
 
-{:ok, _araban_map_configuration} =
+{:ok, araban_map_configuration} =
   GameBackend.Configuration.create_map_configuration(araban_map_config)
 
 {:ok, merliot_map_configuration} =
@@ -4450,6 +4450,20 @@ deathmatch_mode_params = %{
         %{x: -5047, y: 853}
       ],
       map_id: merliot_map_configuration.id
+    },
+    %{
+      amount_of_players: 7,
+      initial_positions: [
+        %{x: 5400, y: -400.0},
+        %{x: -5300, y: 400.0},
+        %{x: 1100, y: 5100},
+        %{x: 3200, y: -4300},
+        %{x: -3400, y: 3600},
+        %{x: -1900, y: -5100},
+        %{x: 4200, y: 3200}
+      ],
+      team_team_initial_positions: [],
+      map_id: araban_map_configuration.id
     }
   ]
 }
