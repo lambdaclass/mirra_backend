@@ -100,7 +100,6 @@ defmodule Arena.Game.Obstacle do
         |> Map.put(:collisionable, next_status_params.make_obstacle_collisionable)
         |> Map.put(:collide_with_projectiles, next_status_params.make_obstacle_collisionable)
         |> Map.put(:time_until_transition_start, now + time_until_transition_ms + random_ms)
-        |> Map.put(:team, :neutral)
       end)
 
     Enum.reduce(next_status_params.on_activation_mechanics, game_state, fn mechanic, game_state ->
