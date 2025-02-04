@@ -4,6 +4,8 @@ defmodule Arena.Game.Item do
   """
 
   alias Arena.Entities
+  alias Arena.Game.Player
+  alias Arena.Game.Skill
 
   @doc """
   Apply all item mechanics to an entity
@@ -29,6 +31,16 @@ defmodule Arena.Game.Item do
     game_state
     |> put_in([:last_id], last_id)
     |> put_in([:traps, new_trap.id], new_trap)
+  end
+
+  def do_mechanic(game_state, entity, %{type: "heal"} = item_params) do
+    player = Player.add_health(entity, item_params.amount)
+
+    put_in(game_state, [:players, player.id], player)
+  end
+
+  def do_mechanic(game_state, entity, %{type: "circle_hit"} = item_params) do
+    Skill.do_mechanic(game_state, entity, item_params, %{})
   end
 
   def do_mechanic(game_state, _entity, _mechanic) do

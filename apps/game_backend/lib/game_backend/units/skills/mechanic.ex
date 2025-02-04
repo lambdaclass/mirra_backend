@@ -6,7 +6,7 @@ defmodule GameBackend.Units.Skills.Mechanic do
 
   alias GameBackend.Items.ConsumableItem
   alias GameBackend.Units.Skills.Skill
-  alias GameBackend.Units.Skills.Mechanics.{ApplyEffectsTo, PassiveEffect, OnCollideEffects}
+  alias GameBackend.Units.Skills.Mechanics.{ApplyEffectsTo, PassiveEffect, OnCollideEffect}
 
   schema "mechanics" do
     field(:amount, :integer)
@@ -41,7 +41,8 @@ defmodule GameBackend.Units.Skills.Mechanic do
         :teleport,
         :simple_shoot,
         :spawn_bomb,
-        :destination_shoot
+        :destination_shoot,
+        :heal
       ]
     )
 
@@ -52,7 +53,7 @@ defmodule GameBackend.Units.Skills.Mechanic do
     belongs_to(:passive_effects, PassiveEffect)
     belongs_to(:on_arrival_mechanic, __MODULE__)
     belongs_to(:parent_mechanic, __MODULE__, foreign_key: :parent_mechanic_id)
-    embeds_one(:on_collide_effects, OnCollideEffects)
+    embeds_one(:on_collide_effect, OnCollideEffect)
     embeds_one(:effect, GameBackend.CurseOfMirra.Effect)
   end
 
@@ -93,7 +94,7 @@ defmodule GameBackend.Units.Skills.Mechanic do
     |> cast_assoc(:parent_mechanic, with: &assoc_changeset/2)
     |> cast_assoc(:on_arrival_mechanic, with: &assoc_changeset/2)
     |> cast_assoc(:on_explode_mechanics, with: &assoc_changeset/2)
-    |> cast_embed(:on_collide_effects)
+    |> cast_embed(:on_collide_effect)
     |> cast_embed(:effect)
   end
 

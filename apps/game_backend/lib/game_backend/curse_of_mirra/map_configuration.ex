@@ -5,6 +5,7 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
   use GameBackend.Schema
   import Ecto.Changeset
   alias GameBackend.Configuration.Version
+  alias GameBackend.CurseOfMirra.Position
 
   @derive {Jason.Encoder,
            only: [:name, :radius, :initial_positions, :obstacles, :bushes, :pools, :crates, :active, :square_wall]}
@@ -14,7 +15,7 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
     field(:radius, :decimal)
     field(:active, :boolean)
 
-    embeds_many(:initial_positions, __MODULE__.Position, on_replace: :delete)
+    embeds_many(:initial_positions, Position, on_replace: :delete)
     embeds_many(:obstacles, __MODULE__.Obstacle, on_replace: :delete)
     embeds_many(:pools, __MODULE__.Pool, on_replace: :delete)
     embeds_many(:bushes, __MODULE__.Bush, on_replace: :delete)
@@ -22,6 +23,7 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
     embeds_one(:square_wall, __MODULE__.SquareWall, on_replace: :delete)
 
     belongs_to(:version, Version)
+    has_many(:map_mode_params, GameBackend.CurseOfMirra.MapModeParams, foreign_key: :map_id, on_replace: :delete)
 
     timestamps(type: :utc_datetime)
   end
@@ -38,6 +40,7 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
     |> cast_embed(:crates)
     |> cast_embed(:square_wall)
     |> unique_constraint(:name)
+    |> cast_assoc(:map_mode_params)
   end
 
   @doc false
@@ -52,6 +55,7 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
     |> cast_embed(:crates)
     |> cast_embed(:square_wall)
     |> unique_constraint(:name)
+    |> cast_assoc(:map_mode_params)
   end
 
   defmodule SquareWall do
@@ -72,25 +76,6 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
     def changeset(square_wall, attrs) do
       square_wall
       |> cast(attrs, [:right, :left, :top, :bottom])
-    end
-  end
-
-  defmodule Position do
-    @moduledoc """
-    Position embedded schema to be used by MapConfiguration
-    """
-    use GameBackend.Schema
-
-    @derive {Jason.Encoder, only: [:x, :y]}
-    embedded_schema do
-      field(:x, :decimal)
-      field(:y, :decimal)
-    end
-
-    def changeset(position, attrs) do
-      position
-      |> cast(attrs, [:x, :y])
-      |> validate_required([:x, :y])
     end
   end
 

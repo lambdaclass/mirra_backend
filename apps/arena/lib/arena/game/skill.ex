@@ -48,6 +48,27 @@ defmodule Arena.Game.Skill do
   defp execute_mechanic(
          game_state,
          entity,
+         %{type: "circle_hit"} = circle_hit,
+         _skill_params
+       ) do
+    circle_center_position = get_position_with_offset(entity.position, nil, circle_hit.offset)
+    circular_damage_area = Entities.make_circular_area(entity.id, circle_center_position, circle_hit.range)
+
+    entity_player_owner = get_entity_player_owner(game_state, entity)
+
+    apply_damage_and_effects_to_entities(
+      game_state,
+      entity_player_owner,
+      circular_damage_area,
+      circle_hit.damage,
+      circle_hit.effect
+    )
+    |> maybe_move_player(entity, circle_hit[:move_by])
+  end
+
+  defp execute_mechanic(
+         game_state,
+         entity,
          %{type: "cone_hit"} = cone_hit,
          %{skill_direction: skill_direction} = _skill_params
        ) do
@@ -377,8 +398,8 @@ defmodule Arena.Game.Skill do
     apply_damage_and_effects_to_entities(game_state, entity_player_owner, polygon_damage_area, polygon_hit.damage)
   end
 
-  def handle_skill_effects(game_state, player, effect, execution_duration_ms) do
-    Effect.put_effect_to_entity(game_state, player, player.id, execution_duration_ms, effect)
+  def handle_on_owner_effect(game_state, player, skill) do
+    Effect.put_effect_to_entity(game_state, player, player.id, skill.execution_duration_ms, skill.on_owner_effect)
   end
 
   defp calculate_angle_directions(amount, angle_between, base_direction) do
@@ -401,6 +422,13 @@ defmodule Arena.Game.Skill do
       end)
 
     Enum.concat([add_side, middle, sub_side])
+  end
+
+  defp get_position_with_offset(position, nil, offset) do
+    real_position_x = position.x + offset
+    real_position_y = position.y + offset
+
+    %{x: real_position_x, y: real_position_y}
   end
 
   defp get_position_with_offset(position, direction, offset) do

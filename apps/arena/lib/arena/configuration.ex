@@ -77,18 +77,18 @@ defmodule Arena.Configuration do
   defp parse_skill_config(%{cooldown_mechanism: "stamina", stamina_cost: cost} = skill_config) when cost >= 0 do
     skill_config = parse_combo_config(skill_config)
     mechanics = parse_mechanics_config(skill_config.mechanics)
-    %{skill_config | mechanics: mechanics, effect_to_apply: parse_effect(skill_config.effect_to_apply)}
+    %{skill_config | mechanics: mechanics, on_owner_effect: parse_effect(skill_config.on_owner_effect)}
   end
 
   defp parse_skill_config(%{cooldown_mechanism: "time", cooldown_ms: cooldown} = skill_config) when cooldown >= 0 do
     skill_config = parse_combo_config(skill_config)
     mechanics = parse_mechanics_config(skill_config.mechanics)
-    %{skill_config | mechanics: mechanics, effect_to_apply: parse_effect(skill_config.effect_to_apply)}
+    %{skill_config | mechanics: mechanics, on_owner_effect: parse_effect(skill_config.on_owner_effect)}
   end
 
   defp parse_skill_config(%{cooldown_mechanism: "mana", mana_cost: cost} = skill_config) when cost >= 0 do
     mechanics = parse_mechanics_config(skill_config.mechanics)
-    %{skill_config | mechanics: mechanics, effect_to_apply: parse_effect(skill_config.effect_to_apply)}
+    %{skill_config | mechanics: mechanics, on_owner_effect: parse_effect(skill_config.on_owner_effect)}
   end
 
   defp parse_skill_config(skill_config) do
@@ -163,7 +163,7 @@ defmodule Arena.Configuration do
         on_explode_mechanics: parse_mechanics_config(mechanic.on_explode_mechanics),
         parent_mechanic: parse_mechanic_config(mechanic.parent_mechanic),
         effect: parse_effect(mechanic.effect),
-        on_collide_effects: parse_on_collide_effects(mechanic.on_collide_effects)
+        on_collide_effect: parse_on_collide_effect(mechanic.on_collide_effect)
     }
   end
 
@@ -218,14 +218,14 @@ defmodule Arena.Configuration do
     %{mechanics | polygon_hit: %{polygon_hit | vertices: Enum.map(polygon_hit.vertices, &parse_position/1)}}
   end
 
-  defp parse_on_collide_effects(nil) do
+  defp parse_on_collide_effect(nil) do
     nil
   end
 
-  defp parse_on_collide_effects(on_collide_effects) do
+  defp parse_on_collide_effect(on_collide_effect) do
     %{
-      on_collide_effects
-      | effect: parse_effect(on_collide_effects.effect)
+      on_collide_effect
+      | effect: parse_effect(on_collide_effect.effect)
     }
   end
 

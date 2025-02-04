@@ -4,6 +4,7 @@ defmodule ConfiguratorWeb.MapConfigurationController do
   alias GameBackend.Configuration
   alias GameBackend.CurseOfMirra.MapConfiguration
   alias GameBackend.Configuration
+  alias Configurator.Utils
 
   def index(conn, %{"version_id" => version_id}) do
     map_configurations = Configuration.list_map_configurations_by_version(version_id)
@@ -17,7 +18,7 @@ defmodule ConfiguratorWeb.MapConfigurationController do
   end
 
   def create(conn, %{"map_configuration" => map_configuration_params}) do
-    map_configuration_params = parse_json_params(map_configuration_params)
+    map_configuration_params = Utils.parse_json_params(map_configuration_params)
 
     case Configuration.create_map_configuration(map_configuration_params) do
       {:ok, map_configuration} ->
@@ -46,7 +47,7 @@ defmodule ConfiguratorWeb.MapConfigurationController do
 
   def update(conn, %{"id" => id, "map_configuration" => map_configuration_params}) do
     map_configuration = Configuration.get_map_configuration!(id)
-    map_configuration_params = parse_json_params(map_configuration_params)
+    map_configuration_params = Utils.parse_json_params(map_configuration_params)
 
     case Configuration.update_map_configuration(map_configuration, map_configuration_params) do
       {:ok, map_configuration} ->
@@ -154,26 +155,6 @@ defmodule ConfiguratorWeb.MapConfigurationController do
           changeset: changeset,
           action: ~p"/versions/#{map_configuration.version_id}/map_configurations/#{map_configuration}/update_obstacles"
         )
-    end
-  end
-
-  def parse_json_params(map_configuration_params) do
-    map_configuration_params
-    |> Map.update("initial_positions", "", &parse_json/1)
-    |> Map.update("obstacles", "", &parse_json/1)
-    |> Map.update("bushes", "", &parse_json/1)
-    |> Map.update("pools", "", &parse_json/1)
-    |> Map.update("crates", "", &parse_json/1)
-    |> Map.update("square_wall", "", &parse_json/1)
-  end
-
-  defp parse_json(""), do: []
-  defp parse_json(nil), do: []
-
-  defp parse_json(json_param) do
-    case Jason.decode(json_param) do
-      {:ok, json} -> json
-      {:error, _} -> json_param
     end
   end
 end

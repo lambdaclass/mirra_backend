@@ -39,6 +39,18 @@ defmodule BotManager.Protobuf.GameStatus do
   field(:SELECTING_BOUNTY, 3)
 end
 
+defmodule BotManager.Protobuf.ItemStatus do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
+
+  field(:ITEM_STATUS_UNDEFINED, 0)
+  field(:ITEM_PICKED_UP, 1)
+  field(:ITEM_USED, 2)
+  field(:ITEM_ACTIVE, 3)
+  field(:ITEM_EXPIRED, 4)
+end
+
 defmodule BotManager.Protobuf.ProjectileStatus do
   @moduledoc false
 
@@ -231,6 +243,7 @@ defmodule BotManager.Protobuf.GameJoined do
   field(:player_id, 1, type: :uint64, json_name: "playerId")
   field(:config, 2, type: BotManager.Protobuf.Configuration)
   field(:bounties, 3, repeated: true, type: BotManager.Protobuf.BountyInfo)
+  field(:team, 4, type: :uint32)
 end
 
 defmodule BotManager.Protobuf.Configuration do
@@ -557,6 +570,15 @@ defmodule BotManager.Protobuf.Player.CooldownsEntry do
   field(:value, 2, type: :uint64)
 end
 
+defmodule BotManager.Protobuf.Player.InventoryEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
+
+  field(:key, 1, type: :uint32)
+  field(:value, 2, type: BotManager.Protobuf.Item)
+end
+
 defmodule BotManager.Protobuf.Player do
   @moduledoc false
 
@@ -578,23 +600,24 @@ defmodule BotManager.Protobuf.Player do
   field(:character_name, 8, proto3_optional: true, type: :string, json_name: "characterName")
   field(:power_ups, 9, proto3_optional: true, type: :uint64, json_name: "powerUps")
   field(:effects, 10, repeated: true, type: BotManager.Protobuf.Effect)
-  field(:inventory, 11, type: BotManager.Protobuf.Item)
-  field(:cooldowns, 12, repeated: true, type: BotManager.Protobuf.Player.CooldownsEntry, map: true)
-  field(:visible_players, 13, repeated: true, type: :uint64, json_name: "visiblePlayers")
-  field(:on_bush, 14, proto3_optional: true, type: :bool, json_name: "onBush")
-  field(:forced_movement, 15, proto3_optional: true, type: :bool, json_name: "forcedMovement")
-  field(:bounty_completed, 16, proto3_optional: true, type: :bool, json_name: "bountyCompleted")
-  field(:mana, 17, proto3_optional: true, type: :uint64)
+  field(:cooldowns, 11, repeated: true, type: BotManager.Protobuf.Player.CooldownsEntry, map: true)
+  field(:visible_players, 12, repeated: true, type: :uint64, json_name: "visiblePlayers")
+  field(:on_bush, 13, proto3_optional: true, type: :bool, json_name: "onBush")
+  field(:forced_movement, 14, proto3_optional: true, type: :bool, json_name: "forcedMovement")
+  field(:bounty_completed, 15, proto3_optional: true, type: :bool, json_name: "bountyCompleted")
+  field(:mana, 16, proto3_optional: true, type: :uint64)
 
-  field(:current_basic_animation, 18,
+  field(:current_basic_animation, 17,
     proto3_optional: true,
     type: :uint32,
     json_name: "currentBasicAnimation"
   )
 
-  field(:match_position, 19, proto3_optional: true, type: :uint32, json_name: "matchPosition")
-  field(:team, 20, proto3_optional: true, type: :uint32)
-  field(:max_health, 21, proto3_optional: true, type: :uint64, json_name: "maxHealth")
+  field(:match_position, 18, proto3_optional: true, type: :uint32, json_name: "matchPosition")
+  field(:team, 19, proto3_optional: true, type: :uint32)
+  field(:max_health, 20, proto3_optional: true, type: :uint64, json_name: "maxHealth")
+  field(:inventory, 21, repeated: true, type: BotManager.Protobuf.Player.InventoryEntry, map: true)
+  field(:blocked_actions, 22, proto3_optional: true, type: :bool, json_name: "blockedActions")
 end
 
 defmodule BotManager.Protobuf.Effect do
@@ -607,12 +630,32 @@ defmodule BotManager.Protobuf.Effect do
   field(:id, 3, type: :uint64)
 end
 
+defmodule BotManager.Protobuf.Item.PickUpTimeElapsedEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
+
+  field(:key, 1, type: :uint32)
+  field(:value, 2, type: :uint32)
+end
+
 defmodule BotManager.Protobuf.Item do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field(:name, 2, proto3_optional: true, type: :string)
+
+  field(:pick_up_time_elapsed, 3,
+    repeated: true,
+    type: BotManager.Protobuf.Item.PickUpTimeElapsedEntry,
+    json_name: "pickUpTimeElapsed",
+    map: true
+  )
+
+  field(:mechanic_radius, 4, proto3_optional: true, type: :float, json_name: "mechanicRadius")
+  field(:status, 5, type: BotManager.Protobuf.ItemStatus, enum: true)
+  field(:owner_id, 6, proto3_optional: true, type: :uint64, json_name: "ownerId")
 end
 
 defmodule BotManager.Protobuf.Projectile do
@@ -730,7 +773,7 @@ defmodule BotManager.Protobuf.UseItem do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  field(:item, 1, type: :uint64)
+  field(:item_position, 1, type: :uint64, json_name: "itemPosition")
 end
 
 defmodule BotManager.Protobuf.SelectBounty do

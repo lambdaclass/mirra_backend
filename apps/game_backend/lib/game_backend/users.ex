@@ -746,9 +746,7 @@ defmodule GameBackend.Users do
 
     milestone_quest_result = Repo.insert(changeset)
 
-    {active_quests_params, remaining_quests} = Enum.split(available_quests, 3)
-
-    {inactive_quests_params, _remaining_quests} = Enum.split(remaining_quests, 3)
+    active_quests_params = Enum.take(available_quests, 3)
 
     active_quests =
       Enum.map(active_quests_params, fn
@@ -765,21 +763,7 @@ defmodule GameBackend.Users do
           Repo.insert(changeset)
       end)
 
-    inactive_quests =
-      Enum.map(inactive_quests_params, fn
-        quest_params ->
-          attrs = %{
-            user_id: user.id,
-            quest_id: quest_params.id,
-            status: "available"
-          }
-
-          changeset = UserQuest.changeset(%UserQuest{}, attrs)
-
-          Repo.insert(changeset)
-      end)
-
-    (active_quests ++ inactive_quests ++ [milestone_quest_result])
+    (active_quests ++ [milestone_quest_result])
     |> Enum.find(fn {result, _quest} -> result == :error end)
     |> case do
       nil -> {:ok, :quests_inserted}

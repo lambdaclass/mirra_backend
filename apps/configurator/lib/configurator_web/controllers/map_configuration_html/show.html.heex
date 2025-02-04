@@ -29,6 +29,10 @@
     <dd><%= @map_configuration.name %></dd>
   </div>
   <div class="flex gap-5 py-4 border-b-2 items-center">
+    <dt>Active</dt>
+    <dd><%= @map_configuration.active %></dd>
+  </div>
+  <div class="flex gap-5 py-4 border-b-2 items-center">
     <dt>Map Radius</dt>
     <dd><%= @map_configuration.radius %></dd>
   </div>
@@ -40,7 +44,7 @@
       <% else %>
         <.button type="button" phx-click={show_modal("initial-positions-#{@map_configuration.id}")}>Show</.button>
         <.modal id={"initial-positions-#{@map_configuration.id}"}>
-          <p class="whitespace-pre"><%= embed_to_string(@map_configuration.initial_positions) %></p>
+          <p class="whitespace-pre"><%= Configurator.Utils.embed_to_string(@map_configuration.initial_positions) %></p>
         </.modal>
       <% end %>
     </dd>
@@ -53,7 +57,7 @@
       <% else %>
         <.button type="button" phx-click={show_modal("obstacles-#{@map_configuration.id}")}>Show</.button>
         <.modal id={"obstacles-#{@map_configuration.id}"}>
-          <p class="whitespace-pre"><%= embed_to_string(@map_configuration.obstacles) %></p>
+          <p class="whitespace-pre"><%= Configurator.Utils.embed_to_string(@map_configuration.obstacles) %></p>
         </.modal>
       <% end %>
     </dd>
@@ -66,7 +70,7 @@
       <% else %>
         <.button type="button" phx-click={show_modal("bushes-#{@map_configuration.id}")}>Show</.button>
         <.modal id={"bushes-#{@map_configuration.id}"}>
-          <p class="whitespace-pre"><%= embed_to_string(@map_configuration.bushes) %></p>
+          <p class="whitespace-pre"><%= Configurator.Utils.embed_to_string(@map_configuration.bushes) %></p>
         </.modal>
       <% end %>
     </dd>
@@ -79,7 +83,7 @@
       <% else %>
         <.button type="button" phx-click={show_modal("pools-#{@map_configuration.id}")}>Show</.button>
         <.modal id={"pools-#{@map_configuration.id}"}>
-          <p class="whitespace-pre"><%= embed_to_string(@map_configuration.pools) %></p>
+          <p class="whitespace-pre"><%= Configurator.Utils.embed_to_string(@map_configuration.pools) %></p>
         </.modal>
       <% end %>
     </dd>
@@ -92,7 +96,7 @@
       <% else %>
         <.button type="button" phx-click={show_modal("crates-#{@map_configuration.id}")}>Show</.button>
         <.modal id={"crates-#{@map_configuration.id}"}>
-          <p class="whitespace-pre"><%= embed_to_string(@map_configuration.crates) %></p>
+          <p class="whitespace-pre"><%= Configurator.Utils.embed_to_string(@map_configuration.crates) %></p>
         </.modal>
       <% end %>
     </dd>
@@ -106,7 +110,9 @@
         <.button type="button" phx-click={show_modal("square-wall-#{@map_configuration.id}")}>Show</.button>
         <.modal id={"square-wall-#{@map_configuration.id}"}>
           <p class="whitespace-pre">
-            <%= embed_to_string(@map_configuration.square_wall) |> Jason.encode!() |> Jason.Formatter.pretty_print() %>
+            <%= Configurator.Utils.embed_to_string(@map_configuration.square_wall)
+            |> Jason.encode!()
+            |> Jason.Formatter.pretty_print() %>
           </p>
         </.modal>
       <% end %>

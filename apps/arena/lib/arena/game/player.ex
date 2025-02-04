@@ -138,6 +138,11 @@ defmodule Arena.Game.Player do
     put_in(player, [:aditional_info, :stamina_interval], stamina_interval)
   end
 
+  def add_health(player, heal_amount) do
+    new_health = min(player.aditional_info.health + heal_amount, player.aditional_info.max_health)
+    Map.update(player, :aditional_info, player, fn info -> %{info | health: new_health} end)
+  end
+
   def recover_mana(player) do
     now = System.monotonic_time(:millisecond)
     time_since_last = now - player.aditional_info.mana_recovery_time_last_at
@@ -269,11 +274,7 @@ defmodule Arena.Game.Player do
           skill.activation_delay_ms
         )
 
-        Process.send_after(
-          self(),
-          {:delayed_effect_application, player.id, Map.get(skill, :effect_to_apply), skill.execution_duration_ms},
-          skill.activation_delay_ms
-        )
+        Process.send_after(self(), {:delayed_effect_application, player.id, skill}, skill.activation_delay_ms)
 
         player =
           add_action(player, action)
@@ -359,15 +360,29 @@ defmodule Arena.Game.Player do
   end
 
   def store_item(player, item) do
-    put_in(player, [:aditional_info, :inventory], item)
+    inventory = player.aditional_info.inventory
+
+    cond do
+      not Map.has_key?(inventory, 1) ->
+        put_in(player, [:aditional_info, :inventory, 1], item)
+
+      not Map.has_key?(inventory, 2) ->
+        put_in(player, [:aditional_info, :inventory, 2], item)
+
+      not Map.has_key?(inventory, 3) ->
+        put_in(player, [:aditional_info, :inventory, 3], item)
+
+      true ->
+        player
+    end
   end
 
   def inventory_full?(player) do
-    player.aditional_info.inventory != nil
+    Enum.count(player.aditional_info.inventory) == 3
   end
 
-  def use_item(player, game_state) do
-    case player.aditional_info.inventory do
+  def use_item(player, item_position, game_state) do
+    case Map.get(player.aditional_info.inventory, item_position) do
       nil ->
         game_state
 
@@ -375,9 +390,14 @@ defmodule Arena.Game.Player do
         game_state =
           Effect.put_effect_to_entity(game_state, player, player.id, item.effect)
           |> maybe_update_player_item_effects_expires_at(player, item.effect)
-          |> put_in([:players, player.id, :aditional_info, :inventory], nil)
 
         Item.do_mechanics(game_state, player, item.mechanics)
+        |> put_in([:items, item.id, :aditional_info, :status], :ITEM_USED)
+        |> put_in([:items, item.id, :aditional_info, :owner_id], player.id)
+        |> put_in(
+          [:players, player.id, :aditional_info, :inventory],
+          Map.delete(player.aditional_info.inventory, item_position)
+        )
     end
   end
 

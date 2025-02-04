@@ -1,7 +1,6 @@
 defmodule ConfiguratorWeb.VersionHTML do
   use ConfiguratorWeb, :html
   import ConfiguratorWeb.SkillHTML
-  import ConfiguratorWeb.MapConfigurationHTML
   import ConfiguratorWeb.CharacterHTML
 
   embed_templates "version_html/*"

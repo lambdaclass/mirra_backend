@@ -18,6 +18,7 @@ defmodule Arena.Game.Effect do
     %{aditional_info: effects: [effect]}
 
   """
+  def put_effect_to_entity(game_state, _entity, _owner_id, nil), do: game_state
 
   def put_effect_to_entity(game_state, entity, owner_id, effect) do
     put_effect_to_entity(game_state, entity, owner_id, 0, effect)
@@ -273,6 +274,10 @@ defmodule Arena.Game.Effect do
 
   defp do_effect_mechanics(_game_state, entity, _effect, %{name: "refresh_cooldowns"} = _refresh_cooldowns) do
     Entities.refresh_cooldowns(entity)
+  end
+
+  defp do_effect_mechanics(_game_state, entity, effect, %{name: "silence"} = _silence_mechanic) do
+    Entities.block_actions_for_duration(entity, effect.duration_ms)
   end
 
   ## Sink for mechanics that don't do anything

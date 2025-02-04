@@ -77,7 +77,7 @@ defmodule Arena.Entities do
         forced_movement: false,
         power_ups: 0,
         power_up_damage_modifier: config.game.power_up_damage_modifier,
-        inventory: nil,
+        inventory: %{},
         damage_immunity: false,
         pull_immunity: false,
         effects: [],
@@ -91,7 +91,8 @@ defmodule Arena.Entities do
         bounty_completed: false,
         current_basic_animation: 0,
         item_effects_expires_at: now,
-        position: nil
+        position: nil,
+        blocked_actions: false
       },
       collides_with: []
     }
@@ -137,7 +138,7 @@ defmodule Arena.Entities do
         remove_on_collision: config_params.remove_on_collision,
         on_explode_mechanics: Map.get(config_params, :on_explode_mechanics),
         pull_immunity: true,
-        on_collide_effect: Map.get(config_params, :on_collide_effects)
+        on_collide_effect: Map.get(config_params, :on_collide_effect)
       },
       collides_with: []
     }
@@ -215,7 +216,7 @@ defmodule Arena.Entities do
       },
       is_moving: false,
       aditional_info: %{
-        effect_to_apply: pool_params.effect,
+        effect: pool_params.effect,
         owner_id: pool_params.owner.id,
         owner_team: pool_params.owner.aditional_info.team,
         effects: [],
@@ -244,12 +245,21 @@ defmodule Arena.Entities do
       is_moving: false,
       aditional_info: %{
         name: config.name,
+        mechanic_radius: get_range_from_mechanic(config.mechanics),
+        status: :ITEM_STATUS_UNDEFINED,
+        owner_id: nil,
         effect: config.effect,
         mechanics: config.mechanics,
-        pull_immunity: true
+        pick_up_time_elapsed: %{},
+        pick_up_time_initial_timestamp: %{},
+        pull_immunity: true,
+        pick_up_time: nil
       }
     }
   end
+
+  defp get_range_from_mechanic([]), do: nil
+  defp get_range_from_mechanic([mechanic | _]), do: mechanic.range
 
   def new_obstacle(id, %{position: position, radius: radius, shape: shape, vertices: vertices} = params) do
     %{
@@ -438,7 +448,8 @@ defmodule Arena.Entities do
        mana: get_in(entity, [:aditional_info, :mana]),
        current_basic_animation: get_in(entity, [:aditional_info, :current_basic_animation]),
        match_position: get_in(entity, [:aditional_info, :match_position]),
-       team: get_in(entity, [:aditional_info, :team])
+       team: get_in(entity, [:aditional_info, :team]),
+       blocked_actions: get_in(entity, [:aditional_info, :blocked_actions])
      }}
   end
 
@@ -483,7 +494,11 @@ defmodule Arena.Entities do
   def maybe_add_custom_info(entity) when entity.category == :item do
     {:item,
      %Arena.Serialization.Item{
-       name: get_in(entity, [:aditional_info, :name])
+       name: get_in(entity, [:aditional_info, :name]),
+       mechanic_radius: get_in(entity, [:aditional_info, :mechanic_radius]),
+       status: get_in(entity, [:aditional_info, :status]),
+       owner_id: get_in(entity, [:aditional_info, :owner_id]),
+       pick_up_time_elapsed: get_in(entity, [:aditional_info, :pick_up_time_elapsed])
      }}
   end
 
@@ -577,6 +592,12 @@ defmodule Arena.Entities do
 
   def refresh_cooldowns(%{category: :player} = entity) do
     put_in(entity, [:aditional_info, :cooldowns], %{})
+  end
+
+  def block_actions_for_duration(%{category: :player} = entity, duration) do
+    Process.send(self(), {:block_actions, entity.id, true}, [])
+    Process.send_after(self(), {:block_actions, entity.id, false}, duration)
+    put_in(entity, [:aditional_info, :blocked_actions], true)
   end
 
   def obstacle_collisionable?(%{type: "dynamic"} = params) do

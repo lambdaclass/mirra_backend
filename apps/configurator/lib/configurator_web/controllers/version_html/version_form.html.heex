@@ -92,8 +92,8 @@
           <.input type="hidden" field={fs[:game_id]} />
 
           <.skill_mechanic_inputs skill_form={fs} />
-          <%= if fs.data.effect_to_apply do %>
-            <.effect_form form={fs} field={:effect_to_apply} />
+          <%= if fs.data.on_owner_effect do %>
+            <.effect_form form={fs} field={:on_owner_effect} />
           <% end %>
         </div>
       </.inputs_for>
@@ -169,23 +169,42 @@
             field={fm[:initial_positions]}
             type="textarea"
             label="Initial positions"
-            value={embed_to_string(fm[:initial_positions].value)}
+            value={Configurator.Utils.embed_to_string(fm[:initial_positions].value)}
           />
           <.input
             field={fm[:square_wall]}
             type="textarea"
             label="Square Wall"
-            value={embed_to_string(fm[:square_wall].value) |> Jason.encode!() |> Jason.Formatter.pretty_print()}
+            value={
+              Configurator.Utils.embed_to_string(fm[:square_wall].value)
+              |> Jason.encode!()
+              |> Jason.Formatter.pretty_print()
+            }
           />
           <.input
             field={fm[:obstacles]}
             type="textarea"
             label="Obstacles"
-            value={embed_to_string(fm[:obstacles].value)}
+            value={Configurator.Utils.embed_to_string(fm[:obstacles].value)}
           />
-          <.input field={fm[:bushes]} type="textarea" label="Bushes" value={embed_to_string(fm[:bushes].value)} />
-          <.input field={fm[:pools]} type="textarea" label="Pools" value={embed_to_string(fm[:pools].value)} />
-          <.input field={fm[:crates]} type="textarea" label="Crates" value={embed_to_string(fm[:crates].value)} />
+          <.input
+            field={fm[:bushes]}
+            type="textarea"
+            label="Bushes"
+            value={Configurator.Utils.embed_to_string(fm[:bushes].value)}
+          />
+          <.input
+            field={fm[:pools]}
+            type="textarea"
+            label="Pools"
+            value={Configurator.Utils.embed_to_string(fm[:pools].value)}
+          />
+          <.input
+            field={fm[:crates]}
+            type="textarea"
+            label="Crates"
+            value={Configurator.Utils.embed_to_string(fm[:crates].value)}
+          />
         </div>
       </.inputs_for>
     </div>
