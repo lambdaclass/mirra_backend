@@ -87,11 +87,22 @@ if config_env() == :prod do
 
   host = System.get_env("PHX_HOST") || "example.com"
   port = String.to_integer(System.get_env("PORT") || "3000")
+  port_ssl = String.to_integer(System.get_env("PORT_SSL") || "443")
 
   config :arena, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
   config :arena, ArenaWeb.Endpoint,
-    url: [host: host, port: 443, scheme: "https"],
+    url: [
+      scheme: "https",
+      port: port_ssl,
+      host: host
+    ],
+    https: [
+      port: port_ssl,
+      cipher_suite: :strong,
+      keyfile: System.get_env("KEYFILE_PATH"),
+      certfile: System.get_env("CERTFILE_PATH")
+    ],
     http: [
       # Enable IPv6 and bind on all interfaces.
       # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.
