@@ -10,7 +10,7 @@ defmodule BotManager.GameSocketHandler do
   use WebSockex, restart: :temporary
   require Logger
 
-  @decision_delay_ms 1000
+  @decision_delay_ms 750
   @action_delay_ms 30
 
   def start_link(%{"bot_client" => bot_client, "game_id" => game_id} = params) do
@@ -89,7 +89,7 @@ defmodule BotManager.GameSocketHandler do
   end
 
   defp update_block_attack_state(%{current_action: %{action: {:use_skill, _, _}, sent: false}} = state) do
-    Process.send_after(self(), :unblock_attack, Enum.random(500..1000))
+    Process.send_after(self(), :unblock_attack, 100)
 
     Map.put(state, :attack_blocked, true)
     |> Map.put(:current_action, Map.put(state.current_action, :sent, true))
