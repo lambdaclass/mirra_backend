@@ -425,6 +425,33 @@ defmodule GameBackend.Configuration do
   """
   def get_version!(id), do: Repo.get!(Version, id)
 
+  def get_preloaded_version!(id) do
+    consumable_items_preload =
+      from(ci in GameBackend.Items.ConsumableItem,
+        preload: [
+          mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]
+        ]
+      )
+
+    q =
+      from(v in Version,
+        where: v.id == ^id,
+        preload: [
+          [consumable_items: ^consumable_items_preload],
+          [skills: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics]]],
+          :map_configurations,
+          :game_configuration,
+          characters: [
+            [basic_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]]],
+            [ultimate_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]]],
+            [dash_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]]]
+          ]
+        ]
+      )
+
+    Repo.one!(q)
+  end
+
   @doc """
   Creates a version.
 
@@ -441,6 +468,41 @@ defmodule GameBackend.Configuration do
     %Version{}
     |> Version.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def copy_version(attrs \\ %{}) do
+    Multi.new()
+    |> Multi.insert(
+      :version,
+      %Version{}
+      |> Version.changeset(attrs)
+    )
+    |> Multi.run(:link_character_skills, fn repo, changes ->
+      characters = changes.version.characters
+      skills = changes.version.skills
+
+      characters
+      |> Enum.each(fn character ->
+        character
+        |> Character.changeset(%{})
+        |> Ecto.Changeset.put_change(
+          :basic_skill_id,
+          Enum.find(skills, fn skill -> skill.name == character.basic_skill.name end).id
+        )
+        |> Ecto.Changeset.put_change(
+          :dash_skill_id,
+          Enum.find(skills, fn skill -> skill.name == character.dash_skill.name end).id
+        )
+        |> Ecto.Changeset.put_change(
+          :ultimate_skill_id,
+          Enum.find(skills, fn skill -> skill.name == character.ultimate_skill.name end).id
+        )
+        |> repo.update!()
+      end)
+
+      {:ok, :ok}
+    end)
+    |> Repo.transaction()
   end
 
   @doc """
