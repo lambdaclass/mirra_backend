@@ -315,7 +315,7 @@ whirlwind_effect =
     ]
   }
 
-buff_singularity_effect =
+_buff_singularity_effect =
   %{
     name: "buff_singularity",
     remove_on_action: false,
@@ -436,13 +436,7 @@ simple_shoot = %{
       "range" => 250.0,
       "offset" => 0
     }
-  ],
-  "on_collide_effect" => %{
-    "apply_effect_to_entity_type" => [
-      "pool"
-    ],
-    "effect" => buff_singularity_effect
-  }
+  ]
 }
 
 simple_piercing_shoot = %{
@@ -3635,20 +3629,20 @@ merliot_map_config = %{
       statuses_cycle: %{},
       vertices: [
         %{
-          x: 6400.0,
-          y: 6400.0
-        },
-        %{
-          x: 6400.0,
+          x: 12000.0,
           y: 12000.0
         },
         %{
-          x: -6400.0,
-          y: 12000.0
+          x: 12000.0,
+          y: 6400.0
         },
         %{
-          x: -6400.0,
+          x: -12000.0,
           y: 6400.0
+        },
+        %{
+          x: -12000.0,
+          y: 12000.0
         }
       ]
     },
@@ -3665,19 +3659,19 @@ merliot_map_config = %{
       statuses_cycle: %{},
       vertices: [
         %{
+          x: -12000.0,
+          y: 12000.0
+        },
+        %{
           x: -6400.0,
           y: 12000.0
         },
         %{
-          x: -12000.0,
-          y: 12000.0
-        },
-        %{
-          x: -12000.0,
+          x: -6400.0,
           y: -12000.0
         },
         %{
-          x: -6400.0,
+          x: -12000.0,
           y: -12000.0
         }
       ]
@@ -3695,19 +3689,19 @@ merliot_map_config = %{
       statuses_cycle: %{},
       vertices: [
         %{
-          x: -6400.0,
+          x: -12000.0,
           y: -6400.0
         },
         %{
-          x: 6400.0,
+          x: 12000.0,
           y: -6400.0
         },
         %{
-          x: 6400.0,
+          x: 12000.0,
           y: -12000.0
         },
         %{
-          x: -6400.0,
+          x: -12000.0,
           y: -12000.0
         }
       ]
@@ -3945,25 +3939,8 @@ merliot_map_config = %{
         %{x: 987, y: -5753},
         %{x: 1873, y: -5819},
         %{x: 2669, y: -6131},
-        %{x: 2653, y: -6443},
-        %{x: 1775, y: -6509}
-      ]
-    },
-    %{
-      name: "Right Bottom Rock",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: 5571, y: -3342},
-        %{x: 6721, y: -3586},
-        %{x: 6530, y: -4611}
+        %{x: 2653, y: -10443},
+        %{x: 1775, y: -10509}
       ]
     },
     %{
@@ -3978,30 +3955,11 @@ merliot_map_config = %{
       base_status: "",
       statuses_cycle: %{},
       vertices: [
-        %{x: 6538, y: 624},
+        %{x: 10538, y: 624},
         %{x: 5741, y: 548},
         %{x: 5850, y: 1513},
         %{x: 6110, y: 2243},
-        %{x: 6538, y: 2268}
-      ]
-    },
-    %{
-      name: "Top Right Rock",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: 3691, y: 6589},
-        %{x: 4221, y: 6589},
-        %{x: 4641, y: 6069},
-        %{x: 3751, y: 5499},
-        %{x: 3236, y: 5565}
+        %{x: 10538, y: 2268}
       ]
     },
     %{
@@ -4018,29 +3976,11 @@ merliot_map_config = %{
       vertices: [
         %{x: -738, y: 5739},
         %{x: -738, y: 5959},
-        %{x: -1078, y: 6619},
-        %{x: -2568, y: 6539},
+        %{x: -1078, y: 9619},
+        %{x: -2568, y: 9539},
         %{x: -2578, y: 6189},
         %{x: -1938, y: 5789},
         %{x: -1288, y: 5659}
-      ]
-    },
-    %{
-      name: "Left Top Rock",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: -6458, y: 4619},
-        %{x: -5866, y: 4027},
-        %{x: -5648, y: 3000},
-        %{x: -6596, y: 3000}
       ]
     },
     %{
@@ -4055,79 +3995,20 @@ merliot_map_config = %{
       base_status: "",
       statuses_cycle: %{},
       vertices: [
-        %{x: -6398, y: -610},
+        %{x: -10398, y: -610},
         %{x: -5728, y: -660},
         %{x: -5718, y: -1290},
         %{x: -5818, y: -1810},
         %{x: -6278, y: -2290},
-        %{x: -6478, y: -2320}
+        %{x: -10478, y: -2320}
       ]
     },
     %{
-      name: "Bottom Rock and Tree",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: 1259, y: -3918},
-        %{x: 1266, y: -3457},
-        %{x: 2030, y: -3319},
-        %{x: 2188, y: -3622},
-        %{x: 1775, y: -3897}
-      ]
-    },
-    %{
-      name: "TopLeft - RockTreeBush - Rock",
-      type: "static",
-      radius: 250,
-      shape: "circle",
-      position: %{x: -1283, y: 3909},
-      vertices: []
-    },
-    %{
-      name: "TopLeft - RockTreeBush - Tree",
-      type: "static",
-      radius: 250,
-      shape: "circle",
-      position: %{x: -1679, y: 3690},
-      vertices: []
-    },
-    %{
-      name: "MidBottomLeft - TreeBush - Trees",
-      type: "static",
-      radius: 550,
-      shape: "circle",
-      position: %{x: -1759, y: -3426},
-      vertices: []
-    },
-    %{
-      name: "MidBottomRight - TreeBush - Trees",
-      type: "static",
-      radius: 500,
-      shape: "circle",
-      position: %{x: 3424, y: -1564},
-      vertices: []
-    },
-    %{
-      name: "MidTopRight - TreeBush - Trees",
-      type: "static",
-      radius: 500,
-      shape: "circle",
-      position: %{x: 1873, y: 3276},
-      vertices: []
-    },
-    %{
-      name: "MidTopLeft - TreeBush - Trees",
+      name: "Center altar",
       type: "static",
       radius: 400,
       shape: "circle",
-      position: %{x: -3200, y: 1300},
+      position: %{x: 31, y: -140},
       vertices: []
     },
     %{
@@ -4143,13 +4024,15 @@ merliot_map_config = %{
       },
       vertices: [
         %{x: -4360, y: 2759},
-        %{x: -3871, y: 2734},
-        %{x: -3896, y: 1900},
+        %{x: -3167, y: 3087},
+        %{x: -2743, y: 2204},
+        %{x: -3500, y: 500},
+        %{x: -4345, y: 400},
         %{x: -4900, y: 1800}
       ]
     },
     %{
-      name: "Left Top Water 2",
+      name: "Left Bottom Water",
       radius: 0.0,
       shape: "polygon",
       type: :lake,
@@ -4160,100 +4043,18 @@ merliot_map_config = %{
         y: 0.0
       },
       vertices: [
-        %{x: -3871, y: 2734},
-        %{x: -3167, y: 3087},
-        %{x: -2743, y: 2204},
-        %{x: -3896, y: 1900}
-      ]
-    },
-    %{
-      name: "Left Top Water 3",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: -4900, y: 1800},
-        %{x: -3216, y: 2150},
-        %{x: -3569, y: 1139},
-        %{x: -4555, y: 1139}
-      ]
-    },
-    %{
-      name: "Left Top Water 4",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: -4555, y: 1139},
-        %{x: -3569, y: 1139},
-        %{x: -3500, y: 500},
-        %{x: -4345, y: 400}
-      ]
-    },
-    %{
-      name: "Left Bottom Water 1",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
+        # (Top-left)
         %{x: -3117, y: -2705},
+        # (Top-right)
         %{x: -2539, y: -2550},
-        %{x: -1953, y: -3549},
-        %{x: -2872, y: -3743}
-      ]
-    },
-    %{
-      name: "Left Bottom Water 2",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: -2872, y: -3743},
-        %{x: -1953, y: -3549},
-        %{x: -1788, y: -4935},
-        %{x: -3029, y: -4477}
-      ]
-    },
-    %{
-      name: "Left Bottom Water 3",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: -1953, y: -3549},
+        # (Right-most)
         %{x: -837, y: -3421},
+        # (Bottom-right)
         %{x: -532, y: -4091},
-        %{x: -1788, y: -4935}
+        # (Bottom-most)
+        %{x: -1788, y: -4935},
+        # (Bottom-left)
+        %{x: -3029, y: -4477}
       ]
     },
     %{
@@ -4268,10 +4069,10 @@ merliot_map_config = %{
         y: 0.0
       },
       vertices: [
-        %{x: -6430, y: 3520},
+        %{x: -10458, y: 8000},
         %{x: -5150, y: 3016},
         %{x: -5600, y: 2132},
-        %{x: -6439, y: 2505}
+        %{x: -10439, y: 2505}
       ]
     },
     %{
@@ -4286,8 +4087,10 @@ merliot_map_config = %{
         y: 0.0
       },
       vertices: [
-        %{x: 2496, y: 6558},
-        %{x: 3691, y: 6546},
+        %{x: 2496, y: 10558},
+        %{x: 4221, y: 10589},
+        %{x: 4641, y: 6069},
+        %{x: 3751, y: 5499},
         %{x: 3236, y: 5565},
         %{x: 2209, y: 6059}
       ]
@@ -4306,8 +4109,8 @@ merliot_map_config = %{
       vertices: [
         %{x: -3168, y: -5127},
         %{x: -2062, y: -5648},
-        %{x: -2530, y: -6395},
-        %{x: -3665, y: -6404}
+        %{x: -2530, y: -10395},
+        %{x: -3665, y: -10404}
       ]
     },
     %{
@@ -4323,13 +4126,13 @@ merliot_map_config = %{
       },
       vertices: [
         %{x: 6046, y: -2263},
-        %{x: 6579, y: -2499},
-        %{x: 6534, y: -3543},
+        %{x: 10579, y: -2499},
+        %{x: 10530, y: -4611},
         %{x: 5571, y: -3342}
       ]
     },
     %{
-      name: "Bottom Mid Water 1",
+      name: "Bottom Mid Water",
       radius: 0.0,
       shape: "polygon",
       type: :lake,
@@ -4340,32 +4143,20 @@ merliot_map_config = %{
         y: 0.0
       },
       vertices: [
+        # Left-most
         %{x: -272, y: -3195},
+        # Top-left
         %{x: 596, y: -3003},
-        %{x: 808, y: -3648},
-        %{x: -23, y: -3927}
-      ]
-    },
-    %{
-      name: "Bottom Mid Water 2",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: 596, y: -3003},
+        # Top-right
         %{x: 2056, y: -2643},
-        %{x: 2260, y: -3295},
-        %{x: 808, y: -3648}
+        # Right-most
+        %{x: 2300, y: -3450},
+        # Bottom-most
+        %{x: 230, y: -4100}
       ]
     },
     %{
-      name: "Top Mid Water 2",
+      name: "Top Mid Water",
       radius: 0.0,
       shape: "polygon",
       type: :lake,
@@ -4383,7 +4174,7 @@ merliot_map_config = %{
       ]
     },
     %{
-      name: "Right Mid Water 1",
+      name: "Right Mid Water",
       radius: 0.0,
       shape: "polygon",
       type: :lake,
@@ -4394,32 +4185,20 @@ merliot_map_config = %{
         y: 0.0
       },
       vertices: [
+        # Bottom-left
         %{x: 2664, y: 2310},
+        # Top-left
         %{x: 3299, y: 2519},
+        # Top-center
         %{x: 3659, y: 1608},
-        %{x: 2966, y: 1407}
-      ]
-    },
-    %{
-      name: "Right Mid Water 2",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: 2966, y: 1407},
-        %{x: 3659, y: 1608},
+        # Top-right
         %{x: 4035, y: -68},
+        # Bottom-right
         %{x: 3478, y: -200}
       ]
     },
     %{
-      name: "Left Mid Water 1",
+      name: "Left Mid Water",
       radius: 0.0,
       shape: "polygon",
       type: :lake,
@@ -4430,14 +4209,20 @@ merliot_map_config = %{
         y: 0.0
       },
       vertices: [
+        # Top-left
         %{x: -4107, y: -343},
+        # Top-right
         %{x: -3368, y: -169},
-        %{x: -3147, y: -871},
+        # Bottom-right
+        %{x: -2826, y: -2024},
+        # Bottom-center
+        %{x: -3448, y: -2203},
+        # Bottom-left
         %{x: -3957, y: -1003}
       ]
     },
     %{
-      name: "Left Mid Water 2",
+      name: "Bottom Right Water",
       radius: 0.0,
       shape: "polygon",
       type: :lake,
@@ -4448,85 +4233,22 @@ merliot_map_config = %{
         y: 0.0
       },
       vertices: [
-        %{x: -3952, y: -1002},
-        %{x: -3142, y: -870},
-        %{x: -2826, y: -2024},
-        %{x: -3448, y: -2203}
-      ]
-    },
-    %{
-      name: "Bottom Right Water 1",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
+        # Bottom-left
         %{x: 2653, y: -2438},
-        %{x: 3633, y: -1502},
-        %{x: 4470, y: -2860},
-        %{x: 2792, y: -3186}
-      ]
-    },
-    %{
-      name: "Bottom Right Water 1 prima",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: 3633, y: -1502},
+        # Bottom-most
+        %{x: 2792, y: -3186},
+        # Right-bottom
         %{x: 4896, y: -2963},
-        %{x: 4470, y: -2860}
-      ]
-    },
-    %{
-      name: "Bottom Right Water 2",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: 3615, y: -694},
-        %{x: 4212, y: -509},
-        %{x: 4629, y: -1281},
-        %{x: 3630, y: -1498}
-      ]
-    },
-    %{
-      name: "Bottom Right Water 3",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: 3630, y: -1498},
-        %{x: 4629, y: -1281},
+        # Right-most
         %{x: 5371, y: -1881},
-        %{x: 4896, y: -2963}
+        # Top-right
+        %{x: 4212, y: -509},
+        # Top-left
+        %{x: 3615, y: -694}
       ]
     },
     %{
-      name: "Top Right Water 1",
+      name: "Top Right Water",
       radius: 0.0,
       shape: "polygon",
       type: :lake,
@@ -4537,47 +4259,17 @@ merliot_map_config = %{
         y: 0.0
       },
       vertices: [
-        %{x: 3029, y: 3061},
+        # Bottom-left
         %{x: 2381, y: 2856},
-        %{x: 1717, y: 3634},
-        %{x: 2762, y: 4031}
-      ]
-    },
-    %{
-      name: "Top Right Water 2",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: 565, y: 4300},
-        %{x: 1455, y: 4700},
-        %{x: 1717, y: 3634},
-        %{x: 808, y: 3500}
-      ]
-    },
-    %{
-      name: "Top Right Water 3",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: 1455, y: 4700},
-        %{x: 1802, y: 5366},
+        # Top-left
+        %{x: 3029, y: 3061},
+        # Top-right
         %{x: 3000, y: 4737},
-        %{x: 2762, y: 4031},
-        %{x: 1717, y: 3634}
+        # Top-most
+        %{x: 1802, y: 5366},
+        # Bottom-right
+        %{x: 565, y: 4300},
+        %{x: 808, y: 3500}
       ]
     }
   ],
@@ -4718,20 +4410,20 @@ team_merliot_map_config = %{
       statuses_cycle: %{},
       vertices: [
         %{
-          x: 6400.0,
-          y: 6400.0
-        },
-        %{
-          x: 6400.0,
+          x: 12000.0,
           y: 12000.0
         },
         %{
-          x: -6400.0,
-          y: 12000.0
+          x: 12000.0,
+          y: 6400.0
         },
         %{
-          x: -6400.0,
+          x: -12000.0,
           y: 6400.0
+        },
+        %{
+          x: -12000.0,
+          y: 12000.0
         }
       ]
     },
@@ -4748,19 +4440,19 @@ team_merliot_map_config = %{
       statuses_cycle: %{},
       vertices: [
         %{
+          x: -12000.0,
+          y: 12000.0
+        },
+        %{
           x: -6400.0,
           y: 12000.0
         },
         %{
-          x: -12000.0,
-          y: 12000.0
-        },
-        %{
-          x: -12000.0,
+          x: -6400.0,
           y: -12000.0
         },
         %{
-          x: -6400.0,
+          x: -12000.0,
           y: -12000.0
         }
       ]
@@ -4778,19 +4470,19 @@ team_merliot_map_config = %{
       statuses_cycle: %{},
       vertices: [
         %{
-          x: -6400.0,
+          x: -12000.0,
           y: -6400.0
         },
         %{
-          x: 6400.0,
+          x: 12000.0,
           y: -6400.0
         },
         %{
-          x: 6400.0,
+          x: 12000.0,
           y: -12000.0
         },
         %{
-          x: -6400.0,
+          x: -12000.0,
           y: -12000.0
         }
       ]
@@ -5028,25 +4720,8 @@ team_merliot_map_config = %{
         %{x: 987, y: -5753},
         %{x: 1873, y: -5819},
         %{x: 2669, y: -6131},
-        %{x: 2653, y: -6443},
-        %{x: 1775, y: -6509}
-      ]
-    },
-    %{
-      name: "Right Bottom Rock",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: 5571, y: -3342},
-        %{x: 6721, y: -3586},
-        %{x: 6530, y: -4611}
+        %{x: 2653, y: -10443},
+        %{x: 1775, y: -10509}
       ]
     },
     %{
@@ -5061,30 +4736,11 @@ team_merliot_map_config = %{
       base_status: "",
       statuses_cycle: %{},
       vertices: [
-        %{x: 6538, y: 624},
+        %{x: 10538, y: 624},
         %{x: 5741, y: 548},
         %{x: 5850, y: 1513},
         %{x: 6110, y: 2243},
-        %{x: 6538, y: 2268}
-      ]
-    },
-    %{
-      name: "Top Right Rock",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: 3691, y: 6589},
-        %{x: 4221, y: 6589},
-        %{x: 4641, y: 6069},
-        %{x: 3751, y: 5499},
-        %{x: 3236, y: 5565}
+        %{x: 10538, y: 2268}
       ]
     },
     %{
@@ -5101,29 +4757,11 @@ team_merliot_map_config = %{
       vertices: [
         %{x: -738, y: 5739},
         %{x: -738, y: 5959},
-        %{x: -1078, y: 6619},
-        %{x: -2568, y: 6539},
+        %{x: -1078, y: 9619},
+        %{x: -2568, y: 9539},
         %{x: -2578, y: 6189},
         %{x: -1938, y: 5789},
         %{x: -1288, y: 5659}
-      ]
-    },
-    %{
-      name: "Left Top Rock",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: -6458, y: 4619},
-        %{x: -5866, y: 4027},
-        %{x: -5648, y: 3000},
-        %{x: -6596, y: 3000}
       ]
     },
     %{
@@ -5147,70 +4785,11 @@ team_merliot_map_config = %{
       ]
     },
     %{
-      name: "Bottom Rock and Tree",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: 1259, y: -3918},
-        %{x: 1266, y: -3457},
-        %{x: 2030, y: -3319},
-        %{x: 2188, y: -3622},
-        %{x: 1775, y: -3897}
-      ]
-    },
-    %{
-      name: "TopLeft - RockTreeBush - Rock",
-      type: "static",
-      radius: 250,
-      shape: "circle",
-      position: %{x: -1283, y: 3909},
-      vertices: []
-    },
-    %{
-      name: "TopLeft - RockTreeBush - Tree",
-      type: "static",
-      radius: 250,
-      shape: "circle",
-      position: %{x: -1679, y: 3690},
-      vertices: []
-    },
-    %{
-      name: "MidBottomLeft - TreeBush - Trees",
-      type: "static",
-      radius: 550,
-      shape: "circle",
-      position: %{x: -1759, y: -3426},
-      vertices: []
-    },
-    %{
-      name: "MidBottomRight - TreeBush - Trees",
-      type: "static",
-      radius: 500,
-      shape: "circle",
-      position: %{x: 3424, y: -1564},
-      vertices: []
-    },
-    %{
-      name: "MidTopRight - TreeBush - Trees",
-      type: "static",
-      radius: 500,
-      shape: "circle",
-      position: %{x: 1873, y: 3276},
-      vertices: []
-    },
-    %{
-      name: "MidTopLeft - TreeBush - Trees",
+      name: "Center altar",
       type: "static",
       radius: 400,
       shape: "circle",
-      position: %{x: -3200, y: 1300},
+      position: %{x: 31, y: -140},
       vertices: []
     },
     %{
@@ -5226,13 +4805,15 @@ team_merliot_map_config = %{
       },
       vertices: [
         %{x: -4360, y: 2759},
-        %{x: -3871, y: 2734},
-        %{x: -3896, y: 1900},
+        %{x: -3167, y: 3087},
+        %{x: -2743, y: 2204},
+        %{x: -3500, y: 500},
+        %{x: -4345, y: 400},
         %{x: -4900, y: 1800}
       ]
     },
     %{
-      name: "Left Top Water 2",
+      name: "Left Bottom Water",
       radius: 0.0,
       shape: "polygon",
       type: :lake,
@@ -5243,100 +4824,18 @@ team_merliot_map_config = %{
         y: 0.0
       },
       vertices: [
-        %{x: -3871, y: 2734},
-        %{x: -3167, y: 3087},
-        %{x: -2743, y: 2204},
-        %{x: -3896, y: 1900}
-      ]
-    },
-    %{
-      name: "Left Top Water 3",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: -4900, y: 1800},
-        %{x: -3216, y: 2150},
-        %{x: -3569, y: 1139},
-        %{x: -4555, y: 1139}
-      ]
-    },
-    %{
-      name: "Left Top Water 4",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: -4555, y: 1139},
-        %{x: -3569, y: 1139},
-        %{x: -3500, y: 500},
-        %{x: -4345, y: 400}
-      ]
-    },
-    %{
-      name: "Left Bottom Water 1",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
+        # (Top-left)
         %{x: -3117, y: -2705},
+        # (Top-right)
         %{x: -2539, y: -2550},
-        %{x: -1953, y: -3549},
-        %{x: -2872, y: -3743}
-      ]
-    },
-    %{
-      name: "Left Bottom Water 2",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: -2872, y: -3743},
-        %{x: -1953, y: -3549},
-        %{x: -1788, y: -4935},
-        %{x: -3029, y: -4477}
-      ]
-    },
-    %{
-      name: "Left Bottom Water 3",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: -1953, y: -3549},
+        # (Right-most)
         %{x: -837, y: -3421},
+        # (Bottom-right)
         %{x: -532, y: -4091},
-        %{x: -1788, y: -4935}
+        # (Bottom-most)
+        %{x: -1788, y: -4935},
+        # (Bottom-left)
+        %{x: -3029, y: -4477}
       ]
     },
     %{
@@ -5351,10 +4850,10 @@ team_merliot_map_config = %{
         y: 0.0
       },
       vertices: [
-        %{x: -6430, y: 3520},
+        %{x: -10458, y: 8000},
         %{x: -5150, y: 3016},
         %{x: -5600, y: 2132},
-        %{x: -6439, y: 2505}
+        %{x: -10439, y: 2505}
       ]
     },
     %{
@@ -5369,8 +4868,10 @@ team_merliot_map_config = %{
         y: 0.0
       },
       vertices: [
-        %{x: 2496, y: 6558},
-        %{x: 3691, y: 6546},
+        %{x: 2496, y: 10558},
+        %{x: 4221, y: 10589},
+        %{x: 4641, y: 6069},
+        %{x: 3751, y: 5499},
         %{x: 3236, y: 5565},
         %{x: 2209, y: 6059}
       ]
@@ -5406,13 +4907,13 @@ team_merliot_map_config = %{
       },
       vertices: [
         %{x: 6046, y: -2263},
-        %{x: 6579, y: -2499},
-        %{x: 6534, y: -3543},
+        %{x: 10579, y: -2499},
+        %{x: 10530, y: -4611},
         %{x: 5571, y: -3342}
       ]
     },
     %{
-      name: "Bottom Mid Water 1",
+      name: "Bottom Mid Water",
       radius: 0.0,
       shape: "polygon",
       type: :lake,
@@ -5423,32 +4924,20 @@ team_merliot_map_config = %{
         y: 0.0
       },
       vertices: [
+        # Left-most
         %{x: -272, y: -3195},
+        # Top-left
         %{x: 596, y: -3003},
-        %{x: 808, y: -3648},
-        %{x: -23, y: -3927}
-      ]
-    },
-    %{
-      name: "Bottom Mid Water 2",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: 596, y: -3003},
+        # Top-right
         %{x: 2056, y: -2643},
-        %{x: 2260, y: -3295},
-        %{x: 808, y: -3648}
+        # Right-most
+        %{x: 2300, y: -3450},
+        # Bottom-most
+        %{x: 230, y: -4100}
       ]
     },
     %{
-      name: "Top Mid Water 2",
+      name: "Top Mid Water",
       radius: 0.0,
       shape: "polygon",
       type: :lake,
@@ -5466,7 +4955,7 @@ team_merliot_map_config = %{
       ]
     },
     %{
-      name: "Right Mid Water 1",
+      name: "Right Mid Water",
       radius: 0.0,
       shape: "polygon",
       type: :lake,
@@ -5477,32 +4966,20 @@ team_merliot_map_config = %{
         y: 0.0
       },
       vertices: [
+        # Bottom-left
         %{x: 2664, y: 2310},
+        # Top-left
         %{x: 3299, y: 2519},
+        # Top-center
         %{x: 3659, y: 1608},
-        %{x: 2966, y: 1407}
-      ]
-    },
-    %{
-      name: "Right Mid Water 2",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: 2966, y: 1407},
-        %{x: 3659, y: 1608},
+        # Top-right
         %{x: 4035, y: -68},
+        # Bottom-right
         %{x: 3478, y: -200}
       ]
     },
     %{
-      name: "Left Mid Water 1",
+      name: "Left Mid Water",
       radius: 0.0,
       shape: "polygon",
       type: :lake,
@@ -5513,14 +4990,20 @@ team_merliot_map_config = %{
         y: 0.0
       },
       vertices: [
+        # Top-left
         %{x: -4107, y: -343},
+        # Top-right
         %{x: -3368, y: -169},
-        %{x: -3147, y: -871},
+        # Bottom-right
+        %{x: -2826, y: -2024},
+        # Bottom-center
+        %{x: -3448, y: -2203},
+        # Bottom-left
         %{x: -3957, y: -1003}
       ]
     },
     %{
-      name: "Left Mid Water 2",
+      name: "Bottom Right Water",
       radius: 0.0,
       shape: "polygon",
       type: :lake,
@@ -5531,85 +5014,22 @@ team_merliot_map_config = %{
         y: 0.0
       },
       vertices: [
-        %{x: -3952, y: -1002},
-        %{x: -3142, y: -870},
-        %{x: -2826, y: -2024},
-        %{x: -3448, y: -2203}
-      ]
-    },
-    %{
-      name: "Bottom Right Water 1",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
+        # Bottom-left
         %{x: 2653, y: -2438},
-        %{x: 3633, y: -1502},
-        %{x: 4470, y: -2860},
-        %{x: 2792, y: -3186}
-      ]
-    },
-    %{
-      name: "Bottom Right Water 1 prima",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: 3633, y: -1502},
+        # Bottom-most
+        %{x: 2792, y: -3186},
+        # Right-bottom
         %{x: 4896, y: -2963},
-        %{x: 4470, y: -2860}
-      ]
-    },
-    %{
-      name: "Bottom Right Water 2",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: 3615, y: -694},
-        %{x: 4212, y: -509},
-        %{x: 4629, y: -1281},
-        %{x: 3630, y: -1498}
-      ]
-    },
-    %{
-      name: "Bottom Right Water 3",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: 3630, y: -1498},
-        %{x: 4629, y: -1281},
+        # Right-most
         %{x: 5371, y: -1881},
-        %{x: 4896, y: -2963}
+        # Top-right
+        %{x: 4212, y: -509},
+        # Top-left
+        %{x: 3615, y: -694}
       ]
     },
     %{
-      name: "Top Right Water 1",
+      name: "Top Right Water",
       radius: 0.0,
       shape: "polygon",
       type: :lake,
@@ -5620,47 +5040,17 @@ team_merliot_map_config = %{
         y: 0.0
       },
       vertices: [
-        %{x: 3029, y: 3061},
+        # Bottom-left
         %{x: 2381, y: 2856},
-        %{x: 1717, y: 3634},
-        %{x: 2762, y: 4031}
-      ]
-    },
-    %{
-      name: "Top Right Water 2",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: 565, y: 4300},
-        %{x: 1455, y: 4700},
-        %{x: 1717, y: 3634},
-        %{x: 808, y: 3500}
-      ]
-    },
-    %{
-      name: "Top Right Water 3",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: 1455, y: 4700},
-        %{x: 1802, y: 5366},
+        # Top-left
+        %{x: 3029, y: 3061},
+        # Top-right
         %{x: 3000, y: 4737},
-        %{x: 2762, y: 4031},
-        %{x: 1717, y: 3634}
+        # Top-most
+        %{x: 1802, y: 5366},
+        # Bottom-right
+        %{x: 565, y: 4300},
+        %{x: 808, y: 3500}
       ]
     }
   ],
