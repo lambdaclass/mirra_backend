@@ -1,5 +1,6 @@
 defmodule Arena.Matchmaking.DeathmatchMode do
   @moduledoc false
+  alias Arena.Matchmaking
   alias Arena.Utils
   alias Ecto.UUID
 
@@ -59,24 +60,7 @@ defmodule Arena.Matchmaking.DeathmatchMode do
     Process.send_after(self(), :launch_game?, 300)
     diff = System.monotonic_time(:millisecond) - state.batch_start_at
 
-    state =
-      if Map.has_key?(state, :game_mode_configuration) do
-        state
-      else
-        case Arena.Configuration.get_game_mode_configuration(1, "deathmatch") do
-          {:error, _} ->
-            state
-
-          {:ok, game_mode_configuration} ->
-            # This is needed because we might not want to send a request every 300 seconds to the game backend
-            Process.send_after(self(), :update_params, 5000)
-
-            map = Enum.random(game_mode_configuration.map_mode_params)
-
-            Map.put(state, :game_mode_configuration, game_mode_configuration)
-            |> Map.put(:current_map, map)
-        end
-      end
+    state = Matchmaking.get_matchmaking_configuration(state, 1, "deathmatch")
 
     if Map.has_key?(state, :game_mode_configuration) &&
          (length(clients) >= state.current_map.amount_of_players or

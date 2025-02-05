@@ -2,6 +2,7 @@ defmodule Arena.Matchmaking.GameLauncher do
   @moduledoc false
   alias Arena.Utils
   alias Ecto.UUID
+  alias Arena.Matchmaking
 
   use GenServer
 
@@ -56,22 +57,7 @@ defmodule Arena.Matchmaking.GameLauncher do
     Process.send_after(self(), :launch_game?, 300)
     diff = System.monotonic_time(:millisecond) - state.batch_start_at
 
-    state =
-      if Map.has_key?(state, :game_mode_configuration) do
-        state
-      else
-        case Arena.Configuration.get_game_mode_configuration(1, "battle_royale") do
-          {:error, _} ->
-            state
-
-          {:ok, game_mode_configuration} ->
-            # This is needed because we might not want to send a request every 300 seconds to the game backend
-            map = Enum.random(game_mode_configuration.map_mode_params)
-
-            Map.put(state, :game_mode_configuration, game_mode_configuration)
-            |> Map.put(:current_map, map)
-        end
-      end
+    state = Matchmaking.get_matchmaking_configuration(state, 1, "battle")
 
     if Map.has_key?(state, :game_mode_configuration) &&
          (length(clients) >= state.current_map.amount_of_players or

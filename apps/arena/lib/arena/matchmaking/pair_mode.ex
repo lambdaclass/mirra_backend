@@ -3,6 +3,8 @@ defmodule Arena.Matchmaking.PairMode do
   alias Arena.Utils
   alias Ecto.UUID
 
+  alias Arena.Matchmaking
+
   use GenServer
 
   # API
@@ -55,24 +57,7 @@ defmodule Arena.Matchmaking.PairMode do
   def handle_info(:launch_game?, %{clients: clients} = state) do
     Process.send_after(self(), :launch_game?, 300)
 
-    state =
-      if Map.has_key?(state, :game_mode_configuration) do
-        state
-      else
-        case Arena.Configuration.get_game_mode_configuration(2, "battle_royale") do
-          {:error, _} ->
-            state
-
-          {:ok, game_mode_configuration} ->
-            # This is needed because we might not want to send a request every 300 seconds to the game backend
-            map = Enum.random(game_mode_configuration.map_mode_params)
-
-            Process.send_after(self(), :update_params, 5000)
-
-            Map.put(state, :game_mode_configuration, game_mode_configuration)
-            |> Map.put(:current_map, map)
-        end
-      end
+    state = Matchmaking.get_matchmaking_configuration(state, 2, "battle_royale")
 
     diff = System.monotonic_time(:millisecond) - state.batch_start_at
 
