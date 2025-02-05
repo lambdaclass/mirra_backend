@@ -4676,11 +4676,11 @@ brazil_arena_server =
 
 battle_mode_params = %{
   version_id: version.id,
-  name: "battle",
   type: "battle_royale",
   zone_enabled: true,
   bots_enabled: true,
   match_duration_ms: 180_000,
+  team_size: 1,
   map_mode_params: [
     %{
       amount_of_players: 12,
@@ -4705,10 +4705,10 @@ battle_mode_params = %{
 
 quick_game_params = %{
   version_id: version.id,
-  name: "quick-game",
-  type: "battle_royale",
+  type: "practice",
   zone_enabled: true,
   bots_enabled: true,
+  team_size: 1,
   match_duration_ms: 180_000,
   map_mode_params: [
     %{
@@ -4734,10 +4734,10 @@ quick_game_params = %{
 
 deathmatch_mode_params = %{
   version_id: version.id,
-  name: "deathmatch",
   type: "deathmatch",
   zone_enabled: true,
   bots_enabled: true,
+  team_size: 1,
   match_duration_ms: 180_000,
   respawn_time_ms: 5000,
   map_mode_params: [
@@ -4763,7 +4763,6 @@ deathmatch_mode_params = %{
 }
 
 pair_mode_params = %{
-  name: "pair",
   type: "battle_royale",
   zone_enabled: true,
   bots_enabled: true,

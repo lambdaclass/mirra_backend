@@ -152,15 +152,15 @@ defmodule GameBackend.Configuration do
   Get a game mode configuration by name and type
 
   ## Examples
-    iex> get_game_mode_configuration_by_name_and_type("battle", "battle_royale")
+    iex> get_game_mode_configuration_by_type_and_team_size("battle", "battle_royale")
     %GameModeConfiguration{}
 
-    iex> get_game_mode_configuration_by_name_and_type("what a", "nonsense")
+    iex> get_game_mode_configuration_by_type_and_team_size("what a", "nonsense")
     nil
   """
-  def get_game_mode_configuration_by_name_and_type(name, type) do
+  def get_game_mode_configuration_by_type_and_team_size(team_size, type) do
     from(gm in GameModeConfiguration,
-      where: gm.name == ^name and fragment("type = ?", ^type) and is_nil(gm.deleted_at),
+      where: gm.team_size == ^String.to_integer(team_size) and fragment("type = ?", ^type) and is_nil(gm.deleted_at),
       preload: [map_mode_params: :map]
     )
     |> Repo.one()

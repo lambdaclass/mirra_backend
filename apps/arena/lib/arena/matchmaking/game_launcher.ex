@@ -59,7 +59,7 @@ defmodule Arena.Matchmaking.GameLauncher do
       if Map.has_key?(state, :game_mode_configuration) do
         state
       else
-        case Arena.Configuration.get_game_mode_configuration("battle", "battle_royale") do
+        case Arena.Configuration.get_game_mode_configuration(1, "battle_royale") do
           {:error, _} ->
             state
 
@@ -101,7 +101,7 @@ defmodule Arena.Matchmaking.GameLauncher do
 
   def handle_info(:update_params, state) do
     game_mode_configuration =
-      case Arena.Configuration.get_game_mode_configuration("battle", "battle_royale") do
+      case Arena.Configuration.get_game_mode_configuration(1, "battle_royale") do
         {:error, _} ->
           state
 

@@ -13,6 +13,7 @@ defmodule GameBackend.Repo.Migrations.ChangesOnGameModeAndMapModeSchematas do
     alter table(:game_mode_configurations) do
       remove :amount_of_players
       remove :team_enabled
+      remove :name
     end
   end
 end

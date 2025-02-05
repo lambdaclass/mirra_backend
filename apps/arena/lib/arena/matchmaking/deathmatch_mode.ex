@@ -62,7 +62,7 @@ defmodule Arena.Matchmaking.DeathmatchMode do
       if Map.has_key?(state, :game_mode_configuration) do
         state
       else
-        case Arena.Configuration.get_game_mode_configuration("deathmatch", "deathmatch") do
+        case Arena.Configuration.get_game_mode_configuration(1, "deathmatch") do
           {:error, _} ->
             state
 
@@ -108,7 +108,7 @@ defmodule Arena.Matchmaking.DeathmatchMode do
 
   def handle_info(:update_params, state) do
     game_mode_configuration =
-      case Arena.Configuration.get_game_mode_configuration("deathmatch", "deathmatch") do
+      case Arena.Configuration.get_game_mode_configuration(1, "deathmatch") do
         {:error, _} ->
           state
 

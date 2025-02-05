@@ -14,9 +14,9 @@ defmodule Arena.Configuration do
     |> Map.put(:client_config, client_config)
   end
 
-  def get_game_mode_configuration(name, type) do
+  def get_game_mode_configuration(team_size, type) do
     gateway_url = Application.get_env(:arena, :gateway_url)
-    query_params = URI.encode_query(%{"name" => name, "type" => type})
+    query_params = URI.encode_query(%{"team_size" => team_size, "type" => type})
     url = "#{gateway_url}/curse/configuration/game_modes?#{query_params}"
 
     case Finch.build(:get, url, [{"content-type", "application/json"}])

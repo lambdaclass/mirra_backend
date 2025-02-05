@@ -58,7 +58,7 @@ defmodule Arena.Matchmaking.PairMode do
       if Map.has_key?(state, :game_mode_configuration) do
         state
       else
-        case Arena.Configuration.get_game_mode_configuration("pair", "battle_royale") do
+        case Arena.Configuration.get_game_mode_configuration(2, "battle_royale") do
           {:error, _} ->
             state
 
@@ -95,7 +95,7 @@ defmodule Arena.Matchmaking.PairMode do
 
   def handle_info(:update_params, state) do
     game_mode_configuration =
-      case Arena.Configuration.get_game_mode_configuration("pair", "battle_royale") do
+      case Arena.Configuration.get_game_mode_configuration(2, "battle_royale") do
         {:error, _} ->
           state
 
