@@ -5,15 +5,11 @@
   <p class="font-semibold"><%= "Version: #{@version.name}" %></p>
   <.input type="hidden" field={f[:version_id]} value={@version.id} />
   <.input
-    field={f[:name]}
+    field={f[:type]}
     type="select"
-    label="Game Mode"
-    options={Ecto.Enum.values(GameBackend.CurseOfMirra.GameModeConfiguration, :name)}
+    label="Game Mode Type"
+    options={Ecto.Enum.values(GameBackend.CurseOfMirra.GameModeConfiguration, :type)}
   />
-  <.input field={f[:zone_enabled]} type="checkbox" label="Zone enabled" />
-  <.input field={f[:bots_enabled]} type="checkbox" label="Bots enabled" />
-  <.input field={f[:match_duration_ms]} type="number" label="Match duration ms" />
-  <.input field={f[:respawn_time_ms]} type="number" label="Respawn time ms" />
 
   <div class="flex items-center justify-between gap-6">
     <span
@@ -24,14 +20,22 @@
     </span>
   </div>
 
-  <div class="flex items-center justify-between gap-6">
-    <span
-      phx-click="remove_map_params"
-      class="relative phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3 text-sm font-semibold leading-6 text-white active:text-white/80"
-    >
-      Remove Map Params
-    </span>
-  </div>
+  <.input field={f[:zone_enabled]} type="checkbox" label="Zone enabled" />
+  <.input field={f[:bots_enabled]} type="checkbox" label="Bots enabled" />
+  <.input field={f[:match_duration_ms]} type="number" label="Match duration ms" />
+  <.input field={f[:respawn_time_ms]} type="number" label="Respawn time ms" />
+  <.input field={f[:team_size]} type="number" label="Team Size" />
+
+  <%= if not is_nil(Ecto.Changeset.get_field(@changeset, :map_mode_params)) do %>
+    <div class="flex items-center justify-between gap-6">
+      <span
+        phx-click="remove_map_params"
+        class="relative phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3 text-sm font-semibold leading-6 text-white active:text-white/80"
+      >
+        Remove Map Params
+      </span>
+    </div>
+  <% end %>
 
   <.inputs_for :let={fp} field={f[:map_mode_params]}>
     <h3>Map specific params</h3>
@@ -46,22 +50,14 @@
         />
       </div>
       <div class="px-6 py-4">
-        <.input field={fp[:amount_of_players]} type="number" label="Amount of players" />
+        <.input field={fp[:amount_of_players]} label="Amount of players" />
       </div>
       <div class="px-6 py-4">
         <.input
-          field={fp[:solo_initial_positions]}
+          field={fp[:initial_positions]}
           type="textarea"
-          label="Solo mode positions"
-          value={Configurator.Utils.embed_to_string(fp[:solo_initial_positions].value)}
-        />
-      </div>
-      <div class="px-6 py-4">
-        <.input
-          field={fp[:team_initial_positions]}
-          type="textarea"
-          label="Team mode Positions"
-          value={Configurator.Utils.embed_to_string(fp[:team_initial_positions].value)}
+          label="Initial positions"
+          value={Configurator.Utils.embed_to_string(fp[:initial_positions].value)}
         />
       </div>
     </div>

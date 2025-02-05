@@ -60,11 +60,15 @@ defmodule Arena.GameUpdater do
   # END API
   ##########################
 
-  def init(%{players: players, game_params: game_params}) do
+  def init(%{players: players, game_params: game_params, map_mode_params: map_mode_params}) do
     game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
-    game_config = Configuration.get_game_config()
-    game_config = Map.put(game_config, :game, Map.merge(game_config.game, game_params))
+    game_config = Configuration.get_game_config(map_mode_params.map.name)
 
+    game_config =
+      Map.put(game_config, :game, Map.merge(game_config.game, game_params))
+      |> Map.put(:map_mode_params, map_mode_params)
+
+    players = Enum.sort_by(players, fn player -> player.team end)
     game_state = new_game(game_id, players, game_config)
     match_id = Ecto.UUID.generate()
 
@@ -320,7 +324,7 @@ defmodule Arena.GameUpdater do
     if state.game_config.game.game_mode != :DEATHMATCH do
       send(self(), {:end_game_check, Map.keys(state.game_state.players)})
     else
-      Process.send_after(self(), :deathmatch_end_game_check, state.game_config.game.match_duration)
+      Process.send_after(self(), :deathmatch_end_game_check, state.game_config.game.match_duration_ms)
     end
 
     unless state.game_config.game.bots_enabled do
@@ -897,7 +901,7 @@ defmodule Arena.GameUpdater do
     now = System.monotonic_time(:millisecond)
 
     {game_state, _} =
-      Enum.reduce(players, {game_state, config.map.initial_positions}, fn player, {game_acc, positions} ->
+      Enum.reduce(players, {game_state, config.map_mode_params.initial_positions}, fn player, {game_acc, positions} ->
         last_id = game_acc.last_id + 1
         {pos, positions} = get_next_position(positions)
         direction = Physics.get_direction_from_positions(pos, %{x: 0.0, y: 0.0})
@@ -1969,7 +1973,7 @@ defmodule Arena.GameUpdater do
         if Map.has_key?(respawn_queue, player_id) || Player.alive?(player) do
           respawn_queue
         else
-          Map.put(respawn_queue, player_id, now + game_config.game.respawn_time)
+          Map.put(respawn_queue, player_id, now + game_config.game.respawn_time_ms)
         end
       end)
 

@@ -109,15 +109,15 @@ defmodule Arena.Utils do
   defp get_correct_protocol("localhost" <> _host), do: "http://"
   defp get_correct_protocol(_host), do: "https://"
 
-  def assign_teams_to_players(players, :pair) do
-    Enum.chunk_every(players, 2)
+  def assign_teams_to_players(players, :team, game_params) do
+    Enum.chunk_every(players, game_params.team_size)
     |> Enum.with_index(fn player_pair, index ->
       Enum.map(player_pair, fn player -> Map.put(player, :team, index) end)
     end)
     |> List.flatten()
   end
 
-  def assign_teams_to_players(players, :solo) do
+  def assign_teams_to_players(players, :solo, _game_params) do
     Enum.with_index(players, fn player, index ->
       Map.put(player, :team, index)
     end)

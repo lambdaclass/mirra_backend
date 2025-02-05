@@ -1,5 +1,6 @@
 defmodule Arena.Matchmaking.DeathmatchMode do
   @moduledoc false
+  alias Arena.Matchmaking
   alias Arena.Utils
   alias Ecto.UUID
 
@@ -7,8 +8,6 @@ defmodule Arena.Matchmaking.DeathmatchMode do
 
   # 3 Mins
   # TODO: add this to the configurator https://github.com/lambdaclass/mirra_backend/issues/985
-  @match_duration 180_000
-  @respawn_time 5000
 
   # API
   def start_link(_) do
@@ -27,6 +26,7 @@ defmodule Arena.Matchmaking.DeathmatchMode do
   @impl true
   def init(_) do
     Process.send_after(self(), :launch_game?, 300)
+    Process.send_after(self(), :update_params, 20_000)
     {:ok, %{clients: [], batch_start_at: 0}}
   end
 
@@ -60,8 +60,11 @@ defmodule Arena.Matchmaking.DeathmatchMode do
     Process.send_after(self(), :launch_game?, 300)
     diff = System.monotonic_time(:millisecond) - state.batch_start_at
 
-    if length(clients) >= Application.get_env(:arena, :players_needed_in_match) or
-         (diff >= Utils.start_timeout_ms() and length(clients) > 0) do
+    state = Matchmaking.get_matchmaking_configuration(state, 1, "deathmatch")
+
+    if Map.has_key?(state, :game_mode_configuration) &&
+         (length(clients) >= state.current_map.amount_of_players or
+            (diff >= Utils.start_timeout_ms() and length(clients) > 0)) do
       send(self(), :start_game)
     end
 
@@ -69,10 +72,14 @@ defmodule Arena.Matchmaking.DeathmatchMode do
   end
 
   def handle_info(:start_game, state) do
-    {game_clients, remaining_clients} = Enum.split(state.clients, Application.get_env(:arena, :players_needed_in_match))
-    create_game_for_clients(game_clients)
+    {game_clients, remaining_clients} =
+      Enum.split(state.clients, state.current_map.amount_of_players)
 
-    {:noreply, %{state | clients: remaining_clients}}
+    create_game_for_clients(game_clients, state.game_mode_configuration, state.current_map)
+
+    next_map = Enum.random(state.game_mode_configuration.map_mode_params)
+
+    {:noreply, %{state | clients: remaining_clients, current_map: next_map}}
   end
 
   def handle_info({:spawn_bot_for_player, bot_client, game_id}, state) do
@@ -82,6 +89,20 @@ defmodule Arena.Matchmaking.DeathmatchMode do
     end)
 
     {:noreply, state}
+  end
+
+  def handle_info(:update_params, state) do
+    game_mode_configuration =
+      case Arena.Configuration.get_game_mode_configuration(1, "deathmatch") do
+        {:error, _} ->
+          state
+
+        {:ok, game_mode_configuration} ->
+          game_mode_configuration
+      end
+
+    Process.send_after(self(), :update_params, 5000)
+    {:noreply, Map.put(state, :game_mode_configuration, game_mode_configuration)}
   end
 
   defp maybe_make_batch_start_at([], _) do
@@ -115,24 +136,23 @@ defmodule Arena.Matchmaking.DeathmatchMode do
 
   # Receives a list of clients.
   # Fills the given list with bots clients, creates a game and tells every client to join that game.
-  defp create_game_for_clients(clients, game_params \\ %{}) do
+  defp create_game_for_clients(clients, game_params, map) do
     game_params =
       Map.merge(game_params, %{
-        game_mode: :DEATHMATCH,
-        match_duration: @match_duration,
-        respawn_time: @respawn_time
+        game_mode: :DEATHMATCH
       })
 
     # We spawn bots only if there is one player
     bot_clients =
       case Enum.count(clients) do
-        1 -> get_bot_clients(Application.get_env(:arena, :players_needed_in_match) - Enum.count(clients))
+        1 -> get_bot_clients(map.amount_of_players - Enum.count(clients))
         _ -> []
       end
 
-    players = Utils.assign_teams_to_players(clients ++ bot_clients, :solo)
+    players = Utils.assign_teams_to_players(clients ++ bot_clients, :solo, game_params)
 
-    {:ok, game_pid} = GenServer.start(Arena.GameUpdater, %{players: players, game_params: game_params})
+    {:ok, game_pid} =
+      GenServer.start(Arena.GameUpdater, %{players: players, game_params: game_params, map_mode_params: map})
 
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()
 

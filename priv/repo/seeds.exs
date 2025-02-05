@@ -4348,795 +4348,11 @@ merliot_map_config = %{
   }
 }
 
-team_merliot_map_config = %{
-  name: "Merliot",
-  radius: 15000.0,
-  active: false,
-  initial_positions: [
-    %{x: -5346, y: 4709},
-    %{x: -4632, y: 5222},
-    %{x: 4631, y: 5480},
-    %{x: 5359, y: 4872},
-    %{x: 5457, y: 1768},
-    %{x: 5431, y: 1322},
-    %{x: 5344, y: -4468},
-    %{x: 4439, y: -5333},
-    %{x: -4730, y: -5243},
-    %{x: -5381, y: -4555},
-    %{x: -5554, y: -929},
-    %{x: -5476, y: -330}
-  ],
-  obstacles: [
-    %{
-      name: "East wall",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{
-          x: 6400.0,
-          y: 12000.0
-        },
-        %{
-          x: 12000.0,
-          y: 12000.0
-        },
-        %{
-          x: 12000.0,
-          y: -12000.0
-        },
-        %{
-          x: 6400.0,
-          y: -12000.0
-        }
-      ]
-    },
-    %{
-      name: "North wall",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{
-          x: 12000.0,
-          y: 12000.0
-        },
-        %{
-          x: 12000.0,
-          y: 6400.0
-        },
-        %{
-          x: -12000.0,
-          y: 6400.0
-        },
-        %{
-          x: -12000.0,
-          y: 12000.0
-        }
-      ]
-    },
-    %{
-      name: "West wall",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{
-          x: -12000.0,
-          y: 12000.0
-        },
-        %{
-          x: -6400.0,
-          y: 12000.0
-        },
-        %{
-          x: -6400.0,
-          y: -12000.0
-        },
-        %{
-          x: -12000.0,
-          y: -12000.0
-        }
-      ]
-    },
-    %{
-      name: "South wall",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{
-          x: -12000.0,
-          y: -6400.0
-        },
-        %{
-          x: 12000.0,
-          y: -6400.0
-        },
-        %{
-          x: 12000.0,
-          y: -12000.0
-        },
-        %{
-          x: -12000.0,
-          y: -12000.0
-        }
-      ]
-    },
-    %{
-      name: "Center Bottom Left Top Wall",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: -2140, y: -319},
-        %{x: -1991, y: -315},
-        %{x: -1962, y: -981},
-        %{x: -2169, y: -985}
-      ]
-    },
-    %{
-      name: "Center Bottom Left Mid Wall",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: -2169, y: -985},
-        %{x: -1962, y: -981},
-        %{x: -1602, y: -1295},
-        %{x: -1743, y: -1444}
-      ]
-    },
-    %{
-      name: "Center Bottom Left Down Wall",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: -1289, y: -1586},
-        %{x: -836, y: -2083},
-        %{x: -938, y: -2196},
-        %{x: -1446, y: -1746},
-        %{x: -1446, y: -1746}
-      ]
-    },
-    %{
-      name: "Center Bottom Right Down Wall",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: 341, y: -2144},
-        %{x: 341, y: -2010},
-        %{x: 982, y: -2010},
-        %{x: 994, y: -2185}
-      ]
-    },
-    %{
-      name: "Center Bottom Right Mid Wall",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: 994, y: -2185},
-        %{x: 982, y: -2010},
-        %{x: 1329, y: -1615},
-        %{x: 1472, y: -1751}
-      ]
-    },
-    %{
-      name: "Center Bottom Right Top Wall",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: 1777, y: -1457},
-        %{x: 1608, y: -1317},
-        %{x: 2108, y: -854},
-        %{x: 2226, y: -961}
-      ]
-    },
-    %{
-      name: "Center Top Left Bottom Wall",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: -2173, y: 922},
-        %{x: -1710, y: 1433},
-        %{x: -1566, y: 1305},
-        %{x: -2055, y: 826}
-      ]
-    },
-    %{
-      name: "Center Top Left Mid Wall",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: -1281, y: 1622},
-        %{x: -1412, y: 1722},
-        %{x: -966, y: 2183},
-        %{x: -961, y: 2006}
-      ]
-    },
-    %{
-      name: "Center Top Left Top Wall",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: -966, y: 2183},
-        %{x: -961, y: 2006},
-        %{x: -310, y: 2013},
-        %{x: -310, y: 2157}
-      ]
-    },
-    %{
-      name: "Center Top Right Bottom Wall",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: 2137, y: 355},
-        %{x: 1969, y: 342},
-        %{x: 1956, y: 990},
-        %{x: 2159, y: 990}
-      ]
-    },
-    %{
-      name: "Center Top Right Mid Wall",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: 2159, y: 990},
-        %{x: 1961, y: 990},
-        %{x: 1576, y: 1313},
-        %{x: 1712, y: 1449}
-      ]
-    },
-    %{
-      name: "Center Top Right Top Wall",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: 1410, y: 1748},
-        %{x: 1269, y: 1610},
-        %{x: 797, y: 2086},
-        %{x: 910, y: 2182}
-      ]
-    },
-    %{
-      name: "Bottom Mid Rock",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: 921, y: -6393},
-        %{x: 987, y: -5753},
-        %{x: 1873, y: -5819},
-        %{x: 2669, y: -6131},
-        %{x: 2653, y: -10443},
-        %{x: 1775, y: -10509}
-      ]
-    },
-    %{
-      name: "Right Top Rock",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: 10538, y: 624},
-        %{x: 5741, y: 548},
-        %{x: 5850, y: 1513},
-        %{x: 6110, y: 2243},
-        %{x: 10538, y: 2268}
-      ]
-    },
-    %{
-      name: "Top Left Rock",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: -738, y: 5739},
-        %{x: -738, y: 5959},
-        %{x: -1078, y: 9619},
-        %{x: -2568, y: 9539},
-        %{x: -2578, y: 6189},
-        %{x: -1938, y: 5789},
-        %{x: -1288, y: 5659}
-      ]
-    },
-    %{
-      name: "Left Bottom Rock",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      base_status: "",
-      statuses_cycle: %{},
-      vertices: [
-        %{x: -6398, y: -610},
-        %{x: -5728, y: -660},
-        %{x: -5718, y: -1290},
-        %{x: -5818, y: -1810},
-        %{x: -6278, y: -2290},
-        %{x: -6478, y: -2320}
-      ]
-    },
-    %{
-      name: "Center altar",
-      type: "static",
-      radius: 400,
-      shape: "circle",
-      position: %{x: 31, y: -140},
-      vertices: []
-    },
-    %{
-      name: "Left Top Water 1",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: -4360, y: 2759},
-        %{x: -3167, y: 3087},
-        %{x: -2743, y: 2204},
-        %{x: -3500, y: 500},
-        %{x: -4345, y: 400},
-        %{x: -4900, y: 1800}
-      ]
-    },
-    %{
-      name: "Left Bottom Water",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        # (Top-left)
-        %{x: -3117, y: -2705},
-        # (Top-right)
-        %{x: -2539, y: -2550},
-        # (Right-most)
-        %{x: -837, y: -3421},
-        # (Bottom-right)
-        %{x: -532, y: -4091},
-        # (Bottom-most)
-        %{x: -1788, y: -4935},
-        # (Bottom-left)
-        %{x: -3029, y: -4477}
-      ]
-    },
-    %{
-      name: "Close to Wall Top Left Water",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: -10458, y: 8000},
-        %{x: -5150, y: 3016},
-        %{x: -5600, y: 2132},
-        %{x: -10439, y: 2505}
-      ]
-    },
-    %{
-      name: "Close to Wall Top Right Water",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: 2496, y: 10558},
-        %{x: 4221, y: 10589},
-        %{x: 4641, y: 6069},
-        %{x: 3751, y: 5499},
-        %{x: 3236, y: 5565},
-        %{x: 2209, y: 6059}
-      ]
-    },
-    %{
-      name: "Close To Wall Bottom Left Water",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: -3168, y: -5127},
-        %{x: -2062, y: -5648},
-        %{x: -2530, y: -6395},
-        %{x: -3665, y: -6404}
-      ]
-    },
-    %{
-      name: "Close To Wall Bottom Right Water",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: 6046, y: -2263},
-        %{x: 10579, y: -2499},
-        %{x: 10530, y: -4611},
-        %{x: 5571, y: -3342}
-      ]
-    },
-    %{
-      name: "Bottom Mid Water",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        # Left-most
-        %{x: -272, y: -3195},
-        # Top-left
-        %{x: 596, y: -3003},
-        # Top-right
-        %{x: 2056, y: -2643},
-        # Right-most
-        %{x: 2300, y: -3450},
-        # Bottom-most
-        %{x: 230, y: -4100}
-      ]
-    },
-    %{
-      name: "Top Mid Water",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{x: -2438, y: 3333},
-        %{x: -50, y: 4148},
-        %{x: 250, y: 3280},
-        %{x: -2076, y: 2509}
-      ]
-    },
-    %{
-      name: "Right Mid Water",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        # Bottom-left
-        %{x: 2664, y: 2310},
-        # Top-left
-        %{x: 3299, y: 2519},
-        # Top-center
-        %{x: 3659, y: 1608},
-        # Top-right
-        %{x: 4035, y: -68},
-        # Bottom-right
-        %{x: 3478, y: -200}
-      ]
-    },
-    %{
-      name: "Left Mid Water",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        # Top-left
-        %{x: -4107, y: -343},
-        # Top-right
-        %{x: -3368, y: -169},
-        # Bottom-right
-        %{x: -2826, y: -2024},
-        # Bottom-center
-        %{x: -3448, y: -2203},
-        # Bottom-left
-        %{x: -3957, y: -1003}
-      ]
-    },
-    %{
-      name: "Bottom Right Water",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        # Bottom-left
-        %{x: 2653, y: -2438},
-        # Bottom-most
-        %{x: 2792, y: -3186},
-        # Right-bottom
-        %{x: 4896, y: -2963},
-        # Right-most
-        %{x: 5371, y: -1881},
-        # Top-right
-        %{x: 4212, y: -509},
-        # Top-left
-        %{x: 3615, y: -694}
-      ]
-    },
-    %{
-      name: "Top Right Water",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        # Bottom-left
-        %{x: 2381, y: 2856},
-        # Top-left
-        %{x: 3029, y: 3061},
-        # Top-right
-        %{x: 3000, y: 4737},
-        # Top-most
-        %{x: 1802, y: 5366},
-        # Bottom-right
-        %{x: 565, y: 4300},
-        %{x: 808, y: 3500}
-      ]
-    }
-  ],
-  bushes: [
-    %{
-      name: "Top Left Corner",
-      radius: 1000,
-      shape: "circle",
-      position: %{x: -6390, y: 6550},
-      vertices: []
-    },
-    %{
-      name: "Top Right Corner",
-      radius: 1000,
-      shape: "circle",
-      position: %{x: 6390, y: 6550},
-      vertices: []
-    },
-    %{
-      name: "Bottom Left Corner",
-      radius: 1000,
-      shape: "circle",
-      position: %{x: -6390, y: -6550},
-      vertices: []
-    },
-    %{
-      name: "Bottom Right Corner",
-      radius: 1000,
-      shape: "circle",
-      position: %{x: 6390, y: -6550},
-      vertices: []
-    },
-    %{
-      name: "TopLeft - RockTreeBush - Bush",
-      radius: 250,
-      shape: "circle",
-      position: %{x: -1610, y: 3994},
-      vertices: []
-    },
-    %{
-      name: "MidBottomLeft - TreeBush - Bush",
-      radius: 800,
-      shape: "circle",
-      position: %{x: -1759, y: -3426},
-      vertices: []
-    },
-    %{
-      name: "MidBottomRight - TreeBush - Bush",
-      radius: 750,
-      shape: "circle",
-      position: %{x: 3350, y: -1634},
-      vertices: []
-    },
-    %{
-      name: "MidTopLeft - TreeBush - Bush",
-      radius: 650,
-      shape: "circle",
-      position: %{x: -3200, y: 1300},
-      vertices: []
-    },
-    %{
-      name: "MidTopRight - TreeBush - Bush",
-      radius: 700,
-      shape: "circle",
-      position: %{x: 1873, y: 3276},
-      vertices: []
-    }
-  ],
-  pools: [],
-  version_id: version.id,
-  square_wall: %{
-    right: 6400,
-    left: -6400,
-    bottom: -6400,
-    top: 6400
-  }
-}
-
 {:ok, _araban_map_configuration} =
   GameBackend.Configuration.create_map_configuration(araban_map_config)
 
-{:ok, _merliot_map_configuration} =
+{:ok, merliot_map_configuration} =
   GameBackend.Configuration.create_map_configuration(merliot_map_config)
-
-{:ok, _team_merliot_map_configuration} =
-  GameBackend.Configuration.create_map_configuration(team_merliot_map_config)
 
 GameBackend.CurseOfMirra.Config.import_quest_descriptions_config()
 
@@ -5149,6 +4365,133 @@ brazil_arena_server =
     status: "active",
     environment: "production"
   }
+
+battle_mode_params = %{
+  version_id: version.id,
+  type: "battle_royale",
+  zone_enabled: true,
+  bots_enabled: true,
+  match_duration_ms: 180_000,
+  team_size: 1,
+  map_mode_params: [
+    %{
+      amount_of_players: 12,
+      initial_positions: [
+        %{x: -4961, y: 5001},
+        %{x: -2417, y: 5103},
+        %{x: 952, y: 5603},
+        %{x: 4695, y: 4859},
+        %{x: 5632, y: 2753},
+        %{x: 5242, y: -316},
+        %{x: 4908, y: -3698},
+        %{x: 2442, y: -5476},
+        %{x: -897, y: -5296},
+        %{x: -4871, y: -4868},
+        %{x: -4897, y: -2416},
+        %{x: -5047, y: 853}
+      ],
+      map_id: merliot_map_configuration.id
+    }
+  ]
+}
+
+quick_game_params = %{
+  version_id: version.id,
+  type: "practice",
+  zone_enabled: true,
+  bots_enabled: true,
+  team_size: 1,
+  match_duration_ms: 180_000,
+  map_mode_params: [
+    %{
+      amount_of_players: 12,
+      initial_positions: [
+        %{x: -4961, y: 5001},
+        %{x: -2417, y: 5103},
+        %{x: 952, y: 5603},
+        %{x: 4695, y: 4859},
+        %{x: 5632, y: 2753},
+        %{x: 5242, y: -316},
+        %{x: 4908, y: -3698},
+        %{x: 2442, y: -5476},
+        %{x: -897, y: -5296},
+        %{x: -4871, y: -4868},
+        %{x: -4897, y: -2416},
+        %{x: -5047, y: 853}
+      ],
+      map_id: merliot_map_configuration.id
+    }
+  ]
+}
+
+deathmatch_mode_params = %{
+  version_id: version.id,
+  type: "deathmatch",
+  zone_enabled: true,
+  bots_enabled: true,
+  team_size: 1,
+  match_duration_ms: 180_000,
+  respawn_time_ms: 5000,
+  map_mode_params: [
+    %{
+      amount_of_players: 12,
+      initial_positions: [
+        %{x: -4961, y: 5001},
+        %{x: -2417, y: 5103},
+        %{x: 952, y: 5603},
+        %{x: 4695, y: 4859},
+        %{x: 5632, y: 2753},
+        %{x: 5242, y: -316},
+        %{x: 4908, y: -3698},
+        %{x: 2442, y: -5476},
+        %{x: -897, y: -5296},
+        %{x: -4871, y: -4868},
+        %{x: -4897, y: -2416},
+        %{x: -5047, y: 853}
+      ],
+      map_id: merliot_map_configuration.id
+    }
+  ]
+}
+
+pair_mode_params = %{
+  type: "battle_royale",
+  zone_enabled: true,
+  bots_enabled: true,
+  match_duration_ms: 180_000,
+  respawn_time_ms: 5000,
+  team_size: 2,
+  map_mode_params: [
+    %{
+      amount_of_players: 12,
+      initial_positions: [
+        %{x: -5346, y: 4709},
+        %{x: -4632, y: 5222},
+        %{x: 4631, y: 5480},
+        %{x: 5359, y: 4872},
+        %{x: 5457, y: 1768},
+        %{x: 5431, y: 1322},
+        %{x: 5344, y: -4468},
+        %{x: 4439, y: -5333},
+        %{x: -4730, y: -5243},
+        %{x: -5381, y: -4555},
+        %{x: -5554, y: -929},
+        %{x: -5476, y: -330}
+      ],
+      map_id: merliot_map_configuration.id
+    }
+  ],
+  version_id: version.id
+}
+
+{:ok, _battle} = GameBackend.Configuration.create_game_mode_configuration(battle_mode_params)
+
+{:ok, _deathmatch} =
+  GameBackend.Configuration.create_game_mode_configuration(deathmatch_mode_params)
+
+{:ok, _pair} = GameBackend.Configuration.create_game_mode_configuration(pair_mode_params)
+
+{:ok, _quick_game} = GameBackend.Configuration.create_game_mode_configuration(quick_game_params)
 
 GameBackend.Configuration.create_arena_server(brazil_arena_server)
 
