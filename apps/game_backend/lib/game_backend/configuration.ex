@@ -247,9 +247,7 @@ defmodule GameBackend.Configuration do
 
   """
   def list_map_configurations_by_version(version_id) do
-    Repo.all(
-      from(m in MapConfiguration, where: m.version_id == ^version_id and m.active, order_by: [desc: m.inserted_at])
-    )
+    Repo.all(from(m in MapConfiguration, where: m.version_id == ^version_id, order_by: [desc: m.inserted_at]))
   end
 
   @doc """
