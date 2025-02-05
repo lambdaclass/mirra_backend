@@ -57,7 +57,7 @@ defmodule Arena.Matchmaking.GameLauncher do
     Process.send_after(self(), :launch_game?, 300)
     diff = System.monotonic_time(:millisecond) - state.batch_start_at
 
-    state = Matchmaking.get_matchmaking_configuration(state, 1, "battle")
+    state = Matchmaking.get_matchmaking_configuration(state, 1, "battle_royale")
 
     if Map.has_key?(state, :game_mode_configuration) &&
          (length(clients) >= state.current_map.amount_of_players or

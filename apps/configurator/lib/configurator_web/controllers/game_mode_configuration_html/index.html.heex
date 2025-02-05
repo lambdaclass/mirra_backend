@@ -11,7 +11,6 @@
   rows={@game_mode_configurations}
   row_click={&JS.navigate(~p"/versions/#{@version_id}/game_mode_configurations/#{&1}")}
 >
-  <:col :let={game_mode_configuration} label="Name"><%= game_mode_configuration.name %></:col>
   <:col :let={game_mode_configuration} label="Type"><%= game_mode_configuration.type %></:col>
   <:col :let={game_mode_configuration} label="Zone enabled"><%= game_mode_configuration.zone_enabled %></:col>
   <:col :let={game_mode_configuration} label="Bots enabled"><%= game_mode_configuration.bots_enabled %></:col>

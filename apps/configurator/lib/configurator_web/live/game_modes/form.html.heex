@@ -4,7 +4,6 @@
   </.error>
   <p class="font-semibold"><%= "Version: #{@version.name}" %></p>
   <.input type="hidden" field={f[:version_id]} value={@version.id} />
-  <.input field={f[:name]} label="Name" />
   <.input
     field={f[:type]}
     type="select"
