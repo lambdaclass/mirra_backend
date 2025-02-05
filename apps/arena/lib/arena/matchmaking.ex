@@ -17,7 +17,6 @@ defmodule Arena.Matchmaking do
           matchmaking_state
 
         {:ok, game_mode_configuration} ->
-          # This is needed because we might not want to send a request every 300 seconds to the game backend
           map = Enum.random(game_mode_configuration.map_mode_params)
 
           Map.put(matchmaking_state, :game_mode_configuration, game_mode_configuration)
