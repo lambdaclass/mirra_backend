@@ -31,8 +31,7 @@
     <.list>
       <:item title="Amount of players"><%= params.amount_of_players %></:item>
       <:item title="Map"><%= params.map.name %></:item>
-      <:item title="Solo - Initial Positions"><%= Jason.encode!(params.solo_initial_positions) %></:item>
-      <:item title="Team - Initial Positions"><%= Jason.encode!(params.team_initial_positions) %></:item>
+      <:item title="Initial Positions"><%= Jason.encode!(params.initial_positions) %></:item>
     </.list>
   <% end %>
 </.modal>

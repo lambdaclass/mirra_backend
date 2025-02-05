@@ -4684,7 +4684,7 @@ battle_mode_params = %{
   map_mode_params: [
     %{
       amount_of_players: 12,
-      solo_initial_positions: [
+      initial_positions: [
         %{x: -4961, y: 5001},
         %{x: -2417, y: 5103},
         %{x: 952, y: 5603},
@@ -4698,8 +4698,7 @@ battle_mode_params = %{
         %{x: -4897, y: -2416},
         %{x: -5047, y: 853}
       ],
-      team_team_initial_positions: [],
-      map_id: araban_map_configuration.id
+      map_id: merliot_map_configuration.id
     }
   ]
 }
@@ -4714,7 +4713,7 @@ quick_game_params = %{
   map_mode_params: [
     %{
       amount_of_players: 12,
-      solo_initial_positions: [
+      initial_positions: [
         %{x: -4961, y: 5001},
         %{x: -2417, y: 5103},
         %{x: 952, y: 5603},
@@ -4728,7 +4727,6 @@ quick_game_params = %{
         %{x: -4897, y: -2416},
         %{x: -5047, y: 853}
       ],
-      team_team_initial_positions: [],
       map_id: merliot_map_configuration.id
     }
   ]
@@ -4745,7 +4743,7 @@ deathmatch_mode_params = %{
   map_mode_params: [
     %{
       amount_of_players: 12,
-      solo_initial_positions: [
+      initial_positions: [
         %{x: -4961, y: 5001},
         %{x: -2417, y: 5103},
         %{x: 952, y: 5603},
@@ -4759,7 +4757,6 @@ deathmatch_mode_params = %{
         %{x: -4897, y: -2416},
         %{x: -5047, y: 853}
       ],
-      team_team_initial_positions: [],
       map_id: merliot_map_configuration.id
     }
   ]
@@ -4770,15 +4767,13 @@ pair_mode_params = %{
   type: "battle_royale",
   zone_enabled: true,
   bots_enabled: true,
-  team_enabled: true,
   match_duration_ms: 180_000,
   respawn_time_ms: 5000,
   team_size: 2,
   map_mode_params: [
     %{
       amount_of_players: 12,
-      solo_initial_positions: [],
-      team_initial_positions: [
+      initial_positions: [
         %{x: -5346, y: 4709},
         %{x: -4632, y: 5222},
         %{x: 4631, y: 5480},

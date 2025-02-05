@@ -11,8 +11,6 @@ defmodule Configurator.Utils do
   def parse_json_params(map_configuration_params) do
     map_configuration_params
     |> Map.update("initial_positions", "", &parse_json/1)
-    |> Map.update("solo_initial_positions", "", &parse_json/1)
-    |> Map.update("team_initial_positions", "", &parse_json/1)
     |> Map.update("obstacles", "", &parse_json/1)
     |> Map.update("bushes", "", &parse_json/1)
     |> Map.update("pools", "", &parse_json/1)

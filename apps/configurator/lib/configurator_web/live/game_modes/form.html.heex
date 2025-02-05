@@ -12,12 +12,6 @@
     options={Ecto.Enum.values(GameBackend.CurseOfMirra.GameModeConfiguration, :type)}
   />
 
-  <.input field={f[:team_enabled]} type="checkbox" label="Enable Teams" phx-update="ignore" />
-
-  <%= if @team_mode do %>
-    <.input field={f[:team_size]} type="number" label="Team Size" />
-  <% end %>
-
   <div class="flex items-center justify-between gap-6">
     <span
       phx-click="add_map_params"
@@ -31,6 +25,7 @@
   <.input field={f[:bots_enabled]} type="checkbox" label="Bots enabled" />
   <.input field={f[:match_duration_ms]} type="number" label="Match duration ms" />
   <.input field={f[:respawn_time_ms]} type="number" label="Respawn time ms" />
+  <.input field={f[:team_size]} type="number" label="Team Size" />
 
   <%= if not is_nil(Ecto.Changeset.get_field(@changeset, :map_mode_params)) do %>
     <div class="flex items-center justify-between gap-6">
@@ -60,18 +55,10 @@
       </div>
       <div class="px-6 py-4">
         <.input
-          field={fp[:solo_initial_positions]}
+          field={fp[:initial_positions]}
           type="textarea"
-          label="Solo mode positions"
-          value={Configurator.Utils.embed_to_string(fp[:solo_initial_positions].value)}
-        />
-      </div>
-      <div class="px-6 py-4">
-        <.input
-          field={fp[:team_initial_positions]}
-          type="textarea"
-          label="Team mode Positions"
-          value={Configurator.Utils.embed_to_string(fp[:team_initial_positions].value)}
+          label="Initial positions"
+          value={Configurator.Utils.embed_to_string(fp[:initial_positions].value)}
         />
       </div>
     </div>

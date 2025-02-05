@@ -900,15 +900,8 @@ defmodule Arena.GameUpdater do
   defp initialize_players(game_state, players, config) do
     now = System.monotonic_time(:millisecond)
 
-    initial_positions =
-      if config.game.team_enabled do
-        config.map_mode_params.team_initial_positions
-      else
-        config.map_mode_params.solo_initial_positions
-      end
-
     {game_state, _} =
-      Enum.reduce(players, {game_state, initial_positions}, fn player, {game_acc, positions} ->
+      Enum.reduce(players, {game_state, config.map_mode_params.initial_positions}, fn player, {game_acc, positions} ->
         last_id = game_acc.last_id + 1
         {pos, positions} = get_next_position(positions)
         direction = Physics.get_direction_from_positions(pos, %{x: 0.0, y: 0.0})

@@ -36,8 +36,7 @@ defmodule Arena.Configuration do
   defp parse_map_mode_params(map_mode_params) do
     %{
       map_mode_params
-      | solo_initial_positions: Enum.map(map_mode_params.solo_initial_positions, &parse_position/1),
-        team_initial_positions: Enum.map(map_mode_params.team_initial_positions, &parse_position/1)
+      | initial_positions: Enum.map(map_mode_params.initial_positions, &parse_position/1)
     }
   end
 

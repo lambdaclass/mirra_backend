@@ -18,7 +18,6 @@ defmodule GameBackend.CurseOfMirra.GameModeConfiguration do
              :match_duration_ms,
              :respawn_time_ms,
              :map_mode_params,
-             :team_enabled,
              :team_size
            ]}
 
@@ -27,7 +26,6 @@ defmodule GameBackend.CurseOfMirra.GameModeConfiguration do
     field(:type, Ecto.Enum, values: [:battle_royale, :deathmatch])
     field(:zone_enabled, :boolean)
     field(:bots_enabled, :boolean)
-    field(:team_enabled, :boolean)
     field(:match_duration_ms, :integer)
     field(:deleted_at, :naive_datetime)
 
@@ -52,8 +50,7 @@ defmodule GameBackend.CurseOfMirra.GameModeConfiguration do
                :match_duration_ms,
                :respawn_time_ms,
                :version_id,
-               :team_size,
-               :team_enabled
+               :team_size
              ] ++
                @required
 
