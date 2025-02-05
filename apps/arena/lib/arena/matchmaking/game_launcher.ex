@@ -22,6 +22,7 @@ defmodule Arena.Matchmaking.GameLauncher do
   @impl true
   def init(_) do
     Process.send_after(self(), :launch_game?, 300)
+    Process.send_after(self(), :update_params, 20_000)
     {:ok, %{clients: [], batch_start_at: 0}}
   end
 
@@ -65,7 +66,6 @@ defmodule Arena.Matchmaking.GameLauncher do
 
           {:ok, game_mode_configuration} ->
             # This is needed because we might not want to send a request every 300 seconds to the game backend
-            Process.send_after(self(), :update_params, 5000)
             map = Enum.random(game_mode_configuration.map_mode_params)
 
             Map.put(state, :game_mode_configuration, game_mode_configuration)
