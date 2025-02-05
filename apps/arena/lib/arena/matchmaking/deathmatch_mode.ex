@@ -77,9 +77,9 @@ defmodule Arena.Matchmaking.DeathmatchMode do
 
     create_game_for_clients(game_clients, state.game_mode_configuration, state.current_map)
 
-    map = Enum.random(state.game_mode_configuration.map_mode_params)
+    next_map = Enum.random(state.game_mode_configuration.map_mode_params)
 
-    {:noreply, %{state | clients: remaining_clients, current_map: map}}
+    {:noreply, %{state | clients: remaining_clients, current_map: next_map}}
   end
 
   def handle_info({:spawn_bot_for_player, bot_client, game_id}, state) do
