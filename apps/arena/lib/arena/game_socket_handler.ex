@@ -221,9 +221,6 @@ defmodule Arena.GameSocketHandler do
     {key, Map.merge(skill, extra_params)}
   end
 
-  defp handle_decoded_message(%{action_type: {:select_bounty, bounty_params}}, state),
-    do: GameUpdater.select_bounty(state.game_pid, state.player_id, bounty_params.bounty_quest_id)
-
   defp handle_decoded_message(%{action_type: {:toggle_zone, _zone_params}}, state),
     do: GameUpdater.toggle_zone(state.game_pid)
 
