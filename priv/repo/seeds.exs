@@ -1268,6 +1268,7 @@ uren_params = %{
 }
 
 # Insert characters
+characters =
 [
   muflus_params,
   h4ck_params,
@@ -1278,11 +1279,31 @@ uren_params = %{
   shinko_params,
   uren_params
 ]
-|> Enum.each(fn char_params ->
+|> Enum.reduce([], fn char_params, characters ->
+  {:ok, character} =
   Map.put(char_params, :game_id, curse_of_mirra_id)
   |> Map.put(:faction, "none")
   |> Characters.insert_character()
+
+  characters ++ [character]
 end)
+
+# Skins params
+h4ck_fenix_params = %{
+  is_default: false,
+  character_id: Enum.find(characters, fn c -> c.name == "h4ck" end).id
+}
+h4ck_basic_params = %{
+  is_default: true,
+  character_id: Enum.find(characters, fn c -> c.name == "h4ck" end).id
+}
+
+# Insert skins
+[
+  h4ck_fenix_params,
+  h4ck_basic_params
+]
+|> Enum.each(fn skin_params -> Characters.insert_skin(skin_params) end)
 
 game_configuration_1 = %{
   tick_rate_ms: 30,

@@ -6,7 +6,6 @@ defmodule GameBackend.Units.Characters.Skin do
   use GameBackend.Schema
   import Ecto.Changeset
 
-  alias GameBackend.Configuration.Version
   alias GameBackend.Units.Characters.Character
 
   @derive {Jason.Encoder,
@@ -15,10 +14,9 @@ defmodule GameBackend.Units.Characters.Skin do
              :character_id
            ]}
 
-  schema "skin" do
-    # check on_replace
+  schema "skins" do
     field(:is_default, :boolean, default: false)
-    belongs_to(:character, Character, on_replace: :update)
+    belongs_to(:character, Character)
 
     timestamps()
   end

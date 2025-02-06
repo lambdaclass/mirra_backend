@@ -17,8 +17,10 @@ defmodule GameBackend.Users do
   alias GameBackend.Quests.UserQuest
   alias GameBackend.Repo
   alias GameBackend.Transaction
-  alias GameBackend.Users.{Currencies, DungeonSettlementLevel, GoogleUser, KalineTreeLevel, User, Unlock, Upgrade}
+  alias GameBackend.Users.{Currencies, DungeonSettlementLevel, GoogleUser, KalineTreeLevel, User, Unlock, Upgrade, UserSkin}
+  alias GameBackend.Users
   alias GameBackend.Units.Unit
+  alias GameBackend.Units.Characters
 
   @doc """
   Registers a user.
@@ -81,6 +83,7 @@ defmodule GameBackend.Users do
         as: :user,
         where: u.id == ^id and u.game_id == ^game_id,
         preload: [
+          :user_skins,
           [units: [:character, :items]],
           [currencies: [:currency]]
         ],
@@ -684,6 +687,14 @@ defmodule GameBackend.Users do
             {:ok, :quests_generated}
         end
     end)
+    |> Multi.run(:insert_user_skins, fn _, %{insert_user: user} ->
+        Enum.each(Characters.list_default_skins(), fn skin ->
+          Users.insert_user_skin(%{user_id: user.id, skin_id: skin.id})
+
+          # Repo.insert(UserSkin, %{user_id: user.id, skin_id: skin.id})
+        end)
+        {:ok, :user_skins_inserted}
+    end)
     |> Multi.run(:user, fn _, %{insert_user: user} ->
       get_user_by_id_and_game_id(user.id, curse_id)
     end)
@@ -769,5 +780,14 @@ defmodule GameBackend.Users do
       nil -> {:ok, :quests_inserted}
       {:error, changeset} -> {:error, changeset}
     end
+  end
+
+  @doc """
+  Inserts a UserSkin into the database.
+  """
+  def insert_user_skin(attrs) do
+    %UserSkin{}
+    |> UserSkin.changeset(attrs)
+    |> Repo.insert()
   end
 end

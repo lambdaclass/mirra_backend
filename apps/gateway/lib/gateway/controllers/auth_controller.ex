@@ -42,8 +42,11 @@ defmodule Gateway.Controllers.AuthController do
          {:ok, ^hashed_client_id} <- Base.url_decode64(claims["dev"]),
          {:ok, _} <- Users.maybe_generate_daily_quests_for_curse_user(claims["sub"]),
          {:ok, user} <- Users.get_user_by_id_and_game_id(claims["sub"], curse_id) do
+      # random_character = Enum.random(user.units).character
+      random_character = Enum.find(user.units, fn unit -> unit.character.name == "h4ck" end).character
+      default_skin = Enum.find(user.user_skins, fn skin -> skin.character_id == random_character.id and skin.is_default end)
       new_gateway_jwt = TokenManager.generate_user_token(user, client_id)
-      send_resp(conn, 200, Jason.encode!(%{gateway_jwt: new_gateway_jwt, user_id: user.id}))
+      send_resp(conn, 200, Jason.encode!(%{user_id: user.id, gateway_jwt: new_gateway_jwt, character: %{character_name: random_character.name, skin_id: default_skin}}))
     end
   end
 end
