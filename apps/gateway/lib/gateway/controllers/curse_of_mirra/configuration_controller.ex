@@ -57,6 +57,16 @@ defmodule Gateway.Controllers.CurseOfMirra.ConfigurationController do
     send_resp(conn, 200, Jason.encode!(consumable_items))
   end
 
+  def get_game_mode_configuration(conn, %{"team_size" => team_size, "type" => type}) do
+    case Configuration.get_game_mode_configuration_by_type_and_team_size(team_size, type) do
+      nil ->
+        send_resp(conn, 404, "Game mode not found")
+
+      game_mode ->
+        send_resp(conn, 200, Jason.encode!(game_mode))
+    end
+  end
+
   defp encode_characters(characters) when is_list(characters) do
     Enum.map(characters, fn character ->
       character

@@ -11,7 +11,7 @@ defmodule ConfiguratorWeb.GameModeConfigurationsLive.Form do
         %{"game_mode_configuration" => game_mode_configuration, "version" => version},
         socket
       ) do
-    maps = Configuration.list_map_configurations_by_version(version.id)
+    maps = Configuration.list_map_configurations_by_version(version.id) |> Enum.filter(& &1.active)
     changeset = Configuration.change_game_mode_configuration(game_mode_configuration)
 
     socket =
@@ -32,10 +32,16 @@ defmodule ConfiguratorWeb.GameModeConfigurationsLive.Form do
         socket
       ) do
     changeset = Configuration.change_game_mode_configuration(%GameModeConfiguration{})
-    maps = Configuration.list_map_configurations_by_version(version.id)
+    maps = Configuration.list_map_configurations_by_version(version.id) |> Enum.filter(& &1.active)
 
     socket =
-      assign(socket, changeset: changeset, action: "save", maps: maps, version: version, game_mode_configuration: %{})
+      assign(socket,
+        changeset: changeset,
+        action: "save",
+        maps: maps,
+        version: version,
+        game_mode_configuration: %{}
+      )
 
     {:ok, socket}
   end

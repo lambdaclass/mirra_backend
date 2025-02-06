@@ -7,14 +7,40 @@ defmodule Arena.Configuration do
     Enum.find(config.characters, fn character -> character.name == name end)
   end
 
-  def get_game_config() do
+  def get_game_config(map_selected \\ "") do
     client_config = get_client_config()
 
-    get_current_game_configuration()
+    get_current_game_configuration(map_selected)
     |> Map.put(:client_config, client_config)
   end
 
-  defp get_current_game_configuration do
+  def get_game_mode_configuration(team_size, type) do
+    gateway_url = Application.get_env(:arena, :gateway_url)
+    query_params = URI.encode_query(%{"team_size" => team_size, "type" => type})
+    url = "#{gateway_url}/curse/configuration/game_modes?#{query_params}"
+
+    case Finch.build(:get, url, [{"content-type", "application/json"}])
+         |> Finch.request(Arena.Finch) do
+      {:ok, payload} ->
+        {:ok,
+         Jason.decode!(payload.body, [{:keys, :atoms}])
+         |> Map.update!(:map_mode_params, fn map_mode_params ->
+           Enum.map(map_mode_params, fn map_mode_param -> parse_map_mode_params(map_mode_param) end)
+         end)}
+
+      {:error, _} ->
+        {:error, %{}}
+    end
+  end
+
+  defp parse_map_mode_params(map_mode_params) do
+    %{
+      map_mode_params
+      | initial_positions: Enum.map(map_mode_params.initial_positions, &parse_position/1)
+    }
+  end
+
+  defp get_current_game_configuration(map_selected) do
     gateway_url = Application.get_env(:arena, :gateway_url)
 
     {:ok, payload} =
@@ -23,10 +49,11 @@ defmodule Arena.Configuration do
 
     Jason.decode!(payload.body, [{:keys, :atoms}])
     |> Map.update!(:map, fn maps ->
+      random_map = Enum.random(maps)
+
       map =
         maps
-        |> Enum.filter(fn map -> map.active end)
-        |> Enum.random()
+        |> Enum.find(random_map, fn map -> map.name == map_selected end)
 
       parse_map_config(map)
     end)
