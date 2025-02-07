@@ -12771,8 +12771,9 @@ proto.CurrencyReward.prototype.setAmount = function(value) {
 proto.GameMode = {
   BATTLE: 0,
   DEATHMATCH: 1,
-  PAIR: 2,
-  QUICK_GAME: 3
+  DUO: 2,
+  QUICK_GAME: 3,
+  TRIO: 4
 };
 
 /**

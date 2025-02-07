@@ -15,7 +15,8 @@ defmodule Arena.Application do
       {Finch, name: Arena.Finch},
       # Start game launcher genserver
       Arena.Matchmaking.GameLauncher,
-      Arena.Matchmaking.PairMode,
+      Arena.Matchmaking.DuoMode,
+      Arena.Matchmaking.TrioMode,
       Arena.Matchmaking.QuickGameMode,
       Arena.Matchmaking.DeathmatchMode,
       Arena.GameTracker,

@@ -1,4 +1,4 @@
-defmodule Arena.Matchmaking.PairMode do
+defmodule Arena.Matchmaking.TrioMode do
   @moduledoc false
   alias Arena.Utils
   alias Ecto.UUID
@@ -57,7 +57,7 @@ defmodule Arena.Matchmaking.PairMode do
   def handle_info(:launch_game?, %{clients: clients} = state) do
     Process.send_after(self(), :launch_game?, 300)
 
-    state = Matchmaking.get_matchmaking_configuration(state, 2, "battle_royale")
+    state = Matchmaking.get_matchmaking_configuration(state, 3, "battle_royale")
 
     diff = System.monotonic_time(:millisecond) - state.batch_start_at
 
@@ -81,7 +81,7 @@ defmodule Arena.Matchmaking.PairMode do
 
   def handle_info(:update_params, state) do
     game_mode_configuration =
-      case Arena.Configuration.get_game_mode_configuration(2, "battle_royale") do
+      case Arena.Configuration.get_game_mode_configuration(3, "battle_royale") do
         {:error, _} ->
           state
 
@@ -134,7 +134,7 @@ defmodule Arena.Matchmaking.PairMode do
   # Receives a list of clients.
   # Fills the given list with bots clients, creates a game and tells every client to join that game.
   defp create_game_for_clients(clients, game_params, map) do
-    game_params = Map.put(game_params, :game_mode, :PAIR)
+    game_params = Map.put(game_params, :game_mode, :TRIO)
 
     bot_clients =
       if Enum.count(clients) < map.amount_of_players do
