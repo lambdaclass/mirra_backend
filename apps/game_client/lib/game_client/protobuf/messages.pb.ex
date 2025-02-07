@@ -5,8 +5,9 @@ defmodule GameClient.Protobuf.GameMode do
 
   field(:BATTLE, 0)
   field(:DEATHMATCH, 1)
-  field(:PAIR, 2)
+  field(:DUO, 2)
   field(:QUICK_GAME, 3)
+  field(:TRIO, 4)
 end
 
 defmodule GameClient.Protobuf.GameStatus do

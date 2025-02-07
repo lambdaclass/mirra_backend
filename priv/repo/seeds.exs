@@ -4468,7 +4468,7 @@ deathmatch_mode_params = %{
   ]
 }
 
-pair_mode_params = %{
+duo_mode_params = %{
   type: "battle_royale",
   zone_enabled: true,
   bots_enabled: true,
@@ -4498,12 +4498,44 @@ pair_mode_params = %{
   version_id: version.id
 }
 
+trio_mode_params = %{
+  type: "battle_royale",
+  zone_enabled: true,
+  bots_enabled: true,
+  match_duration_ms: 180_000,
+  respawn_time_ms: 5000,
+  team_size: 3,
+  map_mode_params: [
+    %{
+      amount_of_players: 12,
+      initial_positions: [
+        %{x: -5378, y: 4702},
+        %{x: -4871, y: 4691},
+        %{x: -4680, y: 4242},
+        %{x: 4758, y: 5226},
+        %{x: 5355, y: 4941},
+        %{x: 4820, y: 4505},
+        %{x: 4829, y: -4831},
+        %{x: 4394, y: -5153},
+        %{x: 5173, y: -5475},
+        %{x: -3979, y: -5396},
+        %{x: -4344, y: -5128},
+        %{x: -4803, y: -5521}
+      ],
+      map_id: merliot_map_configuration.id
+    }
+  ],
+  version_id: version.id
+}
+
 {:ok, _battle} = GameBackend.Configuration.create_game_mode_configuration(battle_mode_params)
 
 {:ok, _deathmatch} =
   GameBackend.Configuration.create_game_mode_configuration(deathmatch_mode_params)
 
-{:ok, _pair} = GameBackend.Configuration.create_game_mode_configuration(pair_mode_params)
+{:ok, _duo} = GameBackend.Configuration.create_game_mode_configuration(duo_mode_params)
+
+{:ok, _trio} = GameBackend.Configuration.create_game_mode_configuration(trio_mode_params)
 
 {:ok, _quick_game} = GameBackend.Configuration.create_game_mode_configuration(quick_game_params)
 
