@@ -5,8 +5,9 @@ defmodule Arena.Serialization.GameMode do
 
   field(:BATTLE, 0)
   field(:DEATHMATCH, 1)
-  field(:PAIR, 2)
+  field(:DUO, 2)
   field(:QUICK_GAME, 3)
+  field(:TRIO, 4)
 end
 
 defmodule Arena.Serialization.AttackType do
@@ -244,6 +245,7 @@ defmodule Arena.Serialization.GameJoined do
   field(:config, 2, type: Arena.Serialization.Configuration)
   field(:bounties, 3, repeated: true, type: Arena.Serialization.BountyInfo)
   field(:team, 4, type: :uint32)
+  field(:map, 5, type: :string)
 end
 
 defmodule Arena.Serialization.Configuration do

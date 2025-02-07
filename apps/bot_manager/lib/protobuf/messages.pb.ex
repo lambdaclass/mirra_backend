@@ -5,8 +5,9 @@ defmodule BotManager.Protobuf.GameMode do
 
   field(:BATTLE, 0)
   field(:DEATHMATCH, 1)
-  field(:PAIR, 2)
+  field(:DUO, 2)
   field(:QUICK_GAME, 3)
+  field(:TRIO, 4)
 end
 
 defmodule BotManager.Protobuf.AttackType do
@@ -244,6 +245,7 @@ defmodule BotManager.Protobuf.GameJoined do
   field(:config, 2, type: BotManager.Protobuf.Configuration)
   field(:bounties, 3, repeated: true, type: BotManager.Protobuf.BountyInfo)
   field(:team, 4, type: :uint32)
+  field(:map, 5, type: :string)
 end
 
 defmodule BotManager.Protobuf.Configuration do
