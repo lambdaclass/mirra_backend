@@ -1291,10 +1291,12 @@ end)
 # Skins params
 h4ck_fenix_params = %{
   is_default: false,
+  name: "Fenix",
   character_id: Enum.find(characters, fn c -> c.name == "h4ck" end).id
 }
 h4ck_basic_params = %{
   is_default: true,
+  name: "Basic",
   character_id: Enum.find(characters, fn c -> c.name == "h4ck" end).id
 }
 

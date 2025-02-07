@@ -15,6 +15,7 @@ defmodule GameBackend.Units.Characters.Skin do
            ]}
 
   schema "skins" do
+    field(:name, :string)
     field(:is_default, :boolean, default: false)
     belongs_to(:character, Character)
 
@@ -25,9 +26,10 @@ defmodule GameBackend.Units.Characters.Skin do
   def changeset(character, attrs) do
     character
     |> cast(attrs, [
+      :name,
       :is_default,
       :character_id
     ])
-    |> validate_required([:is_default, :character_id])
+    |> validate_required([:name, :is_default, :character_id])
   end
 end

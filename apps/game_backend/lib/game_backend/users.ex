@@ -83,7 +83,7 @@ defmodule GameBackend.Users do
         as: :user,
         where: u.id == ^id and u.game_id == ^game_id,
         preload: [
-          :user_skins,
+          [user_skins: [:skin]],
           [units: [:character, :items]],
           [currencies: [:currency]]
         ],

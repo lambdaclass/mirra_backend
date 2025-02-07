@@ -3,6 +3,7 @@ defmodule GameBackend.Repo.Migrations.AddUsersOwnedAssets do
 
   def change do
     create table(:skins) do
+      add(:name, :string)
       add(:is_default, :boolean)
       add(:character_id, references(:characters))
 
