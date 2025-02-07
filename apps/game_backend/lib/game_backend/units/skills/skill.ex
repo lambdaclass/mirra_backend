@@ -29,6 +29,7 @@ defmodule GameBackend.Units.Skills.Skill do
     field(:stamina_cost, :integer)
     field(:mana_cost, :integer)
     field(:type, Ecto.Enum, values: [:basic, :dash, :ultimate])
+    field(:attack_type, Ecto.Enum, values: [:melee, :ranged])
 
     belongs_to(:buff, Buff)
     belongs_to(:next_skill, __MODULE__)
@@ -62,7 +63,8 @@ defmodule GameBackend.Units.Skills.Skill do
     :stamina_cost,
     :mana_cost,
     :type,
-    :version_id
+    :version_id,
+    :attack_type
   ]
 
   @doc false

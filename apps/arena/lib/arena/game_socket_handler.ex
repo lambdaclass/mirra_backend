@@ -215,7 +215,9 @@ defmodule Arena.GameSocketHandler do
       targetting_angle: mechanic[:angle],
       targetting_range: mechanic[:range],
       targetting_offset: mechanic[:offset] || mechanic[:projectile_offset],
-      is_combo: skill.is_combo?
+      is_combo: skill.is_combo?,
+      attack_type: cast_attack_type(skill.attack_type),
+      skill_type: cast_skill_type(skill.type)
     }
 
     {key, Map.merge(skill, extra_params)}
@@ -281,4 +283,11 @@ defmodule Arena.GameSocketHandler do
   # This is to override jwt validation for human clients in loadtests.
   defp maybe_override_jwt(_client_id, "true", req), do: :cowboy_req.binding(:client_id, req)
   defp maybe_override_jwt(client_id, _override_jwt?, _req), do: client_id
+
+  defp cast_attack_type("melee"), do: :MELEE
+  defp cast_attack_type("ranged"), do: :RANGED
+
+  defp cast_skill_type("basic"), do: :BASIC
+  defp cast_skill_type("ultimate"), do: :ULTIMATE
+  defp cast_skill_type("dash"), do: :DASH
 end

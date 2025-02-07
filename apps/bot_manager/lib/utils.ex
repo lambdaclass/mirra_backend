@@ -9,6 +9,19 @@ defmodule BotManager.Utils do
 
   def player_alive?(_), do: :not_a_player
 
+  def list_character_skills_from_config(character_name, characters) do
+    character = Enum.find(characters, fn character -> character.name == character_name end)
+    {_id, basic} = Enum.find(character.skills, fn {_id, skill} -> skill.skill_type == :BASIC end)
+    {_id, ultimate} = Enum.find(character.skills, fn {_id, skill} -> skill.skill_type == :ULTIMATE end)
+    {_id, dash} = Enum.find(character.skills, fn {_id, skill} -> skill.skill_type == :DASH end)
+
+    %{
+      basic: basic,
+      ultimate: ultimate,
+      dash: dash
+    }
+  end
+
   def random_position_within_safe_zone_radius(safe_zone_radius) do
     x = Enum.random(-safe_zone_radius..safe_zone_radius) / 1.0
     y = Enum.random(-safe_zone_radius..safe_zone_radius) / 1.0
