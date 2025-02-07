@@ -1,4 +1,4 @@
-defmodule Arena.Matchmaking.PairMode do
+defmodule Arena.Matchmaking.DuoMode do
   @moduledoc false
   alias Arena.Utils
   alias Ecto.UUID
@@ -134,7 +134,7 @@ defmodule Arena.Matchmaking.PairMode do
   # Receives a list of clients.
   # Fills the given list with bots clients, creates a game and tells every client to join that game.
   defp create_game_for_clients(clients, game_params, map) do
-    game_params = Map.put(game_params, :game_mode, :PAIR)
+    game_params = Map.put(game_params, :game_mode, :DUO)
 
     bot_clients =
       if Enum.count(clients) < map.amount_of_players do
