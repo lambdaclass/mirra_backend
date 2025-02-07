@@ -225,6 +225,7 @@ defmodule GameClient.Protobuf.GameJoined do
   field(:config, 2, type: GameClient.Protobuf.Configuration)
   field(:bounties, 3, repeated: true, type: GameClient.Protobuf.BountyInfo)
   field(:team, 4, type: :uint32)
+  field(:map, 5, type: :string)
 end
 
 defmodule GameClient.Protobuf.Configuration do
