@@ -11,9 +11,6 @@ defmodule BotManager.BotStateMachine do
   @skill_1_key "1"
   @skill_2_key "2"
   @dash_skill_key "3"
-  @run_away_vision 400
-  @ranged_vision 1200
-  @melee_vision 500
 
   def decide_action(%{bots_enabled?: false, bot_state_machine: bot_state_machine}) do
     %{action: {:move, %{x: 0, y: 0}}, bot_state_machine: bot_state_machine}
@@ -27,7 +24,7 @@ defmodule BotManager.BotStateMachine do
         bot_player: bot_player,
         bot_state_machine: bot_state_machine,
         attack_blocked: attack_blocked,
-        config: config
+        bot_skills: skills
       }) do
     bot_state_machine = preprocess_bot_state(bot_state_machine, bot_player)
 
@@ -43,14 +40,14 @@ defmodule BotManager.BotStateMachine do
           bot_state_machine: bot_state_machine,
           game_state: game_state,
           attack_blocked: attack_blocked,
-          config: config
+          bot_skills: skills
         })
 
       :running_away ->
         run_away(bot_player, game_state, bot_state_machine)
 
       :tracking_player ->
-        track_player(game_state, bot_player, bot_state_machine)
+        track_player(game_state, bot_player, bot_state_machine, skills)
     end
   end
 
@@ -68,19 +65,18 @@ defmodule BotManager.BotStateMachine do
         game_state: game_state,
         bot_player: bot_player,
         bot_state_machine: bot_state_machine,
-        config: config
+        bot_skills: skills
       }) do
-    {:player, aditional_info} = bot_player.aditional_info
-
-    skills = BotManager.Utils.list_character_skills_from_config(aditional_info.character_name, config.characters)
-
     cond do
       bot_state_machine.progress_for_ultimate_skill >= bot_state_machine.cap_for_ultimate_skill ->
         players_with_distances =
           Utils.map_directions_to_players(
             game_state.players,
             bot_player,
-            if(skills.ultimate.attack_type == :MELEE, do: @melee_vision, else: @ranged_vision)
+            if(skills.ultimate.attack_type == :MELEE,
+              do: bot_state_machine.melee_attack_distance,
+              else: bot_state_machine.ranged_attack_distance
+            )
           )
 
         if Enum.empty?(players_with_distances) do
@@ -103,7 +99,10 @@ defmodule BotManager.BotStateMachine do
           Utils.map_directions_to_players(
             game_state.players,
             bot_player,
-            if(skills.basic.attack_type == :MELEE, do: @melee_vision, else: @ranged_vision)
+            if(skills.basic.attack_type == :MELEE,
+              do: bot_state_machine.melee_attack_distance,
+              else: bot_state_machine.ranged_attack_distance
+            )
           )
 
         if Enum.empty?(players_with_distances) do
@@ -138,12 +137,15 @@ defmodule BotManager.BotStateMachine do
     end
   end
 
-  defp track_player(game_state, bot_player, bot_state_machine) do
+  defp track_player(game_state, bot_player, bot_state_machine, skills) do
     players_with_distances =
       Utils.map_directions_to_players(
         game_state.players,
         bot_player,
-        bot_state_machine.max_vision_range_to_follow_player
+        if(skills.basic.attack_type == :MELEE,
+          do: bot_state_machine.melee_tracking_range,
+          else: bot_state_machine.ranged_tracking_range
+        )
       )
 
     if Enum.empty?(players_with_distances) do

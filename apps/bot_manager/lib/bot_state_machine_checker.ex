@@ -4,7 +4,6 @@ defmodule BotManager.BotStateMachineChecker do
   """
   alias BotManager.Utils
 
-  @low_health_percentage 40
   @time_stuck_in_position 400
 
   defstruct [
@@ -28,14 +27,20 @@ defmodule BotManager.BotStateMachineChecker do
     :time_amount_to_change_position,
     # The last time that the bot changed its position
     :last_time_position_changed,
-    # The maximum vision range that the bot can follow a player
-    :max_vision_range_to_follow_player,
-    # The vision range that the bot has to find a player to attack
-    :vision_range_to_attack_player,
     # Start Time in the same position
     :start_time_stuck_in_position,
     # The position that the bot is stuck in
-    :stuck_in_position
+    :stuck_in_position,
+    # The range that the bot has to follow a player in melee
+    :melee_tracking_range,
+    # The range that the bot has to follow a player in ranged
+    :ranged_tracking_range,
+    # The range that the bot has to attack a player
+    :ranged_attack_distance,
+    # The range that the bot has to attack a player in melee
+    :melee_attack_distance,
+    # The type of attack that the bot has
+    :is_melee
   ]
 
   def new do
@@ -50,17 +55,19 @@ defmodule BotManager.BotStateMachineChecker do
       position_to_move_to: nil,
       time_amount_to_change_position: 2000,
       last_time_position_changed: 0,
-      max_vision_range_to_follow_player: 1500,
-      vision_range_to_attack_player: 1200,
       stuck_in_position: nil,
-      start_time_stuck_in_position: nil
+      start_time_stuck_in_position: nil,
+      melee_tracking_range: 2000,
+      ranged_tracking_range: 1500,
+      ranged_attack_distance: 1200,
+      melee_attack_distance: 300,
+      is_melee: nil
     }
   end
 
   def move_to_next_state(bot_player, bot_state_machine, players) do
     cond do
       bot_stuck?(bot_state_machine) -> :moving
-      bot_health_low?(bot_player) -> :running_away
       bot_can_follow_a_player?(bot_player, bot_state_machine, players) -> :tracking_player
       bot_can_turn_aggresive?(bot_state_machine) -> :attacking
       true -> :moving
@@ -74,13 +81,6 @@ defmodule BotManager.BotStateMachineChecker do
     time_since_last_position_change >= bot_state_machine.time_amount_to_change_position
   end
 
-  defp bot_health_low?(bot_player) do
-    {:player, bot_player_info} = bot_player.aditional_info
-    health_percentage = bot_player_info.health * 100 / bot_player_info.max_health
-
-    health_percentage <= @low_health_percentage
-  end
-
   defp bot_can_turn_aggresive?(bot_state_machine) do
     bot_state_machine.progress_for_basic_skill >= bot_state_machine.cap_for_basic_skill ||
       bot_state_machine.progress_for_ultimate_skill >= bot_state_machine.cap_for_ultimate_skill
@@ -88,10 +88,24 @@ defmodule BotManager.BotStateMachineChecker do
 
   defp bot_can_follow_a_player?(bot_player, bot_state_machine, players) do
     players_nearby_to_follow =
-      Utils.map_directions_to_players(players, bot_player, bot_state_machine.max_vision_range_to_follow_player)
+      Utils.map_directions_to_players(
+        players,
+        bot_player,
+        if(bot_state_machine.is_melee,
+          do: bot_state_machine.melee_tracking_range,
+          else: bot_state_machine.ranged_tracking_range
+        )
+      )
 
     players_nearby_to_attack =
-      Utils.map_directions_to_players(players, bot_player, bot_state_machine.vision_range_to_attack_player)
+      Utils.map_directions_to_players(
+        players,
+        bot_player,
+        if(bot_state_machine.is_melee,
+          do: bot_state_machine.melee_attack_distance,
+          else: bot_state_machine.ranged_attack_distance
+        )
+      )
 
     Enum.empty?(players_nearby_to_attack) && not Enum.empty?(players_nearby_to_follow) &&
       bot_can_turn_aggresive?(bot_state_machine) && not bot_stuck?(bot_state_machine)

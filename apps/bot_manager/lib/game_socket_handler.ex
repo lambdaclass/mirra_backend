@@ -44,9 +44,29 @@ defmodule BotManager.GameSocketHandler do
       %{event: {:update, game_state}} ->
         bot_player = Map.get(game_state.players, state.player_id)
 
+        state =
+          if Map.has_key?(state, :bot_skills) do
+            state
+          else
+            {:player, aditional_info} = bot_player.aditional_info
+
+            skills =
+              BotManager.Utils.list_character_skills_from_config(aditional_info.character_name, state.config.characters)
+
+            Map.put(state, :bot_skills, skills)
+          end
+
+        bot_state_machine =
+          if is_nil(state.bot_state_machine.is_melee) do
+            Map.put(state.bot_state_machine, :is_melee, state.bot_skills.basic.attack_type == :MELEE)
+          else
+            state.bot_state_machine
+          end
+
         update = %{
           bot_player: bot_player,
-          game_state: game_state
+          game_state: game_state,
+          bot_state_machine: bot_state_machine
         }
 
         {:ok, Map.merge(state, update)}
@@ -160,6 +180,7 @@ defmodule BotManager.GameSocketHandler do
 
   def terminate(close_reason, state) do
     Logger.error("Terminating bot with reason: #{inspect(close_reason)}")
-    Logger.error("Terminating bot with state: #{inspect(state)}")
+    # Logger.error("Terminating bot with state: #{inspect(state)}")
+    Logger.error("Terminating bot in state machine step's: #{inspect(state.bot_state_machine)}")
   end
 end
