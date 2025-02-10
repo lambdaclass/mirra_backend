@@ -10,6 +10,7 @@ defmodule GameBackend.Units.Unit do
   alias GameBackend.Campaigns.Level
   alias GameBackend.Items.Item
   alias GameBackend.Units.Characters.Character
+  alias GameBackend.Units.UnitSkin
   alias GameBackend.Users.User
 
   schema "units" do
@@ -26,6 +27,7 @@ defmodule GameBackend.Units.Unit do
     belongs_to(:character, Character)
 
     has_many(:items, Item)
+    has_many(:skins, UnitSkin)
 
     timestamps()
   end
@@ -44,6 +46,7 @@ defmodule GameBackend.Units.Unit do
       :campaign_level_id,
       :prestige
     ])
+    |> cast_assoc(:skins)
     |> validate_required([:level, :selected, :character_id])
   end
 

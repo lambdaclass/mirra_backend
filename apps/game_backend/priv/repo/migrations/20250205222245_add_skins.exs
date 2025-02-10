@@ -11,6 +11,7 @@ defmodule GameBackend.Repo.Migrations.AddUsersOwnedAssets do
     end
 
     create table(:user_skins) do
+      add(:is_equipped, :boolean)
       add(:user_id, references(:users))
       add(:skin_id, references(:skins))
 
