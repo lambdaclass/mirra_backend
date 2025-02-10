@@ -17,6 +17,7 @@ defmodule GameBackend.Units do
   alias GameBackend.Repo
   alias GameBackend.Units.Unit
   alias GameBackend.Units.Characters.Character
+  alias GameBackend.Units.UnitSkin
 
   @doc """
   Inserts a unit.
@@ -241,7 +242,24 @@ defmodule GameBackend.Units do
       level: 1,
       prestige: 0,
       selected: false,
-      character_id: Characters.get_character_id_by_name_and_game_id(character_name, Utils.get_game_id(:curse_of_mirra))
+      character_id: Characters.get_character_id_by_name_and_game_id(character_name, Utils.get_game_id(:curse_of_mirra)),
+      skins: Repo.all(from s in Skin, where: s.is_default and s.character_name == ^character_name)
     }
+  end
+
+  def select_character_and_skin(unit, skin_name) do
+    Enum.each(unit.skins, fn skin ->
+      Unit.changeset(skin, %{is_equipped: skin.name == skin_name})
+      |> Repo.update()
+    end)
+  end
+
+  @doc """
+  Inserts a UnitSkin into the database.
+  """
+  def insert_user_skin(attrs) do
+    %UnitSkin{}
+    |> UnitSkin.changeset(attrs)
+    |> Repo.insert()
   end
 end

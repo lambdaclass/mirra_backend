@@ -1,4 +1,4 @@
-defmodule GameBackend.Users.UserSkin do
+defmodule GameBackend.Units.UnitSkin do
   @moduledoc """
   The Currencies context.
   """
@@ -6,17 +6,18 @@ defmodule GameBackend.Users.UserSkin do
 use GameBackend.Schema
 import Ecto.Changeset
 
-alias GameBackend.Users.User
+alias GameBackend.Units.Unit
 alias GameBackend.Units.Characters.Skin
 
 @derive {Jason.Encoder,
          only: [
-           :user_id,
+           :unit_id,
            :skin_id
          ]}
 
-schema "user_skins" do
-  belongs_to(:user, User)
+schema "unit_skins" do
+  field(:is_equipped, :boolean, default: false)
+  belongs_to(:unit, Unit)
   belongs_to(:skin, Skin)
 
   timestamps()
@@ -25,7 +26,7 @@ end
 @doc false
 def changeset(character, attrs) do
   character
-  |> cast(attrs, [:user_id, :skin_id])
-  |> validate_required([:user_id, :skin_id])
+  |> cast(attrs, [:unit_id, :skin_id])
+  |> validate_required([:unit_id, :skin_id])
 end
 end
