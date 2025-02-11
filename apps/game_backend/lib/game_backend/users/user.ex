@@ -17,8 +17,7 @@ defmodule GameBackend.Users.User do
     DungeonSettlementLevel,
     KalineTreeLevel,
     GoogleUser,
-    Unlock,
-    UserSkin
+    Unlock
   }
 
   @derive {Jason.Encoder,
@@ -59,7 +58,6 @@ defmodule GameBackend.Users.User do
     has_many(:super_campaign_progresses, SuperCampaignProgress)
     has_many(:unlocks, Unlock)
     has_many(:currency_caps, UserCurrencyCap)
-    has_many(:user_skins, UserSkin)
 
     timestamps()
 
@@ -92,12 +90,10 @@ defmodule GameBackend.Users.User do
       :highest_historical_prestige
     ])
     |> cast_assoc(:unlocks)
-    |> cast_assoc(:user_skins)
     |> assoc_constraint(:google_user)
     |> validate_required([:game_id, :username])
     |> cast_assoc(:units, with: &GameBackend.Units.Unit.changeset/2)
     |> game_validations()
-    |> IO.inspect()
   end
 
   def experience_changeset(user, attrs), do: user |> cast(attrs, [:experience, :level])

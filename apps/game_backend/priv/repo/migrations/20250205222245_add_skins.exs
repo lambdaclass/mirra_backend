@@ -10,12 +10,20 @@ defmodule GameBackend.Repo.Migrations.AddUsersOwnedAssets do
       timestamps(type: :utc_datetime)
     end
 
-    create table(:user_skins) do
-      add(:is_equipped, :boolean)
-      add(:user_id, references(:users))
+    create table(:unit_skins) do
+      add(:selected, :boolean)
+      add(:unit_id, references(:units))
       add(:skin_id, references(:skins))
 
       timestamps(type: :utc_datetime)
     end
+
+    # alter table(:units) do
+    #   add(:is_equipped, :boolean)
+    #   add(:user_id, references(:users))
+    #   add(:skin_id, references(:skins))
+
+    #   timestamps(type: :utc_datetime)
+    # end
   end
 end

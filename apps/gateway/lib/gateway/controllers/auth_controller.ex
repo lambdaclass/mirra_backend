@@ -43,6 +43,7 @@ defmodule Gateway.Controllers.AuthController do
          {:ok, _} <- Users.maybe_generate_daily_quests_for_curse_user(claims["sub"]),
          {:ok, user} <- Users.get_user_by_id_and_game_id(claims["sub"], curse_id) do
       new_gateway_jwt = TokenManager.generate_user_token(user, client_id)
+      IO.inspect("hola")
       send_resp(conn, 200, Jason.encode!(%{gateway_jwt: new_gateway_jwt, user_id: user.id}))
     end
   end

@@ -40,9 +40,9 @@ defmodule Gateway.Controllers.CurseOfMirra.UserController do
   def create_guest_user(conn, %{"client_id" => client_id}) do
     with {:ok, %{user: user}} <- Users.insert_curse_user_and_insert_daily_quests() do
       gateway_jwt = TokenManager.generate_user_token(user, client_id)
-      random_character = Enum.find(user.units, fn unit -> unit.character.name == "h4ck" end).character
-      default_skin = Enum.find(user.user_skins, fn user_skin -> user_skin.skin.character_id == random_character.id and user_skin.skin.is_default end).skin
-      send_resp(conn, 200, Jason.encode!(%{user_id: user.id, gateway_jwt: gateway_jwt, character_name: random_character.name, skin_name: default_skin.name}))
+      random_unit = Enum.find(user.units, fn unit -> unit.character.name == "h4ck" end)
+      default_skin = Enum.find(random_unit.skins, fn unit_skin -> unit_skin.selected end).skin
+      send_resp(conn, 200, Jason.encode!(%{user_id: user.id, gateway_jwt: gateway_jwt, character_name: random_unit.character.name, skin_name: default_skin.name}))
     end
   end
 

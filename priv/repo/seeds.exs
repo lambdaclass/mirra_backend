@@ -1299,11 +1299,53 @@ h4ck_basic_params = %{
   name: "Basic",
   character_id: Enum.find(characters, fn c -> c.name == "h4ck" end).id
 }
+muflus_basic_params = %{
+  is_default: true,
+  name: "Basic",
+  character_id: Enum.find(characters, fn c -> c.name == "muflus" end).id
+}
+uma_basic_params = %{
+  is_default: true,
+  name: "Basic",
+  character_id: Enum.find(characters, fn c -> c.name == "uma" end).id
+}
+valtimer_basic_params = %{
+  is_default: true,
+  name: "Basic",
+  character_id: Enum.find(characters, fn c -> c.name == "valtimer" end).id
+}
+kenzu_basic_params = %{
+  is_default: true,
+  name: "Basic",
+  character_id: Enum.find(characters, fn c -> c.name == "kenzu" end).id
+}
+otix_basic_params = %{
+  is_default: true,
+  name: "Basic",
+  character_id: Enum.find(characters, fn c -> c.name == "otix" end).id
+}
+shinko_basic_params = %{
+  is_default: true,
+  name: "Basic",
+  character_id: Enum.find(characters, fn c -> c.name == "shinko" end).id
+}
+uren_basic_params = %{
+  is_default: true,
+  name: "Basic",
+  character_id: Enum.find(characters, fn c -> c.name == "uren" end).id
+}
 
 # Insert skins
 [
   h4ck_fenix_params,
-  h4ck_basic_params
+  h4ck_basic_params,
+  muflus_basic_params,
+  uma_basic_params,
+  valtimer_basic_params,
+  kenzu_basic_params,
+  otix_basic_params,
+  shinko_basic_params,
+  uren_basic_params
 ]
 |> Enum.each(fn skin_params -> Characters.insert_skin(skin_params) end)
 

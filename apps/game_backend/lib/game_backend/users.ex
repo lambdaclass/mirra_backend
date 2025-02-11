@@ -18,10 +18,9 @@ defmodule GameBackend.Users do
   alias GameBackend.Repo
   alias GameBackend.Transaction
   alias GameBackend.Users.{Currencies, DungeonSettlementLevel, GoogleUser, KalineTreeLevel, User, Unlock, Upgrade}
-  alias GameBackend.Users
   alias GameBackend.Units
+  alias GameBackend.Units.Characters.Skin
   alias GameBackend.Units.Unit
-  alias GameBackend.Units.Characters
 
   @doc """
   Registers a user.
@@ -36,8 +35,10 @@ defmodule GameBackend.Users do
 
   """
   def register_user(attrs) do
+    IO.inspect(attrs, label: :aver_attrs)
     %User{}
     |> User.changeset(attrs)
+    |> IO.inspect(label: :aver_changeset)
     |> Repo.insert()
   end
 
@@ -84,8 +85,7 @@ defmodule GameBackend.Users do
         as: :user,
         where: u.id == ^id and u.game_id == ^game_id,
         preload: [
-          [user_skins: [:skin]],
-          [units: [:character, :items]],
+          [units: [:character, :items, skins: [:skin]]],
           [currencies: [:currency]]
         ],
         select: %{u | quest_refresh_at: ^quest_refresh_at}
@@ -688,15 +688,20 @@ defmodule GameBackend.Users do
             {:ok, :quests_generated}
         end
     end)
-    # |> Multi.run(:insert_user_skins, fn _, %{insert_user: user} ->
-    #     Enum.each(Characters.list_default_skins(), fn skin ->
-    #       # Users.insert_user_skin(%{user_id: user.id, skin_id: skin.id})
-    #       Units.insert_unit_skin(%{unit_id: unit.id, skin_id: skin.id})
+    |> Multi.run(:insert_unit_skins, fn _, %{insert_user: user} ->
 
-    #       # Repo.insert(UserSkin, %{user_id: user.id, skin_id: skin.id})
-    #     end)
-    #     {:ok, :user_skins_inserted}
-    # end)
+
+        Enum.each(user.units, fn unit ->
+          skin = Repo.one!(from s in Skin, where: s.is_default and s.character_id == ^unit.character_id)
+      # skins: Repo.all(from s in Skin, where: s.is_default and s.character_name == ^character_name)
+
+          # Users.insert_user_skin(%{user_id: user.id, skin_id: skin.id})
+          Units.insert_unit_skin(%{unit_id: unit.id, skin_id: skin.id, selected: true})
+
+          # Repo.insert(UserSkin, %{user_id: user.id, skin_id: skin.id})
+        end)
+        {:ok, :unit_skins_inserted}
+    end)
     |> Multi.run(:user, fn _, %{insert_user: user} ->
       get_user_by_id_and_game_id(user.id, curse_id)
     end)

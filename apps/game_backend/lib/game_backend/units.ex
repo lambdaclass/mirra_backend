@@ -12,6 +12,7 @@ defmodule GameBackend.Units do
 
   import Ecto.Query
 
+  alias Ecto.Multi
   alias GameBackend.Utils
   alias GameBackend.Units.Characters
   alias GameBackend.Repo
@@ -143,7 +144,7 @@ defmodule GameBackend.Units do
            )
          ) do
       nil -> {:error, :not_found}
-      unit -> {:ok, unit}
+      unit -> {:ok, unit} |> IO.inspect()
     end
   end
 
@@ -242,22 +243,42 @@ defmodule GameBackend.Units do
       level: 1,
       prestige: 0,
       selected: false,
-      character_id: Characters.get_character_id_by_name_and_game_id(character_name, Utils.get_game_id(:curse_of_mirra)),
-      skins: Repo.all(from s in Skin, where: s.is_default and s.character_name == ^character_name)
+      character_id: Characters.get_character_id_by_name_and_game_id(character_name, Utils.get_game_id(:curse_of_mirra))
+      # skins: Repo.all(from s in Skin, where: s.is_default and s.character_name == ^character_name)
     }
   end
 
-  def select_character_and_skin(unit, skin_name) do
-    Enum.each(unit.skins, fn skin ->
-      Unit.changeset(skin, %{is_equipped: skin.name == skin_name})
-      |> Repo.update()
-    end)
+  def list_units_by_user(user_id) do
+    {:ok, Repo.all(from u in Unit, where: u.user_id == ^user_id, preload: :character)}
   end
+
+  def select_unit_character(units, character_name) do
+    Enum.reduce(units, Multi.new(), fn unit, multi ->
+      # Cannot use Multi.insert because of the embeds_many
+      Multi.update(multi, "select_character_#{unit.id}", Unit.changeset(unit, %{selected: unit.character.name == character_name}))
+    end)
+    |> Repo.transaction()
+  end
+
+  def select_unit_skin(unit, skin_name) do
+    Enum.reduce(unit.skins, Multi.new(), fn skin, multi ->
+      # Cannot use Multi.insert because of the embeds_many
+      Multi.update(multi, "select_skin_#{unit.id}", UnitSkin.changeset(skin, %{selected: skin.name == skin_name}))
+    end)
+    |> Repo.transaction()
+  end
+
+  # def select_unit_skin(unit, skin_name) do
+  #   Enum.each(unit.skins, fn skin ->
+  #     Unit.changeset(skin, %{selected: skin.name == skin_name})
+  #     |> Repo.update()
+  #   end)
+  # end
 
   @doc """
   Inserts a UnitSkin into the database.
   """
-  def insert_user_skin(attrs) do
+  def insert_unit_skin(attrs) do
     %UnitSkin{}
     |> UnitSkin.changeset(attrs)
     |> Repo.insert()

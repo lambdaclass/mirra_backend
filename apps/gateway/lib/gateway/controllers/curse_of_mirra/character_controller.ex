@@ -9,12 +9,16 @@ defmodule Gateway.Controllers.CurseOfMirra.CharacterController do
   action_fallback Gateway.Controllers.FallbackController
 
   def select(conn, params) do
+    with {:ok, units} <- Units.list_units_by_user(params["user_id"]),
+        {:ok, _transaction} <- Units.select_unit_character(units, params["character_name"]) do
+      send_resp(conn, 200, Jason.encode!(%{character_name: params["character_name"]}))
+    end
+  end
+
+  def select_skin(conn, params) do
     with {:ok, unit} <- Units.get_unit_by_character_name(params["character_name"], params["user_id"]),
-         :ok <- Units.select_character_and_skin(unit, params["skin_name"]) do
-        #  {:ok, item} <- Items.get_item_by_name(params["item_name"], params["user_id"]),
-        #  {:ok, :character_can_equip} <- Items.character_can_equip(unit, item),
-        #  {:ok, item} <- Items.equip_item(params["user_id"], item.id, unit.id) do
-      send_resp(conn, 200, Jason.encode!(%{character_name: unit.character, skin_name: params["skin_name"]}))
+        {:ok, _transaction} <- Units.select_unit_skin(unit, params["skin_name"]) do
+      send_resp(conn, 200, Jason.encode!(%{character_name: params["character_name"], skin_name: params["skin_name"]}))
     end
   end
 end
