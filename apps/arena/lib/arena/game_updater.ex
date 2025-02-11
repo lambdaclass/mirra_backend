@@ -6,6 +6,7 @@ defmodule Arena.GameUpdater do
 
   use GenServer
   alias Arena.Game.Obstacle
+  alias Arena.Game.Bounties
   alias Arena.GameTracker
   alias Arena.Game.Crate
   alias Arena.Game.Effect
@@ -39,6 +40,10 @@ defmodule Arena.GameUpdater do
     GenServer.cast(game_pid, {:use_item, player_id, item_position, timestamp})
   end
 
+  def select_bounty(game_pid, player_id, bounty_quest_id) do
+    GenServer.cast(game_pid, {:select_bounty, player_id, bounty_quest_id})
+  end
+
   def toggle_zone(game_pid) do
     GenServer.cast(game_pid, :toggle_zone)
   end
@@ -69,7 +74,13 @@ defmodule Arena.GameUpdater do
 
     send(self(), :update_game)
 
-    Process.send_after(self(), :game_start, game_config.game.start_game_time_ms)
+    bounties_enabled? = game_config.game.bounty_pick_time_ms > 0
+
+    if bounties_enabled? do
+      Process.send_after(self(), :selecting_bounty, game_config.game.bounty_pick_time_ms)
+    else
+      Process.send_after(self(), :game_start, game_config.game.start_game_time_ms)
+    end
 
     clients_ids =
       Enum.filter(players, fn player -> player.type == :human end) |> Enum.map(fn player -> player.client_id end)
@@ -87,6 +98,7 @@ defmodule Arena.GameUpdater do
        clients: clients_ids,
        bot_clients: bot_clients_ids,
        game_config: game_config,
+       bounties_enabled?: bounties_enabled?,
        game_state: game_state,
        last_broadcasted_game_state: %{}
      }}
@@ -115,11 +127,12 @@ defmodule Arena.GameUpdater do
           team: player.aditional_info.team,
           game_config: state.game_config,
           game_status: state.game_state.status,
+          bounties: [],
           map: state.game_config.map_mode_params.map.name
         }
 
         state =
-          put_in(state, [:game_state, :players, player_id, :aditional_info], [])
+          put_in(state, [:game_state, :players, player_id, :aditional_info, :bounties], [])
 
         {:reply, {:ok, response}, state}
     end
@@ -156,6 +169,23 @@ defmodule Arena.GameUpdater do
       |> Player.use_item(item_position, state.game_state)
 
     {:noreply, %{state | game_state: game_state}}
+  end
+
+  def handle_cast({:select_bounty, player_id, bounty_quest_id}, state) do
+    GameTracker.push_event(self(), {:select_bounty, player_id, bounty_quest_id})
+
+    state =
+      update_in(state, [:game_state, :players, player_id, :aditional_info], fn aditional_info ->
+        bounty =
+          Enum.find(aditional_info.bounties, fn bounty -> bounty.id == bounty_quest_id end)
+
+        PubSub.broadcast(Arena.PubSub, state.game_state.game_id, {:bounty_selected, player_id, bounty})
+
+        aditional_info
+        |> Map.put(:selected_bounty, bounty)
+      end)
+
+    {:noreply, state}
   end
 
   def handle_cast(:toggle_zone, %{game_state: %{zone: %{started: false}}} = state) do
@@ -225,6 +255,7 @@ defmodule Arena.GameUpdater do
       |> resolve_projectiles_effects_on_collisions()
       |> apply_zone_damage_to_players(state.game_config.game)
       |> update_visible_players(state.game_config)
+      |> update_bounties_states(state)
       # Projectiles
       |> update_projectiles_status()
       |> move_projectiles()
@@ -272,6 +303,13 @@ defmodule Arena.GameUpdater do
     tick_duration = System.monotonic_time() - tick_duration_start_at
     :telemetry.execute([:arena, :game, :tick], %{duration: tick_duration, duration_measure: tick_duration})
     {:noreply, %{state | game_state: game_state, last_broadcasted_game_state: last_broadcasted_game_state}}
+  end
+
+  def handle_info(:selecting_bounty, state) do
+    Process.send_after(self(), :game_start, state.game_config.game.start_game_time_ms)
+    Process.send_after(self(), :pick_default_bounty_for_missing_players, state.game_config.game.start_game_time_ms)
+
+    {:noreply, put_in(state, [:game_state, :status], :SELECTING_BOUNTY)}
   end
 
   def handle_info(:game_start, state) do
@@ -664,6 +702,17 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
+  def handle_info(:pick_default_bounty_for_missing_players, state) do
+    Enum.each(state.game_state.players, fn {player_id, player} ->
+      if is_nil(player.aditional_info.selected_bounty) and not Enum.empty?(player.aditional_info.bounties) do
+        random_bounty = Enum.random(player.aditional_info.bounties)
+        select_bounty(self(), player_id, random_bounty.id)
+      end
+    end)
+
+    {:noreply, state}
+  end
+
   def handle_info({:delayed_power_up_spawn, entity, amount}, state) do
     game_state =
       state.game_state
@@ -848,10 +897,11 @@ defmodule Arena.GameUpdater do
         enabled: false,
         shrinking: false,
         next_zone_change_timestamp:
-          initial_timestamp + config.game.zone_shrink_start_ms + config.game.start_game_time_ms
+          initial_timestamp + config.game.zone_shrink_start_ms + config.game.start_game_time_ms +
+            config.game.bounty_pick_time_ms
       },
       status: :PREPARING,
-      start_game_timestamp: initial_timestamp + config.game.start_game_time_ms,
+      start_game_timestamp: initial_timestamp + config.game.start_game_time_ms + config.game.bounty_pick_time_ms,
       positions: %{},
       traps: %{},
       respawn_queue: %{}
@@ -1335,6 +1385,41 @@ defmodule Arena.GameUpdater do
       end)
 
     %{game_state | players: updated_players}
+  end
+
+  defp update_bounties_states(game_state, %{bounties_enabled?: false}) do
+    game_state
+  end
+
+  defp update_bounties_states(%{status: :RUNNING} = game_state, state) do
+    # We only want to run this check for actual players, and we are saving their id in state.clients
+    game_state.client_to_player_map
+    |> Map.take(state.clients)
+    |> Enum.reduce(game_state, fn {client_id, player_id}, game_state ->
+      player = get_in(game_state, [:players, player_id])
+
+      if not player.aditional_info.bounty_completed and Player.alive?(player) and
+           Bounties.completed_bounty?(player.aditional_info.selected_bounty, [
+             GameTracker.get_player_result(player_id)
+           ]) do
+        # TODO: WE SHOULDN'T DO REQUEST IN THE MIDDLE OF THE GAME UPDATES
+        spawn(fn ->
+          path = "/curse/users/#{client_id}/quest/#{player.aditional_info.selected_bounty.id}/complete_bounty"
+          gateway_url = Application.get_env(:arena, :gateway_url)
+
+          Finch.build(:get, "#{gateway_url}#{path}")
+          |> Finch.request(Arena.Finch)
+        end)
+
+        put_in(game_state, [:players, player_id, :aditional_info, :bounty_completed], true)
+      else
+        game_state
+      end
+    end)
+  end
+
+  defp update_bounties_states(game_state, _state) do
+    game_state
   end
 
   ##########################
