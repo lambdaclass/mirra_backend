@@ -91,9 +91,10 @@ defmodule BotManager.BotStateMachineChecker do
       Utils.map_directions_to_players(
         players,
         bot_player,
-        if(bot_state_machine.is_melee,
-          do: bot_state_machine.melee_tracking_range,
-          else: bot_state_machine.ranged_tracking_range
+        Utils.get_action_distance_by_attack_type(
+          bot_state_machine.is_melee,
+          bot_state_machine.melee_attack_distance,
+          bot_state_machine.ranged_attack_distance
         )
       )
 
@@ -101,9 +102,10 @@ defmodule BotManager.BotStateMachineChecker do
       Utils.map_directions_to_players(
         players,
         bot_player,
-        if(bot_state_machine.is_melee,
-          do: bot_state_machine.melee_attack_distance,
-          else: bot_state_machine.ranged_attack_distance
+        Utils.get_action_distance_by_attack_type(
+          bot_state_machine.is_melee,
+          bot_state_machine.melee_attack_distance,
+          bot_state_machine.ranged_attack_distance
         )
       )
 

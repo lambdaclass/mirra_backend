@@ -47,7 +47,7 @@ defmodule BotManager.BotStateMachine do
         run_away(bot_player, game_state, bot_state_machine)
 
       :tracking_player ->
-        track_player(game_state, bot_player, bot_state_machine, skills)
+        track_player(game_state, bot_player, bot_state_machine)
     end
   end
 
@@ -73,7 +73,7 @@ defmodule BotManager.BotStateMachine do
           Utils.map_directions_to_players(
             game_state.players,
             bot_player,
-            get_action_distance_by_attack_type(
+            Utils.get_action_distance_by_attack_type(
               skills.ultimate.attack_type,
               bot_state_machine.melee_attack_distance,
               bot_state_machine.ranged_attack_distance
@@ -100,7 +100,7 @@ defmodule BotManager.BotStateMachine do
           Utils.map_directions_to_players(
             game_state.players,
             bot_player,
-            get_action_distance_by_attack_type(
+            Utils.get_action_distance_by_attack_type(
               skills.basic.attack_type,
               bot_state_machine.melee_attack_distance,
               bot_state_machine.ranged_attack_distance
@@ -139,13 +139,13 @@ defmodule BotManager.BotStateMachine do
     end
   end
 
-  defp track_player(game_state, bot_player, bot_state_machine, skills) do
+  defp track_player(game_state, bot_player, bot_state_machine) do
     players_with_distances =
       Utils.map_directions_to_players(
         game_state.players,
         bot_player,
-        get_action_distance_by_attack_type(
-          skills.basic.attack_type,
+        Utils.get_action_distance_by_attack_type(
+          bot_state_machine.is_melee,
           bot_state_machine.melee_tracking_range,
           bot_state_machine.ranged_tracking_range
         )
@@ -262,7 +262,4 @@ defmodule BotManager.BotStateMachine do
         bot_state_machine
     end
   end
-
-  defp get_action_distance_by_attack_type(:MELEE, melee_distance, _ranged_distance), do: melee_distance
-  defp get_action_distance_by_attack_type(:RANGED, _melee_distance, ranged_distance), do: ranged_distance
 end

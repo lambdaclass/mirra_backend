@@ -80,4 +80,9 @@ defmodule BotManager.Utils do
 
     bot_player_info.team == player_info.team
   end
+
+  def get_action_distance_by_attack_type(:MELEE = _action_type, melee_distance, _ranged_distance), do: melee_distance
+  def get_action_distance_by_attack_type(:RANGED = _action_type, _melee_distance, ranged_distance), do: ranged_distance
+  def get_action_distance_by_attack_type(true = _is_melee, melee_distance, _ranged_distance), do: melee_distance
+  def get_action_distance_by_attack_type(false = _is_melee, melee_distance, _ranged_distance), do: melee_distance
 end
