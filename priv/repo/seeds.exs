@@ -1108,7 +1108,7 @@ _combo_skills =
 # Characters params
 muflus_params = %{
   name: "muflus",
-  active: true,
+  active: false,
   base_speed: 0.63,
   base_size: 110.0,
   base_health: 440,
