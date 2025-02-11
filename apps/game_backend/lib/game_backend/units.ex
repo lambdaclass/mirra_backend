@@ -136,11 +136,14 @@ defmodule GameBackend.Units do
   Fails if there are more than one unit of the same character. Returns nil if there are none.
   """
   def get_unit_by_character_name(character_name, user_id) do
+    IO.inspect(character_name, label: :aver_charname)
+    character_name = String.downcase(character_name)
     case Repo.one(
            from(unit in user_units_query(user_id),
              join: character in Character,
              on: unit.character_id == character.id,
-             where: character.name == ^character_name
+             where: character.name == ^character_name,
+             preload: [skins: :skin]
            )
          ) do
       nil -> {:error, :not_found}
@@ -261,11 +264,18 @@ defmodule GameBackend.Units do
   end
 
   def select_unit_skin(unit, skin_name) do
-    Enum.reduce(unit.skins, Multi.new(), fn skin, multi ->
+    Enum.reduce(unit.skins, Multi.new(), fn unit_skin, multi ->
       # Cannot use Multi.insert because of the embeds_many
-      Multi.update(multi, "select_skin_#{unit.id}", UnitSkin.changeset(skin, %{selected: skin.name == skin_name}))
+      Multi.update(multi, "select_skin_#{unit.id}", UnitSkin.changeset(unit_skin, %{selected: unit_skin.skin.name == skin_name}))
     end)
     |> Repo.transaction()
+  end
+
+  def has_skin?(unit, skin_name) do
+    case Enum.any?(unit.skins, fn unit_skin -> unit_skin.skin.name == skin_name end) do
+      true -> {:ok, :skin_exists}
+      _ -> {:error, :skin_not_found}
+    end
   end
 
   # def select_unit_skin(unit, skin_name) do
