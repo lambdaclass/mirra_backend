@@ -180,7 +180,6 @@ defmodule BotManager.GameSocketHandler do
 
   def terminate(close_reason, state) do
     Logger.error("Terminating bot with reason: #{inspect(close_reason)}")
-    # Logger.error("Terminating bot with state: #{inspect(state)}")
-    Logger.error("Terminating bot in state machine step's: #{inspect(state.bot_state_machine)}")
+    Logger.error("Terminating bot in state machine step: #{inspect(state.bot_state_machine)}")
   end
 end
