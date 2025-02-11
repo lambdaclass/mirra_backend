@@ -88,5 +88,5 @@ defmodule BotManager.Utils do
     do: ranged_distance
 
   def get_action_distance_by_type(true = _is_melee, melee_distance, _ranged_distance), do: melee_distance
-  def get_action_distance_by_type(false = _is_melee, melee_distance, _ranged_distance), do: melee_distance
+  def get_action_distance_by_type(false = _is_melee, _melee_distance, ranged_distance), do: ranged_distance
 end
