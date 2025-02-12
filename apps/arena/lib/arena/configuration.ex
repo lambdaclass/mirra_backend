@@ -21,6 +21,9 @@ defmodule Arena.Configuration do
 
     case Finch.build(:get, url, [{"content-type", "application/json"}])
          |> Finch.request(Arena.Finch) do
+      {:ok, %{status: 404, body: "Game mode not found"}} ->
+        {:error, %{}}
+
       {:ok, payload} ->
         {:ok,
          Jason.decode!(payload.body, [{:keys, :atoms}])
