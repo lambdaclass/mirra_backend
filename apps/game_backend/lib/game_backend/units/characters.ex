@@ -219,6 +219,6 @@ defmodule GameBackend.Units.Characters do
   end
 
   def list_default_skins() do
-    Repo.all(from s in Skin, where: s.is_default)
+    Repo.all(from(s in Skin, where: s.is_default))
   end
 end

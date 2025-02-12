@@ -68,7 +68,7 @@ defmodule Arena.GameUpdater do
       Map.put(game_config, :game, Map.merge(game_config.game, game_params))
       |> Map.put(:map_mode_params, map_mode_params)
 
-    players = Enum.sort_by(players, fn player -> player.team end)
+    players = Enum.sort_by(players, fn player -> player.team end) |> IO.inspect(label: :aver_players)
     game_state = new_game(game_id, players, game_config)
     match_id = Ecto.UUID.generate()
 
@@ -924,6 +924,7 @@ defmodule Arena.GameUpdater do
           position: pos,
           direction: direction,
           character_name: player.character_name,
+          skin_name: player.skin_name,
           config: config,
           now: now
         }

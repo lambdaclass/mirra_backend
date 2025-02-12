@@ -11,8 +11,8 @@ defmodule Arena.Matchmaking.GameLauncher do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
-  def join(client_id, character_name, player_name) do
-    GenServer.call(__MODULE__, {:join, client_id, character_name, player_name})
+  def join(params) do
+    GenServer.call(__MODULE__, {:join, params})
   end
 
   def leave(client_id) do
@@ -23,21 +23,23 @@ defmodule Arena.Matchmaking.GameLauncher do
   @impl true
   def init(_) do
     Process.send_after(self(), :launch_game?, 300)
-    Process.send_after(self(), :update_params, 20_000)
+    Process.send_after(self(), :update_params, 200_000)
     {:ok, %{clients: [], batch_start_at: 0}}
   end
 
   @impl true
-  def handle_call({:join, client_id, character_name, player_name}, {from_pid, _}, %{clients: clients} = state) do
+  def handle_call({:join, params}, {from_pid, _}, %{clients: clients} = state) do
     batch_start_at = maybe_make_batch_start_at(state.clients, state.batch_start_at)
 
     client = %{
-      client_id: client_id,
-      character_name: character_name,
-      name: player_name,
+      client_id: params.client_id,
+      character_name: params.character_name,
+      skin_name: params.skin_name,
+      name: params.player_name,
       from_pid: from_pid,
       type: :human
     }
+    |> IO.inspect(label: :aver_client)
 
     {:reply, :ok,
      %{
@@ -54,6 +56,7 @@ defmodule Arena.Matchmaking.GameLauncher do
 
   @impl true
   def handle_info(:launch_game?, %{clients: clients} = state) do
+    IO.inspect("launch?")
     Process.send_after(self(), :launch_game?, 300)
     diff = System.monotonic_time(:millisecond) - state.batch_start_at
 
@@ -124,7 +127,7 @@ defmodule Arena.Matchmaking.GameLauncher do
     Enum.map(1..missing_clients//1, fn i ->
       client_id = UUID.generate()
 
-      %{client_id: client_id, character_name: Enum.random(characters).name, name: Enum.at(bot_names, i - 1), type: :bot}
+      %{client_id: client_id, skin_name: "Basic", character_name: Enum.random(characters).name, name: Enum.at(bot_names, i - 1), type: :bot}
     end)
   end
 

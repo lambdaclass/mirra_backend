@@ -36,6 +36,7 @@ defmodule GameBackend.Users do
   """
   def register_user(attrs) do
     IO.inspect(attrs, label: :aver_attrs)
+
     %User{}
     |> User.changeset(attrs)
     |> IO.inspect(label: :aver_changeset)
@@ -689,18 +690,17 @@ defmodule GameBackend.Users do
         end
     end)
     |> Multi.run(:insert_unit_skins, fn _, %{insert_user: user} ->
+      Enum.each(user.units, fn unit ->
+        skin = Repo.one!(from(s in Skin, where: s.is_default and s.character_id == ^unit.character_id))
+        # skins: Repo.all(from s in Skin, where: s.is_default and s.character_name == ^character_name)
 
+        # Users.insert_user_skin(%{user_id: user.id, skin_id: skin.id})
+        Units.insert_unit_skin(%{unit_id: unit.id, skin_id: skin.id, selected: true})
 
-        Enum.each(user.units, fn unit ->
-          skin = Repo.one!(from s in Skin, where: s.is_default and s.character_id == ^unit.character_id)
-      # skins: Repo.all(from s in Skin, where: s.is_default and s.character_name == ^character_name)
+        # Repo.insert(UserSkin, %{user_id: user.id, skin_id: skin.id})
+      end)
 
-          # Users.insert_user_skin(%{user_id: user.id, skin_id: skin.id})
-          Units.insert_unit_skin(%{unit_id: unit.id, skin_id: skin.id, selected: true})
-
-          # Repo.insert(UserSkin, %{user_id: user.id, skin_id: skin.id})
-        end)
-        {:ok, :unit_skins_inserted}
+      {:ok, :unit_skins_inserted}
     end)
     |> Multi.run(:user, fn _, %{insert_user: user} ->
       get_user_by_id_and_game_id(user.id, curse_id)

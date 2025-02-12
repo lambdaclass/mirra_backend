@@ -7,6 +7,7 @@ defmodule Gateway.Controllers.CurseOfMirra.UserController do
   alias GameBackend.Users
   alias GameBackend.Rewards
   alias GameBackend.Utils
+  alias GameBackend.Units
 
   action_fallback Gateway.Controllers.FallbackController
 
@@ -15,6 +16,14 @@ defmodule Gateway.Controllers.CurseOfMirra.UserController do
 
     with {:ok, user} <- Users.get_user_by_id_and_game_id(user_id, game_id) do
       send_resp(conn, 200, Jason.encode!(user))
+    end
+  end
+
+  def get_unit(conn, %{"user_id" => user_id}) do
+    with unit <- Units.get_selected_unit(user_id),
+      unit_skin <- Enum.find(unit.skins, fn unit_skin -> unit_skin.selected end) do
+      IO.inspect(label: :todo_piola)
+      send_resp(conn, 200, Jason.encode!(%{character_name: unit.character.name, skin_name: unit_skin.skin.name}))
     end
   end
 
@@ -42,7 +51,17 @@ defmodule Gateway.Controllers.CurseOfMirra.UserController do
       gateway_jwt = TokenManager.generate_user_token(user, client_id)
       random_unit = Enum.find(user.units, fn unit -> unit.character.name == "h4ck" end)
       default_skin = Enum.find(random_unit.skins, fn unit_skin -> unit_skin.selected end).skin
-      send_resp(conn, 200, Jason.encode!(%{user_id: user.id, gateway_jwt: gateway_jwt, character_name: random_unit.character.name, skin_name: default_skin.name}))
+
+      send_resp(
+        conn,
+        200,
+        Jason.encode!(%{
+          user_id: user.id,
+          gateway_jwt: gateway_jwt,
+          character_name: random_unit.character.name,
+          skin_name: default_skin.name
+        })
+      )
     end
   end
 

@@ -652,6 +652,7 @@ defmodule ArenaLoadTest.Serialization.Player do
   )
 
   field(:blocked_actions, 22, proto3_optional: true, type: :bool, json_name: "blockedActions")
+  field(:skin_name, 23, proto3_optional: true, type: :string, json_name: "skinName")
 end
 
 defmodule ArenaLoadTest.Serialization.Effect do

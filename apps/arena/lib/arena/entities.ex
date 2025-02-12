@@ -25,6 +25,7 @@ defmodule Arena.Entities do
       position: position,
       direction: direction,
       character_name: character_name,
+      skin_name: skin_name,
       config: config,
       now: now,
       team: team
@@ -74,6 +75,7 @@ defmodule Arena.Entities do
         last_skill_triggered_inside_bush: now,
         natural_healing_damage_interval: character.natural_healing_damage_interval,
         character_name: character.name,
+        skin_name: skin_name,
         forced_movement: false,
         power_ups: 0,
         power_up_damage_modifier: config.game.power_up_damage_modifier,
@@ -437,6 +439,7 @@ defmodule Arena.Entities do
        stamina_interval: get_in(entity, [:aditional_info, :stamina_interval]),
        recharging_stamina: get_in(entity, [:aditional_info, :recharging_stamina]),
        character_name: get_in(entity, [:aditional_info, :character_name]),
+       skin_name: get_in(entity, [:aditional_info, :skin_name]),
        effects: get_in(entity, [:aditional_info, :effects]),
        power_ups: get_in(entity, [:aditional_info, :power_ups]),
        inventory: get_in(entity, [:aditional_info, :inventory]),

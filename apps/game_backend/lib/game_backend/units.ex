@@ -107,7 +107,9 @@ defmodule GameBackend.Units do
         limit: 1
       )
       |> Repo.one()
-      |> Repo.preload([:character, :user])
+      |> IO.inspect()
+      |> Repo.preload([:character, :user, [skins: :skin]])
+      |> IO.inspect()
 
   @doc """
   Gets the user's single selected unit. Fails if they have many or none.
@@ -138,6 +140,7 @@ defmodule GameBackend.Units do
   def get_unit_by_character_name(character_name, user_id) do
     IO.inspect(character_name, label: :aver_charname)
     character_name = String.downcase(character_name)
+
     case Repo.one(
            from(unit in user_units_query(user_id),
              join: character in Character,
@@ -252,13 +255,17 @@ defmodule GameBackend.Units do
   end
 
   def list_units_by_user(user_id) do
-    {:ok, Repo.all(from u in Unit, where: u.user_id == ^user_id, preload: :character)}
+    {:ok, Repo.all(from(u in Unit, where: u.user_id == ^user_id, preload: :character))}
   end
 
   def select_unit_character(units, character_name) do
     Enum.reduce(units, Multi.new(), fn unit, multi ->
       # Cannot use Multi.insert because of the embeds_many
-      Multi.update(multi, "select_character_#{unit.id}", Unit.changeset(unit, %{selected: unit.character.name == character_name}))
+      Multi.update(
+        multi,
+        "select_character_#{unit.id}",
+        Unit.changeset(unit, %{selected: unit.character.name == character_name})
+      )
     end)
     |> Repo.transaction()
   end
@@ -266,7 +273,11 @@ defmodule GameBackend.Units do
   def select_unit_skin(unit, skin_name) do
     Enum.reduce(unit.skins, Multi.new(), fn unit_skin, multi ->
       # Cannot use Multi.insert because of the embeds_many
-      Multi.update(multi, "select_skin_#{unit.id}", UnitSkin.changeset(unit_skin, %{selected: unit_skin.skin.name == skin_name}))
+      Multi.update(
+        multi,
+        "select_skin_#{unit.id}",
+        UnitSkin.changeset(unit_skin, %{selected: unit_skin.skin.name == skin_name})
+      )
     end)
     |> Repo.transaction()
   end
