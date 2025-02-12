@@ -89,7 +89,7 @@ defmodule Arena.Matchmaking.DuoMode do
           game_mode_configuration
       end
 
-    Process.send_after(self(), :update_params, 5000)
+    Process.send_after(self(), :update_params, 50000)
     {:noreply, Map.put(state, :game_mode_configuration, game_mode_configuration)}
   end
 

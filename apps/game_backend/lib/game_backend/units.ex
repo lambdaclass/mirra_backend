@@ -255,12 +255,14 @@ defmodule GameBackend.Units do
   end
 
   def list_units_by_user(user_id) do
-    {:ok, Repo.all(from(u in Unit, where: u.user_id == ^user_id, preload: :character))}
+    {:ok, Repo.all(from(u in Unit, where: u.user_id == ^user_id, preload: :character)) |> IO.inspect(label: :aver_units)}
   end
 
   def select_unit_character(units, character_name) do
     Enum.reduce(units, Multi.new(), fn unit, multi ->
       # Cannot use Multi.insert because of the embeds_many
+      IO.inspect(unit.character.name, label: :aver_char_name)
+      IO.inspect(character_name, label: :aver_name_char)
       Multi.update(
         multi,
         "select_character_#{unit.id}",
@@ -275,7 +277,7 @@ defmodule GameBackend.Units do
       # Cannot use Multi.insert because of the embeds_many
       Multi.update(
         multi,
-        "select_skin_#{unit.id}",
+        "select_skin_#{unit_skin.id}",
         UnitSkin.changeset(unit_skin, %{selected: unit_skin.skin.name == skin_name})
       )
     end)
@@ -283,6 +285,8 @@ defmodule GameBackend.Units do
   end
 
   def has_skin?(unit, skin_name) do
+    IO.inspect(unit)
+    IO.inspect(skin_name)
     case Enum.any?(unit.skins, fn unit_skin -> unit_skin.skin.name == skin_name end) do
       true -> {:ok, :skin_exists}
       _ -> {:error, :skin_not_found}
