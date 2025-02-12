@@ -49,7 +49,7 @@ The way it work is:
 1. We receive a `game_id` to connect and a `client_id` to control in that game through a GET request to the 
 bot manager endpoint
 2. we spawn a websocket with the `BotManager.GameSocketHandler` module with this params
-3. The websocket connects with `Arena.GameSocketHandler` and retreive the player_id 
+3. The websocket connects with `Arena.GameSocketHandler` and retrieve the player_id 
 4. We communicate using the `BotManager.GameSocketHandler` to tell the `Arena.GameSocketHandler` to send
 an action to the `game_updater` process in charge of the `game_id` we got on the get request
 
@@ -58,6 +58,6 @@ This allow us some benefits:
 1. The `game_launcher` from arena doesn't care if we spawned a bot, or even if the bot manager is alive at 
 all to start a game
 2. The game will always start a game without delays due to bot spawning, when the bots are ready they'll 
-start sending message as nothing happended
+start sending message as nothing happened
 3. If a player disconnects from a game we could spawn a bot by just doing a get request to the manager
 with the `client_id` that disconnected and the `game_id`
