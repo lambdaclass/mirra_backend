@@ -4,6 +4,18 @@
 
 ![Image showing the workflow of any bot](bots_flow.png)
 
+Here's each part of the image explained
+
+**Bot Manager Process**: This process is responsible for managing one bot at a time. It ensures that each bot operates independently and efficiently.
+
+**Pre-Process Update**: Before any state machine process begins, certain values need to be verified to facilitate smooth transitions between states. These values are checked during this phase to ensure the system is ready for the next steps.
+
+**State Machine Checker**: This component is responsible for determining the next state based on specific conditions that must be met. It evaluates the current state and transitions the system accordingly.
+
+**State Machine**: The state machine is responsible for applying and generating new actions. These actions are then prepared to be sent to the game server for execution.
+
+**Game Socket Handler**: This component handles the transmission of the newly created action packets to the game server. It ensures that the actions are delivered and applied correctly within the game environment.
+
 ## Bot's State Machine
 
 ### What is a State Machine?
