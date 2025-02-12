@@ -12,6 +12,13 @@
     prompt="Choose a value"
     options={Ecto.Enum.values(GameBackend.Units.Skills.Skill, :type)}
   />
+  <.input
+    field={f[:attack_type]}
+    type="select"
+    label="Type"
+    prompt="Choose a value"
+    options={Ecto.Enum.values(GameBackend.Units.Skills.Skill, :attack_type)}
+  />
   <.input field={f[:activation_delay_ms]} type="number" label="Activation delay (ms)" />
   <.input field={f[:autoaim]} type="checkbox" label="Autoaim" />
   <.input field={f[:block_movement]} type="checkbox" label="Block movement" />
