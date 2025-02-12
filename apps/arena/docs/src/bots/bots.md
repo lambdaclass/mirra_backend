@@ -63,19 +63,19 @@ In order to address this, we’ve come up with the following approach.
 
 --- 
 
-Let’s assume our bot is stuck in that position.
+Let’s assume our bot is stuck in this position.
 
 ![BotPath01](bot_path_01.png)
 
-If we let time pass, we’ll realize that the bot is stuck in that position and isn’t moving. 
-Using that as a trigger, we can change its direction.
+
+If we let some time pass, we’ll notice that the bot is stuck in that position and isn’t moving.
+Using that as a trigger, we can decide to switch the position they're walking to a random one.
 
 ![BotPath01](bot_path_02.png)
 
-Whenever we determine that our bot isn’t moving, we’ll switch its direction by either 90, 180, or 270 degrees. This isn’t a solution, but rather a temporary patch until we implement a pathfinder.
+The bot could also get stuck while tracking a player, so this will also be enabled when they're tracking a player.
 
-![BotPath01](bot_path_03.png)
-
+![alt text](bot_path_03.png)
 
 ### Action blocking
 
