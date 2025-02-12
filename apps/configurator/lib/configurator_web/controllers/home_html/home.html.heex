@@ -1,22 +1,15 @@
-<%= if @current_user do %>
-  <.header>
-    Welcome to Champions of Mirra Configurator
-  </.header>
+<.header>
+  Welcome to Champions of Mirra Configurator
+</.header>
 
-  <.link href={~p"/versions/copy"}>
-    <.button>Copy Version</.button>
-  </.link>
-  <.link href={~p"/versions/show_current_version"}>
-    <.button>See Current Version</.button>
-  </.link>
+<.link href={~p"/versions/copy"}>
+  <.button>Copy Version</.button>
+</.link>
+<.link href={~p"/versions/show_current_version"}>
+  <.button>See Current Version</.button>
+</.link>
 
-  <.list>
-    <:item title="Versions"><.link href={~p"/versions"}>Link</.link></:item>
-    <:item title="Arena servers"><.link href={~p"/arena_servers"}>Link</.link></:item>
-  </.list>
-<% else %>
-  <p>You are not logged in, please login</p>
-  <.link href={~p"/auth/google"}>
-    <img src="https://developers.google.com/static/identity/images/branding_guideline_sample_lt_rd_lg.svg" />
-  </.link>
-<% end %>
+<.list>
+  <:item title="Versions"><.link href={~p"/versions"}>Link</.link></:item>
+  <:item title="Arena servers"><.link href={~p"/arena_servers"}>Link</.link></:item>
+</.list>
