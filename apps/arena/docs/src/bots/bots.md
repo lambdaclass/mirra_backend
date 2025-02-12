@@ -13,7 +13,7 @@ A state machine is a computational model used to design and describe systems wit
 
 ### Bot's States
 
-Our current bots can transition between four states: `idling, moving, attacking, and running_away`. At the moment, there are no restrictions between states; that is to say, bots can transition from any state to any other state. However, specific conditions must be met for transitions depending on the state.
+Our current bots can transition between four states: `idling, moving, attacking and tracking`. At the moment, there are no restrictions between states; that is to say, bots can transition from any state to any other state. However, specific conditions must be met for transitions depending on the state.
 
 #### Idling
 
@@ -43,11 +43,6 @@ This state arises when the bot becomes bloodthirsty, and there are no nearby ene
 Formally, for a bot to reach this state, players need to be near it but not close enough to be attacked.
 
 ![aggresive areas](bots_aggresive_areas.png)
-
-#### Running Away
-
-Bots will transition to this state whenever their health drops below a certain percentage. For now, this threshold is set at 40%. In this state, bots will attempt to escape from players by running in the opposite direction of the closest one. This does not necessarily mean they will run away from the player attacking them.
-
 
 ## Bot's gimmicks
 
@@ -84,7 +79,7 @@ Whenever we determine that our bot isn’t moving, we’ll switch its direction 
 
 ### Action blocking
 
-This piece of code is located in apps/bot_manager/lib/game_socket_handler.ex. It may not be intuitive at first glance, but every time we send an action to the backend, we block the action from being sent until the specified time has passed. This can probably be removed, I think the only reason for this is to add some time to 'think' for the bots.
+This piece of code is located in apps/bot_manager/lib/game_socket_handler.ex. It may not be intuitive at first glance, but every time we send an action to the backend, we block the action from being sent until the specified time has passed. Main reason of this, is to prevent bots sending too many actions in less than a tick.
 
 ```elixir
   defp update_block_attack_state(%{current_action: %{action: {:use_skill, _, _}, sent: false}} = state) do
