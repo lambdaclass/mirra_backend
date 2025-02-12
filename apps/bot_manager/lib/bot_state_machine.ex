@@ -200,25 +200,6 @@ defmodule BotManager.BotStateMachine do
     end
   end
 
-  defp run_away(bot_player, game_state, bot_state_machine) do
-    players_with_distances =
-      Utils.map_directions_to_players(game_state, bot_player, bot_state_machine.vision_range_to_attack_player)
-
-    if Enum.empty?(players_with_distances) do
-      move(bot_player, bot_state_machine, game_state.zone.radius)
-    else
-      closest_player = Enum.min_by(players_with_distances, & &1.distance)
-
-      direction =
-        closest_player.direction |> Vector.normalize() |> Vector.rotate_by_degrees(180)
-
-      %{
-        action: determine_player_move_action(bot_player, direction),
-        bot_state_machine: bot_state_machine
-      }
-    end
-  end
-
   defp maybe_aim_to_a_player(bot_player, players_with_distances) do
     if Enum.empty?(players_with_distances) do
       bot_player.direction
