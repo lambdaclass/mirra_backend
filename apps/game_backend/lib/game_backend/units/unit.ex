@@ -48,7 +48,6 @@ defmodule GameBackend.Units.Unit do
     ])
     |> cast_assoc(:skins)
     |> validate_required([:level, :selected, :character_id])
-    |> IO.inspect(label: :aver_changeset_unit)
   end
 
   @doc """

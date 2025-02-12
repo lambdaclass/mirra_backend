@@ -39,7 +39,6 @@ defmodule GameBackend.Users do
 
     %User{}
     |> User.changeset(attrs)
-    |> IO.inspect(label: :aver_changeset)
     |> Repo.insert()
   end
 

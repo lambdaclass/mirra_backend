@@ -56,7 +56,6 @@ defmodule Arena.Matchmaking.GameLauncher do
 
   @impl true
   def handle_info(:launch_game?, %{clients: clients} = state) do
-    IO.inspect("launch?")
     Process.send_after(self(), :launch_game?, 300)
     diff = System.monotonic_time(:millisecond) - state.batch_start_at
 

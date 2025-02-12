@@ -29,6 +29,5 @@ defmodule GameBackend.Units.UnitSkin do
     character
     |> cast(attrs, [:unit_id, :skin_id, :selected])
     |> validate_required([:skin_id])
-    |> IO.inspect(label: :aver_changeset_unitskin)
   end
 end
