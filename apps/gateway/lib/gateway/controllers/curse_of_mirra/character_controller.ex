@@ -10,7 +10,8 @@ defmodule Gateway.Controllers.CurseOfMirra.CharacterController do
 
   def select(conn, params) do
     with {:ok, units} <- Units.list_units_by_user(params["user_id"]),
-         {:ok, _transaction} <- Units.select_unit_character(units, String.downcase(params["character_name"])) do
+         {:ok, transaction} <- Units.select_unit_character(units, String.downcase(params["character_name"])) do
+          IO.inspect(transaction, label: :aver_transaction)
       send_resp(conn, 200, Jason.encode!(%{character_name: params["character_name"]}))
     end
   end

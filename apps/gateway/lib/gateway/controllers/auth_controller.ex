@@ -6,6 +6,7 @@ defmodule Gateway.Controllers.AuthController do
   alias Gateway.Auth.TokenManager
   alias Gateway.Auth.GoogleTokenManager
   alias GameBackend.Users
+  alias GameBackend.Units
 
   action_fallback Gateway.Controllers.FallbackController
 
@@ -41,10 +42,12 @@ defmodule Gateway.Controllers.AuthController do
          hashed_client_id = :crypto.hash(:sha256, client_id),
          {:ok, ^hashed_client_id} <- Base.url_decode64(claims["dev"]),
          {:ok, _} <- Users.maybe_generate_daily_quests_for_curse_user(claims["sub"]),
-         {:ok, user} <- Users.get_user_by_id_and_game_id(claims["sub"], curse_id) do
+         {:ok, user} <- Users.get_user_by_id_and_game_id(claims["sub"], curse_id),
+         unit <- Units.get_selected_unit(user.id),
+          unit_skin <- Enum.find(unit.skins, fn unit_skin -> unit_skin.selected end) do
       new_gateway_jwt = TokenManager.generate_user_token(user, client_id)
       IO.inspect("hola")
-      send_resp(conn, 200, Jason.encode!(%{gateway_jwt: new_gateway_jwt, user_id: user.id}))
+      send_resp(conn, 200, Jason.encode!(%{gateway_jwt: new_gateway_jwt, user_id: user.id, character_name: unit.character.name, skin_name: unit_skin.skin.name}))
     end
   end
 end
