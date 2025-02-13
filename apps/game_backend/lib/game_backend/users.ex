@@ -35,8 +35,6 @@ defmodule GameBackend.Users do
 
   """
   def register_user(attrs) do
-    IO.inspect(attrs, label: :aver_attrs)
-
     %User{}
     |> User.changeset(attrs)
     |> Repo.insert()
@@ -690,15 +688,13 @@ defmodule GameBackend.Users do
     end)
     |> Multi.run(:insert_unit_skins, fn _, %{insert_user: user} ->
       Enum.each(user.units, fn unit ->
-        # Uncomment this when you can buy skins.
-        # skin = Repo.one!(from(s in Skin, where: s.is_default and s.character_id == ^unit.character_id))
+        # TODO: When users can buy skins, we should only insert the "default" ones.
+        # https://github.com/lambdaclass/mirra_backend/issues/1080
         skins = Repo.all(from(s in Skin, where: s.character_id == ^unit.character_id))
 
-        # Users.insert_user_skin(%{user_id: user.id, skin_id: skin.id})
         Enum.each(skins, fn skin ->
           Units.insert_unit_skin(%{unit_id: unit.id, skin_id: skin.id, selected: skin.is_default})
         end)
-        # Repo.insert(UserSkin, %{user_id: user.id, skin_id: skin.id})
       end)
 
       {:ok, :unit_skins_inserted}

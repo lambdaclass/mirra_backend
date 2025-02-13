@@ -107,9 +107,7 @@ defmodule GameBackend.Units do
         limit: 1
       )
       |> Repo.one()
-      |> IO.inspect()
       |> Repo.preload([:character, :user, [skins: :skin]])
-      |> IO.inspect()
 
   @doc """
   Gets the user's single selected unit. Fails if they have many or none.
@@ -138,7 +136,6 @@ defmodule GameBackend.Units do
   Fails if there are more than one unit of the same character. Returns nil if there are none.
   """
   def get_unit_by_character_name(character_name, user_id) do
-    IO.inspect(character_name, label: :aver_charname)
     character_name = String.downcase(character_name)
 
     case Repo.one(
@@ -150,7 +147,7 @@ defmodule GameBackend.Units do
            )
          ) do
       nil -> {:error, :not_found}
-      unit -> {:ok, unit} |> IO.inspect()
+      unit -> {:ok, unit}
     end
   end
 
@@ -250,19 +247,17 @@ defmodule GameBackend.Units do
       prestige: 0,
       selected: false,
       character_id: Characters.get_character_id_by_name_and_game_id(character_name, Utils.get_game_id(:curse_of_mirra))
-      # skins: Repo.all(from s in Skin, where: s.is_default and s.character_name == ^character_name)
     }
   end
 
   def list_units_by_user(user_id) do
-    {:ok, Repo.all(from(u in Unit, where: u.user_id == ^user_id, preload: :character)) |> IO.inspect(label: :aver_units)}
+    {:ok, Repo.all(from(u in Unit, where: u.user_id == ^user_id, preload: :character))}
   end
 
   def select_unit_character(units, character_name) do
+    character_name = String.downcase(character_name)
+
     Enum.reduce(units, Multi.new(), fn unit, multi ->
-      # Cannot use Multi.insert because of the embeds_many
-      IO.inspect(unit.character.name, label: :aver_char_name)
-      IO.inspect(character_name, label: :aver_name_char)
       Multi.update(
         multi,
         "select_character_#{unit.id}",
@@ -274,7 +269,6 @@ defmodule GameBackend.Units do
 
   def select_unit_skin(unit, skin_name) do
     Enum.reduce(unit.skins, Multi.new(), fn unit_skin, multi ->
-      # Cannot use Multi.insert because of the embeds_many
       Multi.update(
         multi,
         "select_skin_#{unit_skin.id}",
@@ -285,20 +279,11 @@ defmodule GameBackend.Units do
   end
 
   def has_skin?(unit, skin_name) do
-    IO.inspect(unit)
-    IO.inspect(skin_name)
-    case Enum.any?(unit.skins, fn unit_skin -> unit_skin.skin.name == skin_name end) do
+    case Enum.any?(unit.skins, fn unit_skin -> unit_skin.skin.name == skin_name end) |> IO.inspect() do
       true -> {:ok, :skin_exists}
       _ -> {:error, :skin_not_found}
     end
   end
-
-  # def select_unit_skin(unit, skin_name) do
-  #   Enum.each(unit.skins, fn skin ->
-  #     Unit.changeset(skin, %{selected: skin.name == skin_name})
-  #     |> Repo.update()
-  #   end)
-  # end
 
   @doc """
   Inserts a UnitSkin into the database.

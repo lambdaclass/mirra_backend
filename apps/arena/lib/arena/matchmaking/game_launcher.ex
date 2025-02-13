@@ -39,7 +39,6 @@ defmodule Arena.Matchmaking.GameLauncher do
       from_pid: from_pid,
       type: :human
     }
-    |> IO.inspect(label: :aver_client)
 
     {:reply, :ok,
      %{
@@ -126,7 +125,13 @@ defmodule Arena.Matchmaking.GameLauncher do
     Enum.map(1..missing_clients//1, fn i ->
       client_id = UUID.generate()
 
-      %{client_id: client_id, skin_name: "Basic", character_name: Enum.random(characters).name, name: Enum.at(bot_names, i - 1), type: :bot}
+      %{
+        client_id: client_id,
+        skin_name: "Basic",
+        character_name: Enum.random(characters).name,
+        name: Enum.at(bot_names, i - 1),
+        type: :bot
+      }
     end)
   end
 

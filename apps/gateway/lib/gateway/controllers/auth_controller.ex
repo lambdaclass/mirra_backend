@@ -44,10 +44,19 @@ defmodule Gateway.Controllers.AuthController do
          {:ok, _} <- Users.maybe_generate_daily_quests_for_curse_user(claims["sub"]),
          {:ok, user} <- Users.get_user_by_id_and_game_id(claims["sub"], curse_id),
          unit <- Units.get_selected_unit(user.id),
-          unit_skin <- Enum.find(unit.skins, fn unit_skin -> unit_skin.selected end) do
+         unit_skin <- Enum.find(unit.skins, fn unit_skin -> unit_skin.selected end) do
       new_gateway_jwt = TokenManager.generate_user_token(user, client_id)
-      IO.inspect("hola")
-      send_resp(conn, 200, Jason.encode!(%{gateway_jwt: new_gateway_jwt, user_id: user.id, character_name: unit.character.name, skin_name: unit_skin.skin.name}))
+
+      send_resp(
+        conn,
+        200,
+        Jason.encode!(%{
+          gateway_jwt: new_gateway_jwt,
+          user_id: user.id,
+          character_name: unit.character.name,
+          skin_name: unit_skin.skin.name
+        })
+      )
     end
   end
 end

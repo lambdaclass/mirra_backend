@@ -1343,6 +1343,30 @@ uren_basic_params = %{
   character_id: Enum.find(characters, fn c -> c.name == "uren" end).id
 }
 
+uma_chroma_params = %{
+  is_default: true,
+  name: "Chroma",
+  character_id: Enum.find(characters, fn c -> c.name == "uma" end).id
+}
+
+valtimer_chroma_params = %{
+  is_default: true,
+  name: "Chroma",
+  character_id: Enum.find(characters, fn c -> c.name == "valtimer" end).id
+}
+
+kenzu_chroma_params = %{
+  is_default: true,
+  name: "Chroma",
+  character_id: Enum.find(characters, fn c -> c.name == "kenzu" end).id
+}
+
+otix_chroma_params = %{
+  is_default: true,
+  name: "Chroma",
+  character_id: Enum.find(characters, fn c -> c.name == "otix" end).id
+}
+
 # Insert skins
 [
   h4ck_fenix_params,
@@ -1353,7 +1377,10 @@ uren_basic_params = %{
   kenzu_basic_params,
   otix_basic_params,
   shinko_basic_params,
-  uren_basic_params
+  uma_chroma_params,
+  valtimer_chroma_params,
+  kenzu_chroma_params,
+  otix_chroma_params
 ]
 |> Enum.each(fn skin_params -> Characters.insert_skin(skin_params) end)
 

@@ -29,28 +29,18 @@ defmodule Arena.SocketHandler do
         user_id
       end
 
-      IO.inspect(user_id, label: :aver_id)
+    gateway_url = Application.get_env(:arena, :gateway_url)
+    url = "#{gateway_url}/curse/users/#{user_id}/get_unit"
 
-      # def get_game_mode_configuration(team_size, type) do
-        gateway_url = Application.get_env(:arena, :gateway_url)
-        # query_params = URI.encode_query(%{"user_id" => user_id})
-        url = "#{gateway_url}/curse/users/#{user_id}/get_unit"
+    {:ok, %{character_name: character_name, skin_name: skin_name}} =
+      case Finch.build(:get, url, [{"content-type", "application/json"}])
+           |> Finch.request(Arena.Finch) do
+        {:ok, payload} ->
+          {:ok, Jason.decode!(payload.body, [{:keys, :atoms}])}
 
-        {:ok, %{character_name: character_name, skin_name: skin_name}} =
-        case Finch.build(:get, url, [{"content-type", "application/json"}])
-             |> Finch.request(Arena.Finch) do
-          {:ok, payload} ->
-            {:ok,
-             Jason.decode!(payload.body, [{:keys, :atoms}])
-          }
-            #  |> Map.update!(:map_mode_params, fn map_mode_params ->
-            #    Enum.map(map_mode_params, fn map_mode_param -> parse_map_mode_params(map_mode_param) end)
-            #  end)}
-
-          {:error, _} ->
-            {:error, %{}}
-        end
-      # end
+        {:error, _} ->
+          {:error, %{}}
+      end
 
     matchmaking_queue = Matchmaking.get_queue(:cowboy_req.binding(:mode, req))
     player_name = :cowboy_req.binding(:player_name, req)
