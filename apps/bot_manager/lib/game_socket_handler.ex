@@ -10,7 +10,8 @@ defmodule BotManager.GameSocketHandler do
   use WebSockex, restart: :temporary
   require Logger
 
-  @decision_delay_ms 1000
+  @min_decision_delay_ms 750
+  @max_decision_delay_ms 1250
   @action_delay_ms 30
 
   def start_link(%{"bot_client" => bot_client, "game_id" => game_id} = params) do
@@ -44,9 +45,29 @@ defmodule BotManager.GameSocketHandler do
       %{event: {:update, game_state}} ->
         bot_player = Map.get(game_state.players, state.player_id)
 
+        state =
+          if Map.has_key?(state, :bot_skills) do
+            state
+          else
+            {:player, aditional_info} = bot_player.aditional_info
+
+            skills =
+              BotManager.Utils.list_character_skills_from_config(aditional_info.character_name, state.config.characters)
+
+            Map.put(state, :bot_skills, skills)
+          end
+
+        bot_state_machine =
+          if is_nil(state.bot_state_machine.is_melee) do
+            Map.put(state.bot_state_machine, :is_melee, state.bot_skills.basic.attack_type == :MELEE)
+          else
+            state.bot_state_machine
+          end
+
         update = %{
           bot_player: bot_player,
-          game_state: game_state
+          game_state: game_state,
+          bot_state_machine: bot_state_machine
         }
 
         {:ok, Map.merge(state, update)}
@@ -66,7 +87,7 @@ defmodule BotManager.GameSocketHandler do
   end
 
   def handle_info(:decide_action, state) do
-    Process.send_after(self(), :decide_action, @decision_delay_ms)
+    Process.send_after(self(), :decide_action, Enum.random(@min_decision_delay_ms..@max_decision_delay_ms))
 
     %{action: action, bot_state_machine: bot_state_machine} = BotStateMachine.decide_action(state)
 
@@ -89,7 +110,7 @@ defmodule BotManager.GameSocketHandler do
   end
 
   defp update_block_attack_state(%{current_action: %{action: {:use_skill, _, _}, sent: false}} = state) do
-    Process.send_after(self(), :unblock_attack, Enum.random(500..1000))
+    Process.send_after(self(), :unblock_attack, 100)
 
     Map.put(state, :attack_blocked, true)
     |> Map.put(:current_action, Map.put(state.current_action, :sent, true))
@@ -160,6 +181,6 @@ defmodule BotManager.GameSocketHandler do
 
   def terminate(close_reason, state) do
     Logger.error("Terminating bot with reason: #{inspect(close_reason)}")
-    Logger.error("Terminating bot with state: #{inspect(state)}")
+    Logger.error("Terminating bot in state machine step: #{inspect(state.bot_state_machine)}")
   end
 end
