@@ -41,7 +41,7 @@ defmodule ConfiguratorWeb.Router do
   ## Authentication routes
 
   scope "/", ConfiguratorWeb do
-    pipe_through [:browser, :redirect_if_user_is_authenticated]
+    pipe_through [:browser]
 
     scope "/auth" do
       get "/:provider", AuthController, :request
@@ -52,7 +52,7 @@ defmodule ConfiguratorWeb.Router do
   end
 
   scope "/", ConfiguratorWeb do
-    pipe_through [:browser, :require_authenticated_user]
+    pipe_through [:browser]
     resources "/arena_servers", ArenaServerController
 
     scope "/versions" do
