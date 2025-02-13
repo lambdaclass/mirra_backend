@@ -18,6 +18,8 @@ defmodule GameBackend.Users do
   alias GameBackend.Repo
   alias GameBackend.Transaction
   alias GameBackend.Users.{Currencies, DungeonSettlementLevel, GoogleUser, KalineTreeLevel, User, Unlock, Upgrade}
+  alias GameBackend.Units
+  alias GameBackend.Units.Characters.Skin
   alias GameBackend.Units.Unit
 
   @doc """
@@ -81,7 +83,7 @@ defmodule GameBackend.Users do
         as: :user,
         where: u.id == ^id and u.game_id == ^game_id,
         preload: [
-          [units: [:character, :items]],
+          [units: [:character, :items, skins: [:skin]]],
           [currencies: [:currency]]
         ],
         select: %{u | quest_refresh_at: ^quest_refresh_at}
@@ -683,6 +685,19 @@ defmodule GameBackend.Users do
           _ ->
             {:ok, :quests_generated}
         end
+    end)
+    |> Multi.run(:insert_unit_skins, fn _, %{insert_user: user} ->
+      Enum.each(user.units, fn unit ->
+        # TODO: When users can buy skins, we should only insert the "default" ones.
+        # https://github.com/lambdaclass/mirra_backend/issues/1080
+        skins = Repo.all(from(s in Skin, where: s.character_id == ^unit.character_id))
+
+        Enum.each(skins, fn skin ->
+          Units.insert_unit_skin(%{unit_id: unit.id, skin_id: skin.id, selected: skin.is_default})
+        end)
+      end)
+
+      {:ok, :unit_skins_inserted}
     end)
     |> Multi.run(:user, fn _, %{insert_user: user} ->
       get_user_by_id_and_game_id(user.id, curse_id)

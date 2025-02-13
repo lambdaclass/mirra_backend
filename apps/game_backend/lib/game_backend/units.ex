@@ -16,6 +16,7 @@ defmodule GameBackend.Units do
   alias GameBackend.Units.Characters
   alias GameBackend.Repo
   alias GameBackend.Units.Unit
+  alias GameBackend.Units.UnitSkin
   alias GameBackend.Units.Characters.Character
 
   @doc """
@@ -243,5 +244,14 @@ defmodule GameBackend.Units do
       selected: false,
       character_id: Characters.get_character_id_by_name_and_game_id(character_name, Utils.get_game_id(:curse_of_mirra))
     }
+  end
+
+  @doc """
+  Inserts a UnitSkin into the database.
+  """
+  def insert_unit_skin(attrs) do
+    %UnitSkin{}
+    |> UnitSkin.changeset(attrs)
+    |> Repo.insert()
   end
 end
