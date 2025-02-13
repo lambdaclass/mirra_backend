@@ -2,11 +2,12 @@ defmodule GameBackend.CurseOfMirra.Users do
   @moduledoc """
     Module to work with users logic
   """
+  alias GameBackend.Units.Characters
   alias GameBackend.Units
   alias GameBackend.Repo
   alias GameBackend.Users.User
   alias GameBackend.Utils
-  alias GameBackend.CurseOfMirra.Config
+  alias GameBackend.Configuration
 
   @doc """
   Generates a default map with its associations for a new user
@@ -24,12 +25,14 @@ defmodule GameBackend.CurseOfMirra.Users do
     amount_of_users = Repo.aggregate(User, :count)
     username = "User_#{amount_of_users + 1}"
     ##################################################################
+    version = Configuration.get_current_version()
+    active_characters = Characters.get_curse_characters_by_version(version.id) |> Enum.filter(fn c -> c.active end)
 
     units =
-      Enum.reduce(Config.get_characters_config(), [], fn char_params, acc ->
+      Enum.reduce(active_characters, [], fn char_params, acc ->
         acc ++
           [
-            Units.get_unit_default_values(char_params.name)
+            Units.get_unit_default_values(char_params)
           ]
       end)
       |> mark_random_unit_as_selected()

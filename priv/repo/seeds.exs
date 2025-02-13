@@ -1377,6 +1377,7 @@ otix_chroma_params = %{
   kenzu_basic_params,
   otix_basic_params,
   shinko_basic_params,
+  uren_basic_params,
   uma_chroma_params,
   valtimer_chroma_params,
   kenzu_chroma_params,
