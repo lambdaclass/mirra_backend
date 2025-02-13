@@ -32,6 +32,7 @@ defmodule GameBackend.CurseOfMirra.Users do
             Units.get_unit_default_values(char_params.name)
           ]
       end)
+      |> mark_random_unit_as_selected()
 
     %{
       game_id: Utils.get_game_id(:curse_of_mirra),
@@ -41,5 +42,18 @@ defmodule GameBackend.CurseOfMirra.Users do
       units: units,
       last_daily_quest_generation_at: NaiveDateTime.utc_now()
     }
+  end
+
+  defp mark_random_unit_as_selected(units) do
+    random_index = Enum.random(0..(length(units) - 1))
+
+    Enum.with_index(units)
+    |> Enum.map(fn {unit, index} ->
+      if index == random_index do
+        Map.put(unit, :selected, true)
+      else
+        unit
+      end
+    end)
   end
 end
