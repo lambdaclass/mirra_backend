@@ -105,7 +105,7 @@ defmodule GameBackend.Units do
         limit: 1
       )
       |> Repo.one()
-      |> Repo.preload([:character, :user])
+      |> Repo.preload([:character, :user, [skins: :skin]])
 
   @doc """
   Gets the user's single selected unit. Fails if they have many or none.
