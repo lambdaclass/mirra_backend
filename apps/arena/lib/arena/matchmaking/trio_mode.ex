@@ -24,7 +24,7 @@ defmodule Arena.Matchmaking.TrioMode do
   @impl true
   def init(_) do
     Process.send_after(self(), :launch_game?, 300)
-    Process.send_after(self(), :update_params, 20_000)
+    Process.send_after(self(), :update_params, 30_000)
     {:ok, %{clients: [], batch_start_at: 0}}
   end
 
@@ -89,7 +89,7 @@ defmodule Arena.Matchmaking.TrioMode do
           game_mode_configuration
       end
 
-    Process.send_after(self(), :update_params, 50000)
+    Process.send_after(self(), :update_params, 30_000)
     {:noreply, Map.put(state, :game_mode_configuration, game_mode_configuration)}
   end
 
