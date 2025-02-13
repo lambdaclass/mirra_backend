@@ -47,8 +47,8 @@ defmodule Gateway.Controllers.CurseOfMirra.UserController do
 
   def create_guest_user(conn, %{"client_id" => client_id}) do
     with {:ok, %{user: user}} <- Users.insert_curse_user_and_insert_daily_quests(),
-    {:ok, unit} <- Units.get_selected_unit(user.id),
-    unit_skin <- Enum.find(unit.skins, fn unit_skin -> unit_skin.selected end) do
+         {:ok, unit} <- Units.get_selected_unit(user.id),
+         unit_skin <- Enum.find(unit.skins, fn unit_skin -> unit_skin.selected end) do
       gateway_jwt = TokenManager.generate_user_token(user, client_id)
 
       send_resp(
