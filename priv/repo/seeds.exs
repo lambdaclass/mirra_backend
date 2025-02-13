@@ -1152,7 +1152,7 @@ h4ck_params = %{
 
 uma_params = %{
   name: "uma",
-  active: true,
+  active: false,
   base_speed: 0.67,
   base_size: 95.0,
   base_health: 400,
@@ -1235,7 +1235,7 @@ otix_params = %{
 
 shinko_params = %{
   name: "shinko",
-  active: true,
+  active: false,
   base_speed: 0.68,
   base_size: 100.0,
   base_health: 400,
@@ -1252,7 +1252,7 @@ shinko_params = %{
 
 uren_params = %{
   name: "uren",
-  active: true,
+  active: false,
   base_speed: 0.68,
   base_size: 100.0,
   base_health: 400,
