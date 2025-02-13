@@ -45,7 +45,7 @@ defmodule Arena.SocketHandler do
   @impl true
   def websocket_init(state) do
     Logger.info("Websocket INIT called")
-    state.matchmaking_queue.join(state.client_id, state.character_name, state.player_name)
+    state.matchmaking_queue.join(state)
     joined_msg = LobbyEvent.encode(%LobbyEvent{event: {:joined, %JoinedLobby{}}})
     {:reply, {:binary, joined_msg}, state}
   end
