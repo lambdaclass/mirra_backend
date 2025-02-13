@@ -279,7 +279,7 @@ defmodule GameBackend.Units do
   end
 
   def has_skin?(unit, skin_name) do
-    case Enum.any?(unit.skins, fn unit_skin -> unit_skin.skin.name == skin_name end) |> IO.inspect() do
+    case Enum.any?(unit.skins, fn unit_skin -> unit_skin.skin.name == skin_name end) do
       true -> {:ok, :skin_exists}
       _ -> {:error, :skin_not_found}
     end
