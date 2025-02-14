@@ -620,6 +620,7 @@ defmodule Arena.Serialization.Player do
   field(:max_health, 20, proto3_optional: true, type: :uint64, json_name: "maxHealth")
   field(:inventory, 21, repeated: true, type: Arena.Serialization.Player.InventoryEntry, map: true)
   field(:blocked_actions, 22, proto3_optional: true, type: :bool, json_name: "blockedActions")
+  field(:skin_name, 23, proto3_optional: true, type: :string, json_name: "skinName")
 end
 
 defmodule Arena.Serialization.Effect do

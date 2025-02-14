@@ -18,15 +18,6 @@ defmodule GameBackend.CurseOfMirra.Config do
     |> Quests.upsert_quests()
   end
 
-  def get_characters_config() do
-    {:ok, characters_config_json} =
-      Application.app_dir(:game_backend, "priv/characters_config.json")
-      |> File.read()
-
-    Jason.decode!(characters_config_json, [{:keys, :atoms}])
-    |> Map.get(:characters)
-  end
-
   def import_stores_config() do
     curse_of_mirra_id = Utils.get_game_id(:curse_of_mirra)
 

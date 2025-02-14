@@ -924,6 +924,7 @@ defmodule Arena.GameUpdater do
           position: pos,
           direction: direction,
           character_name: player.character_name,
+          skin_name: player.skin_name,
           config: config,
           now: now
         }

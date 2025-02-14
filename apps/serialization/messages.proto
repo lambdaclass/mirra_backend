@@ -236,6 +236,7 @@ message Player {
   optional uint64 max_health = 20;
   map<uint32, Item> inventory = 21;
   optional bool blocked_actions = 22;
+  optional string skin_name = 23;
 }
 
 message Effect {
