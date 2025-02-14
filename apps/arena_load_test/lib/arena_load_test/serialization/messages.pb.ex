@@ -10,6 +10,25 @@ defmodule ArenaLoadTest.Serialization.GameMode do
   field(:TRIO, 4)
 end
 
+defmodule ArenaLoadTest.Serialization.AttackType do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
+
+  field(:MELEE, 0)
+  field(:RANGED, 1)
+end
+
+defmodule ArenaLoadTest.Serialization.SkillType do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
+
+  field(:BASIC, 0)
+  field(:ULTIMATE, 1)
+  field(:DASH, 2)
+end
+
 defmodule ArenaLoadTest.Serialization.GameStatus do
   @moduledoc false
 
@@ -351,6 +370,18 @@ defmodule ArenaLoadTest.Serialization.ConfigSkill do
   field(:targetting_offset, 8, type: :float, json_name: "targettingOffset")
   field(:mana_cost, 9, type: :uint64, json_name: "manaCost")
   field(:is_combo, 10, type: :bool, json_name: "isCombo")
+
+  field(:attack_type, 11,
+    type: ArenaLoadTest.Serialization.AttackType,
+    json_name: "attackType",
+    enum: true
+  )
+
+  field(:skill_type, 12,
+    type: ArenaLoadTest.Serialization.SkillType,
+    json_name: "skillType",
+    enum: true
+  )
 end
 
 defmodule ArenaLoadTest.Serialization.GameState.PlayersEntry do
