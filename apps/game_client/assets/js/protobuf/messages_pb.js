@@ -7114,7 +7114,8 @@ matchPosition: (f = jspb.Message.getField(msg, 18)) == null ? undefined : f,
 team: (f = jspb.Message.getField(msg, 19)) == null ? undefined : f,
 maxHealth: (f = jspb.Message.getField(msg, 20)) == null ? undefined : f,
 inventoryMap: (f = msg.getInventoryMap()) ? f.toObject(includeInstance, proto.Item.toObject) : [],
-blockedActions: (f = jspb.Message.getBooleanField(msg, 22)) == null ? undefined : f
+blockedActions: (f = jspb.Message.getBooleanField(msg, 22)) == null ? undefined : f,
+skinName: (f = jspb.Message.getField(msg, 23)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -7246,6 +7247,10 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
     case 22:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setBlockedActions(value);
+      break;
+    case 23:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSkinName(value);
       break;
     default:
       reader.skipField();
@@ -7423,6 +7428,13 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeBool(
       22,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 23));
+  if (f != null) {
+    writer.writeString(
+      23,
       f
     );
   }
@@ -8197,6 +8209,42 @@ proto.Player.prototype.clearBlockedActions = function() {
  */
 proto.Player.prototype.hasBlockedActions = function() {
   return jspb.Message.getField(this, 22) != null;
+};
+
+
+/**
+ * optional string skin_name = 23;
+ * @return {string}
+ */
+proto.Player.prototype.getSkinName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 23, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setSkinName = function(value) {
+  return jspb.Message.setField(this, 23, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.clearSkinName = function() {
+  return jspb.Message.setField(this, 23, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.Player.prototype.hasSkinName = function() {
+  return jspb.Message.getField(this, 23) != null;
 };
 
 

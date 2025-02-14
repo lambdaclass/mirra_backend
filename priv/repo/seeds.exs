@@ -1294,21 +1294,122 @@ uren_params = %{
 }
 
 # Insert characters
+characters =
+  [
+    muflus_params,
+    h4ck_params,
+    uma_params,
+    valtimer_params,
+    kenzu_params,
+    otix_params,
+    shinko_params,
+    uren_params
+  ]
+  |> Enum.reduce([], fn char_params, characters ->
+    {:ok, character} =
+      Map.put(char_params, :game_id, curse_of_mirra_id)
+      |> Map.put(:faction, "none")
+      |> Characters.insert_character()
+
+    characters ++ [character]
+  end)
+
+# Skins params
+h4ck_fenix_params = %{
+  is_default: false,
+  name: "Fenix",
+  character_id: Enum.find(characters, fn c -> c.name == "h4ck" end).id
+}
+
+h4ck_basic_params = %{
+  is_default: true,
+  name: "Basic",
+  character_id: Enum.find(characters, fn c -> c.name == "h4ck" end).id
+}
+
+muflus_basic_params = %{
+  is_default: true,
+  name: "Basic",
+  character_id: Enum.find(characters, fn c -> c.name == "muflus" end).id
+}
+
+uma_basic_params = %{
+  is_default: true,
+  name: "Basic",
+  character_id: Enum.find(characters, fn c -> c.name == "uma" end).id
+}
+
+valtimer_basic_params = %{
+  is_default: true,
+  name: "Basic",
+  character_id: Enum.find(characters, fn c -> c.name == "valtimer" end).id
+}
+
+kenzu_basic_params = %{
+  is_default: true,
+  name: "Basic",
+  character_id: Enum.find(characters, fn c -> c.name == "kenzu" end).id
+}
+
+otix_basic_params = %{
+  is_default: true,
+  name: "Basic",
+  character_id: Enum.find(characters, fn c -> c.name == "otix" end).id
+}
+
+shinko_basic_params = %{
+  is_default: true,
+  name: "Basic",
+  character_id: Enum.find(characters, fn c -> c.name == "shinko" end).id
+}
+
+uren_basic_params = %{
+  is_default: true,
+  name: "Basic",
+  character_id: Enum.find(characters, fn c -> c.name == "uren" end).id
+}
+
+uma_chroma_params = %{
+  is_default: true,
+  name: "Chroma",
+  character_id: Enum.find(characters, fn c -> c.name == "uma" end).id
+}
+
+valtimer_chroma_params = %{
+  is_default: true,
+  name: "Chroma",
+  character_id: Enum.find(characters, fn c -> c.name == "valtimer" end).id
+}
+
+kenzu_chroma_params = %{
+  is_default: true,
+  name: "Chroma",
+  character_id: Enum.find(characters, fn c -> c.name == "kenzu" end).id
+}
+
+otix_chroma_params = %{
+  is_default: true,
+  name: "Chroma",
+  character_id: Enum.find(characters, fn c -> c.name == "otix" end).id
+}
+
+# Insert skins
 [
-  muflus_params,
-  h4ck_params,
-  uma_params,
-  valtimer_params,
-  kenzu_params,
-  otix_params,
-  shinko_params,
-  uren_params
+  h4ck_fenix_params,
+  h4ck_basic_params,
+  muflus_basic_params,
+  uma_basic_params,
+  valtimer_basic_params,
+  kenzu_basic_params,
+  otix_basic_params,
+  shinko_basic_params,
+  uren_basic_params,
+  uma_chroma_params,
+  valtimer_chroma_params,
+  kenzu_chroma_params,
+  otix_chroma_params
 ]
-|> Enum.each(fn char_params ->
-  Map.put(char_params, :game_id, curse_of_mirra_id)
-  |> Map.put(:faction, "none")
-  |> Characters.insert_character()
-end)
+|> Enum.each(fn skin_params -> Characters.insert_skin(skin_params) end)
 
 game_configuration_1 = %{
   tick_rate_ms: 30,

@@ -12,11 +12,11 @@ defmodule GameBackend.Units do
 
   import Ecto.Query
 
-  alias GameBackend.Utils
-  alias GameBackend.Units.Characters
+  alias Ecto.Multi
   alias GameBackend.Repo
   alias GameBackend.Units.Unit
   alias GameBackend.Units.Characters.Character
+  alias GameBackend.Units.UnitSkin
 
   @doc """
   Inserts a unit.
@@ -105,7 +105,7 @@ defmodule GameBackend.Units do
         limit: 1
       )
       |> Repo.one()
-      |> Repo.preload([:character, :user])
+      |> Repo.preload([:character, :user, [skins: :skin]])
 
   @doc """
   Gets the user's single selected unit. Fails if they have many or none.
@@ -134,11 +134,14 @@ defmodule GameBackend.Units do
   Fails if there are more than one unit of the same character. Returns nil if there are none.
   """
   def get_unit_by_character_name(character_name, user_id) do
+    character_name = String.downcase(character_name)
+
     case Repo.one(
            from(unit in user_units_query(user_id),
              join: character in Character,
              on: unit.character_id == character.id,
-             where: character.name == ^character_name
+             where: character.name == ^character_name,
+             preload: [skins: :skin]
            )
          ) do
       nil -> {:error, :not_found}
@@ -236,12 +239,56 @@ defmodule GameBackend.Units do
     |> Repo.update()
   end
 
-  def get_unit_default_values(character_name) do
+  def get_unit_default_values(char_params) do
     %{
       level: 1,
       prestige: 0,
       selected: false,
-      character_id: Characters.get_character_id_by_name_and_game_id(character_name, Utils.get_game_id(:curse_of_mirra))
+      character_id: char_params.id
     }
+  end
+
+  def list_units_by_user(user_id) do
+    {:ok, Repo.all(from(u in Unit, where: u.user_id == ^user_id, preload: :character))}
+  end
+
+  def select_unit_character(units, character_name) do
+    character_name = String.downcase(character_name)
+
+    Enum.reduce(units, Multi.new(), fn unit, multi ->
+      Multi.update(
+        multi,
+        "select_character_#{unit.id}",
+        Unit.changeset(unit, %{selected: unit.character.name == character_name})
+      )
+    end)
+    |> Repo.transaction()
+  end
+
+  def select_unit_skin(unit, skin_name) do
+    Enum.reduce(unit.skins, Multi.new(), fn unit_skin, multi ->
+      Multi.update(
+        multi,
+        "select_skin_#{unit_skin.id}",
+        UnitSkin.changeset(unit_skin, %{selected: unit_skin.skin.name == skin_name})
+      )
+    end)
+    |> Repo.transaction()
+  end
+
+  def has_skin?(unit, skin_name) do
+    case Enum.any?(unit.skins, fn unit_skin -> unit_skin.skin.name == skin_name end) do
+      true -> {:ok, :skin_exists}
+      _ -> {:error, :skin_not_found}
+    end
+  end
+
+  @doc """
+  Inserts a UnitSkin into the database.
+  """
+  def insert_unit_skin(attrs) do
+    %UnitSkin{}
+    |> UnitSkin.changeset(attrs)
+    |> Repo.insert()
   end
 end

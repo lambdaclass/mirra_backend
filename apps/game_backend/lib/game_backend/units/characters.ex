@@ -8,6 +8,7 @@ defmodule GameBackend.Units.Characters do
   alias Ecto.Multi
   alias GameBackend.Repo
   alias GameBackend.Units.Characters.Character
+  alias GameBackend.Units.Characters.Skin
 
   ##############
   # Characters #
@@ -198,5 +199,19 @@ defmodule GameBackend.Units.Characters do
       )
 
     Repo.all(q)
+  end
+
+  @doc """
+  Inserts a Skin.
+  ## Examples
+      iex> insert_skin(%{field: value})
+      {:ok, %Skin{}}
+      iex> insert_skin(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+  """
+  def insert_skin(attrs \\ %{}) do
+    %Skin{}
+    |> Skin.changeset(attrs)
+    |> Repo.insert()
   end
 end
