@@ -4,6 +4,18 @@
 
 ![Image showing the workflow of any bot](bots_flow.png)
 
+Here's each part of the image explained
+
+**Bot Manager Process**: This process is responsible for managing one bot at a time. It ensures that each bot operates independently and efficiently.
+
+**Pre-Process Update**: Before any state machine process begins, certain values need to be verified to facilitate smooth transitions between states. These values are checked during this phase to ensure the system is ready for the next steps.
+
+**State Machine Checker**: This component is responsible for determining the next state based on specific conditions that must be met. It evaluates the current state and transitions the system accordingly.
+
+**State Machine**: The state machine is responsible for applying and generating new actions. These actions are then prepared to be sent to the game server for execution.
+
+**Game Socket Handler**: This component handles the transmission of the newly created action packets to the game server. It ensures that the actions are delivered and applied correctly within the game environment.
+
 ## Bot's State Machine
 
 ### What is a State Machine?
@@ -13,7 +25,7 @@ A state machine is a computational model used to design and describe systems wit
 
 ### Bot's States
 
-Our current bots can transition between four states: `idling, moving, attacking, and running_away`. At the moment, there are no restrictions between states; that is to say, bots can transition from any state to any other state. However, specific conditions must be met for transitions depending on the state.
+Our current bots can transition between four states: `idling, moving, attacking and tracking`. At the moment, there are no restrictions between states; that is to say, bots can transition from any state to any other state. However, specific conditions must be met for transitions depending on the state.
 
 #### Idling
 
@@ -44,11 +56,6 @@ Formally, for a bot to reach this state, players need to be near it but not clos
 
 ![aggresive areas](bots_aggresive_areas.png)
 
-#### Running Away
-
-Bots will transition to this state whenever their health drops below a certain percentage. For now, this threshold is set at 40%. In this state, bots will attempt to escape from players by running in the opposite direction of the closest one. This does not necessarily mean they will run away from the player attacking them.
-
-
 ## Bot's gimmicks
 
 ### Skills 
@@ -68,23 +75,23 @@ In order to address this, we’ve come up with the following approach.
 
 --- 
 
-Let’s assume our bot is stuck in that position.
+Let’s assume our bot is stuck in this position.
 
 ![BotPath01](bot_path_01.png)
 
-If we let time pass, we’ll realize that the bot is stuck in that position and isn’t moving. 
-Using that as a trigger, we can change its direction.
+
+If we let some time pass, we’ll notice that the bot is stuck in that position and isn’t moving.
+Using that as a trigger, we can decide to switch the position they're walking to a random one.
 
 ![BotPath01](bot_path_02.png)
 
-Whenever we determine that our bot isn’t moving, we’ll switch its direction by either 90, 180, or 270 degrees. This isn’t a solution, but rather a temporary patch until we implement a pathfinder.
+The bot could also get stuck while tracking a player, so this will also be enabled when they're tracking a player.
 
-![BotPath01](bot_path_03.png)
-
+![alt text](bot_path_03.png)
 
 ### Action blocking
 
-This piece of code is located in apps/bot_manager/lib/game_socket_handler.ex. It may not be intuitive at first glance, but every time we send an action to the backend, we block the action from being sent until the specified time has passed. This can probably be removed, I think the only reason for this is to add some time to 'think' for the bots.
+This piece of code is located in apps/bot_manager/lib/game_socket_handler.ex. It may not be intuitive at first glance, but every time we send an action to the backend, we block the action from being sent until the specified time has passed. Main reason of this, is to prevent bots sending too many actions in less than a tick.
 
 ```elixir
   defp update_block_attack_state(%{current_action: %{action: {:use_skill, _, _}, sent: false}} = state) do

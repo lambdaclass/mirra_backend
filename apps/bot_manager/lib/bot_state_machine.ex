@@ -12,6 +12,9 @@ defmodule BotManager.BotStateMachine do
   @skill_2_key "2"
   @dash_skill_key "3"
 
+  @type bot_player() :: %BotManager.Protobuf.Entity{}
+  @type players() :: %{binary() => bot_player()}
+
   def decide_action(%{bots_enabled?: false, bot_state_machine: bot_state_machine}) do
     %{action: {:move, %{x: 0, y: 0}}, bot_state_machine: bot_state_machine}
   end
@@ -42,9 +45,6 @@ defmodule BotManager.BotStateMachine do
           attack_blocked: attack_blocked,
           bot_skills: skills
         })
-
-      :running_away ->
-        run_away(bot_player, game_state, bot_state_machine)
 
       :tracking_player ->
         track_player(game_state, bot_player, bot_state_machine)
@@ -197,25 +197,6 @@ defmodule BotManager.BotStateMachine do
 
       true ->
         bot_state_machine
-    end
-  end
-
-  defp run_away(bot_player, game_state, bot_state_machine) do
-    players_with_distances =
-      Utils.map_directions_to_players(game_state, bot_player, bot_state_machine.vision_range_to_attack_player)
-
-    if Enum.empty?(players_with_distances) do
-      move(bot_player, bot_state_machine, game_state.zone.radius)
-    else
-      closest_player = Enum.min_by(players_with_distances, & &1.distance)
-
-      direction =
-        closest_player.direction |> Vector.normalize() |> Vector.rotate_by_degrees(180)
-
-      %{
-        action: determine_player_move_action(bot_player, direction),
-        bot_state_machine: bot_state_machine
-      }
     end
   end
 
