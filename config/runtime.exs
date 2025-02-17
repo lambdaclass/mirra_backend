@@ -239,8 +239,8 @@ if config_env() == :prod do
       You can generate one by calling: mix phx.gen.secret
       """
 
-  host = System.get_env("PHX_HOST") || "example.com"
-  port = String.to_integer(System.get_env("PORT") || "3000")
+  host = System.get_env("GAME_CLIENT_HOST") || "gameclient-example.com"
+  port = String.to_integer(System.get_env("GAME_CLIENT_PORT") || "3000")
 
   config :game_client, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
