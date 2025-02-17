@@ -7,7 +7,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=game_backend_dev
+      - POSTGRES_DB=game_backend
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
       - game_backend_data:/var/lib/postgresql/data/
