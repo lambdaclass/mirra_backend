@@ -394,7 +394,7 @@ defmodule Arena.GameUpdater do
 
         state =
           put_in(state, [:game_state, :status], :ENDED)
-          |> update_in([:game_state], fn game_state -> put_player_position(game_state, winner_team_ids) end)
+          |> update_in([:game_state], fn game_state -> put_winner_positions(game_state, winner_team_ids) end)
 
         PubSub.broadcast(Arena.PubSub, state.game_state.game_id, :end_game_state)
         broadcast_game_ended(winner_team, state.game_state)
@@ -1873,6 +1873,17 @@ defmodule Arena.GameUpdater do
   defp get_entity_path(%{category: :obstacle}), do: :obstacles
   defp get_entity_path(%{category: :trap}), do: :traps
   defp get_entity_path(%{category: :crate}), do: :crates
+
+  defp put_winner_positions(game_state, player_ids) when is_list(player_ids) do
+    Enum.reduce(player_ids, game_state, fn player_id, game_state_acc ->
+      {client_id, _player_id} =
+        Enum.find(game_state.client_to_player_map, fn {_, map_player_id} -> map_player_id == player_id end)
+
+      game_state_acc
+      |> update_in([:players, player_id, :aditional_info, :match_position], fn _ -> 1 end)
+      |> update_in([:positions], fn positions -> Map.put(positions, client_id, "#{1}") end)
+    end)
+  end
 
   defp put_player_position(game_state, player_ids) when is_list(player_ids) do
     Enum.reduce(player_ids, game_state, fn player_id, game_state_acc ->
