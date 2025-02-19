@@ -302,13 +302,18 @@ whirlwind_effect =
     name: "whirlwind",
     duration_ms: 5000,
     remove_on_action: false,
-    one_time_application: false,
+    one_time_application: true,
     allow_multiple_effects: true,
     disabled_outside_pool: true,
     effect_mechanics: [
       %{
-        name: "defense_change",
-        modifier: 0.75,
+        name: "pull_immunity",
+        effect_delay_ms: 0,
+        execute_multiple_times: false
+      },
+      %{
+        name: "speed_boost",
+        modifier: 0.2,
         effect_delay_ms: 0,
         execute_multiple_times: false
       }
@@ -866,7 +871,7 @@ skills = [
     "type" => "basic",
     "attack_type" => "melee",
     "cooldown_mechanism" => "stamina",
-    "reset_combo_ms" => 800,
+    "reset_combo_ms" => 1_500,
     "is_combo?" => true,
     "execution_duration_ms" => 450,
     "activation_delay_ms" => 100,
@@ -884,7 +889,7 @@ skills = [
     "type" => "basic",
     "attack_type" => "melee",
     "cooldown_mechanism" => "stamina",
-    "reset_combo_ms" => 800,
+    "reset_combo_ms" => 1_500,
     "is_combo?" => true,
     "execution_duration_ms" => 800,
     "activation_delay_ms" => 100,
@@ -913,8 +918,8 @@ skills = [
     "mechanics" => [
       %{
         "type" => "multi_circle_hit",
-        "damage" => 50,
-        "range" => 300.0,
+        "damage" => 60,
+        "range" => 500.0,
         "interval_ms" => 500,
         "duration_ms" => 5000,
         "offset" => 0
@@ -1223,9 +1228,9 @@ valtimer_params = %{
 kenzu_params = %{
   name: "kenzu",
   active: true,
-  base_speed: 0.62,
+  base_speed: 0.7,
   base_size: 100.0,
-  base_health: 400,
+  base_health: 500,
   base_stamina: 3,
   stamina_interval: 2000,
   max_inventory_size: 1,
