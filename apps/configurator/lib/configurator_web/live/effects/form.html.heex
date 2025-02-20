@@ -2,8 +2,6 @@
   <.error :if={@changeset.action}>
     Oops, something went wrong! Please check the errors below.
   </.error>
-  <%!-- <.inputs_for :let={effect_f} field={f[@field]}> --%>
-  <%!-- <.inputs_for :let={effect_f} field={@form[@field]}> --%>
   <.input field={effect_f[:name]} type="text" label="Name" />
   <.input field={effect_f[:duration_ms]} type="number" label="Effect duration" />
   <.input field={effect_f[:remove_on_action]} type="checkbox" label="Remove effect on action" />
@@ -52,6 +50,6 @@
     </div>
   <% end %>
   <:actions>
-    <.button>Save Game configuration</.button>
+    <.button>Save Effect</.button>
   </:actions>
 </.simple_form>
