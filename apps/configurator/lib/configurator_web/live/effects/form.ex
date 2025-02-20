@@ -1,5 +1,5 @@
 defmodule ConfiguratorWeb.EffectsLive.Form do
-alias GameBackend.Units.Skills
+  alias GameBackend.Units.Skills
   use ConfiguratorWeb, :live_view
 
   alias GameBackend.CurseOfMirra.Effects
@@ -27,14 +27,13 @@ alias GameBackend.Units.Skills
       ) do
     changeset = Effects.change_effect(effect)
 
-      socket = assign(socket, skill: skill, changeset: changeset, action: "save", version: version)
+    socket = assign(socket, skill: skill, changeset: changeset, action: "save", version: version)
     {:ok, socket}
   end
 
   def handle_event("validate", %{"effect" => effect_params}, socket) do
     changeset = socket.assigns.changeset
     changeset = Effect.changeset(changeset, effect_params)
-
 
     {:noreply, assign(socket, changeset: changeset, effect: changeset)}
   end
@@ -48,7 +47,6 @@ alias GameBackend.Units.Skills
   end
 
   def handle_event("remove_effect_mechanics", _params, socket) do
-
     changeset = socket.assigns.changeset
     effect_mechanics = Ecto.Changeset.get_field(changeset, :effect_mechanics) |> List.delete_at(-1)
     changeset = Ecto.Changeset.put_change(changeset, :effect_mechanics, effect_mechanics)
@@ -76,5 +74,4 @@ alias GameBackend.Units.Skills
 
     {:noreply, socket}
   end
-
 end

@@ -1,50 +1,38 @@
-
 <.simple_form :let={effect_f} for={@changeset} action={@action} phx-submit={@action} phx-change="validate">
-<.error :if={@changeset.action}>
+  <.error :if={@changeset.action}>
     Oops, something went wrong! Please check the errors below.
   </.error>
-      <%!-- <.inputs_for :let={effect_f} field={f[@field]}> --%>
-      <%!-- <.inputs_for :let={effect_f} field={@form[@field]}> --%>
-        <.input field={effect_f[:name]} type="text" label="Name" />
-        <.input field={effect_f[:duration_ms]} type="number" label="Effect duration" />
-        <.input field={effect_f[:remove_on_action]} type="checkbox" label="Remove effect on action" />
-        <.input field={effect_f[:one_time_application]} type="checkbox" label="Apply effect once" />
-        <.input field={effect_f[:disabled_outside_pool]} type="checkbox" label="Disabled outside pool" />
-        <.input field={effect_f[:allow_multiple_effects]} type="checkbox" label="Allow more that one effect instance" />
-        <.input field={effect_f[:consume_projectile]} type="checkbox" label="Consume projectile" />
+  <%!-- <.inputs_for :let={effect_f} field={f[@field]}> --%>
+  <%!-- <.inputs_for :let={effect_f} field={@form[@field]}> --%>
+  <.input field={effect_f[:name]} type="text" label="Name" />
+  <.input field={effect_f[:duration_ms]} type="number" label="Effect duration" />
+  <.input field={effect_f[:remove_on_action]} type="checkbox" label="Remove effect on action" />
+  <.input field={effect_f[:one_time_application]} type="checkbox" label="Apply effect once" />
+  <.input field={effect_f[:disabled_outside_pool]} type="checkbox" label="Disabled outside pool" />
+  <.input field={effect_f[:allow_multiple_effects]} type="checkbox" label="Allow more that one effect instance" />
+  <.input field={effect_f[:consume_projectile]} type="checkbox" label="Consume projectile" />
 
-        
-
-        <.inputs_for :let={mechanics_form} field={effect_f[:effect_mechanics]}>
-          <div class="w-full rounded overflow-hidden shadow-lg mt-4">
-            <div class="px-6 py-4">
-              <.input
-                field={mechanics_form[:name]}
-                type="select"
-                label="Effect mechanic name"
-                prompt="-- Choose a value --"
-                options={Ecto.Enum.values(GameBackend.CurseOfMirra.Effects.Effect.EffectMechanic, :name)}
-              />
-              <.input field={mechanics_form[:modifier]} type="number" label="Modifier" step="any" />
-              <.input field={mechanics_form[:force]} type="number" label="Force" step="any" />
-              <.input
-                field={mechanics_form[:execute_multiple_times]}
-                type="checkbox"
-                label="Execute mechanic multiple times"
-              />
-              <.input field={mechanics_form[:damage]} type="number" label="Damage amount" />
-              <.input field={mechanics_form[:effect_delay_ms]} type="number" label="Mechanic delay" />
-              <.input field={mechanics_form[:additive_duration_add_ms]} type="number" label="Additive duration to add ms" />
-              <.input
-                field={mechanics_form[:stat_multiplier]}
-                type="number"
-                label="Stat multiplier"
-                step="Start multiplier"
-              />
-            </div>
-          </div>
-        </.inputs_for>
-        <div class="flex items-center justify-between gap-6">
+  <.inputs_for :let={mechanics_form} field={effect_f[:effect_mechanics]}>
+    <div class="w-full rounded overflow-hidden shadow-lg mt-4">
+      <div class="px-6 py-4">
+        <.input
+          field={mechanics_form[:name]}
+          type="select"
+          label="Effect mechanic name"
+          prompt="-- Choose a value --"
+          options={Ecto.Enum.values(GameBackend.CurseOfMirra.Effects.Effect.EffectMechanic, :name)}
+        />
+        <.input field={mechanics_form[:modifier]} type="number" label="Modifier" step="any" />
+        <.input field={mechanics_form[:force]} type="number" label="Force" step="any" />
+        <.input field={mechanics_form[:execute_multiple_times]} type="checkbox" label="Execute mechanic multiple times" />
+        <.input field={mechanics_form[:damage]} type="number" label="Damage amount" />
+        <.input field={mechanics_form[:effect_delay_ms]} type="number" label="Mechanic delay" />
+        <.input field={mechanics_form[:additive_duration_add_ms]} type="number" label="Additive duration to add ms" />
+        <.input field={mechanics_form[:stat_multiplier]} type="number" label="Stat multiplier" step="Start multiplier" />
+      </div>
+    </div>
+  </.inputs_for>
+  <div class="flex items-center justify-between gap-6">
     <span
       phx-click="add_effect_mechanics"
       class="relative phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3 text-sm font-semibold leading-6 text-white active:text-white/80"
@@ -63,7 +51,7 @@
       </span>
     </div>
   <% end %>
-      <:actions>
+  <:actions>
     <.button>Save Game configuration</.button>
   </:actions>
 </.simple_form>

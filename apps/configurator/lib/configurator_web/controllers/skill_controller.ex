@@ -50,7 +50,13 @@ defmodule ConfiguratorWeb.SkillController do
     skill = Skills.get_skill!(id)
     changeset = Skills.change_skill(skill)
     version = Configuration.get_version!(skill.version_id)
-    render(conn, :edit_on_owner_effect, skill: skill, effect: skill.on_owner_effect, changeset: changeset, version: version)
+
+    render(conn, :edit_on_owner_effect,
+      skill: skill,
+      effect: skill.on_owner_effect,
+      changeset: changeset,
+      version: version
+    )
   end
 
   def update(conn, %{"id" => id, "skill" => skill_params}) do
@@ -61,8 +67,8 @@ defmodule ConfiguratorWeb.SkillController do
         case vertices do
           "" -> []
           vertices -> Jason.decode!(vertices)
-          end
-         end)
+        end
+      end)
 
     case Skills.update_skill(skill, skill_params) do
       {:ok, skill} ->
