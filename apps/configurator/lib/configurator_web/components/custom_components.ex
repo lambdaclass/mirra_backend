@@ -80,7 +80,7 @@ defmodule ConfiguratorWeb.CustomComponents do
                 type="select"
                 label="Effect mechanic name"
                 prompt="-- Choose a value --"
-                options={Ecto.Enum.values(GameBackend.CurseOfMirra.Effect.EffectMechanic, :name)}
+                options={Ecto.Enum.values(GameBackend.CurseOfMirra.Effects.Effect.EffectMechanic, :name)}
               />
               <.input field={mechanics_form[:modifier]} type="number" label="Modifier" step="any" />
               <.input field={mechanics_form[:force]} type="number" label="Force" step="any" />
