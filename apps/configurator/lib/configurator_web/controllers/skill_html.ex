@@ -1,6 +1,7 @@
 defmodule ConfiguratorWeb.SkillHTML do
   use ConfiguratorWeb, :html
   alias GameBackend.Units.Skills.Mechanic
+  alias GameBackend.Units.Skills.Skill
 
   embed_templates "skill_html/*"
 
@@ -16,6 +17,7 @@ defmodule ConfiguratorWeb.SkillHTML do
   @doc """
   Renders the inputs for a mechanic inside a skill form.
   """
+  attr :skill, Skill
   attr :skill_form, Phoenix.HTML.FormField, required: true
 
   def skill_mechanic_inputs(assigns)

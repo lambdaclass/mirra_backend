@@ -10,7 +10,7 @@ defmodule GameBackend.Units.Skills.Mechanics.OnCollideEffect do
   @primary_key false
   embedded_schema do
     field(:apply_effect_to_entity_type, {:array, :string})
-    embeds_one(:effect, GameBackend.CurseOfMirra.Effect)
+    embeds_one(:effect, GameBackend.CurseOfMirra.Effects.Effect)
   end
 
   @doc false

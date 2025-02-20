@@ -35,7 +35,7 @@ defmodule GameBackend.Units.Skills.Skill do
     belongs_to(:next_skill, __MODULE__)
     has_many(:mechanics, Mechanic, on_replace: :delete)
     belongs_to(:version, Version)
-    embeds_one(:on_owner_effect, GameBackend.CurseOfMirra.Effect)
+    embeds_one(:on_owner_effect, GameBackend.CurseOfMirra.Effects.Effect, on_replace: :delete)
 
     timestamps()
   end

@@ -46,6 +46,13 @@ defmodule ConfiguratorWeb.SkillController do
     render(conn, :edit, skill: skill, changeset: changeset, version: version)
   end
 
+  def edit_on_owner_effect(conn, %{"id" => id}) do
+    skill = Skills.get_skill!(id)
+    changeset = Skills.change_skill(skill)
+    version = Configuration.get_version!(skill.version_id)
+    render(conn, :edit_on_owner_effect, skill: skill, effect: skill.on_owner_effect, changeset: changeset, version: version)
+  end
+
   def update(conn, %{"id" => id, "skill" => skill_params}) do
     skill = Skills.get_skill!(id)
 

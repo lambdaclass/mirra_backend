@@ -65,6 +65,7 @@ defmodule ConfiguratorWeb.Router do
       scope "/:version_id" do
         resources "/characters", CharacterController
         resources "/skills", SkillController
+        get "/skills/:id/edit_on_owner_effect", SkillController, :edit_on_owner_effect
         resources "/game_configurations", GameConfigurationController
         resources "/game_mode_configurations", GameModeConfigurationController
         resources "/map_configurations", MapConfigurationController
