@@ -55,8 +55,6 @@ defmodule ConfiguratorWeb.EffectsLive.Form do
   end
 
   def handle_event("save", %{"effect" => effect_params}, socket) do
-    IO.inspect(effect_params, label: :aver_params)
-
     socket =
       case Skills.update_skill(socket.assigns.skill, %{on_owner_effect: effect_params}) do
         {:ok, skill} ->
