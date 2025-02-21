@@ -1,7 +1,7 @@
 [
     {
         "config_id": 1,
-        "description": "Win a match with Muflus",
+        "description": "Win a match with Kenzu",
         "type": "daily",
         "objective": {
             "match_tracking_field": "result",
@@ -12,7 +12,7 @@
         "conditions": [
             {
                 "match_tracking_field": "character",
-                "value": "muflus",
+                "value": "kenzu",
                 "comparison": "equal"
             },
             {
@@ -44,7 +44,7 @@
     },
     {
         "config_id": 3,
-        "description": "Win a match with Uma",
+        "description": "Win a match with H4ck",
         "type": "daily",
         "objective": {
             "match_tracking_field": "result",
@@ -55,7 +55,7 @@
         "conditions": [
             {
                 "match_tracking_field": "character",
-                "value": "uma",
+                "value": "h4ck",
                 "comparison": "equal"
             },
             {
