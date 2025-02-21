@@ -3,6 +3,11 @@
   <:subtitle>Use this form to manage skill records in your database.</:subtitle>
 </.header>
 
-<.skill_form changeset={@changeset} action={~p"/versions/#{@version}/skills/#{@skill}"} version={@version} />
+<.skill_form
+  changeset={@changeset}
+  action={~p"/versions/#{@version}/skills/#{@skill}"}
+  version={@version}
+  skill={@skill}
+/>
 
 <.back navigate={~p"/versions/#{@version}/skills"}>Back to skills</.back>

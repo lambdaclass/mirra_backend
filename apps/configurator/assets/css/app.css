@@ -39,4 +39,24 @@
     right: 10px;
   }
 
+/* Button class for components that aren't button (like .link) */
+.button {
+  border-radius: 0.5rem; /* rounded-lg */
+  background-color: #18181b; /* bg-zinc-900 */
+  padding: 12px 16px; /* py-3 px-4 */
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 600; /* font-semibold */
+  line-height: 1.5; /* leading-6 */
+  color: white; /* text-white */
+  transition: background-color 0.2s ease-in-out;
+}
+
+.button:hover {
+  background-color: #3f3f46; /* hover:bg-zinc-700 */
+}
+
+.button:active {
+  color: rgba(255, 255, 255, 0.8); /* active:text-white/80 */
+}
+
 /* This file is for your main application CSS */

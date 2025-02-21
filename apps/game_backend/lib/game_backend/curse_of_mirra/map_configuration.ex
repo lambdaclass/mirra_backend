@@ -120,7 +120,7 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
       field(:name, :string)
       field(:radius, :decimal)
       field(:shape, Ecto.Enum, values: [:circle, :polygon])
-      embeds_one(:effect, GameBackend.CurseOfMirra.Effect)
+      embeds_one(:effect, GameBackend.CurseOfMirra.Effects.Effect)
       embeds_one(:position, Position)
       embeds_many(:vertices, Position)
     end

@@ -1,4 +1,4 @@
-defmodule GameBackend.CurseOfMirra.Effect do
+defmodule GameBackend.CurseOfMirra.Effects.Effect do
   @moduledoc """
   """
   use GameBackend.Schema
@@ -24,7 +24,7 @@ defmodule GameBackend.CurseOfMirra.Effect do
     field(:allow_multiple_effects, :boolean)
     field(:consume_projectile, :boolean)
     field(:disabled_outside_pool, :boolean)
-    embeds_many(:effect_mechanics, EffectMechanic)
+    embeds_many(:effect_mechanics, EffectMechanic, on_replace: :delete)
   end
 
   def changeset(position, attrs) do

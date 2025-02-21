@@ -39,9 +39,9 @@
   <.input field={f[:mana_cost]} type="number" label="Mana cost" />
 
   <.skill_mechanic_inputs skill_form={f} />
-  <%= if f.data.on_owner_effect do %>
-    <.effect_form form={f} field={:on_owner_effect} />
-  <% end %>
+  <.link class="button" href={~p"/versions/#{@version}/skills/#{@skill}/edit_on_owner_effect"}>
+    Edit On Owner Effect
+  </.link>
 
   <:actions>
     <.button>Save Skill</.button>

@@ -54,7 +54,7 @@ defmodule GameBackend.Units.Skills.Mechanic do
     belongs_to(:on_arrival_mechanic, __MODULE__)
     belongs_to(:parent_mechanic, __MODULE__, foreign_key: :parent_mechanic_id)
     embeds_one(:on_collide_effect, OnCollideEffect)
-    embeds_one(:effect, GameBackend.CurseOfMirra.Effect)
+    embeds_one(:effect, GameBackend.CurseOfMirra.Effects.Effect)
   end
 
   def mechanic_types(), do: [:apply_effects_to, :passive_effects]

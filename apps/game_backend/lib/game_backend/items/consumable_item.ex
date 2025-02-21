@@ -19,7 +19,7 @@ defmodule GameBackend.Items.ConsumableItem do
     belongs_to(:version, Version)
     has_many(:mechanics, Mechanic)
 
-    embeds_one(:effect, GameBackend.CurseOfMirra.Effect)
+    embeds_one(:effect, GameBackend.CurseOfMirra.Effects.Effect)
 
     timestamps(type: :utc_datetime)
   end

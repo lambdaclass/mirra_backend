@@ -12,6 +12,9 @@
     <.link href={~p"/versions/#{@version}/skills/#{@skill}/edit"}>
       <.button>Edit skill</.button>
     </.link>
+    <.link href={~p"/versions/#{@version}/skills/#{@skill}/edit_on_owner_effect"}>
+      <.button>Edit On Owner Effect</.button>
+    </.link>
     <.effect_show effect={@skill.on_owner_effect} label="On Owner Effect" />
   </:actions>
 </.header>
