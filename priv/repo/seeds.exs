@@ -4410,38 +4410,51 @@ merliot_map_config = %{
   bushes: [
     %{
       name: "Top Left Corner",
-      radius: 1000,
-      shape: "circle",
-      position: %{x: -6390, y: 6550},
-      vertices: []
+      radius: 0.0,
+      shape: "polygon",
+      position: %{x: 0.0, y: 0.0},
+      vertices: [
+        %{x: -5490, y: 5428},
+        %{x: -10000, y: 5428},
+        %{x: -10000, y: 10000},
+        %{x: -5490, y: 10000}
+      ]
     },
     %{
       name: "Top Right Corner",
-      radius: 1000,
-      shape: "circle",
-      position: %{x: 6390, y: 6550},
-      vertices: []
+      radius: 0.0,
+      shape: "polygon",
+      position: %{x: 0.0, y: 0.0},
+      vertices: [
+        %{x: 5304, y: 5452},
+        %{x: 5304, y: 10000},
+        %{x: 10000, y: 10000},
+        %{x: 10000, y: 5452}
+      ]
     },
     %{
       name: "Bottom Left Corner",
-      radius: 1000,
-      shape: "circle",
-      position: %{x: -6390, y: -6550},
-      vertices: []
+      radius: 0.0,
+      shape: "polygon",
+      position: %{x: 0.0, y: 0.0},
+      vertices: [
+        %{x: -5474, y: -5387},
+        %{x: -5474, y: -10000},
+        %{x: -10000, y: -10000},
+        %{x: -10000, y: -5387}
+      ]
     },
     %{
       name: "Bottom Right Corner",
-      radius: 1000,
-      shape: "circle",
-      position: %{x: 6390, y: -6550},
-      vertices: []
-    },
-    %{
-      name: "TopLeft - RockTreeBush - Bush",
-      radius: 250,
-      shape: "circle",
-      position: %{x: -1610, y: 3994},
-      vertices: []
+      radius: 0.0,
+      shape: "polygon",
+      position: %{x: 0.0, y: 0.0},
+      vertices: [
+        %{x: 5405, y: -5462},
+        %{x: 10000, y: -5462},
+        %{x: 10000, y: -10000},
+        %{x: 5405, y: -10000}
+      ]
     },
     %{
       name: "MidBottomLeft - TreeBush - Bush",
