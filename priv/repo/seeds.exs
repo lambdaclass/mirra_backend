@@ -250,7 +250,7 @@ singularity_effect = %{
     },
     %{
       name: "damage",
-      damage: 15,
+      damage: 25,
       effect_delay_ms: 400,
       execute_multiple_times: true
     }
@@ -267,7 +267,7 @@ denial_of_service =
     effect_mechanics: [
       %{
         name: "damage",
-        damage: 17,
+        damage: 25,
         effect_delay_ms: 220,
         execute_multiple_times: true
       }
@@ -277,7 +277,7 @@ denial_of_service =
 invisible_effect =
   %{
     name: "invisible",
-    duration_ms: 4000,
+    duration_ms: 5000,
     remove_on_action: true,
     one_time_application: false,
     allow_multiple_effects: true,
@@ -290,7 +290,7 @@ invisible_effect =
       },
       %{
         name: "speed_boost",
-        modifier: 0.25,
+        modifier: 0.3,
         effect_delay_ms: 0,
         execute_multiple_times: false
       }
@@ -354,7 +354,7 @@ inferno_effect = %{
     },
     %{
       name: "damage",
-      damage: 13,
+      damage: 25,
       effect_delay_ms: 400,
       execute_multiple_times: true
     }
@@ -371,7 +371,7 @@ toxic_onion_effect = %{
   effect_mechanics: [
     %{
       name: "damage",
-      damage: 20,
+      damage: 10,
       effect_delay_ms: 1000,
       execute_multiple_times: true
     }
@@ -388,13 +388,13 @@ peb_effect = %{
   effect_mechanics: [
     %{
       name: "damage",
-      damage: 10,
+      damage: 5,
       effect_delay_ms: 250,
       execute_multiple_times: true
     },
     %{
       name: "damage",
-      damage: 50,
+      damage: 60,
       effect_delay_ms: 0,
       execute_multiple_times: false
     }
@@ -410,7 +410,7 @@ multi_shoot = %{
   "duration_ms" => 1000,
   "remove_on_collision" => true,
   "projectile_offset" => 100,
-  "damage" => 44,
+  "damage" => 25,
   "radius" => 40.0
 }
 
@@ -419,7 +419,7 @@ singularity = %{
   "name" => "singularity",
   "activation_delay" => 400,
   "duration_ms" => 5000,
-  "radius" => 450.0,
+  "radius" => 500.0,
   "range" => 1200.0,
   "shape" => "circle",
   "vertices" => [],
@@ -437,8 +437,8 @@ simple_shoot = %{
   "on_explode_mechanics" => [
     %{
       "type" => "circle_hit",
-      "damage" => 58,
-      "range" => 250.0,
+      "damage" => 60,
+      "range" => 300.0,
       "offset" => 0
     }
   ]
@@ -505,7 +505,7 @@ inferno = %{
   "type" => "spawn_pool",
   "activation_delay" => 250,
   "duration_ms" => 8000,
-  "radius" => 400.0,
+  "radius" => 650.0,
   "range" => 0.0,
   "shape" => "circle",
   "vertices" => [],
@@ -515,8 +515,8 @@ inferno = %{
 toxic_onion_explosion = %{
   "name" => "toxic_onion_explosion",
   "type" => "circle_hit",
-  "damage" => 58,
-  "range" => 250.0,
+  "damage" => 50,
+  "range" => 350.0,
   "offset" => 0,
   "effect" => toxic_onion_effect
 }
@@ -529,7 +529,7 @@ toxic_onion = %{
   "projectile_offset" => 0,
   "radius" => 250.0,
   "damage" => 0,
-  "range" => 700,
+  "range" => 1200,
   "on_explode_mechanics" => [
     toxic_onion_explosion
   ]
@@ -540,7 +540,7 @@ putrid_elixir_bomb = %{
   "type" => "spawn_pool",
   "activation_delay" => 250,
   "duration_ms" => 8000,
-  "radius" => 400.0,
+  "radius" => 650.0,
   "range" => 0.0,
   "shape" => "circle",
   "vertices" => [],
@@ -561,12 +561,12 @@ otix_carbonthrow_mechanic = %{
   "projectile_offset" => 0,
   "radius" => 250.0,
   "damage" => 0,
-  "range" => 700,
+  "range" => 1200,
   "on_explode_mechanics" => [
     %{
       "type" => "circle_hit",
-      "damage" => 58,
-      "range" => 250.0,
+      "damage" => 60,
+      "range" => 350.0,
       "offset" => 0
     }
   ]
@@ -597,7 +597,7 @@ skills = [
     "mechanics" => [
       %{
         "type" => "circle_hit",
-        "damage" => 64,
+        "damage" => 55,
         "range" => 350.0,
         "offset" => 400
       }
@@ -625,7 +625,7 @@ skills = [
         "radius" => 600,
         "on_arrival_mechanic" => %{
           "type" => "circle_hit",
-          "damage" => 92,
+          "damage" => 110,
           "range" => 600.0,
           "offset" => 0
         }
@@ -737,8 +737,8 @@ skills = [
     "mechanics" => [
       %{
         "type" => "multi_circle_hit",
-        "damage" => 22,
-        "range" => 280.0,
+        "damage" => 27,
+        "range" => 300.0,
         "interval_ms" => 200,
         "amount" => 3,
         "offset" => 200
@@ -841,7 +841,7 @@ skills = [
     "activation_delay_ms" => 150,
     "is_passive" => false,
     "autoaim" => true,
-    "max_autoaim_range" => 1300,
+    "max_autoaim_range" => 1500,
     "stamina_cost" => 1,
     "can_pick_destination" => false,
     "block_movement" => true,
@@ -1140,9 +1140,9 @@ _combo_skills =
 muflus_params = %{
   name: "muflus",
   active: false,
-  base_speed: 0.63,
+  base_speed: 0.58,
   base_size: 110.0,
-  base_health: 440,
+  base_health: 550,
   base_stamina: 3,
   stamina_interval: 2000,
   max_inventory_size: 1,
@@ -1162,9 +1162,9 @@ muflus_params = %{
 h4ck_params = %{
   name: "h4ck",
   active: true,
-  base_speed: 0.7,
+  base_speed: 0.65,
   base_size: 90.0,
-  base_health: 400,
+  base_health: 350,
   base_stamina: 3,
   stamina_interval: 1800,
   max_inventory_size: 1,
@@ -1184,7 +1184,7 @@ h4ck_params = %{
 uma_params = %{
   name: "uma",
   active: false,
-  base_speed: 0.67,
+  base_speed: 0.65,
   base_size: 95.0,
   base_health: 400,
   base_stamina: 3,
@@ -1206,9 +1206,9 @@ uma_params = %{
 valtimer_params = %{
   name: "valtimer",
   active: true,
-  base_speed: 0.68,
+  base_speed: 0.62,
   base_size: 100.0,
-  base_health: 400,
+  base_health: 350,
   base_stamina: 3,
   stamina_interval: 2000,
   max_inventory_size: 1,
@@ -1228,7 +1228,7 @@ valtimer_params = %{
 kenzu_params = %{
   name: "kenzu",
   active: true,
-  base_speed: 0.7,
+  base_speed: 0.65,
   base_size: 100.0,
   base_health: 500,
   base_stamina: 3,
@@ -1250,7 +1250,7 @@ kenzu_params = %{
 otix_params = %{
   name: "otix",
   active: true,
-  base_speed: 0.68,
+  base_speed: 0.65,
   base_size: 100.0,
   base_health: 400,
   base_stamina: 3,
@@ -1267,7 +1267,7 @@ otix_params = %{
 shinko_params = %{
   name: "shinko",
   active: false,
-  base_speed: 0.68,
+  base_speed: 0.65,
   base_size: 100.0,
   base_health: 400,
   base_stamina: 3,
