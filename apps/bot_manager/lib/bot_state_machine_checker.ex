@@ -6,8 +6,30 @@ defmodule BotManager.BotStateMachineChecker do
 
   @time_stuck_in_position 400
 
+  @type state_step() :: :attacking | :moving | :tracking_player | :idling
+
+  @type t :: %BotManager.BotStateMachineChecker{
+          state: state_step(),
+          previous_position: map() | nil,
+          current_position: map() | nil,
+          progress_for_basic_skill: integer(),
+          progress_for_ultimate_skill: integer(),
+          cap_for_basic_skill: integer(),
+          cap_for_ultimate_skill: integer(),
+          position_to_move_to: map() | nil,
+          time_amount_to_change_position: integer(),
+          last_time_position_changed: integer(),
+          stuck_in_position: map() | nil,
+          start_time_stuck_in_position: integer() | nil,
+          melee_tracking_range: integer(),
+          ranged_tracking_range: integer(),
+          ranged_attack_distance: integer(),
+          melee_attack_distance: integer(),
+          is_melee: boolean() | nil
+        }
+
   defstruct [
-    # The bot state, these are the possible states: [:idling, :moving, :attacking, :running_away, :tracking_player, :repositioning]
+    # The bot state, these are the possible states: [:idling, :moving, :attacking, :tracking_player]
     :state,
     # The previous position of the bot
     :previous_position,
@@ -43,6 +65,7 @@ defmodule BotManager.BotStateMachineChecker do
     :is_melee
   ]
 
+  @spec new() :: BotManager.BotStateMachineChecker.t()
   def new do
     %BotManager.BotStateMachineChecker{
       state: :idling,
@@ -65,6 +88,11 @@ defmodule BotManager.BotStateMachineChecker do
     }
   end
 
+  @spec move_to_next_state(
+          BotManager.BotStateMachine.bot_player(),
+          BotManager.BotStateMachineChecker.t(),
+          BotManager.BotStateMachine.players()
+        ) :: state_step()
   def move_to_next_state(bot_player, bot_state_machine, players) do
     cond do
       bot_stuck?(bot_state_machine) -> :moving
@@ -74,6 +102,7 @@ defmodule BotManager.BotStateMachineChecker do
     end
   end
 
+  @spec should_bot_move_to_another_position?(BotManager.BotStateMachineChecker.t()) :: boolean()
   def should_bot_move_to_another_position?(bot_state_machine) do
     current_time = :os.system_time(:millisecond)
     time_since_last_position_change = current_time - bot_state_machine.last_time_position_changed
@@ -81,11 +110,17 @@ defmodule BotManager.BotStateMachineChecker do
     time_since_last_position_change >= bot_state_machine.time_amount_to_change_position
   end
 
+  @spec bot_can_turn_aggresive?(BotManager.BotStateMachineChecker.t()) :: boolean()
   defp bot_can_turn_aggresive?(bot_state_machine) do
     bot_state_machine.progress_for_basic_skill >= bot_state_machine.cap_for_basic_skill ||
       bot_state_machine.progress_for_ultimate_skill >= bot_state_machine.cap_for_ultimate_skill
   end
 
+  @spec bot_can_follow_a_player?(
+          BotManager.BotStateMachine.bot_player(),
+          BotManager.BotStateMachineChecker.t(),
+          BotManager.BotStateMachine.players()
+        ) :: boolean()
   defp bot_can_follow_a_player?(bot_player, bot_state_machine, players) do
     players_nearby_to_follow =
       Utils.map_directions_to_players(
@@ -113,6 +148,7 @@ defmodule BotManager.BotStateMachineChecker do
       bot_can_turn_aggresive?(bot_state_machine) && not bot_stuck?(bot_state_machine)
   end
 
+  @spec bot_stuck?(BotManager.BotStateMachineChecker.t()) :: boolean()
   defp bot_stuck?(%{start_time_stuck_in_position: nil}), do: false
 
   defp bot_stuck?(bot_state_machine) do
