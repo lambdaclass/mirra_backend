@@ -10,8 +10,8 @@ defmodule Arena.Matchmaking.QuickGameMode do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
-  def join(client_id, character_name, player_name) do
-    GenServer.call(__MODULE__, {:join, client_id, character_name, player_name})
+  def join(params) do
+    GenServer.call(__MODULE__, {:join, params})
   end
 
   def leave(_client_id) do
@@ -25,11 +25,12 @@ defmodule Arena.Matchmaking.QuickGameMode do
   end
 
   @impl true
-  def handle_call({:join, client_id, character_name, player_name}, {from_pid, _}, state) do
+  def handle_call({:join, params}, {from_pid, _}, state) do
     client = %{
-      client_id: client_id,
-      character_name: character_name,
-      name: player_name,
+      client_id: params.client_id,
+      character_name: params.character_name,
+      skin_name: params.skin_name,
+      name: params.player_name,
       from_pid: from_pid,
       type: :human
     }

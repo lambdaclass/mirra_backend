@@ -1,4 +1,22 @@
 services:
+  app:
+    container_name: game_backend_app
+    build: .
+    depends_on:
+      - postgres
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/game_backend
+    ports:
+      - "4000:4000"
+      - "4100:4100"
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/_build
+      - /app/deps
+    working_dir: /app
+    command: ["bash", "-c", "mix ecto.reset && mix phx.server"]
+
   postgres:
     container_name: game_backend_db
     image: postgres:16.1
@@ -11,6 +29,7 @@ services:
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
       - game_backend_data:/var/lib/postgresql/data/
+
   prometheus:
     container_name: prometheus
     image: prom/prometheus:latest
@@ -21,6 +40,7 @@ services:
       - '--storage.tsdb.path=/prometheus'
     ports:
       - 9090:9090
+
   grafana:
     image: grafana/grafana-oss
     container_name: grafana
