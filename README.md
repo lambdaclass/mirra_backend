@@ -46,11 +46,16 @@ For devenv to manage caches for you, add yourself to trusted-users in nix conf:
 ```bash
 # Log in as super user first
 sudo su -
-vim /etc/nix/nix.conf
-# Add the users you want to use nix store to nix.conf file
+# Open config file using Vim
+vim /etc/nix/nix.custom.conf
+# Add the users you want to use nix store to nix.custom.conf file
+  # Press 'i' to write stuff in file using vim (insert mode).
+  # Press 'esc' (exit insert mode) then type ':wq' to save changes.
 trusted-users = root your-user
+# If you don't know your user, you can type the following in a terminal:
+whoami
 # Restart nix-daemon
-sudo launchctl kickstart -k system/org.nixos.nix-daemon
+sudo launchctl kickstart -k system/systems.determinate.nix-daemon
 ```
 
 Clone the repo:
@@ -58,8 +63,9 @@ Clone the repo:
 git clone https://github.com/lambdaclass/mirra_backend.git
 ```
 
-Install the last elixir package manager inside devenv:
+Install the last elixir package manager inside the repo folder and devenv shell:
 ```bash
+cd mirra_backend
 devenv shell
 mix archive.install github hexpm/hex branch latest
 ```
