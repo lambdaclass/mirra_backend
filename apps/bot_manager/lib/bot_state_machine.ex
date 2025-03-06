@@ -250,7 +250,7 @@ defmodule BotManager.BotStateMachine do
         position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
 
         Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
-        |> Map.put(:path_towards_position, Utils.find_path_towards_position(bot_state_machine.current_position, bot_state_machine.position_to_move_to))
+        |> Map.put(:path_towards_position, Utils.find_path_towards_position(bot_state_machine.current_position, position_to_move_to))
         |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
 
       BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) ->
@@ -262,7 +262,7 @@ defmodule BotManager.BotStateMachine do
         position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
 
         Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
-        |> Map.put(:path_towards_position, Utils.find_path_towards_position(bot_state_machine.current_position, bot_state_machine.position_to_move_to))
+        |> Map.put(:path_towards_position, Utils.find_path_towards_position(bot_state_machine.current_position, position_to_move_to))
         |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
 
       true ->
