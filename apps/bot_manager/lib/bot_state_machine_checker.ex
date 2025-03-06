@@ -3,8 +3,10 @@ defmodule BotManager.BotStateMachineChecker do
   This module will take care of deciding what the bot will do on each deciding step
   """
   alias BotManager.Utils
+  alias BotManager.Math.Vector
 
   @time_stuck_in_position 400
+  @distance_threshold 100
 
   @type state_step() :: :attacking | :moving | :tracking_player | :idling
 
@@ -17,6 +19,7 @@ defmodule BotManager.BotStateMachineChecker do
           cap_for_basic_skill: integer(),
           cap_for_ultimate_skill: integer(),
           position_to_move_to: map() | nil,
+          path_towards_position: list() | nil,
           time_amount_to_change_position: integer(),
           last_time_position_changed: integer(),
           stuck_in_position: map() | nil,
@@ -45,6 +48,8 @@ defmodule BotManager.BotStateMachineChecker do
     :cap_for_ultimate_skill,
     # The position that the bot is going to move to
     :position_to_move_to,
+    # The path that the bot is following
+    :path_towards_position,
     # The time that the bot is going to take to change its position in milliseconds
     :time_amount_to_change_position,
     # The last time that the bot changed its position
@@ -76,6 +81,7 @@ defmodule BotManager.BotStateMachineChecker do
       previous_position: nil,
       current_position: nil,
       position_to_move_to: nil,
+      path_towards_position: nil,
       time_amount_to_change_position: 2000,
       last_time_position_changed: 0,
       stuck_in_position: nil,
@@ -94,20 +100,30 @@ defmodule BotManager.BotStateMachineChecker do
           BotManager.BotStateMachine.players()
         ) :: state_step()
   def move_to_next_state(bot_player, bot_state_machine, players) do
+    # TODO: force :moving
     cond do
-      bot_stuck?(bot_state_machine) -> :moving
-      bot_can_follow_a_player?(bot_player, bot_state_machine, players) -> :tracking_player
-      bot_can_turn_aggresive?(bot_state_machine) -> :attacking
+      # bot_stuck?(bot_state_machine) -> :moving
+      # bot_can_follow_a_player?(bot_player, bot_state_machine, players) -> :tracking_player
+      # bot_can_turn_aggresive?(bot_state_machine) -> :attacking
       true -> :moving
     end
   end
 
   @spec should_bot_move_to_another_position?(BotManager.BotStateMachineChecker.t()) :: boolean()
   def should_bot_move_to_another_position?(bot_state_machine) do
-    current_time = :os.system_time(:millisecond)
-    time_since_last_position_change = current_time - bot_state_machine.last_time_position_changed
+    is_nil(bot_state_machine.path_towards_position) or Enum.count(bot_state_machine.path_towards_position) <= 1
+  end
 
-    time_since_last_position_change >= bot_state_machine.time_amount_to_change_position
+  @spec current_waypoint_reached?(BotManager.BotStateMachineChecker.t()) :: boolean()
+  def current_waypoint_reached?(bot_state_machine) do
+    # Change position if we're close enough
+    end_position = hd(bot_state_machine.path_towards_position)
+    base_position = bot_state_machine.current_position
+    %{x: x, y: y} = Vector.sub(end_position, base_position)
+
+    distance = Vector.norm(%{x: x, y: y})
+
+    distance <= @distance_threshold
   end
 
   @spec bot_can_turn_aggresive?(BotManager.BotStateMachineChecker.t()) :: boolean()

@@ -69,6 +69,48 @@ defmodule BotManager.Utils do
     }
   end
 
+  ##
+  ## A Star
+  ##
+
+  def find_path_towards_position(from_position, to_position) do
+    # Build or fetch map graph
+
+    # Get proper node ids in map graph
+    # grid_row = from_position.x
+
+    # run a* to get path
+
+    [
+      %{x: 1000, y: 1000}, 
+      %{x: 1000, y: -1000}, 
+      %{x: -1000, y: -1000}, 
+      %{x: -1000, y: 1000}, 
+      %{x: 1000, y: 1000}, 
+      %{x: 1000, y: -1000}, 
+      %{x: -1000, y: -1000}, 
+      %{x: -1000, y: 1000}, 
+      %{x: 1000, y: 1000}, 
+      %{x: 1000, y: -1000}, 
+      %{x: -1000, y: -1000}, 
+      %{x: -1000, y: 1000}, 
+      %{x: 1000, y: 1000}, 
+      %{x: 1000, y: -1000}, 
+      %{x: -1000, y: -1000}, 
+      %{x: -1000, y: 1000}, 
+      %{x: 1000, y: 1000}, 
+      %{x: 1000, y: -1000}, 
+      %{x: -1000, y: -1000}, 
+      %{x: -1000, y: 1000}, 
+      %{x: 1000, y: 1000}, 
+      %{x: 1000, y: -1000}, 
+      %{x: -1000, y: -1000}, 
+      %{x: -1000, y: 1000}, 
+    ]
+  end
+
+  ## ===========
+
   defp player_within_visible_players?(bot_player, player_id) do
     {:player, bot_player_info} = bot_player.aditional_info
     Enum.member?(bot_player_info.visible_players, player_id)
