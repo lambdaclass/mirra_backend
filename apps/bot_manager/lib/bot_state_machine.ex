@@ -16,7 +16,6 @@ defmodule BotManager.BotStateMachine do
   @type players() :: %{binary() => bot_player()}
 
   def decide_action(%{bots_enabled?: false, bot_state_machine: bot_state_machine}) do
-    IO.inspect("Decided action")
     %{action: {:move, %{x: 0, y: 0}}, bot_state_machine: bot_state_machine}
   end
 
@@ -30,13 +29,8 @@ defmodule BotManager.BotStateMachine do
         attack_blocked: attack_blocked,
         bot_skills: skills
       }) do
-    IO.inspect("Preprocessing bot state")
     bot_state_machine = preprocess_bot_state(bot_state_machine, bot_player)
-    IO.inspect("Preprocessed bot state")
-
-    IO.inspect("Calculating next bot state")
     next_state = BotStateMachineChecker.move_to_next_state(bot_player, bot_state_machine, game_state.players)
-    IO.inspect("Calculated next bot state")
 
     case next_state do
       # :moving ->
@@ -140,11 +134,12 @@ defmodule BotManager.BotStateMachine do
   defp determine_player_move_action(bot_player, direction) do
     {:player, bot_player_info} = bot_player.aditional_info
 
-    if Map.has_key?(bot_player_info.cooldowns, @dash_skill_key) do
-      {:move, direction}
-    else
-      {:use_skill, @dash_skill_key, bot_player.direction}
-    end
+    # if Map.has_key?(bot_player_info.cooldowns, @dash_skill_key) do
+    #   {:move, direction}
+    # else
+    #   {:use_skill, @dash_skill_key, bot_player.direction}
+    # end
+    {:move, direction}
   end
 
   defp track_player(game_state, bot_player, bot_state_machine) do
@@ -221,36 +216,19 @@ defmodule BotManager.BotStateMachine do
     bot_state_machine = determine_position_to_move_to(bot_state_machine, safe_zone_radius)
 
     # TODO instead of using `get_distance_and_direction_to_positions, use the pathfinding module`
-
-    IO.inspect(Enum.count(bot_state_machine.path_towards_position) > 0)
-    IO.inspect(is_nil(bot_state_machine.path_towards_position))
-
     if not is_nil(bot_state_machine.path_towards_position) and Enum.count(bot_state_machine.path_towards_position) > 0 do
-      IO.inspect("Getting Distance And Direction To Positions")
-
-      # bot_state_machine 
-      # |> IO.inspect("State Machine:")
-
-      # bot_state_machine.path_towards_position 
-      # |> IO.inspect("current waypoint")
-
-      # hd(bot_state_machine.path_towards_position) 
-      # |> IO.inspect("current waypoint")
-
       %{direction: direction} =
         Utils.get_distance_and_direction_to_positions(
           bot_state_machine.current_position,
           hd(bot_state_machine.path_towards_position)
         )
 
-      IO.inspect("Got Distance and direction to positions")
 
       %{
         action: determine_player_move_action(bot_player, direction),
         bot_state_machine: bot_state_machine
       }
     else
-      IO.inspect("Getting Distance And Direction To Position at 0, 0")
       %{direction: direction} =
         Utils.get_distance_and_direction_to_positions(
           bot_state_machine.current_position,
@@ -276,9 +254,11 @@ defmodule BotManager.BotStateMachine do
         |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
 
       BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) ->
+        IO.inspect("Waypoint Reached!")
         Map.put(bot_state_machine, :path_towards_position, tl(bot_state_machine.path_towards_position))
 
       BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) and BotStateMachineChecker.should_bot_move_to_another_position?(bot_state_machine) ->
+        IO.inspect("Waypoint Reached but need to recalculate new path!")
         position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
 
         Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
