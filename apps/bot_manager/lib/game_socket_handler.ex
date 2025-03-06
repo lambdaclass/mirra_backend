@@ -10,8 +10,8 @@ defmodule BotManager.GameSocketHandler do
   use WebSockex, restart: :temporary
   require Logger
 
-  @min_decision_delay_ms 750
-  @max_decision_delay_ms 1250
+  @min_decision_delay_ms 200
+  @max_decision_delay_ms 300
   @action_delay_ms 30
 
   def start_link(%{"bot_client" => bot_client, "game_id" => game_id} = params) do
