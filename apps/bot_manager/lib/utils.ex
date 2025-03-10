@@ -70,11 +70,12 @@ defmodule BotManager.Utils do
   end
 
   def find_path_towards_position(from_position, to_position) do
-    BotManager.AStar.a_star_shortest_path(from_position, to_position)
-      |> Enum.map(fn grid_pos -> 
-        BotManager.AStar.grid_to_world(grid_pos)
-      end)
-      |> IO.inspect(label: "Path")
+    IO.inspect("Before Calling NIF")
+
+    from = %{x: from_position.x, y: from_position.y}
+    to = %{x: to_position.x, y: to_position.y}
+
+    AStarNative.a_star_shortest_path(from, to)
 
     # Build or fetch map graph
 

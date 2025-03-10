@@ -19,15 +19,32 @@ enum AStarPathResult {
 
 #[rustler::nif()]
 fn a_star_shortest_path(from: Position, to: Position) -> Vec<Position> {
+    println!("BUILDING GRID");
     let mut grid : Vec<Vec<bool>> = vec![vec![false; NUM_COLS as usize]; NUM_ROWS as usize];
-    for j in (NUM_ROWS / 2) - 3..(NUM_ROWS / 2) + 3 {
-        for i in (NUM_COLS / 2) - 3..(NUM_COLS / 2) + 3 {
+    lock_rectangle(&mut grid, world_to_grid(&Position{ x: 500.0, y: 500.0 }), world_to_grid(&Position {x: -500.0, y: -500.0}));
+    lock_rectangle(&mut grid, world_to_grid(&Position{ x: 2500.0, y: 2500.0 }), world_to_grid(&Position {x: 2000.0, y: 2000.0}));
+    lock_rectangle(&mut grid, world_to_grid(&Position{ x: -2500.0, y: -2500.0 }), world_to_grid(&Position {x: -2000.0, y: -2000.0}));
+    lock_rectangle(&mut grid, world_to_grid(&Position{ x: -2500.0, y: 2500.0 }), world_to_grid(&Position {x: -2000.0, y: 2000.0}));
+    lock_rectangle(&mut grid, world_to_grid(&Position{ x: 2500.0, y: -2500.0 }), world_to_grid(&Position {x: 2000.0, y: -2000.0}));
+
+    lock_rectangle(&mut grid, world_to_grid(&Position{ x: 500.0, y: -3500.0 }), world_to_grid(&Position {x: -500.0, y: -2500.0}));
+    lock_rectangle(&mut grid, world_to_grid(&Position{ x: 500.0, y: 3500.0 }), world_to_grid(&Position {x: -500.0, y: 2500.0}));
+    lock_rectangle(&mut grid, world_to_grid(&Position{ x: -3500.0, y: 500.0 }), world_to_grid(&Position {x: -2500.0, y: -500.0}));
+    lock_rectangle(&mut grid, world_to_grid(&Position{ x: 3500.0, y: 500.0 }), world_to_grid(&Position {x: 2500.0, y: -500.0}));
+
+    for j in (NUM_ROWS / 2) - 5..=(NUM_ROWS / 2) + 5 {
+        for i in (NUM_COLS / 2) - 5..=(NUM_COLS / 2) + 5 {
             grid[j as usize][i as usize] = true;
         }
     }
 
+    println!("Casting world into grid positions for: {:?}, {:?}", from, to);
+
     let start = world_to_grid(&from);
+    println!("start: {:?}", start);
+
     let goal = world_to_grid(&to);
+    println!("goal: {:?}", goal);
 
     if let AStarPathResult::Found(path_in_grid) = a_star_find_path(start, goal, grid) {
         path_in_grid
@@ -36,6 +53,19 @@ fn a_star_shortest_path(from: Position, to: Position) -> Vec<Position> {
             .collect::<Vec<Position>>()
     } else {
         Vec::new()
+    }
+}
+
+fn lock_rectangle(grid: &mut Vec<Vec<bool>>, corner: (i64, i64), opposite_corner: (i64, i64)) {
+    let from_x = i64::min(corner.0, opposite_corner.0);
+    let to_x = i64::max(corner.0, opposite_corner.0);
+    let from_y = i64::min(corner.1, opposite_corner.1);
+    let to_y = i64::max(corner.1, opposite_corner.1);
+    
+    for j in from_y..=to_y {
+        for i in from_x..=to_x {
+            grid[j as usize][i as usize] = true;
+        }
     }
 }
 
@@ -105,7 +135,7 @@ fn build_path(start: (i64, i64), goal: (i64, i64), shortest_path_tree: &HashMap<
 fn get_neighbors(pos: (i64, i64), grid: &[Vec<bool>]) -> Vec<(i64, i64)> {
     let mut neighbors = Vec::new();
 
-    for (dy, dx) in [(-1, 0), (1, 0), (0, 1), (0, -1)] {
+    for (dy, dx) in [(-1, 0), (1, 0), (0, 1), (0, -1), (-1, -1), (-1, 1), (1, -1), (-1, -1)] {
         let neigh_pos = (pos.0 + dy, pos.1 + dx);
 
         if neigh_pos.0 >= 0 && neigh_pos.0 < NUM_ROWS && neigh_pos.1 >= 0 && neigh_pos.1 < NUM_COLS && !grid[neigh_pos.0 as usize][neigh_pos.1 as usize] {
