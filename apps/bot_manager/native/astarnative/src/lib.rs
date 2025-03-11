@@ -1,11 +1,15 @@
 #![allow(non_snake_case)] // rustler macros generate non snake case names and dont use this allow themselves
 
 mod position;
+mod entity;
+mod collision_detection;
 
 use std::collections::{BinaryHeap, HashMap};
 use std::cmp::Ordering;
 
 use position::Position;
+use entity::Entity;
+use rustler::{Binary, OwnedBinary};
 
 const GRID_CELL_SIZE: f32 = 100.0;
 const WORLD_RADIUS: f32 = 15000.0;
@@ -18,22 +22,12 @@ enum AStarPathResult {
 }
 
 #[rustler::nif()]
-fn a_star_shortest_path(from: Position, to: Position) -> Vec<Position> {
+fn a_star_shortest_path<'a>(from: Position, to: Position, collision_grid: Binary<'a>) -> Vec<Position> {
     let mut grid : Vec<Vec<bool>> = vec![vec![false; NUM_COLS as usize]; NUM_ROWS as usize];
-    lock_rectangle(&mut grid, world_to_grid(&Position{ x: 500.0, y: 500.0 }), world_to_grid(&Position {x: -500.0, y: -500.0}));
-    lock_rectangle(&mut grid, world_to_grid(&Position{ x: 2500.0, y: 2500.0 }), world_to_grid(&Position {x: 2000.0, y: 2000.0}));
-    lock_rectangle(&mut grid, world_to_grid(&Position{ x: -2500.0, y: -2500.0 }), world_to_grid(&Position {x: -2000.0, y: -2000.0}));
-    lock_rectangle(&mut grid, world_to_grid(&Position{ x: -2500.0, y: 2500.0 }), world_to_grid(&Position {x: -2000.0, y: 2000.0}));
-    lock_rectangle(&mut grid, world_to_grid(&Position{ x: 2500.0, y: -2500.0 }), world_to_grid(&Position {x: 2000.0, y: -2000.0}));
 
-    lock_rectangle(&mut grid, world_to_grid(&Position{ x: 500.0, y: -3500.0 }), world_to_grid(&Position {x: -500.0, y: -2500.0}));
-    lock_rectangle(&mut grid, world_to_grid(&Position{ x: 500.0, y: 3500.0 }), world_to_grid(&Position {x: -500.0, y: 2500.0}));
-    lock_rectangle(&mut grid, world_to_grid(&Position{ x: -3500.0, y: 500.0 }), world_to_grid(&Position {x: -2500.0, y: -500.0}));
-    lock_rectangle(&mut grid, world_to_grid(&Position{ x: 3500.0, y: 500.0 }), world_to_grid(&Position {x: 2500.0, y: -500.0}));
-
-    for j in (NUM_ROWS / 2) - 5..=(NUM_ROWS / 2) + 5 {
-        for i in (NUM_COLS / 2) - 5..=(NUM_COLS / 2) + 5 {
-            grid[j as usize][i as usize] = true;
+    for j in 0..NUM_COLS {
+        for i in 0..NUM_ROWS {
+            grid[j as usize][i as usize] = collision_grid.as_slice()[j as usize * NUM_COLS as usize + i as usize] == 1;
         }
     }
 
@@ -50,17 +44,35 @@ fn a_star_shortest_path(from: Position, to: Position) -> Vec<Position> {
     }
 }
 
-fn lock_rectangle(grid: &mut Vec<Vec<bool>>, corner: (i64, i64), opposite_corner: (i64, i64)) {
-    let from_x = i64::min(corner.0, opposite_corner.0);
-    let to_x = i64::max(corner.0, opposite_corner.0);
-    let from_y = i64::min(corner.1, opposite_corner.1);
-    let to_y = i64::max(corner.1, opposite_corner.1);
-    
-    for j in from_y..=to_y {
-        for i in from_x..=to_x {
-            grid[j as usize][i as usize] = true;
+#[rustler::nif()]
+fn build_collision_grid(obstacles: HashMap<u64, Entity>) -> OwnedBinary {
+    // TODO: remove unwrap
+    let mut grid : OwnedBinary = OwnedBinary::new(NUM_COLS as usize * NUM_ROWS as usize).unwrap();
+    let obstacles = obstacles.into_values().collect::<Vec<_>>();
+
+    for j in 0..NUM_COLS {
+        for i in 0..NUM_ROWS {
+            for obstacle in &obstacles {
+                let bottom_left = grid_to_world(&(j, i));
+                let bottom_right = Position::add(&bottom_left, &Position {x: GRID_CELL_SIZE, y: 0.0});
+                let top_left = Position::add(&bottom_left, &Position {x: 0.0, y: GRID_CELL_SIZE});
+                let top_right = Position::add(&top_left, &Position {x: GRID_CELL_SIZE, y: 0.0});
+
+                let line1 = Entity::new_line(0, vec![bottom_left, bottom_right]);
+                let line2 = Entity::new_line(0, vec![bottom_left, top_left]);
+                let line3 = Entity::new_line(0, vec![top_left, top_right]);
+                let line4 = Entity::new_line(0, vec![top_right, bottom_right]);
+
+                grid[j as usize * NUM_COLS as usize + i as usize] = 0;
+                grid[j as usize * NUM_COLS as usize + i as usize] |= collision_detection::line_polygon_collision(&line1, obstacle) as u8;
+                grid[j as usize * NUM_COLS as usize + i as usize] |= collision_detection::line_polygon_collision(&line2, obstacle) as u8;
+                grid[j as usize * NUM_COLS as usize + i as usize] |= collision_detection::line_polygon_collision(&line3, obstacle) as u8;
+                grid[j as usize * NUM_COLS as usize + i as usize] |= collision_detection::line_polygon_collision(&line4, obstacle) as u8;
+            }
         }
     }
+
+    return grid;
 }
 
 #[derive(Clone, Copy, Eq, PartialEq)]
@@ -156,6 +168,15 @@ fn grid_to_world(grid_pos: &(i64, i64)) -> Position {
         x: (grid_pos.1 - NUM_COLS / 2) as f32 * GRID_CELL_SIZE, 
         y: (grid_pos.0 - NUM_ROWS / 2) as f32 * GRID_CELL_SIZE 
     }
+}
+
+/// Check players inside the player_id radius
+/// Return a list of the players id inside the radius Vec<player_id>
+fn check_collisions(entity: Entity, entities: HashMap<u64, Entity>) -> Vec<u64> {
+    let mut entity: Entity = entity;
+    let ent = entities.into_values().collect();
+
+    entity.collides_with(&ent)
 }
 
 rustler::init!("Elixir.AStarNative", [a_star_shortest_path]);
