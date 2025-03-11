@@ -217,7 +217,8 @@ defmodule BotManager.BotStateMachine do
   end
 
   defp move(bot_player, bot_state_machine, safe_zone_radius) do
-    bot_state_machine = determine_position_to_move_to(bot_state_machine, safe_zone_radius, System.get_env("PATHFINDING_TEST") == "true")
+    bot_state_machine =
+      determine_position_to_move_to(bot_state_machine, safe_zone_radius, System.get_env("PATHFINDING_TEST") == "true")
 
     # TODO instead of using `get_distance_and_direction_to_positions, use the pathfinding module`
     if not is_nil(bot_state_machine.path_towards_position) and Enum.count(bot_state_machine.path_towards_position) > 0 do
@@ -253,7 +254,7 @@ defmodule BotManager.BotStateMachine do
         from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
         to = %{x: position_to_move_to.x, y: position_to_move_to.y}
 
-        shortest_path = 
+        shortest_path =
           AStarNative.a_star_shortest_path(from, to)
 
         # If we don't have a path, retry finding new position in map
@@ -275,7 +276,7 @@ defmodule BotManager.BotStateMachine do
         from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
         to = %{x: position_to_move_to.x, y: position_to_move_to.y}
 
-        shortest_path = 
+        shortest_path =
           AStarNative.a_star_shortest_path(from, to)
 
         # If we don't have a path, retry finding new position in map
