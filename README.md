@@ -5,18 +5,6 @@ The objective is to split the project into multiple applications (modules) based
 
 ## Requirements
 
-- **Protobuf:**
-To serialize our websocket messages, we use Protobuf.
-Install running:
-```bash
-brew install protobuf
-mix escript.install hex protobuf # Remember to add escripts folder to your $PATH
-# JS protobuf for game_client app.
-cd assets
-npm install google-protobuf
-npm install -g protoc-gen-js
-```
-
 - **Nix:**
 You can install the Nix package manager by running the following command in your terminal:
 ```bash
@@ -68,6 +56,18 @@ Install the last elixir package manager inside the repo folder and devenv shell:
 cd mirra_backend
 devenv shell
 mix archive.install github hexpm/hex branch latest
+```
+
+- **Protobuf:**
+To serialize our websocket messages, we use Protobuf.
+Install running:
+```bash
+brew install protobuf
+mix escript.install hex protobuf # Remember to add escripts folder to your $PATH. This step is not needed if you use devenv.
+# JS protobuf for game_client app.
+cd assets
+npm install google-protobuf
+npm install -g protoc-gen-js
 ```
 
 ## Start applications
