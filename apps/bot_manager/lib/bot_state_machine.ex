@@ -251,10 +251,13 @@ defmodule BotManager.BotStateMachine do
           not Utils.position_within_radius(bot_state_machine.position_to_move_to, safe_zone_radius)) ->
         position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
 
+        from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
+        to = %{x: position_to_move_to.x, y: position_to_move_to.y}
+
         Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
         |> Map.put(
           :path_towards_position,
-          Utils.find_path_towards_position(bot_state_machine.current_position, position_to_move_to)
+          AStarNative.a_star_shortest_path(from, to)
         )
         |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
 
@@ -267,19 +270,20 @@ defmodule BotManager.BotStateMachine do
 
       System.get_env("PATHFINDING_TEST") == "true" and
           BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) ->
-        IO.inspect("Waypoint Reached!")
         Map.put(bot_state_machine, :path_towards_position, tl(bot_state_machine.path_towards_position))
 
       System.get_env("PATHFINDING_TEST") == "true" and
         BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) and
           BotStateMachineChecker.should_bot_move_to_another_position?(bot_state_machine) ->
-        IO.inspect("Waypoint Reached but need to recalculate new path!")
         position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
+
+        from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
+        to = %{x: position_to_move_to.x, y: position_to_move_to.y}
 
         Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
         |> Map.put(
           :path_towards_position,
-          Utils.find_path_towards_position(bot_state_machine.current_position, position_to_move_to)
+          AStarNative.a_star_shortest_path(from, to)
         )
         |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
 

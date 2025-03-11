@@ -69,51 +69,6 @@ defmodule BotManager.Utils do
     }
   end
 
-  def find_path_towards_position(from_position, to_position) do
-    IO.inspect("Before Calling NIF")
-
-    from = %{x: from_position.x, y: from_position.y}
-    to = %{x: to_position.x, y: to_position.y}
-
-    AStarNative.a_star_shortest_path(from, to)
-
-    # Build or fetch map graph
-
-    # Get proper node ids in map graph
-    # grid_row = from_position.x
-
-    # run a* to get path
-
-    # [
-    #   %{x: 1000, y: 1000}, 
-    #   %{x: 1000, y: -1000}, 
-    #   %{x: -1000, y: -1000}, 
-    #   %{x: -1000, y: 1000}, 
-    #   %{x: 1000, y: 1000}, 
-    #   %{x: 1000, y: -1000}, 
-    #   %{x: -1000, y: -1000}, 
-    #   %{x: -1000, y: 1000}, 
-    #   %{x: 1000, y: 1000}, 
-    #   %{x: 1000, y: -1000}, 
-    #   %{x: -1000, y: -1000}, 
-    #   %{x: -1000, y: 1000}, 
-    #   %{x: 1000, y: 1000}, 
-    #   %{x: 1000, y: -1000}, 
-    #   %{x: -1000, y: -1000}, 
-    #   %{x: -1000, y: 1000}, 
-    #   %{x: 1000, y: 1000}, 
-    #   %{x: 1000, y: -1000}, 
-    #   %{x: -1000, y: -1000}, 
-    #   %{x: -1000, y: 1000}, 
-    #   %{x: 1000, y: 1000}, 
-    #   %{x: 1000, y: -1000}, 
-    #   %{x: -1000, y: -1000}, 
-    #   %{x: -1000, y: 1000}, 
-    # ]
-  end
-
-  ## ===========
-
   defp player_within_visible_players?(bot_player, player_id) do
     {:player, bot_player_info} = bot_player.aditional_info
     Enum.member?(bot_player_info.visible_players, player_id)
