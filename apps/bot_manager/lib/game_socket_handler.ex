@@ -84,7 +84,21 @@ defmodule BotManager.GameSocketHandler do
           bot_state_machine: bot_state_machine
         }
 
-        {:ok, Map.merge(state, update)}
+        new_state = Map.merge(state, update)
+
+        # only load collision grid once
+        if is_nil(new_state.bot_state_machine.collision_grid) and Map.has_key?(new_state.game_state, :game_state) and Map.has_key?(new_state.game_state, :obstacles) do
+          update = %{
+            bot_state_machine: %{
+              collision_grid: AStarNative.build_collision_grid(state.game_state.obstacles),
+            }
+          }
+
+          new_state = Map.merge(new_state, update)
+          {:ok, new_state}
+        else
+          {:ok, new_state}
+        end
 
       %{event: {:joined, joined}} ->
         {:ok, Map.merge(state, joined)}
