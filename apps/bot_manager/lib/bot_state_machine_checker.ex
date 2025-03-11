@@ -100,18 +100,27 @@ defmodule BotManager.BotStateMachineChecker do
           BotManager.BotStateMachine.players()
         ) :: state_step()
   def move_to_next_state(bot_player, bot_state_machine, players) do
-    # TODO: force :moving
-    cond do
-      # bot_stuck?(bot_state_machine) -> :moving
-      # bot_can_follow_a_player?(bot_player, bot_state_machine, players) -> :tracking_player
-      # bot_can_turn_aggresive?(bot_state_machine) -> :attacking
-      true -> :moving
+    if System.get_env("PATHFINDING_TEST") == "true" do
+      :moving
+    else
+      cond do
+        bot_stuck?(bot_state_machine) -> :moving
+        bot_can_follow_a_player?(bot_player, bot_state_machine, players) -> :tracking_player
+        bot_can_turn_aggresive?(bot_state_machine) -> :attacking
+        true -> :moving
+      end
     end
   end
 
   @spec should_bot_move_to_another_position?(BotManager.BotStateMachineChecker.t()) :: boolean()
   def should_bot_move_to_another_position?(bot_state_machine) do
-    is_nil(bot_state_machine.path_towards_position) or Enum.count(bot_state_machine.path_towards_position) <= 1
+    if System.get_env("PATHFINDING_TEST") == "true" do
+      is_nil(bot_state_machine.path_towards_position) or Enum.count(bot_state_machine.path_towards_position) <= 1
+    else
+      current_time = :os.system_time(:millisecond)
+      time_since_last_position_change = current_time - bot_state_machine.last_time_position_changed
+      time_since_last_position_change >= bot_state_machine.time_amount_to_change_position
+    end
   end
 
   @spec current_waypoint_reached?(BotManager.BotStateMachineChecker.t()) :: boolean()

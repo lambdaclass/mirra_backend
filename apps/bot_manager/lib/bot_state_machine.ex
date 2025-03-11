@@ -32,24 +32,25 @@ defmodule BotManager.BotStateMachine do
     bot_state_machine = preprocess_bot_state(bot_state_machine, bot_player)
     next_state = BotStateMachineChecker.move_to_next_state(bot_player, bot_state_machine, game_state.players)
 
-    case next_state do
-      # :moving ->
-      #   move(bot_player, bot_state_machine, game_state.zone.radius)
+    if System.get_env("PATHFINDING_TEST") == "true" do
+      move(bot_player, bot_state_machine, game_state.zone.radius)
+    else
+      case next_state do
+        :moving ->
+          move(bot_player, bot_state_machine, game_state.zone.radius)
 
-      # :attacking ->
-      #   use_skill(%{
-      #     bot_player: bot_player,
-      #     bot_state_machine: bot_state_machine,
-      #     game_state: game_state,
-      #     attack_blocked: attack_blocked,
-      #     bot_skills: skills
-      #   })
+        :attacking ->
+          use_skill(%{
+            bot_player: bot_player,
+            bot_state_machine: bot_state_machine,
+            game_state: game_state,
+            attack_blocked: attack_blocked,
+            bot_skills: skills
+          })
 
-      # :tracking_player ->
-      #   track_player(game_state, bot_player, bot_state_machine)
-
-      _ ->
-        move(bot_player, bot_state_machine, game_state.zone.radius)
+        :tracking_player ->
+          track_player(game_state, bot_player, bot_state_machine)
+      end
     end
   end
 
@@ -134,12 +135,15 @@ defmodule BotManager.BotStateMachine do
   defp determine_player_move_action(bot_player, direction) do
     {:player, bot_player_info} = bot_player.aditional_info
 
-    # if Map.has_key?(bot_player_info.cooldowns, @dash_skill_key) do
-    #   {:move, direction}
-    # else
-    #   {:use_skill, @dash_skill_key, bot_player.direction}
-    # end
-    {:move, direction}
+    if System.get_env("PATHFINDING_TEST") == "true" do
+      {:move, direction}
+    else
+      if Map.has_key?(bot_player_info.cooldowns, @dash_skill_key) do
+        {:move, direction}
+      else
+        {:use_skill, @dash_skill_key, bot_player.direction}
+      end
+    end
   end
 
   defp track_player(game_state, bot_player, bot_state_machine) do
@@ -243,7 +247,7 @@ defmodule BotManager.BotStateMachine do
 
   end
 
-  defp determine_position_to_move_to(bot_state_machine, safe_zone_radius) do
+  defp determine_position_to_move_to(bot_state_machine, safe_zone_radius) do 
     cond do
       is_nil(bot_state_machine.position_to_move_to) ||
           not Utils.position_within_radius(bot_state_machine.position_to_move_to, safe_zone_radius) ->
@@ -253,16 +257,22 @@ defmodule BotManager.BotStateMachine do
         |> Map.put(:path_towards_position, Utils.find_path_towards_position(bot_state_machine.current_position, position_to_move_to))
         |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
 
-      BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) ->
+      System.get_env("PATHFINDING_TEST") == "true" and BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) ->
         IO.inspect("Waypoint Reached!")
         Map.put(bot_state_machine, :path_towards_position, tl(bot_state_machine.path_towards_position))
 
-      BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) and BotStateMachineChecker.should_bot_move_to_another_position?(bot_state_machine) ->
+      System.get_env("PATHFINDING_TEST") == "true" and BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) and BotStateMachineChecker.should_bot_move_to_another_position?(bot_state_machine) ->
         IO.inspect("Waypoint Reached but need to recalculate new path!")
         position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
 
         Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
         |> Map.put(:path_towards_position, Utils.find_path_towards_position(bot_state_machine.current_position, position_to_move_to))
+        |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
+
+      BotStateMachineChecker.should_bot_move_to_another_position?(bot_state_machine) ->
+        position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
+
+        Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
         |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
 
       true ->
