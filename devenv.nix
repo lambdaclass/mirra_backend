@@ -49,4 +49,9 @@
       ];
     };
   };
+
+  # automatically export mix scripts (needed for protobuf to work)
+  enterShell = ''
+    export PATH="$HOME/.mix/escripts:$PATH"
+  '';
 }
