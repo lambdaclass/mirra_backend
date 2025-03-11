@@ -19,7 +19,6 @@ enum AStarPathResult {
 
 #[rustler::nif()]
 fn a_star_shortest_path(from: Position, to: Position) -> Vec<Position> {
-    println!("BUILDING GRID");
     let mut grid : Vec<Vec<bool>> = vec![vec![false; NUM_COLS as usize]; NUM_ROWS as usize];
     lock_rectangle(&mut grid, world_to_grid(&Position{ x: 500.0, y: 500.0 }), world_to_grid(&Position {x: -500.0, y: -500.0}));
     lock_rectangle(&mut grid, world_to_grid(&Position{ x: 2500.0, y: 2500.0 }), world_to_grid(&Position {x: 2000.0, y: 2000.0}));
@@ -38,13 +37,8 @@ fn a_star_shortest_path(from: Position, to: Position) -> Vec<Position> {
         }
     }
 
-    println!("Casting world into grid positions for: {:?}, {:?}", from, to);
-
     let start = world_to_grid(&from);
-    println!("start: {:?}", start);
-
     let goal = world_to_grid(&to);
-    println!("goal: {:?}", goal);
 
     if let AStarPathResult::Found(path_in_grid) = a_star_find_path(start, goal, grid) {
         path_in_grid
