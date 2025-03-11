@@ -253,12 +253,20 @@ defmodule BotManager.BotStateMachine do
         from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
         to = %{x: position_to_move_to.x, y: position_to_move_to.y}
 
-        Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
-        |> Map.put(
-          :path_towards_position,
+        shortest_path = 
           AStarNative.a_star_shortest_path(from, to)
-        )
-        |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
+
+        # If we don't have a path, retry finding new position in map
+        if Enum.empty?(shortest_path) do
+          determine_position_to_move_to(bot_state_machine, safe_zone_radius, true)
+        else
+          Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
+          |> Map.put(
+            :path_towards_position,
+            shortest_path
+          )
+          |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
+        end
 
       BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) and
           BotStateMachineChecker.should_bot_move_to_another_position?(bot_state_machine) ->
@@ -267,15 +275,26 @@ defmodule BotManager.BotStateMachine do
         from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
         to = %{x: position_to_move_to.x, y: position_to_move_to.y}
 
-        Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
-        |> Map.put(
-          :path_towards_position,
+        shortest_path = 
           AStarNative.a_star_shortest_path(from, to)
-        )
-        |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
+
+        # If we don't have a path, retry finding new position in map
+        if Enum.empty?(shortest_path) do
+          determine_position_to_move_to(bot_state_machine, safe_zone_radius, true)
+        else
+          Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
+          |> Map.put(
+            :path_towards_position,
+            shortest_path
+          )
+          |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
+        end
 
       BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) ->
         Map.put(bot_state_machine, :path_towards_position, tl(bot_state_machine.path_towards_position))
+
+      true ->
+        bot_state_machine
     end
   end
 
