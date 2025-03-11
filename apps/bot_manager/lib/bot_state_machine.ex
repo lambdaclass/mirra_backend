@@ -247,8 +247,9 @@ defmodule BotManager.BotStateMachine do
 
   defp determine_position_to_move_to(bot_state_machine, safe_zone_radius) do
     cond do
-      System.get_env("PATHFINDING_TEST") == "true" and (is_nil(bot_state_machine.position_to_move_to) ||
-          not Utils.position_within_radius(bot_state_machine.position_to_move_to, safe_zone_radius)) ->
+      System.get_env("PATHFINDING_TEST") == "true" and
+          (is_nil(bot_state_machine.position_to_move_to) ||
+             not Utils.position_within_radius(bot_state_machine.position_to_move_to, safe_zone_radius)) ->
         position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
 
         from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
