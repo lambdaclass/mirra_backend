@@ -217,7 +217,7 @@ defmodule BotManager.BotStateMachine do
   end
 
   defp move(bot_player, bot_state_machine, safe_zone_radius) do
-    bot_state_machine = determine_position_to_move_to(bot_state_machine, safe_zone_radius)
+    bot_state_machine = determine_position_to_move_to(bot_state_machine, safe_zone_radius, System.get_env("PATHFINDING_TEST") == "true")
 
     # TODO instead of using `get_distance_and_direction_to_positions, use the pathfinding module`
     if not is_nil(bot_state_machine.path_towards_position) and Enum.count(bot_state_machine.path_towards_position) > 0 do
@@ -245,11 +245,9 @@ defmodule BotManager.BotStateMachine do
     end
   end
 
-  defp determine_position_to_move_to(bot_state_machine, safe_zone_radius) do
+  defp determine_position_to_move_to(bot_state_machine, safe_zone_radius, true = _pathfinding_on) do
     cond do
-      System.get_env("PATHFINDING_TEST") == "true" and
-          (is_nil(bot_state_machine.position_to_move_to) ||
-             not Utils.position_within_radius(bot_state_machine.position_to_move_to, safe_zone_radius)) ->
+      is_nil(bot_state_machine.path_towards_position) ->
         position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
 
         from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
@@ -262,19 +260,7 @@ defmodule BotManager.BotStateMachine do
         )
         |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
 
-      is_nil(bot_state_machine.position_to_move_to) ||
-          not Utils.position_within_radius(bot_state_machine.position_to_move_to, safe_zone_radius) ->
-        position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
-
-        Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
-        |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
-
-      System.get_env("PATHFINDING_TEST") == "true" and
-          BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) ->
-        Map.put(bot_state_machine, :path_towards_position, tl(bot_state_machine.path_towards_position))
-
-      System.get_env("PATHFINDING_TEST") == "true" and
-        BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) and
+      BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) and
           BotStateMachineChecker.should_bot_move_to_another_position?(bot_state_machine) ->
         position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
 
@@ -286,6 +272,20 @@ defmodule BotManager.BotStateMachine do
           :path_towards_position,
           AStarNative.a_star_shortest_path(from, to)
         )
+        |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
+
+      BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) ->
+        Map.put(bot_state_machine, :path_towards_position, tl(bot_state_machine.path_towards_position))
+    end
+  end
+
+  defp determine_position_to_move_to(bot_state_machine, safe_zone_radius, false = _pathfinding_on) do
+    cond do
+      is_nil(bot_state_machine.position_to_move_to) ||
+          not Utils.position_within_radius(bot_state_machine.position_to_move_to, safe_zone_radius) ->
+        position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
+
+        Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
         |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
 
       BotStateMachineChecker.should_bot_move_to_another_position?(bot_state_machine) ->
