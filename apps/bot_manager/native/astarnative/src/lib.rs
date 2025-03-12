@@ -179,4 +179,4 @@ fn check_collisions(entity: Entity, entities: HashMap<u64, Entity>) -> Vec<u64> 
     entity.collides_with(&ent)
 }
 
-rustler::init!("Elixir.AStarNative", [a_star_shortest_path]);
+rustler::init!("Elixir.AStarNative", [a_star_shortest_path, build_collision_grid]);
