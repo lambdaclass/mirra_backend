@@ -11,7 +11,7 @@ use position::Position;
 use entity::Entity;
 use rustler::{Binary, OwnedBinary};
 
-const GRID_CELL_SIZE: f32 = 100.0;
+const GRID_CELL_SIZE: f32 = 50.0;
 const WORLD_RADIUS: f32 = 15000.0;
 const NUM_ROWS: i64 = (WORLD_RADIUS * 2.0 / GRID_CELL_SIZE) as i64;
 const NUM_COLS: i64 = (WORLD_RADIUS * 2.0 / GRID_CELL_SIZE) as i64;
@@ -48,27 +48,29 @@ fn a_star_shortest_path<'a>(from: Position, to: Position, collision_grid: Binary
 fn build_collision_grid(obstacles: HashMap<u64, Entity>) -> OwnedBinary {
     // TODO: remove unwrap
     let mut grid : OwnedBinary = OwnedBinary::new(NUM_COLS as usize * NUM_ROWS as usize).unwrap();
+    let mut collisions_grid: Vec<Vec<bool>> = vec![vec![false; NUM_ROWS as usize]; NUM_COLS as usize];
     let obstacles = obstacles.into_values().collect::<Vec<_>>();
 
     for j in 0..NUM_COLS {
         for i in 0..NUM_ROWS {
-            for obstacle in &obstacles {
-                let bottom_left = grid_to_world(&(j, i));
-                let bottom_right = Position::add(&bottom_left, &Position {x: GRID_CELL_SIZE, y: 0.0});
-                let top_left = Position::add(&bottom_left, &Position {x: 0.0, y: GRID_CELL_SIZE});
-                let top_right = Position::add(&top_left, &Position {x: GRID_CELL_SIZE, y: 0.0});
+            grid[j as usize * NUM_COLS as usize + i as usize] = 0;
 
-                let line1 = Entity::new_line(0, vec![bottom_left, bottom_right]);
-                let line2 = Entity::new_line(0, vec![bottom_left, top_left]);
-                let line3 = Entity::new_line(0, vec![top_left, top_right]);
-                let line4 = Entity::new_line(0, vec![top_right, bottom_right]);
+            let bottom_left = grid_to_world(&(j, i));
+            let bottom_right = Position::add(&bottom_left, &Position {x: GRID_CELL_SIZE, y: 0.0});
+            let top_left = Position::add(&bottom_left, &Position {x: 0.0, y: GRID_CELL_SIZE});
+            let top_right = Position::add(&top_left, &Position {x: GRID_CELL_SIZE, y: 0.0});
 
-                grid[j as usize * NUM_COLS as usize + i as usize] = 0;
-                grid[j as usize * NUM_COLS as usize + i as usize] |= collision_detection::line_polygon_collision(&line1, obstacle) as u8;
-                grid[j as usize * NUM_COLS as usize + i as usize] |= collision_detection::line_polygon_collision(&line2, obstacle) as u8;
-                grid[j as usize * NUM_COLS as usize + i as usize] |= collision_detection::line_polygon_collision(&line3, obstacle) as u8;
-                grid[j as usize * NUM_COLS as usize + i as usize] |= collision_detection::line_polygon_collision(&line4, obstacle) as u8;
-            }
+            let mut line1 = Entity::new_line(0, vec![bottom_left, bottom_right]);
+            let mut line2 = Entity::new_line(0, vec![bottom_left, top_left]);
+            let mut line3 = Entity::new_line(0, vec![top_left, top_right]);
+            let mut line4 = Entity::new_line(0, vec![top_right, bottom_right]);
+
+            grid[j as usize * NUM_COLS as usize + i as usize] |= (!line1.collides_with(&obstacles).is_empty()) as u8;
+            grid[j as usize * NUM_COLS as usize + i as usize] |= (!line2.collides_with(&obstacles).is_empty()) as u8;
+            grid[j as usize * NUM_COLS as usize + i as usize] |= (!line3.collides_with(&obstacles).is_empty()) as u8;
+            grid[j as usize * NUM_COLS as usize + i as usize] |= (!line4.collides_with(&obstacles).is_empty()) as u8;
+
+            collisions_grid[j as usize][i as usize] = grid[j as usize * NUM_COLS as usize + i as usize] == 1;
         }
     }
 

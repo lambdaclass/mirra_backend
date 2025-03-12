@@ -220,6 +220,9 @@ defmodule BotManager.BotStateMachine do
     bot_state_machine =
       determine_position_to_move_to(bot_state_machine, safe_zone_radius, System.get_env("PATHFINDING_TEST") == "true")
 
+    IO.inspect(bot_state_machine.path_towards_position, label: "PATH")
+    IO.inspect(bot_state_machine.position_to_move_to, label: "TARGET POSITION")
+
     # TODO instead of using `get_distance_and_direction_to_positions, use the pathfinding module`
     cond do
       not is_nil(bot_state_machine.path_towards_position) and Enum.count(bot_state_machine.path_towards_position) > 0 ->
@@ -261,11 +264,16 @@ defmodule BotManager.BotStateMachine do
         from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
         to = %{x: position_to_move_to.x, y: position_to_move_to.y}
 
+        IO.inspect("CALCULATING SHORTEST PATH")
+        IO.inspect(from, label: "FROM")
+        IO.inspect(to, label: "TO")
         shortest_path = AStarNative.a_star_shortest_path(from, to, bot_state_machine.collision_grid)
+        |> IO.inspect(label: "SHORTEST PATH")
 
         # If we don't have a path, retry finding new position in map
         if Enum.empty?(shortest_path) do
-          determine_position_to_move_to(bot_state_machine, safe_zone_radius, true)
+          Map.put(bot_state_machine, :path_towards_position, nil)
+          |> Map.put(:position_to_move_to, nil)
         else
           Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
           |> Map.put(
@@ -282,13 +290,16 @@ defmodule BotManager.BotStateMachine do
         from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
         to = %{x: position_to_move_to.x, y: position_to_move_to.y}
 
-
+        IO.inspect("CALCULATING SHORTEST PATH")
+        # IO.inspect(from, label: "FROM")
+        # IO.inspect(to, label: "TO")
         shortest_path = AStarNative.a_star_shortest_path(from, to, bot_state_machine.collision_grid)
-
+        |> IO.inspect(label: "SHORTEST PATH")
 
         # If we don't have a path, retry finding new position in map
         if Enum.empty?(shortest_path) do
-          determine_position_to_move_to(bot_state_machine, safe_zone_radius, true)
+          Map.put(bot_state_machine, :path_towards_position, nil)
+          |> Map.put(:position_to_move_to, nil)
         else
           Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
           |> Map.put(
