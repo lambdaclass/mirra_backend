@@ -1,7 +1,5 @@
 name: "[TESTING-USA] Deploy to Usa Arena testing"
 on:
-  push:
-    branch: 1125-add-new-arena-usa-workflow
   workflow_dispatch:
 
 jobs:
