@@ -86,13 +86,21 @@ defmodule BotManager.GameSocketHandler do
 
         new_state = Map.merge(state, update)
 
-        # only load collision grid once
-        if is_nil(new_state.bot_state_machine.collision_grid) and Map.has_key?(new_state.game_state, :game_state) and Map.has_key?(new_state.game_state, :obstacles) do
+        # # only load collision grid once
+        if is_nil(new_state.bot_state_machine.collision_grid) and not is_nil(new_state.game_state) and not is_nil(new_state.game_state.obstacles) and not Enum.empty?(new_state.game_state.obstacles) do
+          obstacles = new_state.game_state.obstacles
+            |> Enum.map(fn {_obstacle_id, obstacle} -> Map.take(obstacle, [:id, :shape, :position, :radius, :vertices, :speed, :category, :direction, :is_moving, :name]) end)
+            |> Enum.map(fn {_obstacle_id, obstacle} -> Map.put(obstacle, :position, %{x: obstacle.position.x, y: obstacle.position.y}) end)
+            |> Enum.map(fn {_obstacle_id, obstacle} -> Map.put(obstacle, :vertices, Enum.map(obstacle.vertices.positions, fn position -> %{x: position.x, y: position.y} end)) end)
+            |> Enum.map(fn {_obstacle_id, obstacle} -> Map.put(obstacle, :direction, %{x: obstacle.direction.x, y: obstacle.direction.y}) end)
+
+          IO.inspect(obstacles, label: "Obstacles:")
+
           update = %{
-            bot_state_machine: %{
-              collision_grid: AStarNative.build_collision_grid(state.game_state.obstacles),
-            }
+            bot_state_machine: Map.put(bot_state_machine, :collision_grid, AStarNative.build_collision_grid(obstacles)),
           }
+
+          IO.inspect("Finished building collision grid")
 
           new_state = Map.merge(new_state, update)
           {:ok, new_state}
