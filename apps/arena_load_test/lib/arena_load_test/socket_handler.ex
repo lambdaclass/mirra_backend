@@ -59,19 +59,19 @@ defmodule ArenaLoadTest.SocketHandler do
 
     case System.get_env("TARGET_SERVER") do
       nil ->
-        "ws://localhost:4000/join/#{player_id}/#{character}/#{player_name}"
+        "ws://localhost:4000/join/battle-royale/#{player_id}/#{character}/#{player_name}"
 
       target_server ->
         # TODO Replace this for a SSL connection using erlang credentials.
         # TODO https://github.com/lambdaclass/mirra_backend/issues/493
-        "ws://#{Utils.get_server_ip(target_server)}:4000/join/#{player_id}/#{character}/#{player_name}"
+        "ws://#{Utils.get_server_ip(target_server)}:4000/join/battle-royale/#{player_id}/#{character}/#{player_name}"
     end
   end
 
   # This is enough for now. Will request bots from the bots app in future iterations.
   # https://github.com/lambdaclass/mirra_backend/issues/410
   defp get_random_active_character() do
-    ["muflus", "h4ck", "uma", "valtimer", "kenzu", "otix", "shinko", "uren"]
+    ["h4ck", "valtimer", "kenzu", "otix"]
     |> Enum.random()
   end
 

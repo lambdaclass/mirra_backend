@@ -29,21 +29,28 @@ defmodule Arena.SocketHandler do
         user_id
       end
 
-    gateway_url = Application.get_env(:arena, :gateway_url)
-    url = "#{gateway_url}/curse/users/#{user_id}/get_unit"
-
-    {:ok, %{character_name: character_name, skin_name: skin_name}} =
-      case Finch.build(:get, url, [{"content-type", "application/json"}])
-           |> Finch.request(Arena.Finch) do
-        {:ok, payload} ->
-          {:ok, Jason.decode!(payload.body, [{:keys, :atoms}])}
-
-        {:error, _} ->
-          {:error, %{}}
-      end
-
     matchmaking_queue = Matchmaking.get_queue(:cowboy_req.binding(:mode, req))
     player_name = :cowboy_req.binding(:player_name, req)
+
+    {character_name, skin_name} =
+      if System.get_env("OVERRIDE_JWT") == "true" do
+        {:cowboy_req.binding(:character_name, req), "Basic"}
+      else
+        gateway_url = Application.get_env(:arena, :gateway_url)
+        url = "#{gateway_url}/curse/users/#{user_id}/get_unit"
+
+        {:ok, %{character_name: character_name, skin_name: skin_name}} =
+          case Finch.build(:get, url, [{"content-type", "application/json"}])
+               |> Finch.request(Arena.Finch) do
+            {:ok, payload} ->
+              {:ok, Jason.decode!(payload.body, [{:keys, :atoms}])}
+
+            {:error, _} ->
+              {:error, %{}}
+          end
+
+        {character_name, skin_name}
+      end
 
     {:cowboy_websocket, req,
      %{
