@@ -1,8 +1,5 @@
 name: "[LOADTEST-CLIENT-EUROPE] Deploy to Europe Loadtest Client"
 on:
-  push:
-      branches:
-        - 1115-add-new-server-deployment-workflow
   workflow_dispatch:
     inputs:
       target_server:
