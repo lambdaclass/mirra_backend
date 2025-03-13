@@ -69,7 +69,12 @@ generate-bot-manager-protos:
 		--proto_path=apps/serialization \
 		messages.proto
 
-## INFRA
+# INFRA
+## Check server specs (loadtests)
+server-specs:
+	./devops/server_specs.sh
+
+## New server. Setup dependencies.
 ## Run these as admin
 debian-install-deps:
 	sudo apt update -y
