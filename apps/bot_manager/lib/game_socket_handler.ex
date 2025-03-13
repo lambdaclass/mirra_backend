@@ -100,7 +100,7 @@ defmodule BotManager.GameSocketHandler do
           # IO.inspect(obstacles, label: "OBSTACLES")
 
           update = %{
-            bot_state_machine: Map.put(bot_state_machine, :collision_grid, AStarNative.build_collision_grid(new_state.config.map.radius, obstacles)),
+            bot_state_machine: Map.put(bot_state_machine, :collision_grid, AStarNative.build_collision_grid(obstacles)),
           }
 
           new_state = Map.merge(new_state, update)
@@ -219,6 +219,7 @@ defmodule BotManager.GameSocketHandler do
   def terminate(close_reason, state) do
     Logger.error("Terminating bot with reason: #{inspect(close_reason)}")
     Logger.error("Terminating bot in state machine step: #{inspect(state.bot_state_machine)}")
+    Logger.error("Stack trace: #{inspect(Process.info(self(), :current_stacktrace) )}")
   end
 
   defp get_shape("polygon"), do: :polygon
