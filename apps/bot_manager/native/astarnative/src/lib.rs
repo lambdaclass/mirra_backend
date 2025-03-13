@@ -11,7 +11,7 @@ use position::Position;
 use entity::Entity;
 use rustler::{Binary, OwnedBinary};
 
-const GRID_CELL_SIZE: f32 = 50.0;
+const GRID_CELL_SIZE: f32 = 100.0;
 const WORLD_RADIUS: f32 = 15000.0;
 const NUM_ROWS: i64 = (WORLD_RADIUS * 2.0 / GRID_CELL_SIZE) as i64;
 const NUM_COLS: i64 = (WORLD_RADIUS * 2.0 / GRID_CELL_SIZE) as i64;
