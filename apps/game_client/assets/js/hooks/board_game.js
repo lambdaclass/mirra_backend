@@ -75,7 +75,7 @@ export const BoardGame = function () {
 
       // Grid properties
       const worldRadius = 15000;
-      const gridCellSize = 100;  // Size of each cell in the grid (in pixels)
+      const gridCellSize = 100 / 5;  // Size of each cell in the grid (in pixels)
       const numRows = 2 * worldRadius / gridCellSize;
       const numCols = 2 * worldRadius / gridCellSize;      
 
