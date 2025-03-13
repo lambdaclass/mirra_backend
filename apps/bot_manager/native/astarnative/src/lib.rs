@@ -37,7 +37,7 @@ fn a_star_shortest_path<'a>(from: Position, to: Position, collision_grid: Binary
     if let AStarPathResult::Found(path_in_grid) = a_star_find_path(start, goal, grid) {
         path_in_grid
             .iter()
-            .map(grid_to_world)
+            .map(|grid_position| Position::add(&grid_to_world(grid_position), &Position {x: GRID_CELL_SIZE / 2.0, y: GRID_CELL_SIZE / 2.0}))
             .collect::<Vec<Position>>()
     } else {
         Vec::new()
