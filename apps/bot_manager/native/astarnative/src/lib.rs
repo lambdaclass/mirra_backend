@@ -48,7 +48,6 @@ fn a_star_shortest_path<'a>(from: Position, to: Position, collision_grid: Binary
 fn build_collision_grid(obstacles: HashMap<u64, Entity>) -> OwnedBinary {
     // TODO: remove unwrap
     let mut grid : OwnedBinary = OwnedBinary::new(NUM_COLS as usize * NUM_ROWS as usize).unwrap();
-    let mut collisions_grid: Vec<Vec<bool>> = vec![vec![false; NUM_ROWS as usize]; NUM_COLS as usize];
     let obstacles = obstacles.into_values().collect::<Vec<_>>();
 
     for j in 0..NUM_COLS {
@@ -69,8 +68,6 @@ fn build_collision_grid(obstacles: HashMap<u64, Entity>) -> OwnedBinary {
             grid[j as usize * NUM_COLS as usize + i as usize] |= (!line2.collides_with(&obstacles).is_empty()) as u8;
             grid[j as usize * NUM_COLS as usize + i as usize] |= (!line3.collides_with(&obstacles).is_empty()) as u8;
             grid[j as usize * NUM_COLS as usize + i as usize] |= (!line4.collides_with(&obstacles).is_empty()) as u8;
-
-            collisions_grid[j as usize][i as usize] = grid[j as usize * NUM_COLS as usize + i as usize] == 1;
         }
     }
 
