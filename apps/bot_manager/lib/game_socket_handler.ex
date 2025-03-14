@@ -10,8 +10,22 @@ defmodule BotManager.GameSocketHandler do
   use WebSockex, restart: :temporary
   require Logger
 
-  @min_decision_delay_ms 750
-  @max_decision_delay_ms 1250
+  defp min_decision_delay_ms() do
+    if System.get_env("PATHFINDING_TEST") == "true" do
+      100
+    else
+      750
+    end
+  end
+
+  defp max_decision_delay_ms() do
+    if System.get_env("PATHFINDING_TEST") == "true" do
+      150
+    else
+      1250
+    end
+  end
+
   @action_delay_ms 30
 
   def start_link(%{"bot_client" => bot_client, "game_id" => game_id} = params) do
@@ -87,7 +101,7 @@ defmodule BotManager.GameSocketHandler do
   end
 
   def handle_info(:decide_action, state) do
-    Process.send_after(self(), :decide_action, Enum.random(@min_decision_delay_ms..@max_decision_delay_ms))
+    Process.send_after(self(), :decide_action, Enum.random(min_decision_delay_ms()..max_decision_delay_ms()))
 
     %{action: action, bot_state_machine: bot_state_machine} = BotStateMachine.decide_action(state)
 

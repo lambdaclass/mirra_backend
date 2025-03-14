@@ -68,6 +68,32 @@ export const BoardGame = function () {
       zoneCircle.zIndex = 0;
       zoneCircle.endFill();
       container.addChild(zoneCircle);
+
+      let pathfindingGrid = new Graphics();
+      pathfindingGrid.beginFill(0xFFFFFF);
+      pathfindingGrid.lineStyle(1, 0x000000, 1);
+
+      // Grid properties
+      const worldRadius = 15000;
+      const gridCellSize = 100;  // Size of each cell in the grid (in pixels)
+      const numRows = 2 * worldRadius / gridCellSize;
+      const numCols = 2 * worldRadius / gridCellSize;      
+
+      // Draw the grid lines
+      for (let row = 0; row <= numRows; row++) {
+          pathfindingGrid.moveTo(0, row * gridCellSize); // Starting point (left side)
+          pathfindingGrid.lineTo(document.getElementById("board_game").dataset.boardWidth, row * gridCellSize); // Ending point (right side)
+      }
+
+      for (let col = 0; col <= numCols; col++) {
+          pathfindingGrid.moveTo(col * gridCellSize, 0); // Starting point (top side)
+          pathfindingGrid.lineTo(col * gridCellSize, document.getElementById("board_game").dataset.boardHeight); // Ending point (bottom side)
+      }
+
+
+      pathfindingGrid.zIndex = 50;
+      pathfindingGrid.endFill();
+      container.addChild(pathfindingGrid);
     })
 
     window.addEventListener("phx:updateEntities", (e) => {

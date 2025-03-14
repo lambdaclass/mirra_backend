@@ -32,6 +32,7 @@ defmodule BotManager.MixProject do
       # server
       {:plug_cowboy, "~> 2.2"},
       {:jason, "~> 1.2"},
+      {:rustler, "~> 0.30.0"},
       {:websockex, "~> 0.4.3"},
       {:exbase58, "~> 1.0.2"},
       {:protobuf, "~> 0.12.0"}
