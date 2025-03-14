@@ -50,7 +50,9 @@ defmodule BotManager.GameSocketHandler do
       |> Map.put(:bots_enabled?, true)
       |> Map.put(:attack_blocked, false)
       |> Map.put(:bot_state_machine, BotStateMachineChecker.new())
+      |> Map.put(:can_build_map, false)
 
+    Process.send_after(self(), :allow_map_build, Enum.random(1000..2000))
     {:ok, state}
   end
 
@@ -84,7 +86,28 @@ defmodule BotManager.GameSocketHandler do
           bot_state_machine: bot_state_machine
         }
 
-        {:ok, Map.merge(state, update)}
+        new_state = Map.merge(state, update)
+
+        # # only load collision grid once
+        if state.can_build_map && is_nil(new_state.bot_state_machine.collision_grid) and not is_nil(new_state.game_state) and not is_nil(new_state.game_state.obstacles) and not Enum.empty?(new_state.game_state.obstacles) do
+          obstacles = new_state.game_state.obstacles
+            |> Enum.map(fn {obstacle_id, obstacle} -> {obstacle_id, Map.take(Map.from_struct(obstacle), [:id, :shape, :position, :radius, :vertices, :speed, :category, :direction, :is_moving, :name])} end)
+            |> Enum.map(fn {obstacle_id, obstacle} -> {obstacle_id, Map.put(obstacle, :position, %{x: obstacle.position.x, y: obstacle.position.y})} end)
+            |> Enum.map(fn {obstacle_id, obstacle} -> {obstacle_id, Map.put(obstacle, :vertices, Enum.map(obstacle.vertices.positions, fn position -> %{x: position.x, y: position.y} end))} end)
+            |> Enum.map(fn {obstacle_id, obstacle} -> {obstacle_id, Map.put(obstacle, :direction, %{x: obstacle.direction.x, y: obstacle.direction.y})} end)
+            |> Enum.map(fn {obstacle_id, obstacle} -> {obstacle_id, Map.put(obstacle, :shape, get_shape(obstacle.shape))} end)
+            |> Enum.map(fn {obstacle_id, obstacle} -> {obstacle_id, Map.put(obstacle, :category, get_category(obstacle.category))} end)
+            |> Map.new()
+
+          update = %{
+            bot_state_machine: Map.put(bot_state_machine, :collision_grid, AStarNative.build_collision_grid(obstacles)),
+          }
+
+          new_state = Map.merge(new_state, update)
+          {:ok, new_state}
+        else
+          {:ok, new_state}
+        end
 
       %{event: {:joined, joined}} ->
         {:ok, Map.merge(state, joined)}
@@ -98,6 +121,12 @@ defmodule BotManager.GameSocketHandler do
       _ ->
         {:ok, state}
     end
+  end
+
+  def handle_info(:allow_map_build, state) do
+    state = Map.put(state, :can_build_map, true)
+
+    {:ok, state}
   end
 
   def handle_info(:decide_action, state) do
@@ -196,5 +225,23 @@ defmodule BotManager.GameSocketHandler do
   def terminate(close_reason, state) do
     Logger.error("Terminating bot with reason: #{inspect(close_reason)}")
     Logger.error("Terminating bot in state machine step: #{inspect(state.bot_state_machine)}")
+    Logger.error("Stack trace: #{inspect(Process.info(self(), :current_stacktrace) )}")
   end
+
+  defp get_shape("polygon"), do: :polygon
+  defp get_shape("circle"), do: :circle
+  defp get_shape("line"), do: :line
+  defp get_shape("point"), do: :point
+  defp get_shape(_), do: nil
+
+  defp get_category("player"), do: :player
+  defp get_category("projectile"), do: :projectile
+  defp get_category("obstacle"), do: :obstacle
+  defp get_category("power_up"), do: :power_up
+  defp get_category("pool"), do: :pool
+  defp get_category("item"), do: :item
+  defp get_category("bush"), do: :bush
+  defp get_category("crate"), do: :crate
+  defp get_category("trap"), do: :trap
+  defp get_category(_), do: nil
 end
