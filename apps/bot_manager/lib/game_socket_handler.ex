@@ -99,8 +99,6 @@ defmodule BotManager.GameSocketHandler do
             |> Enum.map(fn {obstacle_id, obstacle} -> {obstacle_id, Map.put(obstacle, :category, get_category(obstacle.category))} end)
             |> Map.new()
 
-          # IO.inspect(obstacles, label: "OBSTACLES")
-
           update = %{
             bot_state_machine: Map.put(bot_state_machine, :collision_grid, AStarNative.build_collision_grid(obstacles)),
           }
