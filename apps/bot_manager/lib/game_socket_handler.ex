@@ -50,7 +50,9 @@ defmodule BotManager.GameSocketHandler do
       |> Map.put(:bots_enabled?, true)
       |> Map.put(:attack_blocked, false)
       |> Map.put(:bot_state_machine, BotStateMachineChecker.new())
+      |> Map.put(:can_build_map, false)
 
+    Process.send_after(self(), :allow_map_build, Enum.random(1000..2000))
     {:ok, state}
   end
 
@@ -87,7 +89,7 @@ defmodule BotManager.GameSocketHandler do
         new_state = Map.merge(state, update)
 
         # # only load collision grid once
-        if is_nil(new_state.bot_state_machine.collision_grid) and not is_nil(new_state.game_state) and not is_nil(new_state.game_state.obstacles) and not Enum.empty?(new_state.game_state.obstacles) do
+        if state.can_build_map && is_nil(new_state.bot_state_machine.collision_grid) and not is_nil(new_state.game_state) and not is_nil(new_state.game_state.obstacles) and not Enum.empty?(new_state.game_state.obstacles) do
           obstacles = new_state.game_state.obstacles
             |> Enum.map(fn {obstacle_id, obstacle} -> {obstacle_id, Map.take(Map.from_struct(obstacle), [:id, :shape, :position, :radius, :vertices, :speed, :category, :direction, :is_moving, :name])} end)
             |> Enum.map(fn {obstacle_id, obstacle} -> {obstacle_id, Map.put(obstacle, :position, %{x: obstacle.position.x, y: obstacle.position.y})} end)
@@ -121,6 +123,12 @@ defmodule BotManager.GameSocketHandler do
       _ ->
         {:ok, state}
     end
+  end
+
+  def handle_info(:allow_map_build, state) do
+    state = Map.put(state, :can_build_map, true)
+
+    {:ok, state}
   end
 
   def handle_info(:decide_action, state) do
