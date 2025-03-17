@@ -633,16 +633,16 @@ defmodule GameBackend.Users do
       end)
 
     daily_quests_week_progress =
-      Enum.map(Date.range(start_of_week, end_of_week), fn date ->
+      # Enum.map(Date.range(start_of_week, end_of_week), fn date ->
         completed_quests_amount =
           Enum.count(user.user_quests, fn user_quest ->
-            user_quest.status == "completed" and Date.diff(date, NaiveDateTime.to_date(user_quest.inserted_at)) == 0 and
+            user_quest.status == "completed" and Date.diff(today, NaiveDateTime.to_date(user_quest.inserted_at)) == 0 and
               user_quest.quest.type == :daily
           end)
 
         milestone_quest_value =
           Enum.find(user.user_quests, fn user_quest ->
-            user_quest.quest.type == :milestone and Date.diff(date, NaiveDateTime.to_date(user_quest.inserted_at)) == 0
+            user_quest.quest.type == :milestone and Date.diff(today, NaiveDateTime.to_date(user_quest.inserted_at)) == 0
           end)
           |> case do
             nil ->
@@ -654,12 +654,16 @@ defmodule GameBackend.Users do
               milestone_quest.quest.objective["value"]
           end
 
+        IO.inspect(completed_quests_amount, label: :aver_completed)
+        IO.inspect(milestone_quest_value, label: :milestone_value)
         %{
           completed_quests_amount: completed_quests_amount,
           target_quests_amount: milestone_quest_value,
-          date: date
+          date: today
         }
-      end)
+      # end)
+
+    IO.inspect(updated_quests, label: :aver_updated)
 
     user
     |> Map.put(:user_quests, updated_quests)

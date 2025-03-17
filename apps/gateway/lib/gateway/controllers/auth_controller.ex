@@ -47,6 +47,8 @@ defmodule Gateway.Controllers.AuthController do
          unit_skin <- Enum.find(unit.skins, fn unit_skin -> unit_skin.selected end) do
       new_gateway_jwt = TokenManager.generate_user_token(user, client_id)
 
+      user.user_quests |> IO.inspect(label: :aver_quests)
+
       send_resp(
         conn,
         200,
