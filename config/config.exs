@@ -112,7 +112,14 @@ config :arena, ArenaWeb.Endpoint,
 # Configures Finch
 config :arena, Arena.Finch,
   pools: %{
-    default: [size: 200, count: 2]  # 2 pools, each with 100 connections
+    default: [
+      size: 400,
+      count: 3,
+      start_pool_metrics?: true,
+      conn_opts: [
+        transport_opts: [timeout: 10_000]
+      ]
+    ]
   }
 
 # Configures the mailer
