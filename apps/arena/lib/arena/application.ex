@@ -12,7 +12,9 @@ defmodule Arena.Application do
       {DNSCluster, query: Application.get_env(:arena, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Arena.PubSub},
       # Start the Finch HTTP client for sending emails
-      {Finch, name: Arena.Finch},
+      {Finch, name: Arena.Finch, pools: %{
+        :default => [size: 200, count: 2]
+      }},
       # Start game launcher genserver
       Arena.Matchmaking.GameLauncher,
       Arena.Matchmaking.DuoMode,

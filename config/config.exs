@@ -109,6 +109,12 @@ config :arena, ArenaWeb.Endpoint,
   live_view: [signing_salt: "XED/NEZq"],
   http: [dispatch: dispatch]
 
+# Configures Finch
+config :arena, Arena.Finch,
+  pools: %{
+    default: [size: 200, count: 2]  # 2 pools, each with 100 connections
+  }
+
 # Configures the mailer
 #
 # By default it uses the "Local" adapter which stores the emails
