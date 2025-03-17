@@ -169,13 +169,4 @@ fn grid_to_world(grid_pos: &(i64, i64)) -> Position {
     }
 }
 
-/// Check players inside the player_id radius
-/// Return a list of the players id inside the radius Vec<player_id>
-fn check_collisions(entity: Entity, entities: HashMap<u64, Entity>) -> Vec<u64> {
-    let mut entity: Entity = entity;
-    let ent = entities.into_values().collect();
-
-    entity.collides_with(&ent)
-}
-
 rustler::init!("Elixir.AStarNative", [a_star_shortest_path, build_collision_grid]);

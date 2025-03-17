@@ -52,6 +52,9 @@ defmodule BotManager.GameSocketHandler do
       |> Map.put(:bot_state_machine, BotStateMachineChecker.new())
       |> Map.put(:can_build_map, false)
 
+    # This delay ensures we give some time to the board liveview to join on time before the game starts.
+    # Ideally we should make the collision grid building NIF faster instead of doing this so that we don't have problems
+    # running everything on the same machine (for example when testing locally)
     Process.send_after(self(), :allow_map_build, Enum.random(1000..2000))
     {:ok, state}
   end
