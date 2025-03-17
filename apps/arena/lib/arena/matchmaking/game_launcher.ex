@@ -55,12 +55,15 @@ defmodule Arena.Matchmaking.GameLauncher do
 
   @impl true
   def handle_info(:launch_game?, %{clients: clients} = state) do
-    Process.send_after(self(), :launch_game?, 300)
+    is_loadtest_alone_mode? = System.get_env("LOADTEST_ALONE_MODE") == "true"
+    launch_game_interval =
+      if is_loadtest_alone_mode?, do: 30, else: 300
+    Process.send_after(self(), :launch_game?, launch_game_interval)
     diff = System.monotonic_time(:millisecond) - state.batch_start_at
     state = Matchmaking.get_matchmaking_configuration(state, 1, "battle_royale")
     # is_loadtest_alone_mode? = System.get_env("LOADTEST_ALONE_MODE") == "true"
     amount_of_players =
-      if System.get_env("LOADTEST_ALONE_MODE") == "true", do: 1, else: state.current_map.amount_of_players
+      if is_loadtest_alone_mode?, do: 1, else: state.current_map.amount_of_players
     has_enough_players? = length(clients) >= amount_of_players
     is_queue_timed_out? = diff >= Utils.start_timeout_ms() and length(clients) > 0
 
