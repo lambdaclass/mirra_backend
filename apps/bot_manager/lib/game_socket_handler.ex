@@ -151,24 +151,29 @@ defmodule BotManager.GameSocketHandler do
     obstacles =
       state.game_state.obstacles
       |> Enum.map(fn {obstacle_id, obstacle} ->
-         obstacle = obstacle
+        obstacle =
+          obstacle
           |> Map.from_struct()
           |> Map.take([
-           :id,
-           :shape,
-           :position,
-           :radius,
-           :vertices,
-           :speed,
-           :category,
-           :direction,
-           :is_moving,
-           :name
+            :id,
+            :shape,
+            :position,
+            :radius,
+            :vertices,
+            :speed,
+            :category,
+            :direction,
+            :is_moving,
+            :name
           ])
 
-        obstacle = obstacle
+        obstacle =
+          obstacle
           |> Map.put(:position, %{x: obstacle.position.x, y: obstacle.position.y})
-          |> Map.put(:vertices, Enum.map(obstacle.vertices.positions, fn position -> %{x: position.x, y: position.y} end))
+          |> Map.put(
+            :vertices,
+            Enum.map(obstacle.vertices.positions, fn position -> %{x: position.x, y: position.y} end)
+          )
           |> Map.put(:direction, %{x: obstacle.direction.x, y: obstacle.direction.y})
           |> Map.put(:shape, get_shape(obstacle.shape))
           |> Map.put(:category, get_category(obstacle.category))
