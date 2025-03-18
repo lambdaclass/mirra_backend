@@ -274,7 +274,6 @@ defmodule BotManager.GameSocketHandler do
   def terminate(close_reason, state) do
     Logger.error("Terminating bot with reason: #{inspect(close_reason)}")
     Logger.error("Terminating bot in state machine step: #{inspect(state.bot_state_machine)}")
-    Logger.error("Stack trace: #{inspect(Process.info(self(), :current_stacktrace))}")
   end
 
   defp get_shape("polygon"), do: :polygon
