@@ -74,10 +74,15 @@ export const BoardGame = function () {
       pathfindingGrid.lineStyle(1, 0x000000, 1);
 
       // Grid properties
+      
+      // Web board is smaller than actual world radius so we need to rescale
+      const mocked_board_radius = 3000;
       const worldRadius = 15000;
-      const gridCellSize = 150 / 5;  // Size of each cell in the grid (in pixels)
-      const numRows = 2 * worldRadius / gridCellSize;
-      const numCols = 2 * worldRadius / gridCellSize;      
+
+      const back_size_to_front_ratio = mocked_board_radius / worldRadius;
+      const gridCellSize = 150 * back_size_to_front_ratio;  // Size of each cell in the grid (in pixels)
+      const numRows = 2 * mocked_board_radius / gridCellSize;
+      const numCols = 2 * mocked_board_radius / gridCellSize;      
 
       // Draw the grid lines
       for (let row = 0; row <= numRows; row++) {
