@@ -26,6 +26,8 @@ defmodule BotManager.GameSocketHandler do
     end
   end
 
+  @delay_before_map_grid_building_ms 1000
+
   @action_delay_ms 30
 
   def start_link(%{"bot_client" => bot_client, "game_id" => game_id} = params) do
@@ -55,7 +57,7 @@ defmodule BotManager.GameSocketHandler do
     # This delay ensures we give some time to the board liveview to join on time before the game starts.
     # Ideally we should make the collision grid building NIF faster instead of doing this so that we don't have problems
     # running everything on the same machine (for example when testing locally)
-    Process.send_after(self(), :allow_map_build, Enum.random(1000..2000))
+    Process.send_after(self(), :allow_map_build, @delay_before_map_grid_building_ms)
     {:ok, state}
   end
 
