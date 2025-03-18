@@ -256,7 +256,9 @@ defmodule BotManager.BotStateMachine do
 
   defp determine_position_to_move_to(bot_state_machine, safe_zone_radius, true = _pathfinding_on) do
     cond do
-      not is_nil(bot_state_machine.collision_grid) and is_nil(bot_state_machine.path_towards_position) ->
+      is_nil(bot_state_machine.collision_grid) ->
+        bot_state_machine
+      is_nil(bot_state_machine.path_towards_position) ->
         position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
 
         from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
@@ -277,9 +279,8 @@ defmodule BotManager.BotStateMachine do
           |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
         end
 
-      not is_nil(bot_state_machine.collision_grid) and
-        BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) and
-          BotStateMachineChecker.should_bot_move_to_another_position?(bot_state_machine) ->
+      BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) and
+        BotStateMachineChecker.should_bot_move_to_another_position?(bot_state_machine) ->
         position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
 
         from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
@@ -300,8 +301,7 @@ defmodule BotManager.BotStateMachine do
           |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
         end
 
-      not is_nil(bot_state_machine.path_towards_position) and
-          BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) ->
+      BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) ->
         Map.put(bot_state_machine, :path_towards_position, tl(bot_state_machine.path_towards_position))
 
       true ->
