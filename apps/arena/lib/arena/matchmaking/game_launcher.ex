@@ -77,11 +77,8 @@ defmodule Arena.Matchmaking.GameLauncher do
     {:noreply, %{state | clients: remaining_clients, current_map: next_map}}
   end
 
-  def handle_info({:spawn_bot_for_player, bot_client, game_id}, state) do
-    spawn(fn ->
-      Finch.build(:get, Utils.get_bot_connection_url(game_id, bot_client))
-      |> Finch.request(Arena.Finch)
-    end)
+  def handle_info({:spawn_bot_for_player, bot_id, game_id}, state) do
+    Arena.Bots.BotSupervisor.start_bot(bot_id, game_id)
 
     {:noreply, state}
   end
