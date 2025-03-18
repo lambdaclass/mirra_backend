@@ -15,7 +15,9 @@ defmodule Arena.Application do
       {Finch,
        name: Arena.Finch,
        pools: %{
-         :default => [size: 200, count: 2]
+         :default => [size: 400, count: 5, conn_opts: [
+          transport_opts: [timeout: 10_000]
+        ]]
        }},
       # Start game launcher genserver
       Arena.Matchmaking.GameLauncher,
