@@ -91,72 +91,7 @@ defmodule BotManager.GameSocketHandler do
 
         new_state = Map.merge(state, update)
 
-        # # only load collision grid once
-        if state.can_build_map && is_nil(new_state.bot_state_machine.collision_grid) and
-             not is_nil(new_state.game_state) and not is_nil(new_state.game_state.obstacles) and
-             not Enum.empty?(new_state.game_state.obstacles) do
-          obstacles =
-            new_state.game_state.obstacles
-            |> Enum.map(fn {obstacle_id, obstacle} ->
-              {obstacle_id,
-               Map.take(Map.from_struct(obstacle), [
-                 :id,
-                 :shape,
-                 :position,
-                 :radius,
-                 :vertices,
-                 :speed,
-                 :category,
-                 :direction,
-                 :is_moving,
-                 :name
-               ])}
-            end)
-            |> Enum.map(fn {obstacle_id, obstacle} ->
-              {obstacle_id, Map.put(obstacle, :position, %{x: obstacle.position.x, y: obstacle.position.y})}
-            end)
-            |> Enum.map(fn {obstacle_id, obstacle} ->
-              {obstacle_id,
-               Map.put(
-                 obstacle,
-                 :vertices,
-                 Enum.map(obstacle.vertices.positions, fn position -> %{x: position.x, y: position.y} end)
-               )}
-            end)
-            |> Enum.map(fn {obstacle_id, obstacle} ->
-              {obstacle_id, Map.put(obstacle, :direction, %{x: obstacle.direction.x, y: obstacle.direction.y})}
-            end)
-            |> Enum.map(fn {obstacle_id, obstacle} ->
-              {obstacle_id, Map.put(obstacle, :shape, get_shape(obstacle.shape))}
-            end)
-            |> Enum.map(fn {obstacle_id, obstacle} ->
-              {obstacle_id, Map.put(obstacle, :category, get_category(obstacle.category))}
-            end)
-            |> Map.new()
-
-          new_state =
-            case AStarNative.build_collision_grid(obstacles) do
-              {:ok, collision_grid} ->
-                update = %{
-                  bot_state_machine: Map.put(bot_state_machine, :collision_grid, collision_grid)
-                }
-
-                Map.merge(new_state, update)
-
-              {:error, reason} ->
-                Logger.error("Grid construction failed with reason: #{inspect(reason)}")
-
-                update = %{
-                  can_build_map: false
-                }
-
-                Map.merge(new_state, update)
-            end
-
-          {:ok, new_state}
-        else
-          {:ok, new_state}
-        end
+        {:ok, maybe_build_map(new_state)}
 
       %{event: {:joined, joined}} ->
         {:ok, Map.merge(state, joined)}
@@ -199,6 +134,74 @@ defmodule BotManager.GameSocketHandler do
     Process.send_after(self(), :perform_action, @action_delay_ms)
     send_current_action(state)
     {:ok, update_block_attack_state(state)}
+  end
+
+  defp maybe_build_map(%{can_build_map: false} = state), do: state
+
+  defp maybe_build_map(%{bot_state_machine: %{collision_grid: collision_grid}} = state) when not is_nil(collision_grid),
+    do: state
+
+  defp maybe_build_map(%{game_state: nil} = state), do: state
+  defp maybe_build_map(%{game_state: %{obstacles: nil}} = state), do: state
+  defp maybe_build_map(%{game_state: %{obstacles: []}} = state), do: state
+
+  defp maybe_build_map(state) do
+    obstacles =
+      state.game_state.obstacles
+      |> Enum.map(fn {obstacle_id, obstacle} ->
+        {obstacle_id,
+         Map.take(Map.from_struct(obstacle), [
+           :id,
+           :shape,
+           :position,
+           :radius,
+           :vertices,
+           :speed,
+           :category,
+           :direction,
+           :is_moving,
+           :name
+         ])}
+      end)
+      |> Enum.map(fn {obstacle_id, obstacle} ->
+        {obstacle_id, Map.put(obstacle, :position, %{x: obstacle.position.x, y: obstacle.position.y})}
+      end)
+      |> Enum.map(fn {obstacle_id, obstacle} ->
+        {obstacle_id,
+         Map.put(
+           obstacle,
+           :vertices,
+           Enum.map(obstacle.vertices.positions, fn position -> %{x: position.x, y: position.y} end)
+         )}
+      end)
+      |> Enum.map(fn {obstacle_id, obstacle} ->
+        {obstacle_id, Map.put(obstacle, :direction, %{x: obstacle.direction.x, y: obstacle.direction.y})}
+      end)
+      |> Enum.map(fn {obstacle_id, obstacle} ->
+        {obstacle_id, Map.put(obstacle, :shape, get_shape(obstacle.shape))}
+      end)
+      |> Enum.map(fn {obstacle_id, obstacle} ->
+        {obstacle_id, Map.put(obstacle, :category, get_category(obstacle.category))}
+      end)
+      |> Map.new()
+
+    case AStarNative.build_collision_grid(obstacles) do
+      {:ok, collision_grid} ->
+        update = %{
+          bot_state_machine: Map.put(state.bot_state_machine, :collision_grid, collision_grid)
+        }
+
+        Map.merge(state, update)
+
+      {:error, reason} ->
+        Logger.error("Grid construction failed with reason: #{inspect(reason)}")
+
+        update = %{
+          can_build_map: false
+        }
+
+        Map.merge(state, update)
+    end
   end
 
   defp update_block_attack_state(%{current_action: %{action: {:use_skill, _, _}, sent: false}} = state) do

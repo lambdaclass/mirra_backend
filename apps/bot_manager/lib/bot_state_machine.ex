@@ -258,6 +258,7 @@ defmodule BotManager.BotStateMachine do
     cond do
       is_nil(bot_state_machine.collision_grid) ->
         bot_state_machine
+
       is_nil(bot_state_machine.path_towards_position) ->
         position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
 
@@ -280,7 +281,7 @@ defmodule BotManager.BotStateMachine do
         end
 
       BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) and
-        BotStateMachineChecker.should_bot_move_to_another_position?(bot_state_machine) ->
+          BotStateMachineChecker.should_bot_move_to_another_position?(bot_state_machine) ->
         position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
 
         from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
