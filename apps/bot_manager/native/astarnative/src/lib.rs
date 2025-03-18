@@ -9,7 +9,7 @@ use std::cmp::Ordering;
 
 use position::Position;
 use entity::Entity;
-use rustler::{Binary, OwnedBinary};
+use rustler::{Binary, OwnedBinary, Env};
 
 const GRID_CELL_SIZE: f32 = 150.0;
 const WORLD_RADIUS: f32 = 15000.0;
@@ -45,9 +45,15 @@ fn a_star_shortest_path<'a>(from: Position, to: Position, collision_grid: Binary
 }
 
 #[rustler::nif()]
-fn build_collision_grid(obstacles: HashMap<u64, Entity>) -> OwnedBinary {
-    // TODO: remove unwrap
-    let mut grid : OwnedBinary = OwnedBinary::new(NUM_COLS as usize * NUM_ROWS as usize).unwrap();
+fn build_collision_grid<'a>(env: rustler::Env<'a>, obstacles: HashMap<u64, Entity>) -> Result<Binary<'a>, String>  {
+    let grid : Option<OwnedBinary> = OwnedBinary::new(NUM_COLS as usize * NUM_ROWS as usize);
+
+    if grid.is_none() {
+        return Err("Binary allocation failed".to_string())
+    }
+
+    let mut grid = grid.unwrap();
+
     let obstacles = obstacles.into_values().collect::<Vec<_>>();
 
     for j in 0..NUM_COLS {
@@ -71,7 +77,7 @@ fn build_collision_grid(obstacles: HashMap<u64, Entity>) -> OwnedBinary {
         }
     }
 
-    return grid;
+    return Ok(grid.release(env));
 }
 
 #[derive(Clone, Copy, Eq, PartialEq)]
