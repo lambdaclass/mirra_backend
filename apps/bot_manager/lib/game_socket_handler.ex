@@ -149,8 +149,9 @@ defmodule BotManager.GameSocketHandler do
     obstacles =
       state.game_state.obstacles
       |> Enum.map(fn {obstacle_id, obstacle} ->
-        {obstacle_id,
-         Map.take(Map.from_struct(obstacle), [
+         obstacle = obstacle
+          |> Map.from_struct()
+          |> Map.take([
            :id,
            :shape,
            :position,
@@ -161,27 +162,16 @@ defmodule BotManager.GameSocketHandler do
            :direction,
            :is_moving,
            :name
-         ])}
-      end)
-      |> Enum.map(fn {obstacle_id, obstacle} ->
-        {obstacle_id, Map.put(obstacle, :position, %{x: obstacle.position.x, y: obstacle.position.y})}
-      end)
-      |> Enum.map(fn {obstacle_id, obstacle} ->
-        {obstacle_id,
-         Map.put(
-           obstacle,
-           :vertices,
-           Enum.map(obstacle.vertices.positions, fn position -> %{x: position.x, y: position.y} end)
-         )}
-      end)
-      |> Enum.map(fn {obstacle_id, obstacle} ->
-        {obstacle_id, Map.put(obstacle, :direction, %{x: obstacle.direction.x, y: obstacle.direction.y})}
-      end)
-      |> Enum.map(fn {obstacle_id, obstacle} ->
-        {obstacle_id, Map.put(obstacle, :shape, get_shape(obstacle.shape))}
-      end)
-      |> Enum.map(fn {obstacle_id, obstacle} ->
-        {obstacle_id, Map.put(obstacle, :category, get_category(obstacle.category))}
+          ])
+
+        obstacle = obstacle
+          |> Map.put(:position, %{x: obstacle.position.x, y: obstacle.position.y})
+          |> Map.put(:vertices, Enum.map(obstacle.vertices.positions, fn position -> %{x: position.x, y: position.y} end))
+          |> Map.put(:direction, %{x: obstacle.direction.x, y: obstacle.direction.y})
+          |> Map.put(:shape, get_shape(obstacle.shape))
+          |> Map.put(:category, get_category(obstacle.category))
+
+        {obstacle_id, obstacle}
       end)
       |> Map.new()
 
