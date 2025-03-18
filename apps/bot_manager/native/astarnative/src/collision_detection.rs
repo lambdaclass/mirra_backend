@@ -9,30 +9,6 @@ pub(crate) fn point_circle_collision(point: &Entity, circle: &Entity) -> bool {
     let distance = calculate_distance(&point.position, &circle.position);
     distance <= circle.radius
 }
-pub(crate) fn point_polygon_collision(point: &Entity, polygon: &Entity) -> bool {
-    let mut collision = false;
-    for current in 0..polygon.vertices.len() {
-        let mut next = current + 1;
-        if next == polygon.vertices.len() {
-            next = 0
-        };
-
-        let current_vertex = polygon.vertices[current];
-        let next_vertex = polygon.vertices[next];
-
-        if ((current_vertex.y >= point.position.y && next_vertex.y < point.position.y)
-            || (current_vertex.y < point.position.y && next_vertex.y >= point.position.y))
-            && (point.position.x
-                < (next_vertex.x - current_vertex.x) * (point.position.y - current_vertex.y)
-                    / (next_vertex.y - current_vertex.y)
-                    + current_vertex.x)
-        {
-            collision = !collision;
-        }
-    }
-
-    collision
-}
 
 /*
  * Determines if a collision has occured between a line and a circle
@@ -79,44 +55,6 @@ pub(crate) fn line_circle_collision(line: &Entity, circle: &Entity) -> bool {
 }
 
 /*
- * Determines if a collision has occured between two circles
- * If the distance between the centers of the circles is less than
- * the sum of the radius, a collision has occured
- */
-pub(crate) fn circle_circle_collision(circle_1: &Entity, circle_2: &Entity) -> bool {
-    let distance = calculate_distance(&circle_1.position, &circle_2.position);
-    distance <= circle_1.radius + circle_2.radius
-}
-
-/*
- * Determines if a collision has occured between a circle and a polygon
- *
- */
-pub(crate) fn circle_polygon_collision(circle: &Entity, polygon: &Entity) -> bool {
-    // For each line in the polygon, check if there is a collision between the line and the circle
-    // If there is a collision, return true
-    for current in 0..polygon.vertices.len() {
-        let mut next = current + 1;
-        if next == polygon.vertices.len() {
-            next = 0
-        };
-
-        let current_line =
-            Entity::new_line(0, vec![polygon.vertices[current], polygon.vertices[next]]);
-
-        let collision = line_circle_collision(&current_line, circle);
-        if collision {
-            return true;
-        };
-    }
-
-    // Check if the center of the circle is inside the polygon
-    // If you doesn't want to check if the circle is inside the polygon,
-    // return false instead of calling point_polygon_colision
-    point_polygon_colision(circle, polygon)
-}
-
-/*
  * Determines if a collision has occured between a line and a polygon
  * If the distance between vertex 1 and the point and vertex 2 and the point
  * is equal (with a little bufer) to the distance between vertex 1 and vertex 2,
@@ -130,34 +68,6 @@ pub(crate) fn line_point_colision(line: &Entity, point: &Entity) -> bool {
     let buffer = 0.1;
 
     d1 + d2 >= line_length - buffer && d1 + d2 <= line_length + buffer
-}
-
-/*
- * Determines if a collision has occured between a point and a polygon
- */
-pub(crate) fn point_polygon_colision(point: &Entity, polygon: &Entity) -> bool {
-    let mut collision = false;
-    for current in 0..polygon.vertices.len() {
-        let mut next = current + 1;
-        if next == polygon.vertices.len() {
-            next = 0
-        };
-
-        let current_vertex = polygon.vertices[current];
-        let next_vertex = polygon.vertices[next];
-
-        if ((current_vertex.y >= point.position.y && next_vertex.y < point.position.y)
-            || (current_vertex.y < point.position.y && next_vertex.y >= point.position.y))
-            && (point.position.x
-                < (next_vertex.x - current_vertex.x) * (point.position.y - current_vertex.y)
-                    / (next_vertex.y - current_vertex.y)
-                    + current_vertex.x)
-        {
-            collision = !collision;
-        }
-    }
-
-    collision
 }
 
 pub(crate) fn line_polygon_collision(line: &Entity, polygon: &Entity) -> bool {

@@ -45,7 +45,7 @@ fn a_star_shortest_path<'a>(from: Position, to: Position, collision_grid: Binary
 }
 
 #[rustler::nif()]
-fn build_collision_grid<'a>(env: rustler::Env<'a>, obstacles: HashMap<u64, Entity>) -> Result<Binary<'a>, String>  {
+fn build_collision_grid<'a>(env: Env<'a>, obstacles: HashMap<u64, Entity>) -> Result<Binary<'a>, String>  {
     let grid : Option<OwnedBinary> = OwnedBinary::new(NUM_COLS as usize * NUM_ROWS as usize);
 
     if grid.is_none() {
