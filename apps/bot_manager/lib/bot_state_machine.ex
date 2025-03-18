@@ -233,6 +233,7 @@ defmodule BotManager.BotStateMachine do
           action: determine_player_move_action(bot_player, direction),
           bot_state_machine: bot_state_machine
         }
+
       not is_nil(bot_state_machine.position_to_move_to) ->
         %{direction: direction} =
           Utils.get_distance_and_direction_to_positions(
@@ -276,7 +277,8 @@ defmodule BotManager.BotStateMachine do
           |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
         end
 
-      not is_nil(bot_state_machine.collision_grid) and BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) and
+      not is_nil(bot_state_machine.collision_grid) and
+        BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) and
           BotStateMachineChecker.should_bot_move_to_another_position?(bot_state_machine) ->
         position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
 
@@ -298,7 +300,8 @@ defmodule BotManager.BotStateMachine do
           |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
         end
 
-      not is_nil(bot_state_machine.path_towards_position) and BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) ->
+      not is_nil(bot_state_machine.path_towards_position) and
+          BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) ->
         Map.put(bot_state_machine, :path_towards_position, tl(bot_state_machine.path_towards_position))
 
       true ->

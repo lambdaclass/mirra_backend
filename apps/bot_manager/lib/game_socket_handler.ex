@@ -92,18 +92,50 @@ defmodule BotManager.GameSocketHandler do
         new_state = Map.merge(state, update)
 
         # # only load collision grid once
-        if state.can_build_map && is_nil(new_state.bot_state_machine.collision_grid) and not is_nil(new_state.game_state) and not is_nil(new_state.game_state.obstacles) and not Enum.empty?(new_state.game_state.obstacles) do
-          obstacles = new_state.game_state.obstacles
-            |> Enum.map(fn {obstacle_id, obstacle} -> {obstacle_id, Map.take(Map.from_struct(obstacle), [:id, :shape, :position, :radius, :vertices, :speed, :category, :direction, :is_moving, :name])} end)
-            |> Enum.map(fn {obstacle_id, obstacle} -> {obstacle_id, Map.put(obstacle, :position, %{x: obstacle.position.x, y: obstacle.position.y})} end)
-            |> Enum.map(fn {obstacle_id, obstacle} -> {obstacle_id, Map.put(obstacle, :vertices, Enum.map(obstacle.vertices.positions, fn position -> %{x: position.x, y: position.y} end))} end)
-            |> Enum.map(fn {obstacle_id, obstacle} -> {obstacle_id, Map.put(obstacle, :direction, %{x: obstacle.direction.x, y: obstacle.direction.y})} end)
-            |> Enum.map(fn {obstacle_id, obstacle} -> {obstacle_id, Map.put(obstacle, :shape, get_shape(obstacle.shape))} end)
-            |> Enum.map(fn {obstacle_id, obstacle} -> {obstacle_id, Map.put(obstacle, :category, get_category(obstacle.category))} end)
+        if state.can_build_map && is_nil(new_state.bot_state_machine.collision_grid) and
+             not is_nil(new_state.game_state) and not is_nil(new_state.game_state.obstacles) and
+             not Enum.empty?(new_state.game_state.obstacles) do
+          obstacles =
+            new_state.game_state.obstacles
+            |> Enum.map(fn {obstacle_id, obstacle} ->
+              {obstacle_id,
+               Map.take(Map.from_struct(obstacle), [
+                 :id,
+                 :shape,
+                 :position,
+                 :radius,
+                 :vertices,
+                 :speed,
+                 :category,
+                 :direction,
+                 :is_moving,
+                 :name
+               ])}
+            end)
+            |> Enum.map(fn {obstacle_id, obstacle} ->
+              {obstacle_id, Map.put(obstacle, :position, %{x: obstacle.position.x, y: obstacle.position.y})}
+            end)
+            |> Enum.map(fn {obstacle_id, obstacle} ->
+              {obstacle_id,
+               Map.put(
+                 obstacle,
+                 :vertices,
+                 Enum.map(obstacle.vertices.positions, fn position -> %{x: position.x, y: position.y} end)
+               )}
+            end)
+            |> Enum.map(fn {obstacle_id, obstacle} ->
+              {obstacle_id, Map.put(obstacle, :direction, %{x: obstacle.direction.x, y: obstacle.direction.y})}
+            end)
+            |> Enum.map(fn {obstacle_id, obstacle} ->
+              {obstacle_id, Map.put(obstacle, :shape, get_shape(obstacle.shape))}
+            end)
+            |> Enum.map(fn {obstacle_id, obstacle} ->
+              {obstacle_id, Map.put(obstacle, :category, get_category(obstacle.category))}
+            end)
             |> Map.new()
 
           update = %{
-            bot_state_machine: Map.put(bot_state_machine, :collision_grid, AStarNative.build_collision_grid(obstacles)),
+            bot_state_machine: Map.put(bot_state_machine, :collision_grid, AStarNative.build_collision_grid(obstacles))
           }
 
           new_state = Map.merge(new_state, update)
@@ -228,7 +260,7 @@ defmodule BotManager.GameSocketHandler do
   def terminate(close_reason, state) do
     Logger.error("Terminating bot with reason: #{inspect(close_reason)}")
     Logger.error("Terminating bot in state machine step: #{inspect(state.bot_state_machine)}")
-    Logger.error("Stack trace: #{inspect(Process.info(self(), :current_stacktrace) )}")
+    Logger.error("Stack trace: #{inspect(Process.info(self(), :current_stacktrace))}")
   end
 
   defp get_shape("polygon"), do: :polygon
