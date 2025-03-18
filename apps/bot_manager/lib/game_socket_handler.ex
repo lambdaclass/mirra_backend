@@ -134,22 +134,24 @@ defmodule BotManager.GameSocketHandler do
             end)
             |> Map.new()
 
-          new_state = case AStarNative.build_collision_grid(obstacles) do
-            {:ok, collision_grid} ->
-              update = %{
-                bot_state_machine: Map.put(bot_state_machine, :collision_grid, collision_grid)
-              }
+          new_state =
+            case AStarNative.build_collision_grid(obstacles) do
+              {:ok, collision_grid} ->
+                update = %{
+                  bot_state_machine: Map.put(bot_state_machine, :collision_grid, collision_grid)
+                }
 
-              Map.merge(new_state, update)
-            {:error, reason} ->
-              Logger.error("Grid construction failed with reason: #{inspect(reason)}")
+                Map.merge(new_state, update)
 
-              update = %{
-                can_build_map: false,
-              }
+              {:error, reason} ->
+                Logger.error("Grid construction failed with reason: #{inspect(reason)}")
 
-              Map.merge(new_state, update)
-          end
+                update = %{
+                  can_build_map: false
+                }
+
+                Map.merge(new_state, update)
+            end
 
           {:ok, new_state}
         else
