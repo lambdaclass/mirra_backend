@@ -12,6 +12,9 @@ defmodule BotManager.BotStateMachine do
   @skill_2_key "2"
   @dash_skill_key "3"
 
+  # The minimum distance a tracked player has to move for the tracking path to get recalculated
+  @path_recalculation_min_diff 300
+
   @type bot_player() :: %BotManager.Protobuf.Entity{}
   @type players() :: %{binary() => bot_player()}
 
@@ -154,6 +157,7 @@ defmodule BotManager.BotStateMachine do
 
     cond do
       is_nil(bot_state_machine.path_towards_position) ->
+        IO.inspect("NIL PATH, setting new one")
         from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
         to = %{x: closest_player.position.x, y: closest_player.position.y}
 
@@ -172,6 +176,7 @@ defmodule BotManager.BotStateMachine do
           |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
         end
       Enum.empty?(bot_state_machine.path_towards_position) && time_since_last_position_change >= bot_state_machine.time_amount_to_change_position ->
+        IO.inspect("EMPTY PATH, setting new one")
         from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
         to = %{x: closest_player.position.x, y: closest_player.position.y}
 
@@ -189,7 +194,26 @@ defmodule BotManager.BotStateMachine do
           )
           |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
         end
+      Vector.distance(bot_state_machine.position_to_move_to, closest_player.position) > @path_recalculation_min_diff ->
+        IO.inspect("PLAYER MOVED, RECALCULATING PATH")
+        from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
+        to = %{x: closest_player.position.x, y: closest_player.position.y}
+
+        shortest_path = AStarNative.a_star_shortest_path(from, to, bot_state_machine.collision_grid)
+
+        # If we don't have a path, keep the old one
+        if Enum.empty?(shortest_path) do
+          bot_state_machine
+        else
+          Map.put(bot_state_machine, :position_to_move_to, closest_player.position)
+          |> Map.put(
+            :path_towards_position,
+            shortest_path
+          )
+          |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
+        end
       BotStateMachineChecker.current_waypoint_reached?(bot_player) ->
+        IO.inspect("GOING TO NEXT WAYPOINT")
         Map.put(bot_state_machine, :path_towards_position, tl(bot_state_machine.path_towards_position))
       true ->
         bot_state_machine

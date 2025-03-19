@@ -106,7 +106,7 @@ defmodule BotManager.BotStateMachineChecker do
   def move_to_next_state(bot_player, bot_state_machine, players) do
     cond do
       bot_stuck?(bot_state_machine) -> :moving
-      bot_state_machine.state != :tracking_player && bot_can_follow_a_player?(bot_player, bot_state_machine, players) -> :tracking_player
+      bot_can_follow_a_player?(bot_player, bot_state_machine, players) -> :tracking_player
       bot_can_turn_aggresive?(bot_state_machine) -> :attacking
       true -> :moving
     end
@@ -147,12 +147,14 @@ defmodule BotManager.BotStateMachineChecker do
         bot_player,
         Utils.get_action_distance_by_type(
           bot_state_machine.is_melee,
-          bot_state_machine.melee_attack_distance,
-          bot_state_machine.ranged_attack_distance
+          bot_state_machine.melee_tracking_range,
+          bot_state_machine.ranged_tracking_range
         )
       )
 
-    players_nearby_to_attack =
+    {:player, aditional_info} = bot_player.aditional_info
+
+    players_nearby_to_attack = if aditional_info.available_stamina > 0 do
       Utils.map_directions_to_players(
         players,
         bot_player,
@@ -162,6 +164,9 @@ defmodule BotManager.BotStateMachineChecker do
           bot_state_machine.ranged_attack_distance
         )
       )
+    else
+      []
+    end
 
     Enum.empty?(players_nearby_to_attack) && not Enum.empty?(players_nearby_to_follow) &&
       bot_can_turn_aggresive?(bot_state_machine) && not bot_stuck?(bot_state_machine)
