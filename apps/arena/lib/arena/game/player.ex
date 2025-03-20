@@ -180,7 +180,16 @@ defmodule Arena.Game.Player do
     player
   end
 
+  def move(player, %{x: x, y: y}) do
+    move(player, {x, y})
+  end
+
   def move(player, direction) do
+    IO.inspect(player.id, label: :aver_id)
+    IO.inspect(player.position, label: :aver_current_position)
+    IO.inspect(direction, label: :aver_nueva_direction)
+    IO.inspect(player.direction, label: :aver_current_direction)
+
     current_actions = add_or_remove_moving_action(player.aditional_info.current_actions, direction)
 
     {x, y} = direction
@@ -191,6 +200,8 @@ defmodule Arena.Game.Player do
         true -> Utils.normalize(%{x: x, y: y})
         _ -> player.direction
       end
+
+    IO.inspect(direction, label: :aver_normalized_direction)
 
     player
     |> Map.put(:direction, direction)

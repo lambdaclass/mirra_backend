@@ -30,10 +30,10 @@ defmodule BotManager.BotStateMachine do
         attack_blocked: attack_blocked,
         bot_skills: skills
       }) do
-    IO.inspect("aver esta action papi")
+    # IO.inspect("aver esta action papi")
 
-    bot_state_machine = preprocess_bot_state(bot_state_machine, bot_player) |> IO.inspect()
-    next_state = BotStateMachineChecker.move_to_next_state(bot_player, bot_state_machine, game_state.players) |> IO.inspect()
+    bot_state_machine = preprocess_bot_state(bot_state_machine, bot_player)
+    next_state = BotStateMachineChecker.move_to_next_state(bot_player, bot_state_machine, game_state.players) |> IO.inspect(label: :aver_next_state)
 
     if System.get_env("PATHFINDING_TEST") == "true" do
       move(bot_player, bot_state_machine, game_state.zone.radius)
@@ -57,12 +57,12 @@ defmodule BotManager.BotStateMachine do
     end
   end
 
-  def decide_action(params) do
-    IO.inspect(params)
-  end
+  # def decide_action(params) do
+  #   IO.inspect(params, label: :aver_what_the_fuck)
+  # end
 
-  # def decide_action(%{bot_state_machine: bot_state_machine}),
-  #   do: %{action: :idling, bot_state_machine: bot_state_machine}
+  def decide_action(%{bot_state_machine: bot_state_machine}),
+    do: %{action: :idling, bot_state_machine: bot_state_machine}
 
   @doc """
   This function will be in charge of using the bot's skill.
@@ -140,7 +140,7 @@ defmodule BotManager.BotStateMachine do
 
   # This function will determine the direction and action the bot will take.
   defp determine_player_move_action(bot_player, direction) do
-    {:player, bot_player_info} = bot_player.aditional_info
+    bot_player_info = bot_player.aditional_info
 
     if System.get_env("PATHFINDING_TEST") == "true" do
       {:move, direction}

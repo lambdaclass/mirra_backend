@@ -19,7 +19,6 @@ defmodule Arena.Bots.BotSupervisor do
   Initializes a new bot instance.
   """
   def start_bot(bot_id, game_id) do
-    IO.inspect("starteando botardo")
     DynamicSupervisor.start_child(__MODULE__, {Bot, %{bot_id: bot_id, game_id: game_id}})
   end
 

@@ -18,6 +18,7 @@ defmodule Arena.GameUpdater do
   alias Arena.Serialization.ToggleBots
   alias Phoenix.PubSub
   alias Arena.Game.Trap
+  alias Arena.Bots.Bot
 
   @standing_time 1900
 
@@ -32,7 +33,17 @@ defmodule Arena.GameUpdater do
     GenServer.cast(game_pid, {:move, player_id, direction, timestamp})
   end
 
+  def move(game_id, player_id, direction, timestamp, :id) do
+    game_pid = game_id |> Base58.decode() |> :erlang.binary_to_term([:safe])
+    GenServer.cast(game_pid, {:move, player_id, direction, timestamp})
+  end
+
   def attack(game_pid, player_id, skill, skill_params, timestamp) do
+    GenServer.cast(game_pid, {:attack, player_id, skill, skill_params, timestamp})
+  end
+
+  def attack(game_id, player_id, skill, skill_params, timestamp, :id) do
+    game_pid = game_id |> Base58.decode() |> :erlang.binary_to_term([:safe])
     GenServer.cast(game_pid, {:attack, player_id, skill, skill_params, timestamp})
   end
 
@@ -54,6 +65,11 @@ defmodule Arena.GameUpdater do
 
   def change_tickrate(game_pid, tickrate) do
     GenServer.cast(game_pid, {:change_tickrate, tickrate})
+  end
+
+  def update_bot(game_id, bot_player) do
+    game_pid = game_id |> Base58.decode() |> :erlang.binary_to_term([:safe])
+    GenServer.cast(game_pid, {:update_bot, bot_player})
   end
 
   ##########################
@@ -88,6 +104,8 @@ defmodule Arena.GameUpdater do
     bot_clients_ids =
       Enum.filter(players, fn player -> player.type == :bot end) |> Enum.map(fn player -> player.client_id end)
 
+        bot_player_ids = Enum.map(bot_clients_ids, fn bot_client_id -> game_state.client_to_player_map[bot_client_id] end)
+
     :ok = GameTracker.start_tracking(match_id, game_state.client_to_player_map, game_state.players, clients_ids)
 
     :telemetry.execute([:arena, :game], %{count: 1})
@@ -97,6 +115,7 @@ defmodule Arena.GameUpdater do
        match_id: match_id,
        clients: clients_ids,
        bot_clients: bot_clients_ids,
+       bot_player_ids: bot_player_ids,
        game_config: game_config,
        bounties_enabled?: bounties_enabled?,
        game_state: game_state,
@@ -137,6 +156,19 @@ defmodule Arena.GameUpdater do
         {:reply, {:ok, response}, state}
     end
   end
+
+  # defp move_bots(game_state, bot_client_ids) do
+  #     game_state.players
+  #     |> Enum.filter(fn {id, _player} -> id in bot_client_ids end)
+  #     |> Enum.reduce(game_state, fn {id, bot}, game_state ->
+  #       bot = Player.move(bot, bot.direction)
+  #       bot.position |> IO.inspect(label: :aver_nueva_position)
+
+  #       game_state
+  #       |> put_in([:players, id], bot)
+  #       # |> put_in([:player_timestamps, id], timestamp)
+  #     end)
+  # end
 
   def handle_cast({:move, player_id, direction, timestamp}, state) do
     player =
@@ -220,6 +252,10 @@ defmodule Arena.GameUpdater do
     {:noreply, put_in(state, [:game_config, :game, :tick_rate_ms], tickrate)}
   end
 
+  def handle_cast({:update_bot, bot_player}, state) do
+    {:noreply, put_in(state, [:game_state, :players, bot_player.id], bot_player)}
+  end
+
   ##########################
   # END API Callbacks
   ##########################
@@ -248,6 +284,8 @@ defmodule Arena.GameUpdater do
       |> remove_effects_on_action()
       |> reset_players_effects()
       |> Effect.apply_effect_mechanic_to_entities()
+      # Bots
+      # |> move_bots(state.bot_player_ids)
       # Players
       |> move_players()
       |> reduce_players_cooldowns(delta_time)
@@ -288,6 +326,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:bushes, state_diff[:bushes])
       |> Map.put(:crates, state_diff[:crates])
 
+    broadcast_game_state_to_bots(state.bot_clients, state_diff, state.game_config)
     broadcast_game_update(state_diff, game_state.game_id)
 
     ## We need this check cause there is some unexpected behaviour from the client
@@ -792,6 +831,10 @@ defmodule Arena.GameUpdater do
     PubSub.broadcast(Arena.PubSub, game_id, :enable_incomming_messages)
   end
 
+  defp broadcast_game_state_to_bots(bot_clients, state, game_config) do
+    Enum.each(bot_clients, fn bot_id -> Bot.update_state(bot_id, state, game_config) end)
+  end
+
   defp broadcast_game_update(state, game_id) do
     game_state = struct(GameState, state)
 
@@ -922,7 +965,7 @@ defmodule Arena.GameUpdater do
           team: player.team,
           player_name: player.name,
           position: pos,
-          direction: direction,
+          direction: %{x: 0.0, y: 0.0},
           character_name: player.character_name,
           skin_name: player.skin_name,
           config: config,

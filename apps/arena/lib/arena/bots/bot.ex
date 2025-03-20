@@ -10,8 +10,7 @@ defmodule Arena.Bots.Bot do
 
   def start_link(%{bot_id: bot_id, game_id: _game_id} = params) do
     IO.inspect("starteando botardo2")
-
-    GenServer.start_link(__MODULE__, params, name: via_tuple(bot_id) |> IO.inspect()) |> IO.inspect()
+    GenServer.start_link(__MODULE__, params, name: via_tuple(bot_id)) |> IO.inspect(label: :aver_starlink)
   end
 
   defp via_tuple(bot_id), do: {:via, Registry, {BotRegistry, bot_id}}
@@ -24,12 +23,11 @@ defmodule Arena.Bots.Bot do
     {:ok, %{bot_id: bot_id, game_id: game_id, attack_blocked: false, bot_state_machine: BotStateMachineChecker.new(), bots_enabled?: true, current_action: %{}}}
   end
 
-  def init(params) do
-    IO.inspect(params)
+  def update_state(bot_id, new_state, config) do
+    GenServer.cast(via_tuple(bot_id), {:game_event, new_state, config})
   end
 
   def handle_info(:decide_action, state) do
-    # IO.inspect("voy a decidir una acción")
     Process.send_after(self(), :decide_action, Enum.random(min_decision_delay_ms()..max_decision_delay_ms()))
     %{action: action, bot_state_machine: bot_state_machine} = BotStateMachine.decide_action(state)
     {:noreply, %{state | current_action: %{action: action, sent: false}, bot_state_machine: bot_state_machine}}
@@ -45,35 +43,48 @@ defmodule Arena.Bots.Bot do
     {:noreply, %{state | attack_blocked: false}}
   end
 
-  def handle_cast({:game_event, game_event}, state) do
-    case game_event do
-      %{event: {:update, game_state}} ->
-        bot_player = Map.get(game_state.players, state.bot_id)
-        updated_state = update_bot_state(state, bot_player, game_state)
+  def handle_cast({:game_event, game_event, config}, state) do
+
+    state = Map.put(state, :config, config)
+    case game_event.status do
+      :RUNNING ->
+        bot_player_number = get_in(game_event, [:client_to_player_map, state.bot_id])
+        bot_player = Map.get(game_event.players, bot_player_number)
+        updated_state = update_bot_state(state, bot_player, game_event) |> Map.put(:bot_player, bot_player)
         {:noreply, updated_state}
 
-      %{event: {:joined, joined}} ->
-        {:noreply, Map.merge(state, joined)}
-
-      %{event: {:finished, _}} ->
+      :ENDED ->
         {:stop, :shutdown, state}
-
-      %{event: {:toggle_bots, _}} ->
-        {:noreply, %{state | bots_enabled?: not state.bots_enabled?}}
-
       _ ->
         {:noreply, state}
     end
   end
 
   defp update_bot_state(state, bot_player, game_state) do
-    bot_state_machine = if is_nil(state.bot_state_machine.is_melee) do
-      %{state.bot_state_machine | is_melee: bot_player.attack_type == :MELEE}
-    else
-      state.bot_state_machine
-    end
+    state =
+      if Map.has_key?(state, :bot_skills) do
+        state
+      else
+        skills =
+          BotManager.Utils.list_character_skills_from_config(bot_player.aditional_info.character_name, state.config.characters)
 
-    %{state | bot_player: bot_player, game_state: game_state, bot_state_machine: bot_state_machine}
+        Map.put(state, :bot_skills, skills)
+      end
+
+      bot_state_machine =
+        if is_nil(state.bot_state_machine.is_melee) do
+          Map.put(state.bot_state_machine, :is_melee, state.bot_skills.basic.attack_type == :MELEE)
+        else
+          state.bot_state_machine
+        end
+
+      update = %{
+        bot_player: bot_player,
+        game_state: game_state,
+        bot_state_machine: bot_state_machine
+      }
+
+      Map.merge(state, update)
   end
 
   defp update_block_attack_state(%{current_action: %{action: {:use_skill, _, _}, sent: false}} = state) do
@@ -85,11 +96,16 @@ defmodule Arena.Bots.Bot do
 
   defp send_current_action(%{current_action: %{action: {:move, direction}, sent: false}} = state) do
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+    Arena.GameUpdater.move(state.game_id, state.bot_player.id, direction, timestamp, :id)
     Logger.info("Bot #{state.bot_id} moving in direction: #{inspect(direction)} at #{timestamp}")
   end
 
   defp send_current_action(%{current_action: %{action: {:use_skill, skill_key, direction}, sent: false}} = state) do
+    # timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+    # Arena.GameUpdater.move(state.game_id, state.bot_player.id, direction, timestamp, :id)
+    # Logger.info("Bot #{state.bot_id} moving in direction: #{inspect(direction)} at #{timestamp}")
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+    Arena.GameUpdater.attack(state.game_id, state.bot_player.id, %{skill_key: skill_key, direction: direction}, :id)
     Logger.info("Bot #{state.bot_id} using skill #{skill_key} towards #{inspect(direction)} at #{timestamp}")
   end
 

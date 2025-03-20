@@ -78,7 +78,7 @@ defmodule Arena.Matchmaking.GameLauncher do
   end
 
   def handle_info({:spawn_bot_for_player, bot_id, game_id}, state) do
-    Arena.Bots.BotSupervisor.start_bot(bot_id, game_id)
+    {:ok, _bot_pid} = Arena.Bots.BotSupervisor.start_bot(bot_id, game_id)
 
     {:noreply, state}
   end
@@ -140,7 +140,7 @@ defmodule Arena.Matchmaking.GameLauncher do
     # We spawn bots only if there is one player
     bot_clients =
       case Enum.count(clients) do
-        1 -> get_bot_clients(map.amount_of_players - Enum.count(clients))
+        1 -> get_bot_clients(1)
         _ -> []
       end
 
