@@ -26,6 +26,8 @@ defmodule BotManager.GameSocketHandler do
     end
   end
 
+  @delay_before_map_grid_building_ms 1000
+
   @action_delay_ms 30
 
   def start_link(%{"bot_client" => bot_client, "game_id" => game_id} = params) do
@@ -50,7 +52,12 @@ defmodule BotManager.GameSocketHandler do
       |> Map.put(:bots_enabled?, true)
       |> Map.put(:attack_blocked, false)
       |> Map.put(:bot_state_machine, BotStateMachineChecker.new())
+      |> Map.put(:can_build_map, false)
 
+    # This delay ensures we give some time to the board liveview to join on time before the game starts.
+    # Ideally we should make the collision grid building NIF faster instead of doing this so that we don't have problems
+    # running everything on the same machine (for example when testing locally)
+    Process.send_after(self(), :allow_map_build, @delay_before_map_grid_building_ms)
     {:ok, state}
   end
 
@@ -84,7 +91,9 @@ defmodule BotManager.GameSocketHandler do
           bot_state_machine: bot_state_machine
         }
 
-        {:ok, Map.merge(state, update)}
+        new_state = Map.merge(state, update)
+
+        {:ok, maybe_build_map(new_state)}
 
       %{event: {:joined, joined}} ->
         {:ok, Map.merge(state, joined)}
@@ -98,6 +107,12 @@ defmodule BotManager.GameSocketHandler do
       _ ->
         {:ok, state}
     end
+  end
+
+  def handle_info(:allow_map_build, state) do
+    state = Map.put(state, :can_build_map, true)
+
+    {:ok, state}
   end
 
   def handle_info(:decide_action, state) do
@@ -121,6 +136,69 @@ defmodule BotManager.GameSocketHandler do
     Process.send_after(self(), :perform_action, @action_delay_ms)
     send_current_action(state)
     {:ok, update_block_attack_state(state)}
+  end
+
+  defp maybe_build_map(%{can_build_map: false} = state), do: state
+
+  defp maybe_build_map(%{bot_state_machine: %{collision_grid: collision_grid}} = state) when not is_nil(collision_grid),
+    do: state
+
+  defp maybe_build_map(%{game_state: nil} = state), do: state
+  defp maybe_build_map(%{game_state: %{obstacles: nil}} = state), do: state
+  defp maybe_build_map(%{game_state: %{obstacles: []}} = state), do: state
+
+  defp maybe_build_map(state) do
+    obstacles =
+      state.game_state.obstacles
+      |> Enum.map(fn {obstacle_id, obstacle} ->
+        obstacle =
+          obstacle
+          |> Map.from_struct()
+          |> Map.take([
+            :id,
+            :shape,
+            :position,
+            :radius,
+            :vertices,
+            :speed,
+            :category,
+            :direction,
+            :is_moving,
+            :name
+          ])
+
+        obstacle =
+          obstacle
+          |> Map.put(:position, %{x: obstacle.position.x, y: obstacle.position.y})
+          |> Map.put(
+            :vertices,
+            Enum.map(obstacle.vertices.positions, fn position -> %{x: position.x, y: position.y} end)
+          )
+          |> Map.put(:direction, %{x: obstacle.direction.x, y: obstacle.direction.y})
+          |> Map.put(:shape, get_shape(obstacle.shape))
+          |> Map.put(:category, get_category(obstacle.category))
+
+        {obstacle_id, obstacle}
+      end)
+      |> Map.new()
+
+    case AStarNative.build_collision_grid(obstacles) do
+      {:ok, collision_grid} ->
+        update = %{
+          bot_state_machine: Map.put(state.bot_state_machine, :collision_grid, collision_grid)
+        }
+
+        Map.merge(state, update)
+
+      {:error, reason} ->
+        Logger.error("Grid construction failed with reason: #{inspect(reason)}")
+
+        update = %{
+          can_build_map: false
+        }
+
+        Map.merge(state, update)
+    end
   end
 
   defp update_block_attack_state(%{current_action: %{action: {:use_skill, _, _}, sent: false}} = state) do
@@ -197,4 +275,21 @@ defmodule BotManager.GameSocketHandler do
     Logger.error("Terminating bot with reason: #{inspect(close_reason)}")
     Logger.error("Terminating bot in state machine step: #{inspect(state.bot_state_machine)}")
   end
+
+  defp get_shape("polygon"), do: :polygon
+  defp get_shape("circle"), do: :circle
+  defp get_shape("line"), do: :line
+  defp get_shape("point"), do: :point
+  defp get_shape(_), do: nil
+
+  defp get_category("player"), do: :player
+  defp get_category("projectile"), do: :projectile
+  defp get_category("obstacle"), do: :obstacle
+  defp get_category("power_up"), do: :power_up
+  defp get_category("pool"), do: :pool
+  defp get_category("item"), do: :item
+  defp get_category("bush"), do: :bush
+  defp get_category("crate"), do: :crate
+  defp get_category("trap"), do: :trap
+  defp get_category(_), do: nil
 end

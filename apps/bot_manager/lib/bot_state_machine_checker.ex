@@ -28,7 +28,8 @@ defmodule BotManager.BotStateMachineChecker do
           ranged_tracking_range: integer(),
           ranged_attack_distance: integer(),
           melee_attack_distance: integer(),
-          is_melee: boolean() | nil
+          is_melee: boolean() | nil,
+          collision_grid: binary() | nil
         }
 
   defstruct [
@@ -67,7 +68,9 @@ defmodule BotManager.BotStateMachineChecker do
     # The range that the bot has to attack a player in melee
     :melee_attack_distance,
     # The type of attack that the bot has
-    :is_melee
+    :is_melee,
+    # A collision grid used for pathfinding
+    :collision_grid
   ]
 
   @spec new() :: BotManager.BotStateMachineChecker.t()
@@ -90,7 +93,8 @@ defmodule BotManager.BotStateMachineChecker do
       ranged_tracking_range: 1500,
       ranged_attack_distance: 1200,
       melee_attack_distance: 300,
-      is_melee: nil
+      is_melee: nil,
+      collision_grid: nil
     }
   end
 

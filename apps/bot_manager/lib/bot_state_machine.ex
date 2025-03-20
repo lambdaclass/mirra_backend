@@ -221,45 +221,56 @@ defmodule BotManager.BotStateMachine do
       determine_position_to_move_to(bot_state_machine, safe_zone_radius, System.get_env("PATHFINDING_TEST") == "true")
 
     # TODO instead of using `get_distance_and_direction_to_positions, use the pathfinding module`
-    if not is_nil(bot_state_machine.path_towards_position) and Enum.count(bot_state_machine.path_towards_position) > 0 do
-      %{direction: direction} =
-        Utils.get_distance_and_direction_to_positions(
-          bot_state_machine.current_position,
-          hd(bot_state_machine.path_towards_position)
-        )
+    cond do
+      not is_nil(bot_state_machine.path_towards_position) and Enum.count(bot_state_machine.path_towards_position) > 0 ->
+        %{direction: direction} =
+          Utils.get_distance_and_direction_to_positions(
+            bot_state_machine.current_position,
+            hd(bot_state_machine.path_towards_position)
+          )
 
-      %{
-        action: determine_player_move_action(bot_player, direction),
-        bot_state_machine: bot_state_machine
-      }
-    else
-      %{direction: direction} =
-        Utils.get_distance_and_direction_to_positions(
-          bot_state_machine.current_position,
-          bot_state_machine.position_to_move_to
-        )
+        %{
+          action: determine_player_move_action(bot_player, direction),
+          bot_state_machine: bot_state_machine
+        }
 
-      %{
-        action: determine_player_move_action(bot_player, direction),
-        bot_state_machine: bot_state_machine
-      }
+      not is_nil(bot_state_machine.position_to_move_to) ->
+        %{direction: direction} =
+          Utils.get_distance_and_direction_to_positions(
+            bot_state_machine.current_position,
+            bot_state_machine.position_to_move_to
+          )
+
+        %{
+          action: determine_player_move_action(bot_player, direction),
+          bot_state_machine: bot_state_machine
+        }
+
+      true ->
+        %{
+          action: :idling,
+          bot_state_machine: bot_state_machine
+        }
     end
   end
 
   defp determine_position_to_move_to(bot_state_machine, safe_zone_radius, true = _pathfinding_on) do
     cond do
+      is_nil(bot_state_machine.collision_grid) ->
+        bot_state_machine
+
       is_nil(bot_state_machine.path_towards_position) ->
         position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
 
         from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
         to = %{x: position_to_move_to.x, y: position_to_move_to.y}
 
-        shortest_path =
-          AStarNative.a_star_shortest_path(from, to)
+        shortest_path = AStarNative.a_star_shortest_path(from, to, bot_state_machine.collision_grid)
 
         # If we don't have a path, retry finding new position in map
         if Enum.empty?(shortest_path) do
-          determine_position_to_move_to(bot_state_machine, safe_zone_radius, true)
+          Map.put(bot_state_machine, :path_towards_position, nil)
+          |> Map.put(:position_to_move_to, nil)
         else
           Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
           |> Map.put(
@@ -276,12 +287,12 @@ defmodule BotManager.BotStateMachine do
         from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
         to = %{x: position_to_move_to.x, y: position_to_move_to.y}
 
-        shortest_path =
-          AStarNative.a_star_shortest_path(from, to)
+        shortest_path = AStarNative.a_star_shortest_path(from, to, bot_state_machine.collision_grid)
 
         # If we don't have a path, retry finding new position in map
         if Enum.empty?(shortest_path) do
-          determine_position_to_move_to(bot_state_machine, safe_zone_radius, true)
+          Map.put(bot_state_machine, :path_towards_position, nil)
+          |> Map.put(:position_to_move_to, nil)
         else
           Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
           |> Map.put(
