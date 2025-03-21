@@ -1,7 +1,6 @@
 name: "[NEW-TESTING-EUROPE] Deploy to Europe Arena testing"
 on:
   workflow_dispatch:
-on:
   push:
     branches: add-new-europe-server-workflow
 
