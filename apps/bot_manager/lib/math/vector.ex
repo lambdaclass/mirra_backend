@@ -56,6 +56,11 @@ defmodule BotManager.Math.Vector do
     }
   end
 
+  def distance(x, y) do
+    sub(x, y)
+    |> norm()
+  end
+
   def deg2rad(deg) do
     deg * :math.pi() / 180
   end
