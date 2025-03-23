@@ -90,9 +90,9 @@ debian-install-deps:
 	rm /tmp/elixir-otp-26.zip
 
 setup-caddy:
+	@read -p "Enter the server dns (e.g: 'arena-testing.championsofmirra.com'): " user_input; \
 	sudo ufw allow 80 \
 	sudo ufw allow 443 \
-	@read -p "Enter the server dns (e.g: 'arena-testing.championsofmirra.com'): " user_input; \
 	sudo sed -i "1i $$user_input {" /etc/caddy/Caddyfile; \
 	sudo sed -i "2i \	reverse_proxy localhost:4000" /etc/caddy/Caddyfile; \
 	sudo sed -i "3i }" /etc/caddy/Caddyfile;
