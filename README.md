@@ -139,7 +139,7 @@ Application for Champions Of Mirra game. Has modules for:
   - Users - Handles logic for Users. Consumes from the Users app for general items logic.
 
 ### GameBackend
-Persistance layer and shared logic:
+Persistence layer and shared logic:
 - Users logic that's general among all games. This module is quite incomplete for now, since users are only made of a unique username.
 - Units logic that's general among all games. Defines the schemas for the characters of every game. These act like templates for Units, which are instances of them tied to a user or a campaign level.
 - Items logic that's general among all games. Defines the schemas for the item templates of every game. These act like templates for Items, which are instances of them that belong to a user and can be equipped to a unit.
