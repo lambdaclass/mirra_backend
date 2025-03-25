@@ -147,13 +147,17 @@ defmodule BotManager.BotStateMachine do
           bot_state_machine.ranged_tracking_range
         )
       )
+
     closest_player = Enum.min_by(players_with_distances, & &1.distance)
 
     cond do
-      is_nil(bot_state_machine.path_towards_position) or Enum.empty?(bot_state_machine.path_towards_position) or Vector.distance(bot_state_machine.position_to_move_to, closest_player.position) > @path_recalculation_min_diff ->
+      is_nil(bot_state_machine.path_towards_position) or Enum.empty?(bot_state_machine.path_towards_position) or
+          Vector.distance(bot_state_machine.position_to_move_to, closest_player.position) > @path_recalculation_min_diff ->
         try_pathing_towards(bot_state_machine, closest_player.position)
+
       BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) ->
         Map.put(bot_state_machine, :path_towards_position, tl(bot_state_machine.path_towards_position))
+
       true ->
         bot_state_machine
     end
@@ -164,7 +168,9 @@ defmodule BotManager.BotStateMachine do
       move(bot_player, bot_state_machine, game_state.zone.radius)
     else
       current_waypoint = hd(bot_state_machine.path_towards_position)
-      direction = Vector.sub(current_waypoint, bot_player.position)
+
+      direction =
+        Vector.sub(current_waypoint, bot_player.position)
         |> Vector.normalize()
 
       %{
