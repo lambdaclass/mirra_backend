@@ -315,59 +315,46 @@ defmodule BotManager.BotStateMachine do
     end
   end
 
+  defp determine_position_to_move_to(%{collision_grid: nil} = bot_state_machine, _safe_zone_radius) do
+    bot_state_machine
+  end
+
   defp determine_position_to_move_to(bot_state_machine, safe_zone_radius) do
     cond do
-      is_nil(bot_state_machine.collision_grid) ->
-        bot_state_machine
-
       is_nil(bot_state_machine.path_towards_position) || Enum.empty?(bot_state_machine.path_towards_position) ->
-        position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
-
-        from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
-        to = %{x: position_to_move_to.x, y: position_to_move_to.y}
-
-        shortest_path = AStarNative.a_star_shortest_path(from, to, bot_state_machine.collision_grid)
-
-        # If we don't have a path, retry finding new position in map
-        if Enum.empty?(shortest_path) do
-          Map.put(bot_state_machine, :path_towards_position, nil)
-          |> Map.put(:position_to_move_to, nil)
-        else
-          Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
-          |> Map.put(
-            :path_towards_position,
-            shortest_path
-          )
-          |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
-        end
+        try_pick_random_position_to_move_to(bot_state_machine, safe_zone_radius)
 
       BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) and
           BotStateMachineChecker.should_bot_move_to_another_position?(bot_state_machine) ->
-        position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
-
-        from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
-        to = %{x: position_to_move_to.x, y: position_to_move_to.y}
-
-        shortest_path = AStarNative.a_star_shortest_path(from, to, bot_state_machine.collision_grid)
-
-        # If we don't have a path, retry finding new position in map
-        if Enum.empty?(shortest_path) do
-          Map.put(bot_state_machine, :path_towards_position, nil)
-          |> Map.put(:position_to_move_to, nil)
-        else
-          Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
-          |> Map.put(
-            :path_towards_position,
-            shortest_path
-          )
-          |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
-        end
+        try_pick_random_position_to_move_to(bot_state_machine, safe_zone_radius)
 
       BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) ->
         Map.put(bot_state_machine, :path_towards_position, tl(bot_state_machine.path_towards_position))
 
       true ->
         bot_state_machine
+    end
+  end
+
+  defp try_pick_random_position_to_move_to(bot_state_machine, safe_zone_radius) do
+    position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
+
+    from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
+    to = %{x: position_to_move_to.x, y: position_to_move_to.y}
+
+    shortest_path = AStarNative.a_star_shortest_path(from, to, bot_state_machine.collision_grid)
+
+    # If we don't have a path, retry finding new position in map
+    if Enum.empty?(shortest_path) do
+      Map.put(bot_state_machine, :path_towards_position, nil)
+      |> Map.put(:position_to_move_to, nil)
+    else
+      Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
+      |> Map.put(
+        :path_towards_position,
+        shortest_path
+      )
+      |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
     end
   end
 end
