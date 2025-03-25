@@ -10,7 +10,7 @@ defmodule BotManager.BotStateMachine do
 
   @skill_1_key "1"
   @skill_2_key "2"
-  @dash_skill_key "3"
+  # @dash_skill_key "3"
 
   # The minimum distance a tracked player has to move for the tracking path to get recalculated
   @path_recalculation_min_diff 300
@@ -133,7 +133,7 @@ defmodule BotManager.BotStateMachine do
 
   # This function will determine the direction and action the bot will take.
   defp determine_player_move_action(bot_player, direction) do
-    {:player, bot_player_info} = bot_player.aditional_info
+    {:player, _bot_player_info} = bot_player.aditional_info
 
     # TODO: consider if we want to dash in the desired direction instead of just moving
     {:move, direction}
