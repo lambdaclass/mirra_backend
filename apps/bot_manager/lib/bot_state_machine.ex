@@ -131,14 +131,6 @@ defmodule BotManager.BotStateMachine do
     end
   end
 
-  # This function will determine the direction and action the bot will take.
-  defp determine_player_move_action(bot_player, direction) do
-    {:player, _bot_player_info} = bot_player.aditional_info
-
-    # TODO: consider if we want to dash in the desired direction instead of just moving
-    {:move, direction}
-  end
-
   defp maybe_set_tracking_path(game_state, bot_player, bot_state_machine) do
     players_with_distances =
       Utils.map_directions_to_players(
@@ -177,7 +169,7 @@ defmodule BotManager.BotStateMachine do
         |> Vector.normalize()
 
       %{
-        action: determine_player_move_action(bot_player, direction),
+        action: {:move, direction},
         bot_state_machine: bot_state_machine
       }
     end
@@ -243,7 +235,7 @@ defmodule BotManager.BotStateMachine do
           )
 
         %{
-          action: determine_player_move_action(bot_player, direction),
+          action: {:move, direction},
           bot_state_machine: bot_state_machine
         }
 
@@ -255,7 +247,7 @@ defmodule BotManager.BotStateMachine do
           )
 
         %{
-          action: determine_player_move_action(bot_player, direction),
+          action: {:move, direction},
           bot_state_machine: bot_state_machine
         }
 
