@@ -149,63 +149,9 @@ defmodule BotManager.BotStateMachine do
       )
     closest_player = Enum.min_by(players_with_distances, & &1.distance)
 
-    current_time = :os.system_time(:millisecond)
-    time_since_last_position_change = current_time - bot_state_machine.last_time_position_changed
-
     cond do
-      is_nil(bot_state_machine.path_towards_position) ->
-        from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
-        to = %{x: closest_player.position.x, y: closest_player.position.y}
-
-        shortest_path = AStarNative.a_star_shortest_path(from, to, bot_state_machine.collision_grid)
-
-        # If we don't have a path, retry finding new position in map
-        if Enum.empty?(shortest_path) do
-          Map.put(bot_state_machine, :path_towards_position, nil)
-          |> Map.put(:position_to_move_to, nil)
-        else
-          Map.put(bot_state_machine, :position_to_move_to, closest_player.position)
-          |> Map.put(
-            :path_towards_position,
-            shortest_path
-          )
-          |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
-        end
-      Enum.empty?(bot_state_machine.path_towards_position) && time_since_last_position_change >= bot_state_machine.time_amount_to_change_position ->
-        from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
-        to = %{x: closest_player.position.x, y: closest_player.position.y}
-
-        shortest_path = AStarNative.a_star_shortest_path(from, to, bot_state_machine.collision_grid)
-
-        # If we don't have a path, retry finding new position in map
-        if Enum.empty?(shortest_path) do
-          Map.put(bot_state_machine, :path_towards_position, nil)
-          |> Map.put(:position_to_move_to, nil)
-        else
-          Map.put(bot_state_machine, :position_to_move_to, closest_player.position)
-          |> Map.put(
-            :path_towards_position,
-            shortest_path
-          )
-          |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
-        end
-      Vector.distance(bot_state_machine.position_to_move_to, closest_player.position) > @path_recalculation_min_diff ->
-        from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
-        to = %{x: closest_player.position.x, y: closest_player.position.y}
-
-        shortest_path = AStarNative.a_star_shortest_path(from, to, bot_state_machine.collision_grid)
-
-        # If we don't have a path, keep the old one
-        if Enum.empty?(shortest_path) do
-          bot_state_machine
-        else
-          Map.put(bot_state_machine, :position_to_move_to, closest_player.position)
-          |> Map.put(
-            :path_towards_position,
-            shortest_path
-          )
-          |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
-        end
+      is_nil(bot_state_machine.path_towards_position) or Enum.empty?(bot_state_machine.path_towards_position) or Vector.distance(bot_state_machine.position_to_move_to, closest_player.position) > @path_recalculation_min_diff ->
+        try_pathing_towards(bot_state_machine, closest_player.position)
       BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) ->
         Map.put(bot_state_machine, :path_towards_position, tl(bot_state_machine.path_towards_position))
       true ->
@@ -336,6 +282,10 @@ defmodule BotManager.BotStateMachine do
   defp try_pick_random_position_to_move_to(bot_state_machine, safe_zone_radius) do
     position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
 
+    try_pathing_towards(bot_state_machine, position_to_move_to)
+  end
+
+  defp try_pathing_towards(bot_state_machine, position_to_move_to) do
     from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
     to = %{x: position_to_move_to.x, y: position_to_move_to.y}
 
