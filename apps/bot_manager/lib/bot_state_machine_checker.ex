@@ -104,27 +104,17 @@ defmodule BotManager.BotStateMachineChecker do
           BotManager.BotStateMachine.players()
         ) :: state_step()
   def move_to_next_state(bot_player, bot_state_machine, players) do
-    if System.get_env("PATHFINDING_TEST") == "true" do
-      :moving
-    else
-      cond do
-        bot_stuck?(bot_state_machine) -> :moving
-        bot_can_follow_a_player?(bot_player, bot_state_machine, players) -> :tracking_player
-        bot_can_turn_aggresive?(bot_state_machine) -> :attacking
-        true -> :moving
-      end
+    cond do
+      bot_stuck?(bot_state_machine) -> :moving
+      bot_can_follow_a_player?(bot_player, bot_state_machine, players) -> :tracking_player
+      bot_can_turn_aggresive?(bot_state_machine) -> :attacking
+      true -> :moving
     end
   end
 
   @spec should_bot_move_to_another_position?(BotManager.BotStateMachineChecker.t()) :: boolean()
   def should_bot_move_to_another_position?(bot_state_machine) do
-    if System.get_env("PATHFINDING_TEST") == "true" do
-      is_nil(bot_state_machine.path_towards_position) or Enum.count(bot_state_machine.path_towards_position) <= 1
-    else
-      current_time = :os.system_time(:millisecond)
-      time_since_last_position_change = current_time - bot_state_machine.last_time_position_changed
-      time_since_last_position_change >= bot_state_machine.time_amount_to_change_position
-    end
+    is_nil(bot_state_machine.path_towards_position) or Enum.count(bot_state_machine.path_towards_position) <= 1
   end
 
   @spec current_waypoint_reached?(BotManager.BotStateMachineChecker.t()) :: boolean()
@@ -157,21 +147,27 @@ defmodule BotManager.BotStateMachineChecker do
         bot_player,
         Utils.get_action_distance_by_type(
           bot_state_machine.is_melee,
-          bot_state_machine.melee_attack_distance,
-          bot_state_machine.ranged_attack_distance
+          bot_state_machine.melee_tracking_range,
+          bot_state_machine.ranged_tracking_range
         )
       )
 
+    {:player, aditional_info} = bot_player.aditional_info
+
     players_nearby_to_attack =
-      Utils.map_directions_to_players(
-        players,
-        bot_player,
-        Utils.get_action_distance_by_type(
-          bot_state_machine.is_melee,
-          bot_state_machine.melee_attack_distance,
-          bot_state_machine.ranged_attack_distance
+      if aditional_info.available_stamina > 0 do
+        Utils.map_directions_to_players(
+          players,
+          bot_player,
+          Utils.get_action_distance_by_type(
+            bot_state_machine.is_melee,
+            bot_state_machine.melee_attack_distance,
+            bot_state_machine.ranged_attack_distance
+          )
         )
-      )
+      else
+        []
+      end
 
     Enum.empty?(players_nearby_to_attack) && not Enum.empty?(players_nearby_to_follow) &&
       bot_can_turn_aggresive?(bot_state_machine) && not bot_stuck?(bot_state_machine)
