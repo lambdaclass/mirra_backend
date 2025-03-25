@@ -795,7 +795,22 @@ defmodule Arena.GameUpdater do
   end
 
   defp broadcast_game_state_to_bots(bot_clients, state, game_config) do
-    Enum.each(bot_clients, fn bot_id -> Bot.update_state(bot_id, state, game_config) end)
+    completed_state =
+
+      Map.merge(state, %{
+        players: complete_entities(state[:players], :player),
+        projectiles: complete_entities(state[:projectiles], :projectile),
+        power_ups: complete_entities(state[:power_ups], :power_up),
+        pools: complete_entities(state[:pools], :pool),
+        bushes: complete_entities(state[:bushes], :bush),
+        items: complete_entities(state[:items], :item),
+        obstacles: complete_entities(state[:obstacles], :obstacle),
+        crates: complete_entities(state[:crates], :crate),
+        traps: complete_entities(state[:traps], :trap),
+        external_wall: complete_entity(state[:external_wall], :obstacle)
+      })
+
+    Enum.each(bot_clients, fn bot_id -> Bot.update_state(bot_id, completed_state, game_config) end)
   end
 
   defp broadcast_game_update(state, game_id) do

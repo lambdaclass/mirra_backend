@@ -130,7 +130,7 @@ defmodule BotManager.BotStateMachine do
 
   # This function will determine the direction and action the bot will take.
   defp determine_player_move_action(bot_player, direction) do
-    bot_player_info = bot_player.aditional_info
+    {:player, bot_player_info} = bot_player.aditional_info
 
     if System.get_env("PATHFINDING_TEST") == "true" do
       {:move, direction}
