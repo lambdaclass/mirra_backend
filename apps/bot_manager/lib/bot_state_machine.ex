@@ -217,18 +217,17 @@ defmodule BotManager.BotStateMachine do
   end
 
   defp track_player(game_state, bot_player, bot_state_machine) do
-    cond do 
-      is_nil(bot_state_machine.path_towards_position) || Enum.empty?(bot_state_machine.path_towards_position) ->
-        move(bot_player, bot_state_machine, game_state.zone.radius)
-      true ->
-        current_waypoint = hd(bot_state_machine.path_towards_position)
-        direction = Vector.sub(current_waypoint, bot_player.position)
-          |> Vector.normalize()
+    if is_nil(bot_state_machine.path_towards_position) || Enum.empty?(bot_state_machine.path_towards_position) do
+      move(bot_player, bot_state_machine, game_state.zone.radius)
+    else
+      current_waypoint = hd(bot_state_machine.path_towards_position)
+      direction = Vector.sub(current_waypoint, bot_player.position)
+        |> Vector.normalize()
 
-        %{
-          action: determine_player_move_action(bot_player, direction),
-          bot_state_machine: bot_state_machine
-        }
+      %{
+        action: determine_player_move_action(bot_player, direction),
+        bot_state_machine: bot_state_machine
+      }
     end
   end
 
