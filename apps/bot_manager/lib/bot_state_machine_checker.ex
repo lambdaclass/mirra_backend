@@ -154,19 +154,20 @@ defmodule BotManager.BotStateMachineChecker do
 
     {:player, aditional_info} = bot_player.aditional_info
 
-    players_nearby_to_attack = if aditional_info.available_stamina > 0 do
-      Utils.map_directions_to_players(
-        players,
-        bot_player,
-        Utils.get_action_distance_by_type(
-          bot_state_machine.is_melee,
-          bot_state_machine.melee_attack_distance,
-          bot_state_machine.ranged_attack_distance
+    players_nearby_to_attack =
+      if aditional_info.available_stamina > 0 do
+        Utils.map_directions_to_players(
+          players,
+          bot_player,
+          Utils.get_action_distance_by_type(
+            bot_state_machine.is_melee,
+            bot_state_machine.melee_attack_distance,
+            bot_state_machine.ranged_attack_distance
+          )
         )
-      )
-    else
-      []
-    end
+      else
+        []
+      end
 
     Enum.empty?(players_nearby_to_attack) && not Enum.empty?(players_nearby_to_follow) &&
       bot_can_turn_aggresive?(bot_state_machine) && not bot_stuck?(bot_state_machine)
