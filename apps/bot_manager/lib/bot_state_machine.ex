@@ -144,7 +144,7 @@ defmodule BotManager.BotStateMachine do
       Utils.map_directions_to_players(
         game_state.players,
         bot_player,
-        Utils.get_action_distance_based_on_action_type(
+        Utils.get_action_distance_by_type(
           bot_state_machine.is_melee,
           bot_state_machine.melee_tracking_range,
           bot_state_machine.ranged_tracking_range
@@ -157,7 +157,6 @@ defmodule BotManager.BotStateMachine do
 
     cond do
       is_nil(bot_state_machine.path_towards_position) ->
-        IO.inspect("NIL PATH, setting new one")
         from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
         to = %{x: closest_player.position.x, y: closest_player.position.y}
 
@@ -176,7 +175,6 @@ defmodule BotManager.BotStateMachine do
           |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
         end
       Enum.empty?(bot_state_machine.path_towards_position) && time_since_last_position_change >= bot_state_machine.time_amount_to_change_position ->
-        IO.inspect("EMPTY PATH, setting new one")
         from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
         to = %{x: closest_player.position.x, y: closest_player.position.y}
 
@@ -195,7 +193,6 @@ defmodule BotManager.BotStateMachine do
           |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
         end
       Vector.distance(bot_state_machine.position_to_move_to, closest_player.position) > @path_recalculation_min_diff ->
-        IO.inspect("PLAYER MOVED, RECALCULATING PATH")
         from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
         to = %{x: closest_player.position.x, y: closest_player.position.y}
 
@@ -212,8 +209,7 @@ defmodule BotManager.BotStateMachine do
           )
           |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
         end
-      BotStateMachineChecker.current_waypoint_reached?(bot_player) ->
-        IO.inspect("GOING TO NEXT WAYPOINT")
+      BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) ->
         Map.put(bot_state_machine, :path_towards_position, tl(bot_state_machine.path_towards_position))
       true ->
         bot_state_machine
@@ -325,7 +321,7 @@ defmodule BotManager.BotStateMachine do
       is_nil(bot_state_machine.collision_grid) ->
         bot_state_machine
 
-      is_nil(bot_state_machine.path_towards_position) ->
+      is_nil(bot_state_machine.path_towards_position) || Enum.empty?(bot_state_machine.path_towards_position) ->
         position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
 
         from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
