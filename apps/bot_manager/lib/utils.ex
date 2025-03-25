@@ -71,13 +71,13 @@ defmodule BotManager.Utils do
   end
 
   defp player_within_visible_players?(bot_player, player_id) do
-    bot_player_info = bot_player.aditional_info
+    {:player, bot_player_info} = bot_player.aditional_info
     Enum.member?(bot_player_info.visible_players, player_id)
   end
 
   defp bot_belongs_to_the_same_team?(bot_player, player) do
-    bot_player_info = bot_player.aditional_info
-    player_info = player.aditional_info
+    {:player, bot_player_info} = bot_player.aditional_info
+    {:player, player_info} = player.aditional_info
 
     bot_player_info.team == player_info.team
   end
