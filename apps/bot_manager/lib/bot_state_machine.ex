@@ -34,7 +34,7 @@ defmodule BotManager.BotStateMachine do
 
     case next_state do
       :moving ->
-        move(bot_player, bot_state_machine, game_state.zone.radius)
+        move(bot_state_machine, game_state.zone.radius)
 
       :attacking ->
         use_skill(%{
@@ -81,7 +81,7 @@ defmodule BotManager.BotStateMachine do
           )
 
         if Enum.empty?(players_with_distances) do
-          move(bot_player, bot_state_machine, game_state.zone.radius)
+          move(bot_state_machine, game_state.zone.radius)
         else
           bot_state_machine =
             Map.put(
@@ -108,7 +108,7 @@ defmodule BotManager.BotStateMachine do
           )
 
         if Enum.empty?(players_with_distances) do
-          move(bot_player, bot_state_machine, game_state.zone.radius)
+          move(bot_state_machine, game_state.zone.radius)
         else
           bot_state_machine =
             Map.put(
@@ -124,7 +124,7 @@ defmodule BotManager.BotStateMachine do
         end
 
       true ->
-        move(bot_player, bot_state_machine, game_state.zone.radius)
+        move(bot_state_machine, game_state.zone.radius)
     end
   end
 
@@ -157,7 +157,7 @@ defmodule BotManager.BotStateMachine do
 
   defp track_player(game_state, bot_player, bot_state_machine) do
     if is_nil(bot_state_machine.path_towards_position) || Enum.empty?(bot_state_machine.path_towards_position) do
-      move(bot_player, bot_state_machine, game_state.zone.radius)
+      move(bot_state_machine, game_state.zone.radius)
     else
       current_waypoint = hd(bot_state_machine.path_towards_position)
 
@@ -218,7 +218,7 @@ defmodule BotManager.BotStateMachine do
     end
   end
 
-  defp move(bot_player, bot_state_machine, safe_zone_radius) do
+  defp move(bot_state_machine, safe_zone_radius) do
     bot_state_machine =
       determine_position_to_move_to(bot_state_machine, safe_zone_radius)
 
