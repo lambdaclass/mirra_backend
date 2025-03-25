@@ -29,7 +29,8 @@ defmodule BotManager.BotStateMachineChecker do
           ranged_attack_distance: integer(),
           melee_attack_distance: integer(),
           is_melee: boolean() | nil,
-          collision_grid: binary() | nil
+          collision_grid: binary() | nil,
+          current_move_direction: map()
         }
 
   defstruct [
@@ -70,7 +71,9 @@ defmodule BotManager.BotStateMachineChecker do
     # The type of attack that the bot has
     :is_melee,
     # A collision grid used for pathfinding
-    :collision_grid
+    :collision_grid,
+    # The current direction the player is moving towards
+    :current_move_direction
   ]
 
   @spec new() :: BotManager.BotStateMachineChecker.t()
@@ -94,7 +97,8 @@ defmodule BotManager.BotStateMachineChecker do
       ranged_attack_distance: 1200,
       melee_attack_distance: 300,
       is_melee: nil,
-      collision_grid: nil
+      collision_grid: nil,
+      current_move_direction: %{x: 0.0, y: 0.0}
     }
   end
 

@@ -15,6 +15,9 @@ defmodule BotManager.BotStateMachine do
   # The minimum distance a tracked player has to move for the tracking path to get recalculated
   @path_recalculation_min_diff 300
 
+  # The force used to steer the current velocity into the new target velocity
+  @steering_force 0.1
+
   @type bot_player() :: %BotManager.Protobuf.Entity{}
   @type players() :: %{binary() => bot_player()}
 
@@ -168,10 +171,7 @@ defmodule BotManager.BotStateMachine do
         Vector.sub(current_waypoint, bot_player.position)
         |> Vector.normalize()
 
-      %{
-        action: {:move, direction},
-        bot_state_machine: bot_state_machine
-      }
+      handle_move_in_direction(bot_state_machine, direction)
     end
   end
 
@@ -234,10 +234,7 @@ defmodule BotManager.BotStateMachine do
             hd(bot_state_machine.path_towards_position)
           )
 
-        %{
-          action: {:move, direction},
-          bot_state_machine: bot_state_machine
-        }
+        handle_move_in_direction(bot_state_machine, direction)
 
       not is_nil(bot_state_machine.position_to_move_to) ->
         %{direction: direction} =
@@ -246,11 +243,7 @@ defmodule BotManager.BotStateMachine do
             bot_state_machine.position_to_move_to
           )
 
-        %{
-          action: {:move, direction},
-          bot_state_machine: bot_state_machine
-        }
-
+        handle_move_in_direction(bot_state_machine, direction)
       true ->
         %{
           action: :idling,
@@ -304,5 +297,27 @@ defmodule BotManager.BotStateMachine do
       )
       |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
     end
+  end
+
+  defp handle_move_in_direction(%{current_move_direction: direction} = bot_state_machine, desired_direction) when is_nil(direction) or (direction.x == 0 and direction.y == 0) do
+    %{
+      action: {:move, desired_direction},
+      bot_state_machine: Map.put(bot_state_machine, :current_move_direction, desired_direction)
+    }
+  end
+
+  defp handle_move_in_direction(bot_state_machine, desired_direction) do
+    current_direction = bot_state_machine.current_move_direction
+    direction_force = Vector.sub(desired_direction, current_direction)
+      |> Vector.normalize()
+      |> Vector.mult(@steering_force)
+
+    displaced_direction = Vector.add(current_direction, direction_force)
+      |> Vector.normalize()
+
+    %{
+      action: {:move, displaced_direction},
+      bot_state_machine: Map.put(bot_state_machine, :current_move_direction, displaced_direction)
+    }
   end
 end
