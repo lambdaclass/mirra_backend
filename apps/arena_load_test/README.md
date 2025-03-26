@@ -17,7 +17,8 @@ make run
 Inside the Elixir shell:
 ```elixir
 # number_of_simulated_players must be a positive integer
-System.get_env("LOADTEST_ALONE_MODE") == "true"
+System.put_env("LOADTEST_ALONE_MODE", "true")
+System.put_env("LOADTEST_EUROPE_HOST", "176.9.26.172")
 number_of_simulated_players = 25
 ArenaLoadTest.SocketSupervisor.spawn_players(number_of_simulated_players)
 ```
