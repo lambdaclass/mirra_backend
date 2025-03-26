@@ -13,7 +13,6 @@ defmodule Arena.Bots.PathfindingGrid do
 
   def init(_opts) do
     Process.send_after(self(), :update_config, 1_000)
-
     {:ok, %{}}
   end
 
@@ -27,7 +26,7 @@ defmodule Arena.Bots.PathfindingGrid do
       |> Enum.reduce(%{maps: []}, fn map, acc ->
         map_obstacles =
           Enum.reduce(map.obstacles, {[], 1}, fn obstacle, {obstacles_acc, current_id} ->
-            # Add the fake incremental ID to the obstacle
+            # The following is only done so Rust doesn't complain about Entity type param
             updated_obstacle =
               obstacle
               |> Map.take([
@@ -49,10 +48,8 @@ defmodule Arena.Bots.PathfindingGrid do
               |> Map.put(:direction, %{x: 0.0, y: 0.0})
               |> Map.put(:speed, 0.0)
 
-            # Add the updated obstacle to the accumulator list
             {obstacles_acc ++ [updated_obstacle], current_id + 1}
           end)
-          # take only the list
           |> elem(0)
           |> Enum.map(fn obstacle -> {obstacle.id, obstacle} end)
           |> Map.new()
@@ -79,7 +76,7 @@ defmodule Arena.Bots.PathfindingGrid do
         )
       end)
 
-    Process.send_after(__MODULE__, :update_bounties, @update_interval_ms)
+    Process.send_after(__MODULE__, :update_config, @update_interval_ms)
     {:noreply, state}
   end
 
