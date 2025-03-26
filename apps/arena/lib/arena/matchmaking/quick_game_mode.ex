@@ -1,8 +1,6 @@
 defmodule Arena.Matchmaking.QuickGameMode do
   @moduledoc false
   alias Arena.Matchmaking.GameLauncher
-  alias Arena.Utils
-
   use GenServer
 
   # API
@@ -56,15 +54,5 @@ defmodule Arena.Matchmaking.QuickGameMode do
     end
 
     {:reply, :ok, state}
-  end
-
-  @impl true
-  def handle_info({:spawn_bot_for_player, bot_client, game_id}, state) do
-    spawn(fn ->
-      Finch.build(:get, Utils.get_bot_connection_url(game_id, bot_client))
-      |> Finch.request(Arena.Finch)
-    end)
-
-    {:noreply, state}
   end
 end
