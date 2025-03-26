@@ -15,7 +15,6 @@ defmodule Arena.GameUpdater do
   alias Arena.Serialization.GameEvent
   alias Arena.Serialization.GameState
   alias Arena.Serialization.GameFinished
-  alias Arena.Serialization.ToggleBots
   alias Phoenix.PubSub
   alias Arena.Game.Trap
 
@@ -99,6 +98,7 @@ defmodule Arena.GameUpdater do
        bot_clients: bot_clients_ids,
        game_config: game_config,
        bounties_enabled?: bounties_enabled?,
+       bots_enabled?: game_config.game.bots_enabled,
        game_state: game_state,
        last_broadcasted_game_state: %{}
      }}
@@ -206,12 +206,8 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_cast(:toggle_bots, state) do
-    encoded_msg =
-      GameEvent.encode(%GameEvent{
-        event: {:toggle_bots, %ToggleBots{}}
-      })
-
-    PubSub.broadcast(Arena.PubSub, state.game_state.game_id, {:toggle_bots, encoded_msg})
+    state = Map.put(state, :bots_enabled?, not state.bots_enabled?)
+    PubSub.broadcast(Arena.PubSub, "BOTS_#{state.game_state.game_id}", {:enable_bots, state.bots_enabled?})
 
     {:noreply, state}
   end

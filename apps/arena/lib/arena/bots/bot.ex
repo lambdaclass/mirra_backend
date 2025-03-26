@@ -27,8 +27,8 @@ defmodule Arena.Bots.Bot do
        game_pid: game_pid,
        attack_blocked: false,
        bot_state_machine: BotStateMachineChecker.new(),
-       bots_enabled?: true,
-       current_action: %{},
+       enabled?: true,
+       current_action: %{}
      }}
   end
 
@@ -61,6 +61,10 @@ defmodule Arena.Bots.Bot do
       _ ->
         {:noreply, state}
     end
+  end
+
+  def handle_info({:enable_bots, enable_bots?}, state) do
+    {:noreply, Map.put(state, :enabled?, enable_bots?)}
   end
 
   def handle_info({:collision_grid_response, grid}, state) do
