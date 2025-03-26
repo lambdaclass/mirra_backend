@@ -287,6 +287,7 @@ defmodule Arena.GameUpdater do
       Map.put(game_state, :obstacles, state_diff[:obstacles])
       |> Map.put(:bushes, state_diff[:bushes])
       |> Map.put(:crates, state_diff[:crates])
+      |> complete_state_entities()
 
     broadcast_game_state_to_bots(state_diff, state.game_config)
     broadcast_game_update(state_diff, game_state.game_id)
@@ -793,20 +794,20 @@ defmodule Arena.GameUpdater do
     PubSub.broadcast(Arena.PubSub, game_id, :enable_incomming_messages)
   end
 
-    completed_state =
-
-      Map.merge(state, %{
-        players: complete_entities(state[:players], :player),
-        projectiles: complete_entities(state[:projectiles], :projectile),
-        power_ups: complete_entities(state[:power_ups], :power_up),
-        pools: complete_entities(state[:pools], :pool),
-        bushes: complete_entities(state[:bushes], :bush),
-        items: complete_entities(state[:items], :item),
-        obstacles: complete_entities(state[:obstacles], :obstacle),
-        crates: complete_entities(state[:crates], :crate),
-        traps: complete_entities(state[:traps], :trap),
-        external_wall: complete_entity(state[:external_wall], :obstacle)
-      })
+  defp complete_state_entities(state) do
+    Map.merge(state, %{
+      players: complete_entities(state[:players], :player),
+      projectiles: complete_entities(state[:projectiles], :projectile),
+      power_ups: complete_entities(state[:power_ups], :power_up),
+      pools: complete_entities(state[:pools], :pool),
+      bushes: complete_entities(state[:bushes], :bush),
+      items: complete_entities(state[:items], :item),
+      obstacles: complete_entities(state[:obstacles], :obstacle),
+      crates: complete_entities(state[:crates], :crate),
+      traps: complete_entities(state[:traps], :trap),
+      external_wall: complete_entity(state[:external_wall], :obstacle)
+    })
+  end
 
   defp broadcast_game_state_to_bots(state, game_config) do
     PubSub.broadcast(Arena.PubSub, "BOTS_#{state.game_id}", {:game_update, state, game_config})
@@ -817,20 +818,7 @@ defmodule Arena.GameUpdater do
 
     encoded_state =
       GameEvent.encode(%GameEvent{
-        event:
-          {:update,
-           Map.merge(game_state, %{
-             players: complete_entities(state[:players], :player),
-             projectiles: complete_entities(state[:projectiles], :projectile),
-             power_ups: complete_entities(state[:power_ups], :power_up),
-             pools: complete_entities(state[:pools], :pool),
-             bushes: complete_entities(state[:bushes], :bush),
-             items: complete_entities(state[:items], :item),
-             obstacles: complete_entities(state[:obstacles], :obstacle),
-             crates: complete_entities(state[:crates], :crate),
-             traps: complete_entities(state[:traps], :trap),
-             external_wall: complete_entity(state[:external_wall], :obstacle)
-           })}
+        event: {:update, game_state}
       })
 
     PubSub.broadcast(Arena.PubSub, game_id, {:game_update, encoded_state})
