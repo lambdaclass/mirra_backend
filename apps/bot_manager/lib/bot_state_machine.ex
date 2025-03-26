@@ -299,7 +299,7 @@ defmodule BotManager.BotStateMachine do
     end
   end
 
-  defp handle_move_in_direction(%{current_move_direction: direction} = bot_state_machine, desired_direction) when is_nil(direction) or (direction.x == 0 and direction.y == 0) do
+  defp handle_move_in_direction(%{current_move_direction: direction} = bot_state_machine, desired_direction) when is_nil(direction) do
     %{
       action: {:move, desired_direction},
       bot_state_machine: Map.put(bot_state_machine, :current_move_direction, desired_direction)
@@ -308,16 +308,24 @@ defmodule BotManager.BotStateMachine do
 
   defp handle_move_in_direction(bot_state_machine, desired_direction) do
     current_direction = bot_state_machine.current_move_direction
-    direction_force = Vector.sub(desired_direction, current_direction)
-      |> Vector.normalize()
-      |> Vector.mult(@steering_force)
 
-    displaced_direction = Vector.add(current_direction, direction_force)
-      |> Vector.normalize()
+    if abs(Vector.angle_between(current_direction, desired_direction)) < 15 or abs(Vector.angle_between(current_direction, desired_direction)) > 95 do
+      %{
+        action: {:move, desired_direction},
+        bot_state_machine: Map.put(bot_state_machine, :current_move_direction, desired_direction)
+      }
+    else
+      direction_force = Vector.sub(desired_direction, current_direction)
+        |> Vector.normalize()
+        |> Vector.mult(@steering_force)
 
-    %{
-      action: {:move, displaced_direction},
-      bot_state_machine: Map.put(bot_state_machine, :current_move_direction, displaced_direction)
-    }
+      displaced_direction = Vector.add(current_direction, direction_force)
+        |> Vector.normalize()
+
+      %{
+        action: {:move, displaced_direction},
+        bot_state_machine: Map.put(bot_state_machine, :current_move_direction, displaced_direction)
+      }
+    end
   end
 end
