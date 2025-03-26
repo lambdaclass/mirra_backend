@@ -18,6 +18,7 @@ defmodule Arena.GameUpdater do
   alias Arena.Serialization.ToggleBots
   alias Phoenix.PubSub
   alias Arena.Game.Trap
+  alias Arena.Bots.Bot
 
   @standing_time 1900
 
@@ -288,6 +289,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:bushes, state_diff[:bushes])
       |> Map.put(:crates, state_diff[:crates])
 
+    broadcast_game_state_to_bots(state.bot_clients, game_state, state.game_config)
     broadcast_game_update(state_diff, game_state.game_id)
 
     ## We need this check cause there is some unexpected behaviour from the client
@@ -790,6 +792,10 @@ defmodule Arena.GameUpdater do
 
   defp broadcast_enable_incomming_messages(game_id) do
     PubSub.broadcast(Arena.PubSub, game_id, :enable_incomming_messages)
+  end
+
+  defp broadcast_game_state_to_bots(bot_clients, state, game_config) do
+    Enum.each(bot_clients, fn bot_id -> Bot.update_state(bot_id, state, game_config) end)
   end
 
   defp broadcast_game_update(state, game_id) do

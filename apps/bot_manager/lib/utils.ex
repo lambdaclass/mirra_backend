@@ -11,9 +11,10 @@ defmodule BotManager.Utils do
 
   def list_character_skills_from_config(character_name, characters) do
     character = Enum.find(characters, fn character -> character.name == character_name end)
-    {_id, basic} = Enum.find(character.skills, fn {_id, skill} -> skill.skill_type == :BASIC end)
-    {_id, ultimate} = Enum.find(character.skills, fn {_id, skill} -> skill.skill_type == :ULTIMATE end)
-    {_id, dash} = Enum.find(character.skills, fn {_id, skill} -> skill.skill_type == :DASH end)
+    character_skills = Enum.map(character.skills, fn skill -> complete_skill(skill) end)
+    {_id, basic} = Enum.find(character_skills, fn {_id, skill} -> skill.skill_type == :BASIC end)
+    {_id, ultimate} = Enum.find(character_skills, fn {_id, skill} -> skill.skill_type == :ULTIMATE end)
+    {_id, dash} = Enum.find(character_skills, fn {_id, skill} -> skill.skill_type == :DASH end)
 
     %{
       basic: basic,
@@ -70,13 +71,13 @@ defmodule BotManager.Utils do
   end
 
   defp player_within_visible_players?(bot_player, player_id) do
-    {:player, bot_player_info} = bot_player.aditional_info
+    bot_player_info = bot_player.aditional_info
     Enum.member?(bot_player_info.visible_players, player_id)
   end
 
   defp bot_belongs_to_the_same_team?(bot_player, player) do
-    {:player, bot_player_info} = bot_player.aditional_info
-    {:player, player_info} = player.aditional_info
+    bot_player_info = bot_player.aditional_info
+    player_info = player.aditional_info
 
     bot_player_info.team == player_info.team
   end
@@ -89,4 +90,29 @@ defmodule BotManager.Utils do
 
   def get_action_distance_by_type(true = _is_melee, melee_distance, _ranged_distance), do: melee_distance
   def get_action_distance_by_type(false = _is_melee, _melee_distance, ranged_distance), do: ranged_distance
+
+  defp complete_skill({key, skill}) do
+    ## TODO: This will break once a skill has more than 1 mechanic, until then
+    ##   we can use this "shortcut" and deal with it when the time comes
+    [mechanic] = skill.mechanics
+
+    extra_params = %{
+      targetting_radius: mechanic[:radius],
+      targetting_angle: mechanic[:angle],
+      targetting_range: mechanic[:range],
+      targetting_offset: mechanic[:offset] || mechanic[:projectile_offset],
+      is_combo: skill.is_combo?,
+      attack_type: cast_attack_type(skill.attack_type),
+      skill_type: cast_skill_type(skill.type)
+    }
+
+    {key, Map.merge(skill, extra_params)}
+  end
+
+  defp cast_attack_type("melee"), do: :MELEE
+  defp cast_attack_type("ranged"), do: :RANGED
+
+  defp cast_skill_type("basic"), do: :BASIC
+  defp cast_skill_type("ultimate"), do: :ULTIMATE
+  defp cast_skill_type("dash"), do: :DASH
 end
