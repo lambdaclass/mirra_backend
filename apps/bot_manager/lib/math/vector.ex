@@ -3,6 +3,20 @@ defmodule BotManager.Math.Vector do
   Module to handle math operations with vectors
   """
 
+  def add(vector, value) when is_integer(value) or is_float(value) do
+    %{
+      x: vector.x + value,
+      y: vector.y + value
+    }
+  end
+
+  def add(first_vector, second_vector) do
+    %{
+      x: first_vector.x + second_vector.x,
+      y: first_vector.y + second_vector.y
+    }
+  end
+
   def sub(vector, value) when is_integer(value) or is_float(value) do
     %{
       x: vector.x - value,
@@ -58,6 +72,11 @@ defmodule BotManager.Math.Vector do
 
   def deg2rad(deg) do
     deg * :math.pi() / 180
+  end
+
+  # Taken from https://www.jwwalker.com/pages/angle-between-vectors.html
+  def angle_between(first_vector, second_vector) do
+    (180 / :math.pi()) * 2 * :math.atan2(norm(sub(mult(first_vector, norm(second_vector)), mult(second_vector, norm(first_vector)))), norm(add(mult(first_vector, norm(second_vector)), mult(second_vector, norm(first_vector)))))
   end
 
   def distance(%{x: x1, y: y1}, %{x: x2, y: y2}) do
