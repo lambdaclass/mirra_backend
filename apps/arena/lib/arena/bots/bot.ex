@@ -5,11 +5,11 @@ defmodule Arena.Bots.Bot do
   """
   use GenServer
   alias Phoenix.PubSub
+  alias Arena.Bots.PathfindingGrid
   alias BotManager.BotStateMachine
   alias BotManager.BotStateMachineChecker
   require Logger
   @action_delay_ms 30
-  @delay_before_map_grid_building_ms 1000
 
   def start_link(%{bot_id: bot_id, game_id: _game_id} = params) do
     GenServer.start_link(__MODULE__, params, name: generate_bot_name(bot_id))
@@ -20,10 +20,6 @@ defmodule Arena.Bots.Bot do
     PubSub.subscribe(Arena.PubSub, "BOTS_#{game_id}")
     send(self(), :decide_action)
     send(self(), :perform_action)
-    # This delay ensures we give some time to the board liveview to join on time before the game starts.
-    # Ideally we should make the collision grid building NIF faster instead of doing this so that we don't have problems
-    # running everything on the same machine (for example when testing locally)
-    Process.send_after(self(), :allow_map_build, @delay_before_map_grid_building_ms)
 
     {:ok,
      %{
@@ -33,12 +29,7 @@ defmodule Arena.Bots.Bot do
        bot_state_machine: BotStateMachineChecker.new(),
        bots_enabled?: true,
        current_action: %{},
-       can_build_map: false
      }}
-  end
-
-  def handle_info(:allow_map_build, state) do
-    {:noreply, Map.put(state, :can_build_map, true)}
   end
 
   def handle_info(:decide_action, state) do
@@ -72,7 +63,15 @@ defmodule Arena.Bots.Bot do
     end
   end
 
+  def handle_info({:collision_grid_response, grid}, state) do
+    {:noreply, %{state | bot_state_machine: %{state.bot_state_machine | collision_grid: grid}}}
+  end
+
   defp maybe_update_state_params(state, game_state, config) do
+    if System.get_env("PATHFINDING_TEST") == "true" and is_nil(state.bot_state_machine.collision_grid) do
+      PathfindingGrid.get_map_collision_grid(config.map.name, self())
+    end
+
     state
     |> update_in([:config], fn _ -> config end)
     |> update_in([:bot_player_id], fn _ -> get_in(game_state, [:client_to_player_map, state.bot_id]) end)
@@ -112,7 +111,6 @@ defmodule Arena.Bots.Bot do
     }
 
     Map.merge(state, update)
-    |> maybe_build_map()
   end
 
   defp update_block_attack_state(%{current_action: %{action: {:use_skill, _, _}, sent: false}} = state) do
@@ -140,80 +138,4 @@ defmodule Arena.Bots.Bot do
 
   defp min_decision_delay_ms(), do: if(System.get_env("PATHFINDING_TEST") == "true", do: 100, else: 750)
   defp max_decision_delay_ms(), do: if(System.get_env("PATHFINDING_TEST") == "true", do: 150, else: 1250)
-
-  defp maybe_build_map(%{can_build_map: false} = state), do: state
-  defp maybe_build_map(%{bot_state_machine: %{collision_grid: collision_grid}} = state) when not is_nil(collision_grid),
-    do: state
-  defp maybe_build_map(%{game_state: nil} = state), do: state
-  defp maybe_build_map(%{game_state: %{obstacles: nil}} = state), do: state
-  defp maybe_build_map(%{game_state: %{obstacles: []}} = state), do: state
-  defp maybe_build_map(state) do
-    obstacles =
-      state.game_state.obstacles
-      |> Enum.map(fn {obstacle_id, obstacle} ->
-        obstacle =
-          obstacle
-          |> Map.take([
-            :id,
-            :shape,
-            :position,
-            :radius,
-            :vertices,
-            :speed,
-            :category,
-            :direction,
-            :is_moving,
-            :name
-          ])
-
-        obstacle =
-          obstacle
-          |> Map.put(:position, %{x: obstacle.position.x, y: obstacle.position.y})
-          |> Map.put(
-            :vertices,
-            Enum.map(obstacle.vertices.positions, fn position -> %{x: position.x, y: position.y} end)
-          )
-          |> Map.put(:direction, %{x: obstacle.direction.x, y: obstacle.direction.y})
-          |> Map.put(:shape, get_shape(obstacle.shape))
-          |> Map.put(:category, get_category(obstacle.category))
-
-        {obstacle_id, obstacle}
-      end)
-      |> Map.new()
-
-    case AStarNative.build_collision_grid(obstacles) do
-      {:ok, collision_grid} ->
-        update = %{
-          bot_state_machine: Map.put(state.bot_state_machine, :collision_grid, collision_grid)
-        }
-
-        Map.merge(state, update)
-
-      {:error, reason} ->
-        Logger.error("Grid construction failed with reason: #{inspect(reason)}")
-
-        update = %{
-          can_build_map: false
-        }
-
-        Map.merge(state, update)
-    end
-  end
-
-  defp get_shape("polygon"), do: :polygon
-  defp get_shape("circle"), do: :circle
-  defp get_shape("line"), do: :line
-  defp get_shape("point"), do: :point
-  defp get_shape(_), do: nil
-
-  defp get_category("player"), do: :player
-  defp get_category("projectile"), do: :projectile
-  defp get_category("obstacle"), do: :obstacle
-  defp get_category("power_up"), do: :power_up
-  defp get_category("pool"), do: :pool
-  defp get_category("item"), do: :item
-  defp get_category("bush"), do: :bush
-  defp get_category("crate"), do: :crate
-  defp get_category("trap"), do: :trap
-  defp get_category(_), do: nil
 end
