@@ -4,7 +4,7 @@ defmodule SplinePath do
   """
 alias BotManager.Math.Vector
 
-  @segment_point_amount 5
+  @segment_point_amount 15
   @tension 0
   @alpha 0.5
 
@@ -18,8 +18,8 @@ alias BotManager.Math.Vector
     last_point = Enum.at(waypoints, -1)
     second_to_last_point = Enum.at(waypoints, -2)
 
-    first_control_point = Vector.add(first_point, Vector.sub(first_point, second_point))
-    last_control_point = Vector.add(last_point, Vector.sub(last_point, second_to_last_point))
+    first_control_point = Vector.add(first_point, Vector.sub(first_point, second_point) |> Vector.normalize())
+    last_control_point = Vector.add(last_point, Vector.sub(last_point, second_to_last_point) |> Vector.normalize())
     control_points = [first_control_point] ++ waypoints ++ [last_control_point]
 
     generate_spline_from_control_points(control_points) ++ [last_point]
