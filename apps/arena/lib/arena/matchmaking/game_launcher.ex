@@ -3,6 +3,7 @@ defmodule Arena.Matchmaking.GameLauncher do
   alias Arena.Utils
   alias Ecto.UUID
   alias Arena.Matchmaking
+  alias Arena.Bots.BotSupervisor
 
   use GenServer
 
