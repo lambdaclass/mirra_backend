@@ -4,6 +4,7 @@ defmodule Arena.Bots.Bot do
   This module is in charge of handling bots messages to the Game process.
   """
   use GenServer
+  alias Phoenix.PubSub
   alias BotManager.BotStateMachine
   alias BotManager.BotStateMachineChecker
   require Logger
@@ -16,6 +17,7 @@ defmodule Arena.Bots.Bot do
 
   def init(%{bot_id: bot_id, game_id: game_id}) do
     game_pid = game_id |> Base58.decode() |> :erlang.binary_to_term([:safe])
+    PubSub.subscribe(Arena.PubSub, "BOTS_#{game_id}")
     send(self(), :decide_action)
     send(self(), :perform_action)
     # This delay ensures we give some time to the board liveview to join on time before the game starts.
@@ -33,13 +35,6 @@ defmodule Arena.Bots.Bot do
        current_action: %{},
        can_build_map: false
      }}
-  end
-
-  @doc """
-  Updates the bots state due to new Game event update (new tick) received.
-  """
-  def update_state(bot_id, game_state, config) do
-    GenServer.cast(generate_bot_name(bot_id), {:update_state, game_state, config})
   end
 
   def handle_info(:allow_map_build, state) do
@@ -62,7 +57,7 @@ defmodule Arena.Bots.Bot do
     {:noreply, %{state | attack_blocked: false}}
   end
 
-  def handle_cast({:update_state, game_state, config}, state) do
+  def handle_info({:game_update, game_state, config}, state) do
     case game_state.status do
       :RUNNING ->
         state = maybe_update_state_params(state, game_state, config)
