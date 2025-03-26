@@ -65,15 +65,7 @@ defmodule Arena.Bots.PathfindingGrid do
               %{}
           end
 
-        Map.put(
-          acc,
-          :maps,
-          acc.maps ++
-            [
-              map
-              |> Map.put(:grid, collision_grid)
-            ]
-        )
+        Map.put(acc, :maps, acc.maps ++ [Map.put(map, :grid, collision_grid)])
       end)
 
     Process.send_after(__MODULE__, :update_config, @update_interval_ms)
