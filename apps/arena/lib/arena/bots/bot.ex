@@ -49,9 +49,10 @@ defmodule Arena.Bots.Bot do
   end
 
   def handle_info({:game_update, game_state, config}, state) do
+    state = maybe_update_state_params(state, game_state, config)
+
     case game_state.status do
       :RUNNING ->
-        state = maybe_update_state_params(state, game_state, config)
         updated_state = update_bot_state(state, game_state)
         {:noreply, updated_state}
 
@@ -77,8 +78,8 @@ defmodule Arena.Bots.Bot do
     end
 
     state
-    |> update_in([:config], fn _ -> config end)
-    |> update_in([:bot_player_id], fn _ -> get_in(game_state, [:client_to_player_map, state.bot_id]) end)
+    |> Map.put_new(:config, config)
+    |> Map.put_new(:bot_player_id, get_in(game_state, [:client_to_player_map, state.bot_id]))
   end
 
   defp generate_bot_name(bot_id), do: {:via, Registry, {BotRegistry, bot_id}}
