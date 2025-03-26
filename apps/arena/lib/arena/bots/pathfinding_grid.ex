@@ -15,6 +15,7 @@ defmodule Arena.Bots.PathfindingGrid do
     if System.get_env("PATHFINDING_TEST") == "true" do
       Process.send_after(self(), :update_config, 1_000)
     end
+
     {:ok, %{}}
   end
 
