@@ -177,7 +177,7 @@ defmodule BotManager.GameSocketHandler do
     case AStarNative.build_collision_grid(obstacles) do
       {:ok, collision_grid} ->
         update = %{
-          bot_state_machine: Map.put(state.bot_state_machine, :collision_grid, collision_grid)
+          bot_state_machine: Map.put(state.bot_state_machine, :collision_grid, collision_grid) |> Map.put(:obstacles, obstacles)
         }
 
         Map.merge(state, update)

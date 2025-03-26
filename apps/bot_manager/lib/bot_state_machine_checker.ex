@@ -6,7 +6,7 @@ defmodule BotManager.BotStateMachineChecker do
   alias BotManager.Math.Vector
 
   @time_stuck_in_position 400
-  @distance_threshold 100
+  @distance_threshold 150
 
   @type state_step() :: :attacking | :moving | :tracking_player | :idling
 
@@ -29,7 +29,8 @@ defmodule BotManager.BotStateMachineChecker do
           ranged_attack_distance: integer(),
           melee_attack_distance: integer(),
           is_melee: boolean() | nil,
-          collision_grid: binary() | nil
+          collision_grid: binary() | nil,
+          obstacles: list() | nil
         }
 
   defstruct [
@@ -70,7 +71,9 @@ defmodule BotManager.BotStateMachineChecker do
     # The type of attack that the bot has
     :is_melee,
     # A collision grid used for pathfinding
-    :collision_grid
+    :collision_grid,
+    # The obstacles on the level
+    :obstacles
   ]
 
   @spec new() :: BotManager.BotStateMachineChecker.t()
@@ -94,7 +97,8 @@ defmodule BotManager.BotStateMachineChecker do
       ranged_attack_distance: 1200,
       melee_attack_distance: 300,
       is_melee: nil,
-      collision_grid: nil
+      collision_grid: nil,
+      obstacles: nil
     }
   end
 
