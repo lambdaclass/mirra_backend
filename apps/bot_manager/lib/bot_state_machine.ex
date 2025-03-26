@@ -325,6 +325,7 @@ defmodule BotManager.BotStateMachine do
     to = %{x: position_to_move_to.x, y: position_to_move_to.y}
 
     shortest_path = AStarNative.a_star_shortest_path(from, to, bot_state_machine.collision_grid)
+      |> SplinePath.smooth_path()
 
     # If we don't have a path, retry finding new position in map
     if Enum.empty?(shortest_path) do
