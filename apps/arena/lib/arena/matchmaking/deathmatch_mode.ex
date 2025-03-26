@@ -1,5 +1,6 @@
 defmodule Arena.Matchmaking.DeathmatchMode do
   @moduledoc false
+  alias Arena.Bots.BotSupervisor
   alias Arena.Matchmaking
   alias Arena.Utils
   alias Ecto.UUID
@@ -83,15 +84,6 @@ defmodule Arena.Matchmaking.DeathmatchMode do
     {:noreply, %{state | clients: remaining_clients, current_map: next_map}}
   end
 
-  def handle_info({:spawn_bot_for_player, bot_client, game_id}, state) do
-    spawn(fn ->
-      Finch.build(:get, Utils.get_bot_connection_url(game_id, bot_client))
-      |> Finch.request(Arena.Finch)
-    end)
-
-    {:noreply, state}
-  end
-
   def handle_info(:update_params, state) do
     game_mode_configuration =
       case Arena.Configuration.get_game_mode_configuration(1, "deathmatch") do
@@ -112,12 +104,6 @@ defmodule Arena.Matchmaking.DeathmatchMode do
 
   defp maybe_make_batch_start_at([_ | _], batch_start_at) do
     batch_start_at
-  end
-
-  defp spawn_bot_for_player(bot_clients, game_id) do
-    Enum.each(bot_clients, fn %{client_id: bot_client_id} ->
-      send(self(), {:spawn_bot_for_player, bot_client_id, game_id})
-    end)
   end
 
   defp get_bot_clients(missing_clients) do
@@ -163,7 +149,7 @@ defmodule Arena.Matchmaking.DeathmatchMode do
 
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()
 
-    spawn_bot_for_player(bot_clients, game_id)
+    BotSupervisor.start_bots_for_game(bot_clients, game_id)
 
     Enum.each(clients, fn %{from_pid: from_pid} ->
       Process.send(from_pid, {:join_game, game_id}, [])
