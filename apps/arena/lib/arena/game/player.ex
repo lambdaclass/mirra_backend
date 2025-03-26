@@ -180,6 +180,10 @@ defmodule Arena.Game.Player do
     player
   end
 
+  def move(player, %{x: x, y: y}) do
+    move(player, {x, y})
+  end
+
   def move(player, direction) do
     current_actions = add_or_remove_moving_action(player.aditional_info.current_actions, direction)
 

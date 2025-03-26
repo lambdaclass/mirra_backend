@@ -21,6 +21,8 @@ defmodule Arena.Application do
       Arena.Matchmaking.DeathmatchMode,
       Arena.GameTracker,
       Arena.Authentication.GatewaySigner,
+      Arena.Bots.BotSupervisor,
+      {Registry, keys: :unique, name: BotRegistry},
       # Start a worker by calling: Arena.Worker.start_link(arg)
       # {Arena.Worker, arg},
       # Start to serve requests, typically the last entry

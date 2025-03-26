@@ -12,9 +12,6 @@ defmodule BotManager.BotStateMachine do
   @skill_2_key "2"
   @dash_skill_key "3"
 
-  @type bot_player() :: %BotManager.Protobuf.Entity{}
-  @type players() :: %{binary() => bot_player()}
-
   def decide_action(%{bots_enabled?: false, bot_state_machine: bot_state_machine}) do
     %{action: {:move, %{x: 0, y: 0}}, bot_state_machine: bot_state_machine}
   end
@@ -133,7 +130,7 @@ defmodule BotManager.BotStateMachine do
 
   # This function will determine the direction and action the bot will take.
   defp determine_player_move_action(bot_player, direction) do
-    {:player, bot_player_info} = bot_player.aditional_info
+    bot_player_info = bot_player.aditional_info
 
     if System.get_env("PATHFINDING_TEST") == "true" do
       {:move, direction}
