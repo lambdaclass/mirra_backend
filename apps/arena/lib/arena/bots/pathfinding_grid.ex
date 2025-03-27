@@ -64,8 +64,7 @@ defmodule Arena.Bots.PathfindingGrid do
 
             {:error, reason} ->
               Logger.error("Grid construction failed with reason: #{inspect(reason)}")
-
-              %{}
+              nil
           end
 
         Map.put(acc, :maps, acc.maps ++ [Map.put(map, :grid, collision_grid)])
@@ -83,14 +82,6 @@ defmodule Arena.Bots.PathfindingGrid do
     send(from_pid, {:collision_grid_response, grid})
 
     {:noreply, state}
-  end
-
-  def handle_call({:get_map_collision_grid, map_name}, _from, state) do
-    grid =
-      Enum.find(state.maps, fn map -> map.name == map_name end)
-      |> Map.get(:grid)
-
-    {:reply, grid, state}
   end
 
   defp get_shape("polygon"), do: :polygon
