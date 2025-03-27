@@ -325,14 +325,20 @@ defmodule BotManager.BotStateMachine do
     to = %{x: position_to_move_to.x, y: position_to_move_to.y}
 
     shortest_path = AStarNative.a_star_shortest_path(from, to, bot_state_machine.collision_grid)
-      |> AStarNative.simplify_path(bot_state_machine.obstacles)
-      |> SplinePath.smooth_path()
 
     # If we don't have a path, retry finding new position in map
     if Enum.empty?(shortest_path) do
       Map.put(bot_state_machine, :path_towards_position, nil)
       |> Map.put(:position_to_move_to, nil)
     else
+      # Replacing first and last points with the actual start and end points
+      shortest_path = ([from] ++ Enum.slice(shortest_path, 1, Enum.count(shortest_path) - 2) ++ [to])
+      |> AStarNative.simplify_path(bot_state_machine.obstacles)
+      |> SplinePath.smooth_path()
+
+      # The first point should only be necessary to simplify the path
+      shortest_path = tl(shortest_path)
+
       Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
       |> Map.put(
         :path_towards_position,
