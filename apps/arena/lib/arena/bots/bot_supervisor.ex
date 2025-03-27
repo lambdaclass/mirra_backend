@@ -18,10 +18,17 @@ defmodule Arena.Bots.BotSupervisor do
   Instances bot GenServers for a game.
   """
   def start_bots_for_game(bot_clients, game_id) do
+    game_topic = get_game_topic(game_id)
+
     Enum.each(bot_clients, fn %{client_id: bot_id} ->
-      DynamicSupervisor.start_child(__MODULE__, {Bot, %{bot_id: bot_id, game_id: game_id}})
+      DynamicSupervisor.start_child(__MODULE__, {Bot, %{bot_id: bot_id, game_id: game_id, game_topic: game_topic}})
     end)
   end
+
+  @doc """
+  Returns PubSub game topic.
+  """
+  def get_game_topic(game_id), do: "BOTS_#{game_id}"
 
   @doc """
   Terminates all the bots GenServers.

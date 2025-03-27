@@ -5,6 +5,7 @@ defmodule Arena.GameUpdater do
   """
 
   use GenServer
+  alias Arena.Bots.BotSupervisor
   alias Arena.Game.Obstacle
   alias Arena.Game.Bounties
   alias Arena.GameTracker
@@ -100,6 +101,7 @@ defmodule Arena.GameUpdater do
        bounties_enabled?: bounties_enabled?,
        bots_enabled?: game_config.game.bots_enabled,
        game_state: game_state,
+       bots_topic: BotSupervisor.get_game_topic(game_id),
        last_broadcasted_game_state: %{}
      }}
   end
@@ -207,7 +209,7 @@ defmodule Arena.GameUpdater do
 
   def handle_cast(:toggle_bots, state) do
     state = Map.put(state, :bots_enabled?, not state.bots_enabled?)
-    PubSub.broadcast(Arena.PubSub, "BOTS_#{state.game_state.game_id}", {:enable_bots, state.bots_enabled?})
+    PubSub.broadcast(Arena.PubSub, state.bots_topic, {:enable_bots, state.bots_enabled?})
 
     {:noreply, state}
   end
@@ -285,7 +287,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:crates, state_diff[:crates])
       |> complete_state_entities()
 
-    broadcast_game_state_to_bots(state_diff, state.game_config)
+    broadcast_game_state_to_bots(state_diff, state)
     broadcast_game_update(state_diff, game_state.game_id)
 
     ## We need this check cause there is some unexpected behaviour from the client
@@ -805,8 +807,8 @@ defmodule Arena.GameUpdater do
     })
   end
 
-  defp broadcast_game_state_to_bots(state, game_config) do
-    PubSub.broadcast(Arena.PubSub, "BOTS_#{state.game_id}", {:game_update, state, game_config})
+  defp broadcast_game_state_to_bots(state, %{game_config: game_config, bots_topic: bots_topic}) do
+    PubSub.broadcast(Arena.PubSub, bots_topic, {:game_update, state, game_config})
   end
 
   defp broadcast_game_update(state, game_id) do

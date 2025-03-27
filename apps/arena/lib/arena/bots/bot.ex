@@ -11,13 +11,13 @@ defmodule Arena.Bots.Bot do
   require Logger
   @action_delay_ms 30
 
-  def start_link(%{bot_id: bot_id, game_id: _game_id} = params) do
+  def start_link(%{bot_id: bot_id, game_id: _game_id, game_topic: _game_topic} = params) do
     GenServer.start_link(__MODULE__, params, name: generate_bot_name(bot_id))
   end
 
-  def init(%{bot_id: bot_id, game_id: game_id}) do
+  def init(%{bot_id: bot_id, game_id: game_id, game_topic: game_topic}) do
     game_pid = game_id |> Base58.decode() |> :erlang.binary_to_term([:safe])
-    PubSub.subscribe(Arena.PubSub, "BOTS_#{game_id}")
+    PubSub.subscribe(Arena.PubSub, game_topic)
     send(self(), :decide_action)
     send(self(), :perform_action)
 
