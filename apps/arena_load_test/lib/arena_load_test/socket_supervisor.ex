@@ -7,6 +7,7 @@ defmodule ArenaLoadTest.SocketSupervisor do
   alias ArenaLoadTest.GameSocketHandler
   alias ArenaLoadTest.LoadtestManager
   require Logger
+  # use Ecto.UUID
 
   def start_link(args) do
     DynamicSupervisor.start_link(__MODULE__, args, name: __MODULE__, max_restarts: 1)
@@ -16,7 +17,7 @@ defmodule ArenaLoadTest.SocketSupervisor do
   def init(_opts) do
     create_ets_table(:clients)
     create_ets_table(:players)
-    DynamicSupervisor.init(strategy: :one_for_one)
+    DynamicSupervisor.init(strategy: :one_for_one, max_restarts: 100, max_seconds: 20)
   end
 
   @doc """
@@ -51,7 +52,8 @@ defmodule ArenaLoadTest.SocketSupervisor do
 
     Enum.each(1..num_clients, fn client_number ->
       Logger.info("Iteration: #{client_number}")
-      {:ok, _pid} = ArenaLoadTest.SocketSupervisor.add_new_client(client_number)
+      id = Ecto.UUID.generate()
+      {:ok, _pid} = ArenaLoadTest.SocketSupervisor.add_new_client(id)
     end)
   end
 

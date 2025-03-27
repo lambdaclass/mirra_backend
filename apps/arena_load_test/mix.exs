@@ -26,6 +26,8 @@ defmodule ArenaLoadTest.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:ecto, "~> 3.11"},
+      {:ecto_sql, "~> 3.6"},
       {:websockex, "~> 0.4.3"},
       {:protobuf, "~> 0.12.0"}
       # {:dep_from_hexpm, "~> 0.3.0"},

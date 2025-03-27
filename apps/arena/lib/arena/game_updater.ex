@@ -7,7 +7,7 @@ defmodule Arena.GameUpdater do
   use GenServer
   alias Arena.Game.Obstacle
   alias Arena.Game.Bounties
-  alias Arena.GameTracker
+  # alias Arena.GameTracker
   alias Arena.Game.Crate
   alias Arena.Game.Effect
   alias Arena.{Configuration, Entities}
@@ -60,6 +60,7 @@ defmodule Arena.GameUpdater do
   ##########################
 
   def init(%{players: players, game_params: game_params, map_mode_params: map_mode_params}) do
+    Process.flag(:priority, :high)
     game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
     game_config = Configuration.get_game_config(map_mode_params.map.name)
 
@@ -87,7 +88,7 @@ defmodule Arena.GameUpdater do
     bot_clients_ids =
       Enum.filter(players, fn player -> player.type == :bot end) |> Enum.map(fn player -> player.client_id end)
 
-    :ok = GameTracker.start_tracking(match_id, game_state.client_to_player_map, game_state.players, clients_ids)
+    # :ok = GameTracker.start_tracking(match_id, game_state.client_to_player_map, game_state.players, clients_ids)
 
     :telemetry.execute([:arena, :game], %{count: 1})
 
@@ -172,7 +173,7 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_cast({:select_bounty, player_id, bounty_quest_id}, state) do
-    GameTracker.push_event(self(), {:select_bounty, player_id, bounty_quest_id})
+    # GameTracker.push_event(self(), {:select_bounty, player_id, bounty_quest_id})
 
     state =
       update_in(state, [:game_state, :players, player_id, :aditional_info], fn aditional_info ->
@@ -337,8 +338,8 @@ defmodule Arena.GameUpdater do
     teams_with_kills =
       state.game_state.players
       |> Enum.map(fn {player_id, player} ->
-        %{kills: kills} = GameTracker.get_player_result(player_id)
-        Map.put(player, :kills, kills)
+        # %{kills: kills} = GameTracker.get_player_result(player_id)
+        Map.put(player, :kills, 1)
       end)
       |> Enum.group_by(fn player -> player.aditional_info.team end)
       |> Enum.map(fn {team, players} ->
@@ -359,7 +360,7 @@ defmodule Arena.GameUpdater do
         teams_with_kills
         |> Enum.reduce(game_state, fn {team, position}, game_state_acc ->
           Enum.reduce(team.players, game_state_acc, fn player, game_state_acc ->
-            GameTracker.push_event(self(), {:deathmatch_position, player.id, position})
+            # GameTracker.push_event(self(), {:deathmatch_position, player.id, position})
             put_player_position(game_state_acc, player.id, position)
           end)
         end)
@@ -368,7 +369,7 @@ defmodule Arena.GameUpdater do
     PubSub.broadcast(Arena.PubSub, state.game_state.game_id, :end_game_state)
     broadcast_game_ended(winner_team_players, state.game_state)
 
-    GameTracker.finish_tracking(self(), winner_team.team)
+    # GameTracker.finish_tracking(self(), winner_team.team)
 
     Process.send_after(self(), :game_ended, state.game_config.game.shutdown_game_wait_ms)
 
@@ -396,7 +397,7 @@ defmodule Arena.GameUpdater do
 
         PubSub.broadcast(Arena.PubSub, state.game_state.game_id, :end_game_state)
         broadcast_game_ended(winner_team, state.game_state)
-        GameTracker.finish_tracking(self(), winner_team_number)
+        # GameTracker.finish_tracking(self(), winner_team_number)
 
         ## The idea of having this waiting period is in case websocket processes keep
         ## sending messages, this way we give some time before making them crash
@@ -589,16 +590,17 @@ defmodule Arena.GameUpdater do
 
     case Map.get(game_state.players, killer_id) do
       nil ->
-        GameTracker.push_event(self(), {:kill_by_zone, victim_id})
+        nil
+        # GameTracker.push_event(self(), {:kill_by_zone, victim_id})
 
       killer ->
         victim = Map.get(game_state.players, victim_id)
 
-        GameTracker.push_event(
-          self(),
-          {:kill, %{id: killer_id, character_name: killer.aditional_info.character_name},
-           %{id: victim_id, character_name: victim.aditional_info.character_name}}
-        )
+        # GameTracker.push_event(
+        #   self(),
+        #   {:kill, %{id: killer_id, character_name: killer.aditional_info.character_name},
+        #    %{id: victim_id, character_name: victim.aditional_info.character_name}}
+        # )
     end
 
     {:noreply, %{state | game_state: game_state}}
@@ -614,7 +616,7 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info({:damage_done, player_id, damage}, state) do
-    GameTracker.push_event(self(), {:damage_done, player_id, damage})
+    # GameTracker.push_event(self(), {:damage_done, player_id, damage})
 
     state =
       update_in(state, [:game_state, :damage_done, player_id], fn
@@ -626,7 +628,7 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info({:damage_taken, player_id, damage}, state) do
-    GameTracker.push_event(self(), {:damage_taken, player_id, damage})
+    # GameTracker.push_event(self(), {:damage_taken, player_id, damage})
 
     state =
       update_in(state, [:game_state, :damage_taken, player_id], fn
@@ -1405,7 +1407,7 @@ defmodule Arena.GameUpdater do
 
       if not player.aditional_info.bounty_completed and Player.alive?(player) and
            Bounties.completed_bounty?(player.aditional_info.selected_bounty, [
-             GameTracker.get_player_result(player_id)
+            #  GameTracker.get_player_result(player_id)
            ]) do
         # TODO: WE SHOULDN'T DO REQUEST IN THE MIDDLE OF THE GAME UPDATES
         spawn(fn ->

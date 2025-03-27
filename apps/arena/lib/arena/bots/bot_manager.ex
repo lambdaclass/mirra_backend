@@ -1,4 +1,4 @@
-defmodule Arena.Bots.Bot do
+defmodule Arena.Bots.BotManager do
   @moduledoc """
   Arena bot GenServer.
   This module is in charge of handling bots messages to the Game process.
@@ -11,26 +11,30 @@ defmodule Arena.Bots.Bot do
   require Logger
   @action_delay_ms 30
 
-  def start_link(%{bot_id: bot_id, game_id: _game_id} = params) do
-    GenServer.start_link(__MODULE__, params, name: generate_bot_name(bot_id))
+  def start_link(%{bot_ids: _bot_ids, game_id: game_id} = params) do
+    GenServer.start_link(__MODULE__, params, name: generate_name(game_id))
   end
 
-  def init(%{bot_id: bot_id, game_id: game_id}) do
-    Process.flag(:priority, :low)
+  def init(%{bot_ids: bot_ids, game_id: game_id}) do
     game_pid = game_id |> Base58.decode() |> :erlang.binary_to_term([:safe])
     PubSub.subscribe(Arena.PubSub, "BOTS_#{game_id}")
-    send(self(), :decide_action)
-    send(self(), :perform_action)
+    # Initialize state for all bots in the batch
+  bots_state =
+    Enum.into(bot_ids, %{}, fn bot_id ->
+      {bot_id,
+       %{
+         attack_blocked: false,
+         bot_state_machine: BotStateMachineChecker.new(),
+         enabled?: true,
+         current_action: %{}
+       }}
+    end)
 
-    {:ok,
-     %{
-       bot_id: bot_id,
-       game_pid: game_pid,
-       attack_blocked: false,
-       bot_state_machine: BotStateMachineChecker.new(),
-       enabled?: true,
-       current_action: %{}
-     }}
+  send(self(), :decide_actions)
+  send(self(), :perform_actions)
+
+  {:ok, %{bots: bots_state, game_pid: game_pid}}
+
   end
 
   def handle_info(:decide_action, state) do
