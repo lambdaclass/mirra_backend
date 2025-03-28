@@ -163,21 +163,33 @@ defmodule Arena.Game.Player do
   end
 
   def get_skill_if_usable(player, skill_key) do
-    skill = get_in(player, [:aditional_info, :skills, skill_key])
-    skill_cooldown = get_in(player, [:aditional_info, :cooldowns, skill_key])
-    available_stamina = player.aditional_info.available_stamina
-    available_mana = player.aditional_info.mana
+    if alive?(player) do
+      skill = get_in(player, [:aditional_info, :skills, skill_key])
+      skill_cooldown = get_in(player, [:aditional_info, :cooldowns, skill_key])
+      available_stamina = player.aditional_info.available_stamina
+      available_mana = player.aditional_info.mana
 
-    case skill do
-      %{cooldown_mechanism: "time"} when is_nil(skill_cooldown) -> skill
-      %{cooldown_mechanism: "stamina", stamina_cost: cost} when cost <= available_stamina -> skill
-      %{cooldown_mechanism: "mana", mana_cost: cost} when cost <= available_mana -> skill
-      _ -> nil
+      case skill do
+        %{cooldown_mechanism: "time"} when is_nil(skill_cooldown) -> skill
+        %{cooldown_mechanism: "stamina", stamina_cost: cost} when cost <= available_stamina -> skill
+        %{cooldown_mechanism: "mana", mana_cost: cost} when cost <= available_mana -> skill
+        _ -> nil
+      end
+    else
+      nil
     end
   end
 
   def move(%{aditional_info: %{forced_movement: true}} = player, _) do
     player
+  end
+
+  def move(%{aditional_info: %{health: health}} = player, _) when health <= 0 do
+    player
+  end
+
+  def move(player, %{x: x, y: y}) do
+    move(player, {x, y})
   end
 
   def move(player, direction) do

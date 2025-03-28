@@ -1,5 +1,6 @@
 defmodule Arena.Matchmaking.DuoMode do
   @moduledoc false
+  alias Arena.Bots.BotSupervisor
   alias Arena.Utils
   alias Ecto.UUID
 
@@ -94,15 +95,6 @@ defmodule Arena.Matchmaking.DuoMode do
     {:noreply, Map.put(state, :game_mode_configuration, game_mode_configuration)}
   end
 
-  def handle_info({:spawn_bot_for_player, bot_client, game_id}, state) do
-    spawn(fn ->
-      Finch.build(:get, Utils.get_bot_connection_url(game_id, bot_client))
-      |> Finch.request(Arena.Finch)
-    end)
-
-    {:noreply, state}
-  end
-
   defp maybe_make_batch_start_at([], _) do
     System.monotonic_time(:millisecond)
   end
@@ -132,12 +124,6 @@ defmodule Arena.Matchmaking.DuoMode do
     end)
   end
 
-  defp spawn_bot_for_player(bot_clients, game_id) do
-    Enum.each(bot_clients, fn %{client_id: bot_client_id} ->
-      send(self(), {:spawn_bot_for_player, bot_client_id, game_id})
-    end)
-  end
-
   # Receives a list of clients.
   # Fills the given list with bots clients, creates a game and tells every client to join that game.
   defp create_game_for_clients(clients, game_params, map) do
@@ -157,7 +143,7 @@ defmodule Arena.Matchmaking.DuoMode do
 
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()
 
-    spawn_bot_for_player(bot_clients, game_id)
+    BotSupervisor.start_bots_for_game(bot_clients, game_id)
 
     Enum.each(clients, fn %{from_pid: from_pid} ->
       Process.send(from_pid, {:join_game, game_id}, [])
