@@ -11,19 +11,11 @@ defmodule BotManager.GameSocketHandler do
   require Logger
 
   defp min_decision_delay_ms() do
-    if System.get_env("PATHFINDING_TEST") == "true" do
-      100
-    else
-      750
-    end
+    40
   end
 
   defp max_decision_delay_ms() do
-    if System.get_env("PATHFINDING_TEST") == "true" do
-      150
-    else
-      1250
-    end
+    70
   end
 
   @delay_before_map_grid_building_ms 1000
@@ -185,7 +177,7 @@ defmodule BotManager.GameSocketHandler do
     case AStarNative.build_collision_grid(obstacles) do
       {:ok, collision_grid} ->
         update = %{
-          bot_state_machine: Map.put(state.bot_state_machine, :collision_grid, collision_grid)
+          bot_state_machine: Map.put(state.bot_state_machine, :collision_grid, collision_grid) |> Map.put(:obstacles, obstacles)
         }
 
         Map.merge(state, update)
