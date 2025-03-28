@@ -342,7 +342,13 @@ defmodule BotManager.BotStateMachine do
         # Replacing first and last points with the actual start and end points
         shortest_path = ([from] ++ Enum.slice(shortest_path, 1, Enum.count(shortest_path) - 2) ++ [to])
         |> AStarNative.simplify_path(bot_state_machine.obstacles)
-        |> SplinePath.smooth_path()
+
+        shortest_path = if System.get_env("TEST_PATHFINDING_SPLINES") == "true" do
+          shortest_path
+          |> SplinePath.smooth_path()
+        else
+          shortest_path
+        end
 
         # The first point should only be necessary to simplify the path
         shortest_path = tl(shortest_path)
