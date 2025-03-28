@@ -4,8 +4,8 @@ defmodule SplinePath do
   """
 alias BotManager.Math.Vector
 
-  @segment_point_amount 15
-  @tension 0
+  @segment_point_amount 5
+  @tension 0.2
   @alpha 0.5
 
   def smooth_path(waypoints) when length(waypoints) < 3 do
