@@ -327,24 +327,32 @@ defmodule BotManager.BotStateMachine do
     shortest_path = AStarNative.a_star_shortest_path(from, to, bot_state_machine.collision_grid)
 
     # If we don't have a path, retry finding new position in map
-    if Enum.empty?(shortest_path) do
-      Map.put(bot_state_machine, :path_towards_position, nil)
-      |> Map.put(:position_to_move_to, nil)
-    else
-      # Replacing first and last points with the actual start and end points
-      shortest_path = ([from] ++ Enum.slice(shortest_path, 1, Enum.count(shortest_path) - 2) ++ [to])
-      |> AStarNative.simplify_path(bot_state_machine.obstacles)
-      |> SplinePath.smooth_path()
+    cond do
+      Enum.empty?(shortest_path) ->
+        Map.put(bot_state_machine, :path_towards_position, nil)
+        |> Map.put(:position_to_move_to, nil)
+      length(shortest_path) == 1 ->
+        Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
+        |> Map.put(
+          :path_towards_position,
+          [to]
+        )
+        |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
+      true ->
+        # Replacing first and last points with the actual start and end points
+        shortest_path = ([from] ++ Enum.slice(shortest_path, 1, Enum.count(shortest_path) - 2) ++ [to])
+        |> AStarNative.simplify_path(bot_state_machine.obstacles)
+        |> SplinePath.smooth_path()
 
-      # The first point should only be necessary to simplify the path
-      shortest_path = tl(shortest_path)
+        # The first point should only be necessary to simplify the path
+        shortest_path = tl(shortest_path)
 
-      Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
-      |> Map.put(
-        :path_towards_position,
-        shortest_path
-      )
-      |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
+        Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
+        |> Map.put(
+          :path_towards_position,
+          shortest_path
+        )
+        |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
     end
   end
 end
