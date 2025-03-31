@@ -102,31 +102,32 @@ setup-caddy:
 
 create-env-file:
 	sudo truncate -s0 /home/app/.env
-	sudo echo "PHX_HOST=$$(hostname).championsofmirra.com" >> /home/app/.env
-	sudo echo "DATABASE_URL=ecto://postgres:postgres@localhost:5432/game_backend" >> /home/app/.env
-	sudo echo "CONFIGURATOR_DATABASE_URL=" >> /home/app/.env
-	sudo echo "PHX_SERVER=true" >> /home/app/.env
-	sudo echo "SECRET_KEY_BASE=ecoRrjLPSLqYamG2+CCuTF24ZRkSApTYC1DBBIaq2PgPap1LFRZ4oKlcOkuYA+Ew" >> /home/app/.env
-	sudo echo "JWT_PRIVATE_KEY_BASE_64=" >> /home/app/.env
-	sudo echo "PORT=4000" >> /home/app/.env
-	sudo echo "RELEASE_NODE=" >> /home/app/.env
-	sudo echo "_SERVICE_SUFFIX=" >> /home/app/.env
-	sudo echo "GATEWAY_URL=https://$$(hostname).championsofmirra.com" >> /home/app/.env
-	sudo echo "METRICS_ENDPOINT_PORT=" >> /home/app/.env
-	sudo echo "OVERRIDE_JWT=" >> /home/app/.env
-	sudo echo "GOOGLE_CLIENT_ID=" >> /home/app/.env
-	sudo echo "BOT_MANAGER_PORT=4003" >> /home/app/.env
-	sudo echo "BOT_MANAGER_HOST=bot-manager.championsofmirra.com" >> /home/app/.env
-	sudo echo "CONFIGURATOR_HOST=" >> /home/app/.env
-	sudo echo "CONFIGURATOR_GOOGLE_CLIENT_ID=" >> /home/app/.env
-	sudo echo "CONFIGURATOR_GOOGLE_CLIENT_SECRET=" >> /home/app/.env
-	sudo echo "RELEASE=arena" >> /home/app/.env
-	sudo echo "TARGET_SERVER=" >> /home/app/.env
-	sudo echo "LOADTEST_EUROPE_HOST=" >> /home/app/.env
-	sudo echo "LOADTEST_BRAZIL_HOST=" >> /home/app/.env
-	sudo echo "LOADTEST_CHILE_HOST=" >> /home/app/.env
-	sudo echo "NEWRELIC_APP_NAME=testing-europe" >> /home/app/.env
-	sudo echo "NEWRELIC_KEY=8ae39e7ac1a8aa938b65f21daed82bbdFFFFNRAL" >> /home/app/.env
+	sudo truncate -s0 /home/app/.env
+	sudo echo "PHX_HOST=$$(hostname).championsofmirra.com" | sudo tee -a /home/app/.env > /dev/null
+	sudo echo "DATABASE_URL=ecto://postgres:postgres@localhost:5432/game_backend" | sudo tee -a /home/app/.env > /dev/null
+	sudo echo "CONFIGURATOR_DATABASE_URL=" | sudo tee -a /home/app/.env > /dev/null
+	sudo echo "PHX_SERVER=true" | sudo tee -a /home/app/.env > /dev/null
+	sudo echo "SECRET_KEY_BASE=ecoRrjLPSLqYamG2+CCuTF24ZRkSApTYC1DBBIaq2PgPap1LFRZ4oKlcOkuYA+Ew" | sudo tee -a /home/app/.env > /dev/null
+	sudo echo "JWT_PRIVATE_KEY_BASE_64=" | sudo tee -a /home/app/.env > /dev/null
+	sudo echo "PORT=4000" | sudo tee -a /home/app/.env > /dev/null
+	sudo echo "RELEASE_NODE=" | sudo tee -a /home/app/.env > /dev/null
+	sudo echo "_SERVICE_SUFFIX=" | sudo tee -a /home/app/.env > /dev/null
+	sudo echo "GATEWAY_URL=https://$$(hostname).championsofmirra.com" | sudo tee -a /home/app/.env > /dev/null
+	sudo echo "METRICS_ENDPOINT_PORT=" | sudo tee -a /home/app/.env > /dev/null
+	sudo echo "OVERRIDE_JWT=" | sudo tee -a /home/app/.env > /dev/null
+	sudo echo "GOOGLE_CLIENT_ID=" | sudo tee -a /home/app/.env > /dev/null
+	sudo echo "BOT_MANAGER_PORT=4003" | sudo tee -a /home/app/.env > /dev/null
+	sudo echo "BOT_MANAGER_HOST=bot-manager.championsofmirra.com" | sudo tee -a /home/app/.env > /dev/null
+	sudo echo "CONFIGURATOR_HOST=" | sudo tee -a /home/app/.env > /dev/null
+	sudo echo "CONFIGURATOR_GOOGLE_CLIENT_ID=" | sudo tee -a /home/app/.env > /dev/null
+	sudo echo "CONFIGURATOR_GOOGLE_CLIENT_SECRET=" | sudo tee -a /home/app/.env > /dev/null
+	sudo echo "RELEASE=arena" | sudo tee -a /home/app/.env > /dev/null
+	sudo echo "TARGET_SERVER=" | sudo tee -a /home/app/.env > /dev/null
+	sudo echo "LOADTEST_EUROPE_HOST=" | sudo tee -a /home/app/.env > /dev/null
+	sudo echo "LOADTEST_BRAZIL_HOST=" | sudo tee -a /home/app/.env > /dev/null
+	sudo echo "LOADTEST_CHILE_HOST=" | sudo tee -a /home/app/.env > /dev/null
+	sudo echo "NEWRELIC_APP_NAME=testing-europe" | sudo tee -a /home/app/.env > /dev/null
+	sudo echo "NEWRELIC_KEY=8ae39e7ac1a8aa938b65f21daed82bbdFFFFNRAL" | sudo tee -a /home/app/.env > /dev/null
 
 setup-aws-dns:
 	aws route53 change-resource-record-sets \
