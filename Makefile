@@ -82,6 +82,9 @@ admin-setup-arena-server: debian-install-deps setup-caddy create-env-file setup-
 debian-install-deps:
 	sudo apt update -y
 	sudo apt install -y rsync libssl-dev libncurses5 libsctp1 wget systemd-timesyncd ufw
+	sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+	sudo unzip awscliv2.zip \
+	sudo ./aws/install
 	wget -P /tmp/ http://ftp.de.debian.org/debian/pool/main/o/openssl/libssl1.1_1.1.1w-0+deb11u1_amd64.deb
 	sudo dpkg -i /tmp/libssl1.1_1.1.1w-0+deb11u1_amd64.deb
 	rm /tmp/libssl1.1_1.1.1w-0+deb11u1_amd64.deb
