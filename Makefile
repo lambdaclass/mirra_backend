@@ -95,7 +95,7 @@ debian-install-deps:
 setup-caddy:
 	sudo ufw allow 80
 	sudo ufw allow 443
-	sudo sed -i "1i $(hostname).championsofmirra.com {" /etc/caddy/Caddyfile; \
+	sudo sed -i "1i $$(hostname).championsofmirra.com {" /etc/caddy/Caddyfile; \
 	sudo sed -i "2i \	reverse_proxy localhost:4000" /etc/caddy/Caddyfile; \
 	sudo sed -i "3i }" /etc/caddy/Caddyfile;
 	sudo systemctl restart caddy
