@@ -141,7 +141,7 @@ setup-aws-dns:
 
 ## Run this as app or dev user
 
-app-setup-arena-server: clone-repo debian-install-dev-deps
+app-setup-arena-server: debian-install-dev-deps
 
 debian-install-dev-deps:
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
