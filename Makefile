@@ -75,7 +75,10 @@ server-specs:
 	./devops/server_specs.sh
 
 ## New server. Setup dependencies.
-## Run these as admin
+## Run these as admin user
+
+setup-arena-server: debian-install-deps setup-caddy setup-ssh-key create-env-file setup-aws-dns
+
 debian-install-deps:
 	sudo apt update -y
 	sudo apt install -y rsync libssl-dev libncurses5 libsctp1 wget systemd-timesyncd
@@ -90,14 +93,58 @@ debian-install-deps:
 	rm /tmp/elixir-otp-26.zip
 
 setup-caddy:
-	@read -p "Enter the server dns (e.g: 'arena-testing.championsofmirra.com'): " user_input; \
 	sudo ufw allow 80 \
 	sudo ufw allow 443 \
-	sudo sed -i "1i $$user_input {" /etc/caddy/Caddyfile; \
+	sudo sed -i "1i $$(hostname).championsofmirra.com {" /etc/caddy/Caddyfile; \
 	sudo sed -i "2i \	reverse_proxy localhost:4000" /etc/caddy/Caddyfile; \
 	sudo sed -i "3i }" /etc/caddy/Caddyfile;
 	sudo systemctl restart caddy
 
-## Run this as dev
+setup-ssh-key:
+	@echo "🔑 Paste your private SSH key and press Ctrl+D when done:"
+	@cat > /home/app/.ssh/id_ed25519
+	@chmod 600 /home/app/.ssh/id_ed25519
+	@echo "✅ Key saved to /home/app/.ssh/id_ed25519"
+
+create-env-file:
+	@truncate -s0 /home/app/.env
+	@echo "PHX_HOST=$$(hostname).championsofmirra.com" >> /home/app/.env
+	@echo "DATABASE_URL=ecto://postgres:postgres@localhost:5432/game_backend" >> /home/app/.env
+	@echo "CONFIGURATOR_DATABASE_URL=" >> /home/app/.env
+	@echo "PHX_SERVER=true" >> /home/app/.env
+	@echo "SECRET_KEY_BASE=ecoRrjLPSLqYamG2+CCuTF24ZRkSApTYC1DBBIaq2PgPap1LFRZ4oKlcOkuYA+Ew" >> /home/app/.env
+	@echo "JWT_PRIVATE_KEY_BASE_64=" >> /home/app/.env
+	@echo "PORT=4000" >> /home/app/.env
+	@echo "RELEASE_NODE=" >> /home/app/.env
+	@echo "_SERVICE_SUFFIX=" >> /home/app/.env
+	@echo "GATEWAY_URL=https://$$(hostname).championsofmirra.com" >> /home/app/.env
+	@echo "METRICS_ENDPOINT_PORT=" >> /home/app/.env
+	@echo "OVERRIDE_JWT=" >> /home/app/.env
+	@echo "GOOGLE_CLIENT_ID=" >> /home/app/.env
+	@echo "BOT_MANAGER_PORT=4003" >> /home/app/.env
+	@echo "BOT_MANAGER_HOST=bot-manager.championsofmirra.com" >> /home/app/.env
+	@echo "CONFIGURATOR_HOST=" >> /home/app/.env
+	@echo "CONFIGURATOR_GOOGLE_CLIENT_ID=" >> /home/app/.env
+	@echo "CONFIGURATOR_GOOGLE_CLIENT_SECRET=" >> /home/app/.env
+	@echo "RELEASE=arena" >> /home/app/.env
+	@echo "TARGET_SERVER=" >> /home/app/.env
+	@echo "LOADTEST_EUROPE_HOST=" >> /home/app/.env
+	@echo "LOADTEST_BRAZIL_HOST=" >> /home/app/.env
+	@echo "LOADTEST_CHILE_HOST=" >> /home/app/.env
+	@echo "NEWRELIC_APP_NAME=testing-europe" >> /home/app/.env
+	@echo "NEWRELIC_KEY=8ae39e7ac1a8aa938b65f21daed82bbdFFFFNRAL" >> /home/app/.env
+
+setup-aws-dns:
+	aws route53 change-resource-record-sets \
+    --hosted-zone-id "Z10155211PTW2X4H9NGDM" \
+    --change-batch "{\"Changes\":[{\"Action\":\"CREATE\",\"ResourceRecordSet\":{\"Name\":\"$$(hostname).championsofmirra.com\",\"Type\":\"A\",\"TTL\":300,\"ResourceRecords\":[{\"Value\":\"$$(curl -s ipinfo.io/ip)\"}]}}]}"
+
+## Run this as app or dev user
+
+setup-arena-server: clone-repo debian-install-dev-deps
+
+clone-repo:
+	git clone git@github.com:lambdaclass/mirra_backend.git
+
 debian-install-dev-deps:
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
