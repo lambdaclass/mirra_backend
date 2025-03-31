@@ -51,4 +51,30 @@ defmodule Configurator.Utils do
   def embed_to_string(struct) when is_map(struct) do
     struct
   end
+
+  @doc """
+  Receives a json file path and prints its elixir representation in the terminal.
+
+  ## Examples
+
+      iex> print_from_json(path_to_json)
+      [%{name: "Left Bottom Water", position: %{y: "0.0", x: "0.0"}, ...]
+
+  """
+  def print_from_json(path_to_json) do
+    case File.read(path_to_json) do
+      {:ok, content} ->
+        case Jason.decode(content) do
+          {:ok, data} ->
+            IO.inspect(data, label: :start_of_json_file, limit: :infinity)
+            :end_of_json_file
+
+          {:error, reason} ->
+            IO.puts("Failed to parse JSON: #{reason}")
+        end
+
+      {:error, reason} ->
+        IO.puts("Failed to read file: #{reason}")
+    end
+  end
 end
