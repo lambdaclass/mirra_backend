@@ -3684,1774 +3684,859 @@ merliot_map_config = %{
   ],
   obstacles: [
     %{
-      name: "East wall",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "6400",
-          y: "12000"
-        },
-        %{
-          x: "12000",
-          y: "12000"
-        },
-        %{
-          x: "12000",
-          y: "-12000"
-        },
-        %{
-          x: "6400",
-          y: "-12000"
-        }
+      "base_status" => nil,
+      "name" => "East wall",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "6400", "y" => "12000"},
+        %{"x" => "12000", "y" => "12000"},
+        %{"x" => "12000", "y" => "-12000"},
+        %{"x" => "6400", "y" => "-12000"}
       ]
     },
     %{
-      name: "North wall",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "12000",
-          y: "12000"
-        },
-        %{
-          x: "12000",
-          y: "6400"
-        },
-        %{
-          x: "-12000",
-          y: "6400"
-        },
-        %{
-          x: "-12000",
-          y: "12000"
-        }
+      "base_status" => nil,
+      "name" => "North wall",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "12000", "y" => "12000"},
+        %{"x" => "12000", "y" => "6400"},
+        %{"x" => "-12000", "y" => "6400"},
+        %{"x" => "-12000", "y" => "12000"}
       ]
     },
     %{
-      name: "West wall",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "-12000",
-          y: "12000"
-        },
-        %{
-          x: "-6400",
-          y: "12000"
-        },
-        %{
-          x: "-6400",
-          y: "-12000"
-        },
-        %{
-          x: "-12000",
-          y: "-12000"
-        }
+      "base_status" => nil,
+      "name" => "West wall",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "-12000", "y" => "12000"},
+        %{"x" => "-6400", "y" => "12000"},
+        %{"x" => "-6400", "y" => "-12000"},
+        %{"x" => "-12000", "y" => "-12000"}
       ]
     },
     %{
-      name: "South wall",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "-12000",
-          y: "-6400"
-        },
-        %{
-          x: "12000",
-          y: "-6400"
-        },
-        %{
-          x: "12000",
-          y: "-12000"
-        },
-        %{
-          x: "-12000",
-          y: "-12000"
-        }
+      "base_status" => nil,
+      "name" => "South wall",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "-12000", "y" => "-6400"},
+        %{"x" => "12000", "y" => "-6400"},
+        %{"x" => "12000", "y" => "-12000"},
+        %{"x" => "-12000", "y" => "-12000"}
       ]
     },
     %{
-      name: "Center Bottom Left Top Wall",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "-2140",
-          y: "-319"
-        },
-        %{
-          x: "-1991",
-          y: "-315"
-        },
-        %{
-          x: "-1962",
-          y: "-981"
-        },
-        %{
-          x: "-2169",
-          y: "-985"
-        }
+      "base_status" => nil,
+      "name" => "Center Bottom Left Top Wall",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "-2140", "y" => "-319"},
+        %{"x" => "-1991", "y" => "-315"},
+        %{"x" => "-1962", "y" => "-981"},
+        %{"x" => "-2169", "y" => "-985"}
       ]
     },
     %{
-      name: "Center Bottom Left Mid Wall",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "-2169",
-          y: "-985"
-        },
-        %{
-          x: "-1962",
-          y: "-981"
-        },
-        %{
-          x: "-1602",
-          y: "-1295"
-        },
-        %{
-          x: "-1743",
-          y: "-1444"
-        }
+      "base_status" => nil,
+      "name" => "Center Bottom Left Mid Wall",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "-2169", "y" => "-985"},
+        %{"x" => "-1962", "y" => "-981"},
+        %{"x" => "-1602", "y" => "-1295"},
+        %{"x" => "-1743", "y" => "-1444"}
       ]
     },
     %{
-      name: "Center Bottom Left Down Wall",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "-1289",
-          y: "-1586"
-        },
-        %{
-          x: "-836",
-          y: "-2083"
-        },
-        %{
-          x: "-938",
-          y: "-2196"
-        },
-        %{
-          x: "-1446",
-          y: "-1746"
-        },
-        %{
-          x: "-1446",
-          y: "-1746"
-        }
+      "base_status" => nil,
+      "name" => "Center Bottom Left Down Wall",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "-1289", "y" => "-1586"},
+        %{"x" => "-836", "y" => "-2083"},
+        %{"x" => "-938", "y" => "-2196"},
+        %{"x" => "-1446", "y" => "-1746"},
+        %{"x" => "-1446", "y" => "-1746"}
       ]
     },
     %{
-      name: "Center Bottom Right Down Wall",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "341",
-          y: "-2144"
-        },
-        %{
-          x: "341",
-          y: "-2010"
-        },
-        %{
-          x: "982",
-          y: "-2010"
-        },
-        %{
-          x: "994",
-          y: "-2185"
-        }
+      "base_status" => nil,
+      "name" => "Center Bottom Right Down Wall",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "341", "y" => "-2144"},
+        %{"x" => "341", "y" => "-2010"},
+        %{"x" => "982", "y" => "-2010"},
+        %{"x" => "994", "y" => "-2185"}
       ]
     },
     %{
-      name: "Center Bottom Right Mid Wall",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "994",
-          y: "-2185"
-        },
-        %{
-          x: "982",
-          y: "-2010"
-        },
-        %{
-          x: "1329",
-          y: "-1615"
-        },
-        %{
-          x: "1472",
-          y: "-1751"
-        }
+      "base_status" => nil,
+      "name" => "Center Bottom Right Mid Wall",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "994", "y" => "-2185"},
+        %{"x" => "982", "y" => "-2010"},
+        %{"x" => "1329", "y" => "-1615"},
+        %{"x" => "1472", "y" => "-1751"}
       ]
     },
     %{
-      name: "Center Bottom Right Top Wall",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "1777",
-          y: "-1457"
-        },
-        %{
-          x: "1608",
-          y: "-1317"
-        },
-        %{
-          x: "2108",
-          y: "-854"
-        },
-        %{
-          x: "2226",
-          y: "-961"
-        }
+      "base_status" => nil,
+      "name" => "Center Bottom Right Top Wall",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "1777", "y" => "-1457"},
+        %{"x" => "1608", "y" => "-1317"},
+        %{"x" => "2108", "y" => "-854"},
+        %{"x" => "2226", "y" => "-961"}
       ]
     },
     %{
-      name: "Center Top Left Bottom Wall",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "-2173",
-          y: "922"
-        },
-        %{
-          x: "-1710",
-          y: "1433"
-        },
-        %{
-          x: "-1566",
-          y: "1305"
-        },
-        %{
-          x: "-2055",
-          y: "826"
-        }
+      "base_status" => nil,
+      "name" => "Center Top Left Bottom Wall",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "-2173", "y" => "922"},
+        %{"x" => "-1710", "y" => "1433"},
+        %{"x" => "-1566", "y" => "1305"},
+        %{"x" => "-2055", "y" => "826"}
       ]
     },
     %{
-      name: "Center Top Left Mid Wall",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "-1281",
-          y: "1622"
-        },
-        %{
-          x: "-1412",
-          y: "1722"
-        },
-        %{
-          x: "-966",
-          y: "2183"
-        },
-        %{
-          x: "-961",
-          y: "2006"
-        }
+      "base_status" => nil,
+      "name" => "Center Top Left Mid Wall",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "-1281", "y" => "1622"},
+        %{"x" => "-1412", "y" => "1722"},
+        %{"x" => "-966", "y" => "2183"},
+        %{"x" => "-961", "y" => "2006"}
       ]
     },
     %{
-      name: "Center Top Left Top Wall",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "-966",
-          y: "2183"
-        },
-        %{
-          x: "-961",
-          y: "2006"
-        },
-        %{
-          x: "-310",
-          y: "2013"
-        },
-        %{
-          x: "-310",
-          y: "2157"
-        }
+      "base_status" => nil,
+      "name" => "Center Top Left Top Wall",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "-966", "y" => "2183"},
+        %{"x" => "-961", "y" => "2006"},
+        %{"x" => "-310", "y" => "2013"},
+        %{"x" => "-310", "y" => "2157"}
       ]
     },
     %{
-      name: "Center Top Right Bottom Wall",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "2137",
-          y: "355"
-        },
-        %{
-          x: "1969",
-          y: "342"
-        },
-        %{
-          x: "1956",
-          y: "990"
-        },
-        %{
-          x: "2159",
-          y: "990"
-        }
+      "base_status" => nil,
+      "name" => "Center Top Right Bottom Wall",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "2137", "y" => "355"},
+        %{"x" => "1969", "y" => "342"},
+        %{"x" => "1956", "y" => "990"},
+        %{"x" => "2159", "y" => "990"}
       ]
     },
     %{
-      name: "Center Top Right Mid Wall",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "2159",
-          y: "990"
-        },
-        %{
-          x: "1961",
-          y: "990"
-        },
-        %{
-          x: "1576",
-          y: "1313"
-        },
-        %{
-          x: "1712",
-          y: "1449"
-        }
+      "base_status" => nil,
+      "name" => "Center Top Right Mid Wall",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "2159", "y" => "990"},
+        %{"x" => "1961", "y" => "990"},
+        %{"x" => "1576", "y" => "1313"},
+        %{"x" => "1712", "y" => "1449"}
       ]
     },
     %{
-      name: "Center Top Right Top Wall",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "1410",
-          y: "1748"
-        },
-        %{
-          x: "1269",
-          y: "1610"
-        },
-        %{
-          x: "797",
-          y: "2086"
-        },
-        %{
-          x: "910",
-          y: "2182"
-        }
+      "base_status" => nil,
+      "name" => "Center Top Right Top Wall",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "1410", "y" => "1748"},
+        %{"x" => "1269", "y" => "1610"},
+        %{"x" => "797", "y" => "2086"},
+        %{"x" => "910", "y" => "2182"}
       ]
     },
     %{
-      name: "Center altar",
-      position: %{
-        x: "31",
-        y: "-140"
-      },
-      radius: "400",
-      shape: "circle",
-      type: "static",
-      statuses_cycle: nil,
-      base_status: nil,
-      vertices: []
+      "base_status" => nil,
+      "name" => "Center altar",
+      "position" => %{"x" => "31", "y" => "-140"},
+      "radius" => "400",
+      "shape" => "circle",
+      "statuses_cycle" => nil,
+      "type" => "static",
+      "vertices" => []
     },
     %{
-      name: "Left Top Water 1",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "lake",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "-4360",
-          y: "2759"
-        },
-        %{
-          x: "-3167",
-          y: "3087"
-        },
-        %{
-          x: "-2743",
-          y: "2204"
-        },
-        %{
-          x: "-3500",
-          y: "500"
-        },
-        %{
-          x: "-4345",
-          y: "400"
-        },
-        %{
-          x: "-4900",
-          y: "1800"
-        }
+      "base_status" => nil,
+      "name" => "Left Top Water 1",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "lake",
+      "vertices" => [
+        %{"x" => "-4360", "y" => "2759"},
+        %{"x" => "-3167", "y" => "3087"},
+        %{"x" => "-2743", "y" => "2204"},
+        %{"x" => "-3500", "y" => "500"},
+        %{"x" => "-4345", "y" => "400"},
+        %{"x" => "-4900", "y" => "1800"}
       ]
     },
     %{
-      name: "Left Bottom Water",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "lake",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "-3117",
-          y: "-2705"
-        },
-        %{
-          x: "-2539",
-          y: "-2550"
-        },
-        %{
-          x: "-837",
-          y: "-3421"
-        },
-        %{
-          x: "-532",
-          y: "-4091"
-        },
-        %{
-          x: "-1788",
-          y: "-4935"
-        },
-        %{
-          x: "-3029",
-          y: "-4477"
-        }
+      "base_status" => nil,
+      "name" => "Left Bottom Water",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "lake",
+      "vertices" => [
+        %{"x" => "-3117", "y" => "-2705"},
+        %{"x" => "-2539", "y" => "-2550"},
+        %{"x" => "-837", "y" => "-3421"},
+        %{"x" => "-532", "y" => "-4091"},
+        %{"x" => "-1788", "y" => "-4935"},
+        %{"x" => "-3029", "y" => "-4477"}
       ]
     },
     %{
-      name: "Close to Wall Top Left Water",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "lake",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "-10458",
-          y: "8000"
-        },
-        %{
-          x: "-5150",
-          y: "3016"
-        },
-        %{
-          x: "-5600",
-          y: "2132"
-        },
-        %{
-          x: "-10439",
-          y: "2505"
-        }
+      "base_status" => nil,
+      "name" => "Close to Wall Top Left Water",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "lake",
+      "vertices" => [
+        %{"x" => "-10458", "y" => "8000"},
+        %{"x" => "-5150", "y" => "3016"},
+        %{"x" => "-5600", "y" => "2132"},
+        %{"x" => "-10439", "y" => "2505"}
       ]
     },
     %{
-      name: "Close to Wall Top Right Water",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "lake",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "2380",
-          y: "70000"
-        },
-        %{
-          x: "3760",
-          y: "70000"
-        },
-        %{
-          x: "3760",
-          y: "6300"
-        },
-        %{
-          x: "3310",
-          y: "5460"
-        },
-        %{
-          x: "2380",
-          y: "5820"
-        }
+      "base_status" => nil,
+      "name" => "Close to Wall Top Right Water",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "lake",
+      "vertices" => [
+        %{"x" => "2380", "y" => "70000"},
+        %{"x" => "3760", "y" => "70000"},
+        %{"x" => "3760", "y" => "6300"},
+        %{"x" => "3310", "y" => "5460"},
+        %{"x" => "2380", "y" => "5820"}
       ]
     },
     %{
-      name: "Close To Wall Bottom Left Water",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "lake",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "-3168",
-          y: "-5127"
-        },
-        %{
-          x: "-2062",
-          y: "-5648"
-        },
-        %{
-          x: "-2530",
-          y: "-10395"
-        },
-        %{
-          x: "-6000",
-          y: "-10404"
-        }
+      "base_status" => nil,
+      "name" => "Close To Wall Bottom Left Water",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "lake",
+      "vertices" => [
+        %{"x" => "-3168", "y" => "-5127"},
+        %{"x" => "-2062", "y" => "-5648"},
+        %{"x" => "-2530", "y" => "-10395"},
+        %{"x" => "-6000", "y" => "-10404"}
       ]
     },
     %{
-      name: "Close To Wall Bottom Right Water",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "lake",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "70000",
-          y: "-4620"
-        },
-        %{
-          x: "6400",
-          y: "-4620"
-        },
-        %{
-          x: "5590",
-          y: "-3400"
-        },
-        %{
-          x: "6000",
-          y: "-2300"
-        },
-        %{
-          x: "70000",
-          y: "-2300"
-        }
+      "base_status" => nil,
+      "name" => "Close To Wall Bottom Right Water",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "lake",
+      "vertices" => [
+        %{"x" => "70000", "y" => "-4620"},
+        %{"x" => "6400", "y" => "-4620"},
+        %{"x" => "5590", "y" => "-3400"},
+        %{"x" => "6000", "y" => "-2300"},
+        %{"x" => "70000", "y" => "-2300"}
       ]
     },
     %{
-      name: "Bottom Mid Water",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "lake",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "-272",
-          y: "-3195"
-        },
-        %{
-          x: "2056",
-          y: "-2643"
-        },
-        %{
-          x: "2230",
-          y: "-3450"
-        },
-        %{
-          x: "80",
-          y: "-3947"
-        }
+      "base_status" => nil,
+      "name" => "Bottom Mid Water",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "lake",
+      "vertices" => [
+        %{"x" => "-272", "y" => "-3195"},
+        %{"x" => "2056", "y" => "-2643"},
+        %{"x" => "2230", "y" => "-3450"},
+        %{"x" => "80", "y" => "-3947"}
       ]
     },
     %{
-      name: "Top Mid Water",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "lake",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "-2482",
-          y: "3376"
-        },
-        %{
-          x: "0",
-          y: "4110"
-        },
-        %{
-          x: "294",
-          y: "3177"
-        },
-        %{
-          x: "-2139",
-          y: "2410"
-        }
+      "base_status" => nil,
+      "name" => "Top Mid Water",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "lake",
+      "vertices" => [
+        %{"x" => "-2482", "y" => "3376"},
+        %{"x" => "0", "y" => "4110"},
+        %{"x" => "294", "y" => "3177"},
+        %{"x" => "-2139", "y" => "2410"}
       ]
     },
     %{
-      name: "Right Mid Water",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "lake",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "2664",
-          y: "2310"
-        },
-        %{
-          x: "3299",
-          y: "2519"
-        },
-        %{
-          x: "3659",
-          y: "1608"
-        },
-        %{
-          x: "4035",
-          y: "-68"
-        },
-        %{
-          x: "3478",
-          y: "-200"
-        }
+      "base_status" => nil,
+      "name" => "Right Mid Water",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "lake",
+      "vertices" => [
+        %{"x" => "2664", "y" => "2310"},
+        %{"x" => "3299", "y" => "2519"},
+        %{"x" => "3659", "y" => "1608"},
+        %{"x" => "4035", "y" => "-68"},
+        %{"x" => "3478", "y" => "-200"}
       ]
     },
     %{
-      name: "Left Mid Water",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "lake",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "-4107",
-          y: "-343"
-        },
-        %{
-          x: "-3368",
-          y: "-169"
-        },
-        %{
-          x: "-2826",
-          y: "-2024"
-        },
-        %{
-          x: "-3448",
-          y: "-2203"
-        },
-        %{
-          x: "-3957",
-          y: "-1003"
-        }
+      "base_status" => nil,
+      "name" => "Left Mid Water",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "lake",
+      "vertices" => [
+        %{"x" => "-4107", "y" => "-343"},
+        %{"x" => "-3368", "y" => "-169"},
+        %{"x" => "-2826", "y" => "-2024"},
+        %{"x" => "-3448", "y" => "-2203"},
+        %{"x" => "-3957", "y" => "-1003"}
       ]
     },
     %{
-      name: "Bottom Right Water",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "lake",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "2653",
-          y: "-2438"
-        },
-        %{
-          x: "2792",
-          y: "-3186"
-        },
-        %{
-          x: "4896",
-          y: "-2963"
-        },
-        %{
-          x: "5371",
-          y: "-1881"
-        },
-        %{
-          x: "4212",
-          y: "-509"
-        },
-        %{
-          x: "3615",
-          y: "-694"
-        }
+      "base_status" => nil,
+      "name" => "Bottom Right Water",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "lake",
+      "vertices" => [
+        %{"x" => "2653", "y" => "-2438"},
+        %{"x" => "2792", "y" => "-3186"},
+        %{"x" => "4896", "y" => "-2963"},
+        %{"x" => "5371", "y" => "-1881"},
+        %{"x" => "4212", "y" => "-509"},
+        %{"x" => "3615", "y" => "-694"}
       ]
     },
     %{
-      name: "Top Right Water",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "lake",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "2381",
-          y: "2856"
-        },
-        %{
-          x: "3029",
-          y: "3061"
-        },
-        %{
-          x: "3000",
-          y: "4737"
-        },
-        %{
-          x: "1802",
-          y: "5366"
-        },
-        %{
-          x: "565",
-          y: "4300"
-        },
-        %{
-          x: "808",
-          y: "3500"
-        }
+      "base_status" => nil,
+      "name" => "Top Right Water",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "lake",
+      "vertices" => [
+        %{"x" => "2381", "y" => "2856"},
+        %{"x" => "3029", "y" => "3061"},
+        %{"x" => "3000", "y" => "4737"},
+        %{"x" => "1802", "y" => "5366"},
+        %{"x" => "565", "y" => "4300"},
+        %{"x" => "808", "y" => "3500"}
       ]
     },
     %{
-      name: "zone 1 - obstacle 1 - rock tree",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "-5961.0",
-          y: "6300.0"
-        },
-        %{
-          x: "-6300.0",
-          y: "5800.0"
-        },
-        %{
-          x: "-10000.0",
-          y: "5800.0"
-        },
-        %{
-          x: "-5800.0",
-          y: "10000.0"
-        }
+      "base_status" => nil,
+      "name" => "zone 1 - obstacle 1 - rock tree",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "-5961.0", "y" => "6300.0"},
+        %{"x" => "-6300.0", "y" => "5800.0"},
+        %{"x" => "-10000.0", "y" => "5800.0"},
+        %{"x" => "-5800.0", "y" => "10000.0"}
       ]
     },
     %{
-      name: "zone 1 - obstacle 2 - top rock",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "-3527.0",
-          y: "4830.0"
-        },
-        %{
-          x: "-4571.0",
-          y: "5185.0"
-        },
-        %{
-          x: "-4477.0",
-          y: "5560.0"
-        },
-        %{
-          x: "-3374.0",
-          y: "5194.0"
-        }
+      "base_status" => nil,
+      "name" => "zone 1 - obstacle 2 - top rock",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "-3527.0", "y" => "4830.0"},
+        %{"x" => "-4571.0", "y" => "5185.0"},
+        %{"x" => "-4477.0", "y" => "5560.0"},
+        %{"x" => "-3374.0", "y" => "5194.0"}
       ]
     },
     %{
-      name: "zone 1 - obstacle 3 - left rock",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "-5297.0",
-          y: "4830.0"
-        },
-        %{
-          x: "-4722.0",
-          y: "4785.0"
-        },
-        %{
-          x: "-4670.0",
-          y: "3812.0"
-        },
-        %{
-          x: "-4942.0",
-          y: "3612.0"
-        }
+      "base_status" => nil,
+      "name" => "zone 1 - obstacle 3 - left rock",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "-5297.0", "y" => "4830.0"},
+        %{"x" => "-4722.0", "y" => "4785.0"},
+        %{"x" => "-4670.0", "y" => "3812.0"},
+        %{"x" => "-4942.0", "y" => "3612.0"}
       ]
     },
     %{
-      name: "zone 2 - obstacle 1 - left rock",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "-5333.0",
-          y: "-3496.0"
-        },
-        %{
-          x: "-4775.0",
-          y: "-3513.0"
-        },
-        %{
-          x: "-5144.0",
-          y: "-4439.0"
-        },
-        %{
-          x: "-5577.0",
-          y: "-4637.0"
-        }
+      "base_status" => nil,
+      "name" => "zone 2 - obstacle 1 - left rock",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "-5333.0", "y" => "-3496.0"},
+        %{"x" => "-4775.0", "y" => "-3513.0"},
+        %{"x" => "-5144.0", "y" => "-4439.0"},
+        %{"x" => "-5577.0", "y" => "-4637.0"}
       ]
     },
     %{
-      name: "zone 2 - obstacle 2 - bottom rock",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "-4845.0",
-          y: "-5448.0"
-        },
-        %{
-          x: "-4948.0",
-          y: "-4718.0"
-        },
-        %{
-          x: "-3585.0",
-          y: "-4811.0"
-        }
+      "base_status" => nil,
+      "name" => "zone 2 - obstacle 2 - bottom rock",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "-4845.0", "y" => "-5448.0"},
+        %{"x" => "-4948.0", "y" => "-4718.0"},
+        %{"x" => "-3585.0", "y" => "-4811.0"}
       ]
     },
     %{
-      name: "zone 2 - obstacle 3 - rock tree",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "-5352.0",
-          y: "-6300.0"
-        },
-        %{
-          x: "-5352.0",
-          y: "-70000.0"
-        },
-        %{
-          x: "-70000.0",
-          y: "-70000.0"
-        },
-        %{
-          x: "-70000.0",
-          y: "-5700.0"
-        },
-        %{
-          x: "-6300.0",
-          y: "-5753.0"
-        }
+      "base_status" => nil,
+      "name" => "zone 2 - obstacle 3 - rock tree",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "-5352.0", "y" => "-6300.0"},
+        %{"x" => "-5352.0", "y" => "-70000.0"},
+        %{"x" => "-70000.0", "y" => "-70000.0"},
+        %{"x" => "-70000.0", "y" => "-5700.0"},
+        %{"x" => "-6300.0", "y" => "-5753.0"}
       ]
     },
     %{
-      name: "zone 3 - obstacle 1 - rock tree",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "5273.0",
-          y: "6300.0"
-        },
-        %{
-          x: "5273.0",
-          y: "10000.0"
-        },
-        %{
-          x: "10000.0",
-          y: "10000.0"
-        },
-        %{
-          x: "10000.0",
-          y: "5600.0"
-        },
-        %{
-          x: "6300.0",
-          y: "5600.0"
-        }
+      "base_status" => nil,
+      "name" => "zone 3 - obstacle 1 - rock tree",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "5273.0", "y" => "6300.0"},
+        %{"x" => "5273.0", "y" => "10000.0"},
+        %{"x" => "10000.0", "y" => "10000.0"},
+        %{"x" => "10000.0", "y" => "5600.0"},
+        %{"x" => "6300.0", "y" => "5600.0"}
       ]
     },
     %{
-      name: "zone 3 - obstacle 2 - right rock",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "5300.0",
-          y: "4150.0"
-        },
-        %{
-          x: "5700.0",
-          y: "4210.0"
-        },
-        %{
-          x: "5700.0",
-          y: "3450.0"
-        },
-        %{
-          x: "5360.0",
-          y: "3030.0"
-        },
-        %{
-          x: "5080.0",
-          y: "3190.0"
-        }
+      "base_status" => nil,
+      "name" => "zone 3 - obstacle 2 - right rock",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "5300.0", "y" => "4150.0"},
+        %{"x" => "5700.0", "y" => "4210.0"},
+        %{"x" => "5700.0", "y" => "3450.0"},
+        %{"x" => "5360.0", "y" => "3030.0"},
+        %{"x" => "5080.0", "y" => "3190.0"}
       ]
     },
     %{
-      name: "zone 3 - obstacle 3 - top rock",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "4020.0",
-          y: "4730.0"
-        },
-        %{
-          x: "5100.0",
-          y: "4930.0"
-        },
-        %{
-          x: "5170.0",
-          y: "4420.0"
-        },
-        %{
-          x: "3960.0",
-          y: "4420.0"
-        }
+      "base_status" => nil,
+      "name" => "zone 3 - obstacle 3 - top rock",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "4020.0", "y" => "4730.0"},
+        %{"x" => "5100.0", "y" => "4930.0"},
+        %{"x" => "5170.0", "y" => "4420.0"},
+        %{"x" => "3960.0", "y" => "4420.0"}
       ]
     },
     %{
-      name: "zone 4 - obstacle 1 - bottom rock",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "3468.0",
-          y: "-5078.0"
-        },
-        %{
-          x: "4650.0",
-          y: "-5078.0"
-        },
-        %{
-          x: "4490.0",
-          y: "-5800.0"
-        },
-        %{
-          x: "3772.0",
-          y: "-5563.0"
-        }
+      "base_status" => nil,
+      "name" => "zone 4 - obstacle 1 - bottom rock",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "3468.0", "y" => "-5078.0"},
+        %{"x" => "4650.0", "y" => "-5078.0"},
+        %{"x" => "4490.0", "y" => "-5800.0"},
+        %{"x" => "3772.0", "y" => "-5563.0"}
       ]
     },
     %{
-      name: "zone 4 - obstacle 2 - right rock",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "4610.0",
-          y: "-3830.0"
-        },
-        %{
-          x: "5000.0",
-          y: "-3830.0"
-        },
-        %{
-          x: "5320.0",
-          y: "-4860.0"
-        },
-        %{
-          x: "4710.0",
-          y: "-4860.0"
-        }
+      "base_status" => nil,
+      "name" => "zone 4 - obstacle 2 - right rock",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "4610.0", "y" => "-3830.0"},
+        %{"x" => "5000.0", "y" => "-3830.0"},
+        %{"x" => "5320.0", "y" => "-4860.0"},
+        %{"x" => "4710.0", "y" => "-4860.0"}
       ]
     },
     %{
-      name: "zone 4 - obstacle 3 - rock tree",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: nil,
-      vertices: [
-        %{
-          x: "5624.0",
-          y: "-6300.0"
-        },
-        %{
-          x: "6300.0",
-          y: "-5600.0"
-        },
-        %{
-          x: "70000.0",
-          y: "-5600.0"
-        },
-        %{
-          x: "70000.0",
-          y: "-70000.0"
-        },
-        %{
-          x: "5624.0",
-          y: "-70000.0"
-        }
+      "base_status" => nil,
+      "name" => "zone 4 - obstacle 3 - rock tree",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "statuses_cycle" => %{},
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "5624.0", "y" => "-6300.0"},
+        %{"x" => "6300.0", "y" => "-5600.0"},
+        %{"x" => "70000.0", "y" => "-5600.0"},
+        %{"x" => "70000.0", "y" => "-70000.0"},
+        %{"x" => "5624.0", "y" => "-70000.0"}
       ]
     }
   ],
   bushes: [
     %{
-      name: "zone 1 - bush 1",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      vertices: [
-        %{
-          x: "-6900.0",
-          y: "6900.0"
-        },
-        %{
-          x: "-5486.0",
-          y: "6300.0"
-        },
-        %{
-          x: "-6300.0",
-          y: "5400.0"
-        }
+      "name" => "zone 1 - bush 1",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "-6900.0", "y" => "6900.0"},
+        %{"x" => "-5486.0", "y" => "6300.0"},
+        %{"x" => "-6300.0", "y" => "5400.0"}
       ]
     },
     %{
-      name: "zone 1 - bush 2",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      vertices: [
-        %{
-          x: "-4755.0",
-          y: "5171.0"
-        },
-        %{
-          x: "-3774.0",
-          y: "4857.0"
-        },
-        %{
-          x: "-4516.0",
-          y: "4060.0"
-        }
+      "name" => "zone 1 - bush 2",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "-4755.0", "y" => "5171.0"},
+        %{"x" => "-3774.0", "y" => "4857.0"},
+        %{"x" => "-4516.0", "y" => "4060.0"}
       ]
     },
     %{
-      name: "zone 1 - bush 3",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      vertices: [
-        %{
-          x: "-1196.0",
-          y: "7000.0"
-        },
-        %{
-          x: "-1196.0",
-          y: "6100.0"
-        },
-        %{
-          x: "-2650.0",
-          y: "6100.0"
-        },
-        %{
-          x: "-2650.0",
-          y: "7000.0"
-        }
+      "name" => "zone 1 - bush 3",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "-1196.0", "y" => "7000.0"},
+        %{"x" => "-1196.0", "y" => "6100.0"},
+        %{"x" => "-2650.0", "y" => "6100.0"},
+        %{"x" => "-2650.0", "y" => "7000.0"}
       ]
     },
     %{
-      name: "zone 1 - bush 4",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      vertices: [
-        %{
-          x: "-2190.0",
-          y: "3861.0"
-        },
-        %{
-          x: "-790.0",
-          y: "4340.0"
-        },
-        %{
-          x: "-444.0",
-          y: "3460.0"
-        },
-        %{
-          x: "-1780.0",
-          y: "3070.0"
-        }
+      "name" => "zone 1 - bush 4",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "-2190.0", "y" => "3861.0"},
+        %{"x" => "-790.0", "y" => "4340.0"},
+        %{"x" => "-444.0", "y" => "3460.0"},
+        %{"x" => "-1780.0", "y" => "3070.0"}
       ]
     },
     %{
-      name: "zone 2 - bush 1",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      vertices: [
-        %{
-          x: "-5957.0",
-          y: "-396.0"
-        },
-        %{
-          x: "-5957.0",
-          y: "-1942.0"
-        },
-        %{
-          x: "-70000.0",
-          y: "-1942.0"
-        },
-        %{
-          x: "-70000.0",
-          y: "-396.0"
-        }
+      "name" => "zone 2 - bush 1",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "-5957.0", "y" => "-396.0"},
+        %{"x" => "-5957.0", "y" => "-1942.0"},
+        %{"x" => "-70000.0", "y" => "-1942.0"},
+        %{"x" => "-70000.0", "y" => "-396.0"}
       ]
     },
     %{
-      name: "zone 2 - bush 2",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      vertices: [
-        %{
-          x: "-4557.0",
-          y: "-533.0"
-        },
-        %{
-          x: "-4204.0",
-          y: "-359.0"
-        },
-        %{
-          x: "-3758.0",
-          y: "-1764.0"
-        },
-        %{
-          x: "-4245.0",
-          y: "-1886.0"
-        }
+      "name" => "zone 2 - bush 2",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "-4557.0", "y" => "-533.0"},
+        %{"x" => "-4204.0", "y" => "-359.0"},
+        %{"x" => "-3758.0", "y" => "-1764.0"},
+        %{"x" => "-4245.0", "y" => "-1886.0"}
       ]
     },
     %{
-      name: "zone 2 - bush 3",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      vertices: [
-        %{
-          x: "-4952.0",
-          y: "-3813.0"
-        },
-        %{
-          x: "-5257.0",
-          y: "-4942.0"
-        },
-        %{
-          x: "-3866.0",
-          y: "-4664.0"
-        }
+      "name" => "zone 2 - bush 3",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "-4952.0", "y" => "-3813.0"},
+        %{"x" => "-5257.0", "y" => "-4942.0"},
+        %{"x" => "-3866.0", "y" => "-4664.0"}
       ]
     },
     %{
-      name: "zone 2 - bush 4",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      vertices: [
-        %{
-          x: "-6300.0",
-          y: "-5320.0"
-        },
-        %{
-          x: "-4973.0",
-          y: "-6300.0"
-        },
-        %{
-          x: "-6300.0",
-          y: "-6300.0"
-        }
+      "name" => "zone 2 - bush 4",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "-6300.0", "y" => "-5320.0"},
+        %{"x" => "-4973.0", "y" => "-6300.0"},
+        %{"x" => "-6300.0", "y" => "-6300.0"}
       ]
     },
     %{
-      name: "center - bush 1",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      vertices: [
-        %{
-          x: "-2870.0",
-          y: "2040.0"
-        },
-        %{
-          x: "-2040.0",
-          y: "1200.0"
-        },
-        %{
-          x: "-3220.0",
-          y: "870.0"
-        }
+      "name" => "center - bush 1",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "-2870.0", "y" => "2040.0"},
+        %{"x" => "-2040.0", "y" => "1200.0"},
+        %{"x" => "-3220.0", "y" => "870.0"}
       ]
     },
     %{
-      name: "center - bush 2",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      vertices: [
-        %{
-          x: "1015.0",
-          y: "3380.0"
-        },
-        %{
-          x: "2295.0",
-          y: "2642.0"
-        },
-        %{
-          x: "1080.0",
-          y: "2230.0"
-        }
+      "name" => "center - bush 2",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "1015.0", "y" => "3380.0"},
+        %{"x" => "2295.0", "y" => "2642.0"},
+        %{"x" => "1080.0", "y" => "2230.0"}
       ]
     },
     %{
-      name: "center - bush 3",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      vertices: [
-        %{
-          x: "3450.0",
-          y: "-790.0"
-        },
-        %{
-          x: "2390.0",
-          y: "-1070.0"
-        },
-        %{
-          x: "2820.0",
-          y: "-2050.0"
-        }
+      "name" => "center - bush 3",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "3450.0", "y" => "-790.0"},
+        %{"x" => "2390.0", "y" => "-1070.0"},
+        %{"x" => "2820.0", "y" => "-2050.0"}
       ]
     },
     %{
-      name: "center - bush 4",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      vertices: [
-        %{
-          x: "-1474.0",
-          y: "-2122.0"
-        },
-        %{
-          x: "-1021.0",
-          y: "-3211.0"
-        },
-        %{
-          x: "-2153.0",
-          y: "-2635.0"
-        }
+      "name" => "center - bush 4",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "-1474.0", "y" => "-2122.0"},
+        %{"x" => "-1021.0", "y" => "-3211.0"},
+        %{"x" => "-2153.0", "y" => "-2635.0"}
       ]
     },
     %{
-      name: "zone 3 - bush 1",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      vertices: [
-        %{
-          x: "4837.0",
-          y: "6063.0"
-        },
-        %{
-          x: "6300.0",
-          y: "6300.0"
-        },
-        %{
-          x: "6300.0",
-          y: "5278.0"
-        }
+      "name" => "zone 3 - bush 1",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "4837.0", "y" => "6063.0"},
+        %{"x" => "6300.0", "y" => "6300.0"},
+        %{"x" => "6300.0", "y" => "5278.0"}
       ]
     },
     %{
-      name: "zone 3 - bush 2",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      vertices: [
-        %{
-          x: "5346.0",
-          y: "4331.0"
-        },
-        %{
-          x: "4971.0",
-          y: "3370.0"
-        },
-        %{
-          x: "4054.0",
-          y: "4320.0"
-        }
+      "name" => "zone 3 - bush 2",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "5346.0", "y" => "4331.0"},
+        %{"x" => "4971.0", "y" => "3370.0"},
+        %{"x" => "4054.0", "y" => "4320.0"}
       ]
     },
     %{
-      name: "zone 3 - bush 3",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      vertices: [
-        %{
-          x: "3775.0",
-          y: "1621.0"
-        },
-        %{
-          x: "4289.0",
-          y: "1817.0"
-        },
-        %{
-          x: "4568.0",
-          y: "416.0"
-        },
-        %{
-          x: "4050.0",
-          y: "322.0"
-        }
+      "name" => "zone 3 - bush 3",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "3775.0", "y" => "1621.0"},
+        %{"x" => "4289.0", "y" => "1817.0"},
+        %{"x" => "4568.0", "y" => "416.0"},
+        %{"x" => "4050.0", "y" => "322.0"}
       ]
     },
     %{
-      name: "zone 3 - bush 4",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      vertices: [
-        %{
-          x: "6122.0",
-          y: "1330.0"
-        },
-        %{
-          x: "6300.0",
-          y: "1330.0"
-        },
-        %{
-          x: "6300.0",
-          y: "-50.0"
-        },
-        %{
-          x: "6120.0",
-          y: "-50.0"
-        }
+      "name" => "zone 3 - bush 4",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "6122.0", "y" => "1330.0"},
+        %{"x" => "6300.0", "y" => "1330.0"},
+        %{"x" => "6300.0", "y" => "-50.0"},
+        %{"x" => "6120.0", "y" => "-50.0"}
       ]
     },
     %{
-      name: "zone 4 - bush 1",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      vertices: [
-        %{
-          x: "421.0",
-          y: "-3970.0"
-        },
-        %{
-          x: "1926.0",
-          y: "-3622.0"
-        },
-        %{
-          x: "1914.0",
-          y: "-3828.0"
-        },
-        %{
-          x: "685.0",
-          y: "-4202.0"
-        }
+      "name" => "zone 4 - bush 1",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "421.0", "y" => "-3970.0"},
+        %{"x" => "1926.0", "y" => "-3622.0"},
+        %{"x" => "1914.0", "y" => "-3828.0"},
+        %{"x" => "685.0", "y" => "-4202.0"}
       ]
     },
     %{
-      name: "zone 4 - bush 2",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      vertices: [
-        %{
-          x: "1198.0",
-          y: "-5940.0"
-        },
-        %{
-          x: "2740.0",
-          y: "-5940.0"
-        },
-        %{
-          x: "2740.0",
-          y: "-6400.0"
-        },
-        %{
-          x: "1198.0",
-          y: "-6400.0"
-        }
+      "name" => "zone 4 - bush 2",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "1198.0", "y" => "-5940.0"},
+        %{"x" => "2740.0", "y" => "-5940.0"},
+        %{"x" => "2740.0", "y" => "-6400.0"},
+        %{"x" => "1198.0", "y" => "-6400.0"}
       ]
     },
     %{
-      name: "zone 4 - bush 3",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      vertices: [
-        %{
-          x: "3621.0",
-          y: "-4966.0"
-        },
-        %{
-          x: "4519.0",
-          y: "-4047.0"
-        },
-        %{
-          x: "4893.0",
-          y: "-5207.0"
-        }
+      "name" => "zone 4 - bush 3",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "3621.0", "y" => "-4966.0"},
+        %{"x" => "4519.0", "y" => "-4047.0"},
+        %{"x" => "4893.0", "y" => "-5207.0"}
       ]
     },
     %{
-      name: "zone 4 - bush 3",
-      position: %{
-        x: "0.0",
-        y: "0.0"
-      },
-      radius: "0.0",
-      shape: "polygon",
-      vertices: [
-        %{
-          x: "5190.0",
-          y: "-6300.0"
-        },
-        %{
-          x: "6300.0",
-          y: "-5100.0"
-        },
-        %{
-          x: "6300.0",
-          y: "-6300.0"
-        }
+      "name" => "zone 4 - bush 3",
+      "position" => %{"x" => "0.0", "y" => "0.0"},
+      "radius" => "0.0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "5190.0", "y" => "-6300.0"},
+        %{"x" => "6300.0", "y" => "-5100.0"},
+        %{"x" => "6300.0", "y" => "-6300.0"}
       ]
     }
   ],
