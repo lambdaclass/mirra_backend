@@ -201,7 +201,7 @@ defmodule ConfiguratorWeb.UserAuth do
   they use the application at all, here would be a good place.
   """
   def require_authenticated_user(conn, _opts) do
-    if get_session(conn, :current_user) do
+    if not is_nil(get_session(conn, :current_user)) or Mix.env() == :dev do
       conn
     else
       conn
