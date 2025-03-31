@@ -1,0 +1,114 @@
+name: Deploy new Arena server
+
+on:
+  push:
+    branches:
+      1144-add-makefile-commands-for-arena-deployment
+  workflow_dispatch:
+    inputs:
+      server_ip:
+        description: 'Server IP Address'
+        required: true
+
+jobs:
+  deploy-new-arena-server:
+    environment: DeployNewArenaServer
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+          
+      - name: Tailscale (admin)
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TS_ADMIN_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_ADMIN_OAUTH_SECRET }}
+          tags: tag:ci-admin
+
+      - name: Create ssh private key file from env var
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          SSH_HOST: mirra-nico-testing
+        run: |
+          set -ex
+          mkdir -p ~/.ssh/
+          sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 400 ~/.ssh/id_ed25519
+          retries=5; until ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts || [ $retries -eq 0 ]; do ((retries--)); sleep 5; done
+
+      - name: Add SSH Key to Server
+        env:
+          SSH_USERNAME: ${{ vars.SSH_ADMIN_USERNAME }}
+          SSH_HOST: mirra-nico-testing
+          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          printf "%s" "$SSH_PRIVATE_KEY" | ssh ${SSH_USERNAME}@${SSH_HOST} 'cat > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519'
+
+      - name: Clone the Repository
+        env:
+          SSH_USERNAME: ${{ vars.SSH_ADMIN_USERNAME }}
+          SSH_HOST: mirra-nico-testing
+        run: |
+          ssh ${SSH_USERNAME}@${SSH_HOST} << 'EOF'
+            set -ex
+            ssh-keyscan github.com >> ~/.ssh/known_hosts
+            cd /tmp
+            rm -rf /tmp/mirra_backend
+            git clone git@github.com:lambdaclass/mirra_backend.git --branch 1144-add-makefile-commands-for-arena-deployment
+            rm -rf ~/mirra_backend/
+            mv /tmp/mirra_backend ~/
+          EOF
+
+      - name: Setup dependencies (admin)
+        env:
+          SSH_USERNAME: ${{ vars.SSH_ADMIN_USERNAME }}
+          SSH_APP_USERNAME: ${{ vars.SSH_USERNAME }}
+          SSH_HOST: mirra-nico-testing
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+          NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
+        run: |
+          ssh ${SSH_USERNAME}@${SSH_HOST} \
+            SSH_APP_USERNAME=${SSH_APP_USERNAME} \
+            DATABASE_URL=${DATABASE_URL} \
+            SECRET_KEY_BASE=${SECRET_KEY_BASE} \
+            NEWRELIC_KEY=${NEWRELIC_KEY} \
+            /home/${SSH_USERNAME}/mirra_backend/devops/setup-admin-deps.sh
+
+      - name: Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+
+      - name: Setup dependencies
+        env:
+          SSH_USERNAME: ${{ vars.SSH_USERNAME }}
+          SSH_HOST: mirra-nico-testing
+        run: |
+          ssh ${SSH_USERNAME}@${SSH_HOST} \
+          'cd ~/mirra_backend && make app-setup-arena-server'
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ vars.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Setup Arena Server DNS in AWS
+        run: |
+          aws route53 change-resource-record-sets \
+          --hosted-zone-id "Z10155211PTW2X4H9NGDM" \
+          --change-batch "{\"Changes\":[{\"Action\":\"UPSERT\",\"ResourceRecordSet\":{\"Name\":\"$(hostname).championsofmirra.com\",\"Type\":\"A\",\"TTL\":300,\"ResourceRecords\":[{\"Value\":\"$(curl -s ipinfo.io/ip)\"}]}}]}"
+
+      - name: Start Arena service
+        env:
+          SSH_USERNAME: ${{ vars.SSH_USERNAME }}
+          SSH_HOST: mirra-nico-testing
+        run: |
+          set -ex
+          ssh ${SSH_USERNAME}@${SSH_HOST} \
+          /home/${SSH_USERNAME}/mirra_backend/devops/arena-start.sh
+          
+
