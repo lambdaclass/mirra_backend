@@ -81,7 +81,7 @@ admin-setup-arena-server: debian-install-deps setup-caddy setup-ssh-key create-e
 
 debian-install-deps:
 	sudo apt update -y
-	sudo apt install -y rsync libssl-dev libncurses5 libsctp1 wget systemd-timesyncd
+	sudo apt install -y rsync libssl-dev libncurses5 libsctp1 wget systemd-timesyncd ufw
 	wget -P /tmp/ http://ftp.de.debian.org/debian/pool/main/o/openssl/libssl1.1_1.1.1w-0+deb11u1_amd64.deb
 	sudo dpkg -i /tmp/libssl1.1_1.1.1w-0+deb11u1_amd64.deb
 	rm /tmp/libssl1.1_1.1.1w-0+deb11u1_amd64.deb
@@ -93,9 +93,9 @@ debian-install-deps:
 	rm /tmp/elixir-otp-26.zip
 
 setup-caddy:
-	sudo ufw allow 80 \
-	sudo ufw allow 443 \
-	sudo sed -i "1i $$(hostname).championsofmirra.com {" /etc/caddy/Caddyfile; \
+	sudo ufw allow 80
+	sudo ufw allow 443
+	sudo sed -i "1i $(hostname).championsofmirra.com {" /etc/caddy/Caddyfile; \
 	sudo sed -i "2i \	reverse_proxy localhost:4000" /etc/caddy/Caddyfile; \
 	sudo sed -i "3i }" /etc/caddy/Caddyfile;
 	sudo systemctl restart caddy
