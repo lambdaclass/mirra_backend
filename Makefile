@@ -77,7 +77,7 @@ server-specs:
 ## New server. Setup dependencies.
 ## Run these as admin user
 
-setup-arena-server: debian-install-deps setup-caddy setup-ssh-key create-env-file setup-aws-dns
+admin-setup-arena-server: debian-install-deps setup-caddy setup-ssh-key create-env-file setup-aws-dns
 
 debian-install-deps:
 	sudo apt update -y
@@ -141,10 +141,7 @@ setup-aws-dns:
 
 ## Run this as app or dev user
 
-setup-arena-server: clone-repo debian-install-dev-deps
-
-clone-repo:
-	git clone git@github.com:lambdaclass/mirra_backend.git
+app-setup-arena-server: clone-repo debian-install-dev-deps
 
 debian-install-dev-deps:
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
