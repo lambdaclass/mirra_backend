@@ -77,7 +77,7 @@ server-specs:
 ## New server. Setup dependencies.
 ## Run these as admin user
 
-admin-setup-arena-server: debian-install-deps setup-caddy setup-ssh-key create-env-file setup-aws-dns
+admin-setup-arena-server: debian-install-deps setup-caddy create-env-file setup-aws-dns
 
 debian-install-deps:
 	sudo apt update -y
@@ -99,12 +99,6 @@ setup-caddy:
 	sudo sed -i "2i \	reverse_proxy localhost:4000" /etc/caddy/Caddyfile; \
 	sudo sed -i "3i }" /etc/caddy/Caddyfile;
 	sudo systemctl restart caddy
-
-setup-ssh-key:
-	@echo "🔑 Paste your private SSH key and press Ctrl+D when done:"
-	@cat > /home/app/.ssh/id_ed25519
-	@chmod 600 /home/app/.ssh/id_ed25519
-	@echo "✅ Key saved to /home/app/.ssh/id_ed25519"
 
 create-env-file:
 	@truncate -s0 /home/app/.env
