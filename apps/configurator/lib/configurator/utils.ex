@@ -2,6 +2,7 @@ defmodule Configurator.Utils do
   @moduledoc """
   Helper module
   """
+  require Logger
 
   def list_curse_skills_by_version_grouped_by_type(version_id) do
     GameBackend.Units.Skills.list_curse_skills_by_version(version_id)
@@ -66,7 +67,7 @@ defmodule Configurator.Utils do
       {:ok, content} ->
         case Jason.decode(content) do
           {:ok, data} ->
-            IO.inspect(data, label: :start_of_json_file, limit: :infinity)
+            Logger.info("start_of_json_file: #{inspect(data, limit: :infinity, pretty: true)}")
             :end_of_json_file
 
           {:error, reason} ->
