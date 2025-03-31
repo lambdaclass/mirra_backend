@@ -133,6 +133,11 @@ create-env-file:
 	sudo echo "NEWRELIC_KEY=8ae39e7ac1a8aa938b65f21daed82bbdFFFFNRAL" | sudo tee -a /home/app/.env > /dev/null
 
 setup-aws-dns:
+	@read -p "AWS Access Key ID: " AWS_ACCESS_KEY_ID; \
+	read -s -p "AWS Secret Access Key: " AWS_SECRET_ACCESS_KEY; echo ""; \
+	aws configure set aws_access_key_id $$AWS_ACCESS_KEY_ID; \
+	aws configure set aws_secret_access_key $$AWS_SECRET_ACCESS_KEY; \
+	echo "✅ AWS credentials configured successfully!"
 	aws route53 change-resource-record-sets \
     --hosted-zone-id "Z10155211PTW2X4H9NGDM" \
     --change-batch "{\"Changes\":[{\"Action\":\"CREATE\",\"ResourceRecordSet\":{\"Name\":\"$$(hostname).championsofmirra.com\",\"Type\":\"A\",\"TTL\":300,\"ResourceRecords\":[{\"Value\":\"$$(curl -s ipinfo.io/ip)\"}]}}]}"
