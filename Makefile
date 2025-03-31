@@ -134,7 +134,7 @@ create-env-file:
 
 setup-aws-dns:
 	@read -p "AWS Access Key ID: " AWS_ACCESS_KEY_ID; \
-	read -s -p "AWS Secret Access Key: " AWS_SECRET_ACCESS_KEY; echo ""; \
+	read -p "AWS Secret Access Key: " AWS_SECRET_ACCESS_KEY; echo ""; \
 	aws configure set aws_access_key_id $$AWS_ACCESS_KEY_ID; \
 	aws configure set aws_secret_access_key $$AWS_SECRET_ACCESS_KEY; \
 	echo "✅ AWS credentials configured successfully!"
