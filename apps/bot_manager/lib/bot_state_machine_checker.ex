@@ -8,6 +8,9 @@ defmodule BotManager.BotStateMachineChecker do
   @time_stuck_in_position 400
   @distance_threshold 100
 
+  @tracking_timeout_ms 7000
+  @tracking_cooldown_ms 5000
+
   @type state_step() :: :attacking | :moving | :tracking_player | :idling
 
   @type t :: %BotManager.BotStateMachineChecker{
@@ -29,7 +32,9 @@ defmodule BotManager.BotStateMachineChecker do
           ranged_attack_distance: integer(),
           melee_attack_distance: integer(),
           is_melee: boolean() | nil,
-          collision_grid: binary() | nil
+          collision_grid: binary() | nil,
+          last_time_state_changed: integer(),
+          last_time_tracking_exited: integer()
         }
 
   defstruct [
@@ -70,7 +75,11 @@ defmodule BotManager.BotStateMachineChecker do
     # The type of attack that the bot has
     :is_melee,
     # A collision grid used for pathfinding
-    :collision_grid
+    :collision_grid,
+    # The last time the bot changed state
+    :last_time_state_changed,
+    # The last time the bot exited the tracking state
+    :last_time_tracking_exited
   ]
 
   @spec new() :: BotManager.BotStateMachineChecker.t()
@@ -94,7 +103,9 @@ defmodule BotManager.BotStateMachineChecker do
       ranged_attack_distance: 1200,
       melee_attack_distance: 300,
       is_melee: nil,
-      collision_grid: nil
+      collision_grid: nil,
+      last_time_state_changed: 0,
+      last_time_tracking_exited: 0,
     }
   end
 
@@ -162,8 +173,16 @@ defmodule BotManager.BotStateMachineChecker do
         )
       )
 
+    current_time = :os.system_time(:millisecond) 
+    time_since_tracking_started = current_time - bot_state_machine.last_time_state_changed
+    time_since_last_tracking_ended = current_time - bot_state_machine.last_time_tracking_exited
+
+    tracking_timed_out = bot_state_machine.state == :tracking_player && time_since_tracking_started > @tracking_timeout_ms
+    tracking_in_cooldown = time_since_last_tracking_ended <= @tracking_cooldown_ms
+
     Enum.empty?(players_nearby_to_attack) && not Enum.empty?(players_nearby_to_follow) &&
-      bot_can_turn_aggresive?(bot_state_machine) && not bot_stuck?(bot_state_machine)
+      bot_can_turn_aggresive?(bot_state_machine) && not bot_stuck?(bot_state_machine) &&
+      !tracking_timed_out && !tracking_in_cooldown
   end
 
   @spec bot_stuck?(BotManager.BotStateMachineChecker.t()) :: boolean()

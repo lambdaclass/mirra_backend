@@ -32,6 +32,8 @@ defmodule BotManager.BotStateMachine do
     bot_state_machine = preprocess_bot_state(bot_state_machine, bot_player)
     next_state = BotStateMachineChecker.move_to_next_state(bot_player, bot_state_machine, game_state.players)
 
+    bot_state_machine = maybe_exit_state(bot_state_machine, next_state)
+
     case next_state do
       :moving ->
         move(bot_state_machine, game_state.zone.radius)
@@ -53,6 +55,28 @@ defmodule BotManager.BotStateMachine do
 
   def decide_action(%{bot_state_machine: bot_state_machine}),
     do: %{action: :idling, bot_state_machine: bot_state_machine}
+
+  # This function will handle state switching logic to leave the bot state machine in a proper state
+  defp maybe_exit_state(%{state: state} = bot_state_machine, state) do
+    bot_state_machine
+  end
+
+  defp maybe_exit_state(%{state: state} = bot_state_machine, new_state) do
+    bot_state_machine
+    |> Map.put(:state, new_state)
+    |> Map.put(:last_time_state_changed, :os.system_time(:millisecond))
+    |> exit_state(state)
+  end
+
+  # updates necessary data to exit each specific state
+  defp exit_state(bot_state_machine, :tracking_player) do
+    bot_state_machine
+    |> Map.put(:last_time_tracking_exited, :os.system_time(:millisecond))
+  end
+
+  defp exit_state(bot_state_machine, _exited_state) do
+    bot_state_machine
+  end
 
   @doc """
   This function will be in charge of using the bot's skill.
