@@ -99,9 +99,11 @@ debian-install-deps:
 setup-caddy:
 	sudo ufw allow 80
 	sudo ufw allow 443
-	sudo sed -i "1i $$(hostname).championsofmirra.com {" /etc/caddy/Caddyfile; \
-	sudo sed -i "2i \	reverse_proxy localhost:4000" /etc/caddy/Caddyfile; \
-	sudo sed -i "3i }" /etc/caddy/Caddyfile;
+	sudo truncate -s 0 /etc/caddy/Caddyfile && \
+	echo "$$(hostname).championsofmirra.com {" | sudo tee -a /etc/caddy/Caddyfile > /dev/null && \
+	echo "  reverse_proxy localhost:4000" | sudo tee -a /etc/caddy/Caddyfile > /dev/null && \
+	echo "}" | sudo tee -a /etc/caddy/Caddyfile > /dev/null && \
+	sudo sh -c 'echo "" >> /etc/caddy/Caddyfile'
 	sudo systemctl restart caddy
 
 create-env-file:
