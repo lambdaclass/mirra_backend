@@ -27,7 +27,7 @@ jobs:
       - name: Create ssh private key file from env var
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
-          SSH_HOST: ${{ vars.TS_LOADTEST_CLIENT_HOST }}
+          SSH_HOST: mirra-nico-testing
         run: |
           set -ex
           mkdir -p ~/.ssh/
