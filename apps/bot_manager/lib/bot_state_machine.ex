@@ -19,6 +19,10 @@ defmodule BotManager.BotStateMachine do
     %{action: {:move, %{x: 0, y: 0}}, bot_state_machine: bot_state_machine}
   end
 
+  def decide_action(%{bot_player: %{aditional_info: {:player, %{health: health}}}, bot_state_machine: bot_state_machine}) when health <= 0 do
+    %{action: {:move, %{x: 0, y: 0}}, bot_state_machine: bot_state_machine}
+  end
+
   @doc """
   This function will decide the next action for the bot.
   """
