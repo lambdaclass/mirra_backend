@@ -51,7 +51,7 @@ jobs:
           ssh ${SSH_USERNAME}@${SSH_HOST} << 'EOF'
             set -ex
             cd /tmp
-            git clone git@github.com:lambdaclass/mirra_backend.git
+            git clone git@github.com:lambdaclass/mirra_backend.git --branch 1144-add-makefile-commands-for-arena-deployment
             rm -rf ~/mirra_backend/
             mv /tmp/mirra_backend ~/
           EOF
