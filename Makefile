@@ -93,7 +93,7 @@ debian-install-deps:
 	sudo dpkg -i /tmp/esl-erlang_26.2.3-1~debian~buster_amd64.deb
 	rm /tmp/esl-erlang_26.2.3-1~debian~buster_amd64.deb
 	wget -P /tmp/ https://github.com/elixir-lang/elixir/releases/download/v1.16.3/elixir-otp-26.zip
-	sudo unzip -do /usr/elixir-otp-26.zip /tmp/elixir-otp-26.zip
+	sudo unzip -qo /tmp/elixir-otp-26.zip
 	rm /tmp/elixir-otp-26.zip
 
 setup-caddy:
