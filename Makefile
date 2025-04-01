@@ -80,6 +80,7 @@ server-specs:
 admin-setup-arena-server: debian-install-deps setup-caddy create-env-file setup-aws-dns
 
 debian-install-deps:
+	cd ~
 	sudo apt update -y
 	sudo apt install -y rsync libssl-dev libncurses5 libsctp1 wget systemd-timesyncd ufw
 	sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
