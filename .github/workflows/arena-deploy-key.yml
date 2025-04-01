@@ -38,7 +38,7 @@ jobs:
       - name: Add SSH Key to Server
         env:
           SSH_USERNAME: ${{ vars.SSH_USERNAME }}
-          SSH_HOST: ${{ inputs.server_ip }}
+          SSH_HOST: mirra-nico-testing
           SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
         run: |
           echo "$SSH_PRIVATE_KEY" | ${SSH_USERNAME}@${SSH_HOST} 'cat > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519'
@@ -46,7 +46,7 @@ jobs:
       - name: Clone the Repository
         env:
           SSH_USERNAME: ${{ vars.SSH_USERNAME }}
-          SSH_HOST: ${{ inputs.server_ip }}
+          SSH_HOST: mirra-nico-testing
         run: |
           ssh ${SSH_USERNAME}@${SSH_HOST} \
           'git clone git@github.com:lambdaclass/mirra_backend.git'
@@ -54,7 +54,7 @@ jobs:
       - name: Run Make Command
         env:
           SSH_USERNAME: ${{ vars.SSH_USERNAME }}
-          SSH_HOST: ${{ inputs.server_ip }}
+          SSH_HOST: mirra-nico-testing
         run: |
           ssh ${SSH_USERNAME}@${SSH_HOST} \
           'cd ~/mirra_backend && make app-setup-arena-server'
