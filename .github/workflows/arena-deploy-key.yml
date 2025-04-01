@@ -48,8 +48,14 @@ jobs:
           SSH_USERNAME: ${{ vars.SSH_USERNAME }}
           SSH_HOST: mirra-nico-testing
         run: |
-          ssh ${SSH_USERNAME}@${SSH_HOST} \
-          'git clone git@github.com:lambdaclass/mirra_backend.git'
+          ssh ${SSH_USERNAME}@${SSH_HOST} << 'EOF'
+            set -ex
+            cd /tmp
+            git clone git@github.com:lambdaclass/mirra_backend.git
+            rm -rf ~/mirra_backend/
+            mv /tmp/mirra_backend ~/
+          EOF
+          
 
       - name: Run Make Command
         env:
