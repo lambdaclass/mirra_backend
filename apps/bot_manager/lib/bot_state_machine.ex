@@ -286,7 +286,8 @@ defmodule BotManager.BotStateMachine do
 
   defp determine_position_to_move_to(bot_state_machine, safe_zone_radius) do
     cond do
-      is_nil(bot_state_machine.path_towards_position) || Enum.empty?(bot_state_machine.path_towards_position) ->
+      is_nil(bot_state_machine.path_towards_position) || Enum.empty?(bot_state_machine.path_towards_position) || 
+        Vector.distance(%{x: 0, y: 0}, bot_state_machine.position_to_move_to) > safe_zone_radius ->
         try_pick_random_position_to_move_to(bot_state_machine, safe_zone_radius)
 
       BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) and
