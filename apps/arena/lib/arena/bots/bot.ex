@@ -3,7 +3,7 @@ defmodule Arena.Bots.Bot do
   Arena bot GenServer.
   This module is in charge of handling bots messages to the Game process.
   """
-  use GenServer
+  use GenServer, restart: :transient
   alias Phoenix.PubSub
   alias Arena.Bots.PathfindingGrid
   alias BotManager.BotStateMachine
