@@ -8,8 +8,8 @@ defmodule BotManager.BotStateMachineChecker do
   @time_stuck_in_position 400
   @distance_threshold 100
 
-  @tracking_timeout_ms 7000
-  @tracking_cooldown_ms 5000
+  @tracking_timeout_ms 10000
+  @tracking_cooldown_ms 4000
 
   @type state_step() :: :attacking | :moving | :tracking_player | :idling
 
