@@ -105,7 +105,7 @@ defmodule BotManager.BotStateMachineChecker do
       is_melee: nil,
       collision_grid: nil,
       last_time_state_changed: 0,
-      last_time_tracking_exited: 0,
+      last_time_tracking_exited: 0
     }
   end
 
@@ -163,7 +163,8 @@ defmodule BotManager.BotStateMachineChecker do
         )
       )
 
-    players_nearby_to_attack = Utils.map_directions_to_players(
+    players_nearby_to_attack =
+      Utils.map_directions_to_players(
         players,
         bot_player,
         Utils.get_action_distance_by_type(
@@ -173,11 +174,13 @@ defmodule BotManager.BotStateMachineChecker do
         )
       )
 
-    current_time = :os.system_time(:millisecond) 
+    current_time = :os.system_time(:millisecond)
     time_since_tracking_started = current_time - bot_state_machine.last_time_state_changed
     time_since_last_tracking_ended = current_time - bot_state_machine.last_time_tracking_exited
 
-    tracking_timed_out = bot_state_machine.state == :tracking_player && time_since_tracking_started > @tracking_timeout_ms
+    tracking_timed_out =
+      bot_state_machine.state == :tracking_player && time_since_tracking_started > @tracking_timeout_ms
+
     tracking_in_cooldown = time_since_last_tracking_ended <= @tracking_cooldown_ms
 
     Enum.empty?(players_nearby_to_attack) && not Enum.empty?(players_nearby_to_follow) &&
