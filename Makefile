@@ -105,7 +105,6 @@ setup-caddy:
 
 create-env-file:
 	sudo truncate -s0 /home/app/.env
-	sudo truncate -s0 /home/app/.env
 	sudo echo "PHX_HOST=$$(hostname).championsofmirra.com" | sudo tee -a /home/app/.env > /dev/null
 	sudo echo "DATABASE_URL=ecto://postgres:postgres@localhost:5432/game_backend" | sudo tee -a /home/app/.env > /dev/null
 	sudo echo "CONFIGURATOR_DATABASE_URL=" | sudo tee -a /home/app/.env > /dev/null
@@ -115,7 +114,7 @@ create-env-file:
 	sudo echo "PORT=4000" | sudo tee -a /home/app/.env > /dev/null
 	sudo echo "RELEASE_NODE=" | sudo tee -a /home/app/.env > /dev/null
 	sudo echo "_SERVICE_SUFFIX=" | sudo tee -a /home/app/.env > /dev/null
-	sudo echo "GATEWAY_URL=https://$$(hostname).championsofmirra.com" | sudo tee -a /home/app/.env > /dev/null
+	sudo echo "GATEWAY_URL=https://central-europe-testing.championsofmirra.com" | sudo tee -a /home/app/.env > /dev/null
 	sudo echo "METRICS_ENDPOINT_PORT=" | sudo tee -a /home/app/.env > /dev/null
 	sudo echo "OVERRIDE_JWT=" | sudo tee -a /home/app/.env > /dev/null
 	sudo echo "GOOGLE_CLIENT_ID=" | sudo tee -a /home/app/.env > /dev/null
