@@ -3,7 +3,7 @@ name: Add Deploy Key (Arena) to Server
 on:
   push:
     branches:
-      1144-add-makefile-commands-for-arena-deployment
+      old-makefile-arena
   workflow_dispatch:
     inputs:
       server_ip:
