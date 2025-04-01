@@ -1,0 +1,60 @@
+name: Add Deploy Key (Arena) to Server
+
+on:
+  push:
+    branches:
+      1144-add-makefile-commands-for-arena-deployment
+  workflow_dispatch:
+    inputs:
+      server_ip:
+        description: 'Server IP Address'
+        required: true
+
+jobs:
+  deploy-key:
+    environment: DeployKeySetup
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+
+      # - name: Create ssh private key file from env var
+      #   env:
+      #     SSH_KEY: ${{ secrets.SSH_KEY }}
+      #     SSH_HOST: ${{ vars.TS_LOADTEST_CLIENT_HOST }}
+      #   run: |
+      #     set -ex
+      #     mkdir -p ~/.ssh/
+      #     sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > ~/.ssh/id_ed25519
+      #     chmod 400 ~/.ssh/id_ed25519
+      #     retries=5; until ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts || [ $retries -eq 0 ]; do ((retries--)); sleep 5; done
+
+      - name: Add SSH Key to Server
+        env:
+          SSH_USERNAME: ${{ vars.SSH_USERNAME }}
+          SSH_HOST: ${{ inputs.server_ip }}
+          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          echo "$SSH_PRIVATE_KEY" | ${SSH_USERNAME}@${SSH_HOST} 'cat > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519'
+
+      - name: Clone the Repository
+        env:
+          SSH_USERNAME: ${{ vars.SSH_USERNAME }}
+          SSH_HOST: ${{ inputs.server_ip }}
+        run: |
+          ssh ${SSH_USERNAME}@${SSH_HOST} \
+          'git clone git@github.com:lambdaclass/mirra_backend.git'
+
+      - name: Run Make Command
+        env:
+          SSH_USERNAME: ${{ vars.SSH_USERNAME }}
+          SSH_HOST: ${{ inputs.server_ip }}
+        run: |
+          ssh ${SSH_USERNAME}@${SSH_HOST} \
+          'cd ~/mirra_backend && make app-setup-arena-server'
