@@ -53,7 +53,7 @@ jobs:
             ssh-keyscan github.com >> ~/.ssh/known_hosts
             cd /tmp
             rm -rf /tmp/mirra_backend
-            git clone git@github.com:lambdaclass/mirra_backend.git
+            git clone git@github.com:lambdaclass/mirra_backend.git --branch test-deploy
             rm -rf ~/mirra_backend/
             mv /tmp/mirra_backend ~/
           EOF
