@@ -27,7 +27,7 @@ jobs:
       - name: Create ssh private key file from env var
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
-          SSH_HOST: ${{ inputs.mirra-nico-testing }}
+          SSH_HOST: mirra-nico-testing
         run: |
           set -ex
           mkdir -p ~/.ssh/
@@ -38,7 +38,7 @@ jobs:
       - name: Add SSH Key to Server
         env:
           SSH_USERNAME: ${{ vars.SSH_ADMIN_USERNAME }}
-          SSH_HOST: ${{ inputs.mirra-nico-testing }}
+          SSH_HOST: mirra-nico-testing
           SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
         run: |
           printf "%s" "$SSH_PRIVATE_KEY" | ssh ${SSH_USERNAME}@${SSH_HOST} 'cat > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519'
@@ -46,7 +46,7 @@ jobs:
       - name: Clone the Repository
         env:
           SSH_USERNAME: ${{ vars.SSH_ADMIN_USERNAME }}
-          SSH_HOST: ${{ inputs.mirra-nico-testing }}
+          SSH_HOST: mirra-nico-testing
         run: |
           ssh ${SSH_USERNAME}@${SSH_HOST} << 'EOF'
             set -ex
@@ -62,7 +62,7 @@ jobs:
         env:
           SSH_USERNAME: ${{ vars.SSH_ADMIN_USERNAME }}
           SSH_APP_USERNAME: ${{ vars.SSH_USERNAME }}
-          SSH_HOST: ${{ inputs.mirra-nico-testing }}
+          SSH_HOST: mirra-nico-testing
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
           NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
@@ -84,7 +84,7 @@ jobs:
       - name: Setup dependencies
         env:
           SSH_USERNAME: ${{ vars.SSH_USERNAME }}
-          SSH_HOST: ${{ inputs.mirra-nico-testing }}
+          SSH_HOST: mirra-nico-testing
         run: |
           ssh ${SSH_USERNAME}@${SSH_HOST} \
           'cd ~/mirra_backend && make app-setup-arena-server'
@@ -105,7 +105,7 @@ jobs:
       - name: Start Arena service
         env:
           SSH_USERNAME: ${{ vars.SSH_USERNAME }}
-          SSH_HOST: ${{ inputs.mirra-nico-testing }}
+          SSH_HOST: mirra-nico-testing
         run: |
           set -ex
           ssh ${SSH_USERNAME}@${SSH_HOST} \
