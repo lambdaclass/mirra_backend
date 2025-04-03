@@ -104,33 +104,34 @@ setup-caddy:
 	sudo sh -c 'echo "" >> /etc/caddy/Caddyfile'
 	sudo systemctl restart caddy
 
+
 create-env-file:
-	sudo truncate -s0 /home/$$(SSH_APP_USERNAME)/.env
-	sudo echo "PHX_HOST=$$(hostname).championsofmirra.com" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
-	sudo echo "DATABASE_URL=$${DATABASE_URL}" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
-	sudo echo "CONFIGURATOR_DATABASE_URL=" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
-	sudo echo "PHX_SERVER=true" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
-	sudo echo "SECRET_KEY_BASE=$${SECRET_KEY_BASE}" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
-	sudo echo "JWT_PRIVATE_KEY_BASE_64=" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
-	sudo echo "PORT=4000" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
-	sudo echo "RELEASE_NODE=" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
-	sudo echo "_SERVICE_SUFFIX=" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
-	sudo echo "GATEWAY_URL=https://central-europe-testing.championsofmirra.com" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
-	sudo echo "METRICS_ENDPOINT_PORT=" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
-	sudo echo "OVERRIDE_JWT=" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
-	sudo echo "GOOGLE_CLIENT_ID=" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
-	sudo echo "BOT_MANAGER_PORT=4003" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
-	sudo echo "BOT_MANAGER_HOST=bot-manager.championsofmirra.com" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
-	sudo echo "CONFIGURATOR_HOST=" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
-	sudo echo "CONFIGURATOR_GOOGLE_CLIENT_ID=" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
-	sudo echo "CONFIGURATOR_GOOGLE_CLIENT_SECRET=" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
-	sudo echo "RELEASE=arena" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
-	sudo echo "TARGET_SERVER=" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
-	sudo echo "LOADTEST_EUROPE_HOST=" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
-	sudo echo "LOADTEST_BRAZIL_HOST=" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
-	sudo echo "LOADTEST_CHILE_HOST=" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
-	sudo echo "NEWRELIC_APP_NAME=$$(hostname)" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
-	sudo echo "NEWRELIC_KEY=$${NEWRELIC_KEY}" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
+	sudo truncate -s0 /home/$(SSH_APP_USERNAME)/.env
+	sudo echo "PHX_HOST=$$(hostname).championsofmirra.com" | sudo tee -a /home/$(SSH_APP_USERNAME)/.env > /dev/null
+	sudo echo "DATABASE_URL=$(DATABASE_URL)" | sudo tee -a /home/$(SSH_APP_USERNAME)/.env > /dev/null
+	sudo echo "CONFIGURATOR_DATABASE_URL=" | sudo tee -a /home/$(SSH_APP_USERNAME)/.env > /dev/null
+	sudo echo "PHX_SERVER=true" | sudo tee -a /home/$(SSH_APP_USERNAME)/.env > /dev/null
+	sudo echo "SECRET_KEY_BASE=$(SECRET_KEY_BASE)" | sudo tee -a /home/$(SSH_APP_USERNAME)/.env > /dev/null
+	sudo echo "JWT_PRIVATE_KEY_BASE_64=" | sudo tee -a /home/$(SSH_APP_USERNAME)/.env > /dev/null
+	sudo echo "PORT=4000" | sudo tee -a /home/$(SSH_APP_USERNAME)/.env > /dev/null
+	sudo echo "RELEASE_NODE=" | sudo tee -a /home/$(SSH_APP_USERNAME)/.env > /dev/null
+	sudo echo "_SERVICE_SUFFIX=" | sudo tee -a /home/$(SSH_APP_USERNAME)/.env > /dev/null
+	sudo echo "GATEWAY_URL=https://central-europe-testing.championsofmirra.com" | sudo tee -a /home/$(SSH_APP_USERNAME)/.env > /dev/null
+	sudo echo "METRICS_ENDPOINT_PORT=" | sudo tee -a /home/$(SSH_APP_USERNAME)/.env > /dev/null
+	sudo echo "OVERRIDE_JWT=" | sudo tee -a /home/$(SSH_APP_USERNAME)/.env > /dev/null
+	sudo echo "GOOGLE_CLIENT_ID=" | sudo tee -a /home/$(SSH_APP_USERNAME)/.env > /dev/null
+	sudo echo "BOT_MANAGER_PORT=4003" | sudo tee -a /home/$(SSH_APP_USERNAME)/.env > /dev/null
+	sudo echo "BOT_MANAGER_HOST=bot-manager.championsofmirra.com" | sudo tee -a /home/$(SSH_APP_USERNAME)/.env > /dev/null
+	sudo echo "CONFIGURATOR_HOST=" | sudo tee -a /home/$(SSH_APP_USERNAME)/.env > /dev/null
+	sudo echo "CONFIGURATOR_GOOGLE_CLIENT_ID=" | sudo tee -a /home/$(SSH_APP_USERNAME)/.env > /dev/null
+	sudo echo "CONFIGURATOR_GOOGLE_CLIENT_SECRET=" | sudo tee -a /home/$(SSH_APP_USERNAME)/.env > /dev/null
+	sudo echo "RELEASE=arena" | sudo tee -a /home/$(SSH_APP_USERNAME)/.env > /dev/null
+	sudo echo "TARGET_SERVER=" | sudo tee -a /home/$(SSH_APP_USERNAME)/.env > /dev/null
+	sudo echo "LOADTEST_EUROPE_HOST=" | sudo tee -a /home/$(SSH_APP_USERNAME)/.env > /dev/null
+	sudo echo "LOADTEST_BRAZIL_HOST=" | sudo tee -a /home/$(SSH_APP_USERNAME)/.env > /dev/null
+	sudo echo "LOADTEST_CHILE_HOST=" | sudo tee -a /home/$(SSH_APP_USERNAME)/.env > /dev/null
+	sudo echo "NEWRELIC_APP_NAME=$$(hostname)" | sudo tee -a /home/$(SSH_APP_USERNAME)/.env > /dev/null
+	sudo echo "NEWRELIC_KEY=$(NEWRELIC_KEY)" | sudo tee -a /home/$(SSH_APP_USERNAME)/.env > /dev/null
 
 ## Run this as app or dev user
 
