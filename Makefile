@@ -105,13 +105,6 @@ setup-caddy:
 	sudo systemctl restart caddy
 
 
-echo app
-app
-echo SH_APP_USERNAME
-SH_APP_USERNAME
-echo app
-app
-
 create-env-file:
 	echo ${SSH_APP_USERNAME}
 	echo $SSH_APP_USERNAME
