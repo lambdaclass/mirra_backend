@@ -105,6 +105,9 @@ setup-caddy:
 	sudo systemctl restart caddy
 
 create-env-file:
+	echo ${SSH_APP_USERNAME}
+	echo $SSH_APP_USERNAME
+	echo $(SSH_APP_USERNAME)
 	sudo truncate -s0 /home/$$(SSH_APP_USERNAME)/.env
 	sudo echo "PHX_HOST=$$(hostname).championsofmirra.com" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
 	sudo echo "DATABASE_URL=$${DATABASE_URL}" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
