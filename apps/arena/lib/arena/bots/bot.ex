@@ -73,7 +73,7 @@ defmodule Arena.Bots.Bot do
   end
 
   defp maybe_update_state_params(state, game_state, config) do
-    if System.get_env("PATHFINDING_TEST") == "true" and is_nil(state.bot_state_machine.collision_grid) do
+    if is_nil(state.bot_state_machine.collision_grid) do
       PathfindingGrid.get_map_collision_grid(config.map.name, self())
     end
 
@@ -141,6 +141,6 @@ defmodule Arena.Bots.Bot do
     Logger.error("Bot #{state.bot_id} terminating: #{inspect(reason)}")
   end
 
-  defp min_decision_delay_ms(), do: if(System.get_env("PATHFINDING_TEST") == "true", do: 100, else: 750)
-  defp max_decision_delay_ms(), do: if(System.get_env("PATHFINDING_TEST") == "true", do: 150, else: 1250)
+  defp min_decision_delay_ms(), do: 100
+  defp max_decision_delay_ms(), do: 150
 end
