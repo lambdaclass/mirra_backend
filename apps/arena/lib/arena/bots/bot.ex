@@ -80,6 +80,48 @@ defmodule Arena.Bots.Bot do
     state
     |> Map.put_new(:config, config)
     |> Map.put_new(:bot_player_id, get_in(game_state, [:client_to_player_map, state.bot_id]))
+    |> maybe_set_obstacles(game_state)
+  end
+
+  defp maybe_set_obstacles(%{bot_state_machine: %{obstacles: nil}} = state, %{obstacles: obstacles}) when not is_nil(obstacles) do
+    obstacles =
+        obstacles
+        |> Enum.map(fn {obstacle_id, obstacle} ->
+          obstacle =
+            obstacle
+            |> Map.take([
+              :id,
+              :shape,
+              :position,
+              :radius,
+              :vertices,
+              :speed,
+              :category,
+              :direction,
+              :is_moving,
+              :name
+            ])
+
+          obstacle =
+            obstacle
+            |> Map.put(:position, %{x: obstacle.position.x, y: obstacle.position.y})
+            |> Map.put(
+              :vertices,
+              Enum.map(obstacle.vertices.positions, fn position -> %{x: position.x, y: position.y} end)
+            )
+            |> Map.put(:direction, %{x: obstacle.direction.x, y: obstacle.direction.y})
+            |> Map.put(:shape, get_shape(obstacle.shape))
+            |> Map.put(:category, get_category(obstacle.category))
+
+          {obstacle_id, obstacle}
+        end)
+        |> Map.new()
+
+    %{state | bot_state_machine: %{state.bot_state_machine | obstacles: obstacles}}
+  end
+
+  defp maybe_set_obstacles(state, _game_state) do
+    state
   end
 
   defp generate_bot_name(bot_id), do: {:via, Registry, {BotRegistry, bot_id}}
@@ -151,6 +193,19 @@ defmodule Arena.Bots.Bot do
     Logger.error("Bot #{state.bot_id} terminating: #{inspect(reason)}")
   end
 
-  defp min_decision_delay_ms(), do: 40
-  defp max_decision_delay_ms(), do: 60
+  defp min_decision_delay_ms(), do: 100
+  defp max_decision_delay_ms(), do: 150
+
+  defp get_shape("polygon"), do: :polygon
+  defp get_shape("circle"), do: :circle
+  defp get_shape("line"), do: :line
+  defp get_shape("point"), do: :point
+  defp get_shape(_), do: nil
+  defp get_category("player"), do: :player
+  defp get_category("projectile"), do: :projectile
+  defp get_category("obstacle"), do: :obstacle
+  defp get_category("power_up"), do: :power_up
+  defp get_category("pool"), do: :pool
+  defp get_category("item"), do: :item
+  defp get_category("bush"), do: :bush
 end
