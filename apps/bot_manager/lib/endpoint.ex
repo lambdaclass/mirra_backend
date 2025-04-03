@@ -25,14 +25,6 @@ defmodule BotManager.Endpoint do
   # responsible for dispatching responses
   plug(:dispatch)
 
-  get "/join/:arena_host/:game_id/:bot_client/" do
-    bot_pid = BotManager.BotSupervisor.add_bot_to_game(conn.params) || ""
-
-    conn
-    |> put_resp_content_type("application/json")
-    |> send_resp(200, Jason.encode!(bot_pid |> :erlang.term_to_binary() |> Base58.encode()))
-  end
-
   get "/api/health" do
     conn
     |> send_resp(200, "ok")

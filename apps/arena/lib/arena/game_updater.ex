@@ -5,6 +5,7 @@ defmodule Arena.GameUpdater do
   """
 
   use GenServer
+  alias Arena.Bots.BotSupervisor
   alias Arena.Game.Obstacle
   alias Arena.Game.Bounties
   alias Arena.GameTracker
@@ -15,7 +16,6 @@ defmodule Arena.GameUpdater do
   alias Arena.Serialization.GameEvent
   alias Arena.Serialization.GameState
   alias Arena.Serialization.GameFinished
-  alias Arena.Serialization.ToggleBots
   alias Phoenix.PubSub
   alias Arena.Game.Trap
 
@@ -99,7 +99,9 @@ defmodule Arena.GameUpdater do
        bot_clients: bot_clients_ids,
        game_config: game_config,
        bounties_enabled?: bounties_enabled?,
+       bots_enabled?: game_config.game.bots_enabled,
        game_state: game_state,
+       bots_topic: BotSupervisor.get_game_topic(game_id),
        last_broadcasted_game_state: %{}
      }}
   end
@@ -206,12 +208,8 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_cast(:toggle_bots, state) do
-    encoded_msg =
-      GameEvent.encode(%GameEvent{
-        event: {:toggle_bots, %ToggleBots{}}
-      })
-
-    PubSub.broadcast(Arena.PubSub, state.game_state.game_id, {:toggle_bots, encoded_msg})
+    state = Map.put(state, :bots_enabled?, not state.bots_enabled?)
+    PubSub.broadcast(Arena.PubSub, state.bots_topic, {:enable_bots, state.bots_enabled?})
 
     {:noreply, state}
   end
@@ -287,7 +285,9 @@ defmodule Arena.GameUpdater do
       Map.put(game_state, :obstacles, state_diff[:obstacles])
       |> Map.put(:bushes, state_diff[:bushes])
       |> Map.put(:crates, state_diff[:crates])
+      |> complete_state_entities()
 
+    broadcast_game_state_to_bots(state_diff, state)
     broadcast_game_update(state_diff, game_state.game_id)
 
     ## We need this check cause there is some unexpected behaviour from the client
@@ -792,25 +792,31 @@ defmodule Arena.GameUpdater do
     PubSub.broadcast(Arena.PubSub, game_id, :enable_incomming_messages)
   end
 
+  defp complete_state_entities(state) do
+    Map.merge(state, %{
+      players: complete_entities(state[:players], :player),
+      projectiles: complete_entities(state[:projectiles], :projectile),
+      power_ups: complete_entities(state[:power_ups], :power_up),
+      pools: complete_entities(state[:pools], :pool),
+      bushes: complete_entities(state[:bushes], :bush),
+      items: complete_entities(state[:items], :item),
+      obstacles: complete_entities(state[:obstacles], :obstacle),
+      crates: complete_entities(state[:crates], :crate),
+      traps: complete_entities(state[:traps], :trap),
+      external_wall: complete_entity(state[:external_wall], :obstacle)
+    })
+  end
+
+  defp broadcast_game_state_to_bots(state, %{game_config: game_config, bots_topic: bots_topic}) do
+    PubSub.broadcast(Arena.PubSub, bots_topic, {:game_update, state, game_config})
+  end
+
   defp broadcast_game_update(state, game_id) do
     game_state = struct(GameState, state)
 
     encoded_state =
       GameEvent.encode(%GameEvent{
-        event:
-          {:update,
-           Map.merge(game_state, %{
-             players: complete_entities(state[:players], :player),
-             projectiles: complete_entities(state[:projectiles], :projectile),
-             power_ups: complete_entities(state[:power_ups], :power_up),
-             pools: complete_entities(state[:pools], :pool),
-             bushes: complete_entities(state[:bushes], :bush),
-             items: complete_entities(state[:items], :item),
-             obstacles: complete_entities(state[:obstacles], :obstacle),
-             crates: complete_entities(state[:crates], :crate),
-             traps: complete_entities(state[:traps], :trap),
-             external_wall: complete_entity(state[:external_wall], :obstacle)
-           })}
+        event: {:update, game_state}
       })
 
     PubSub.broadcast(Arena.PubSub, game_id, {:game_update, encoded_state})
