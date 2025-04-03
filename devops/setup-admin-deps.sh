@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+: "${SSH_APP_USERNAME:?SSH_APP_USERNAME is not set}"
+: "${DATABASE_URL:?DATABASE_URL is not set}"
+: "${SECRET_KEY_BASE:?SECRET_KEY_BASE is not set}"
+: "${NEWRELIC_KEY:?NEWRELIC_KEY is not set}"
+
 set -ex
 
 export SSH_APP_USERNAME=$SSH_APP_USERNAME
