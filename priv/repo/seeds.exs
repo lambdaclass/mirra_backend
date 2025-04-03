@@ -1139,7 +1139,7 @@ _combo_skills =
 # Characters params
 muflus_params = %{
   name: "muflus",
-  active: false,
+  active: true,
   base_speed: 0.58,
   base_size: 110.0,
   base_health: 550,
@@ -1320,6 +1320,13 @@ characters =
   end)
 
 # Skins params
+
+muflus_basic_params = %{
+  is_default: true,
+  name: "Basic",
+  character_id: Enum.find(characters, fn c -> c.name == "muflus" end).id
+}
+
 h4ck_fenix_params = %{
   is_default: false,
   name: "Fenix",
@@ -1377,7 +1384,8 @@ otix_basic_params = %{
   kenzu_black_lotus_params,
   kenzu_basic_params,
   otix_corrupt_underground,
-  otix_basic_params
+  otix_basic_params,
+  muflus_basic_params,
 ]
 |> Enum.each(fn skin_params -> Characters.insert_skin(skin_params) end)
 
