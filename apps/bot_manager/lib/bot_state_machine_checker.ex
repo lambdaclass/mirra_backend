@@ -6,7 +6,7 @@ defmodule BotManager.BotStateMachineChecker do
   alias BotManager.Math.Vector
 
   @time_stuck_in_position 400
-  @distance_threshold 100
+  @distance_threshold 150
 
   @tracking_timeout_ms 10_000
   @tracking_cooldown_ms 4000
@@ -34,7 +34,8 @@ defmodule BotManager.BotStateMachineChecker do
           is_melee: boolean() | nil,
           collision_grid: binary() | nil,
           last_time_state_changed: integer(),
-          last_time_tracking_exited: integer()
+          last_time_tracking_exited: integer(),
+          obstacles: list() | nil
         }
 
   defstruct [
@@ -79,7 +80,9 @@ defmodule BotManager.BotStateMachineChecker do
     # The last time the bot changed state
     :last_time_state_changed,
     # The last time the bot exited the tracking state
-    :last_time_tracking_exited
+    :last_time_tracking_exited,
+    # The obstacles on the level
+    :obstacles
   ]
 
   @spec new() :: BotManager.BotStateMachineChecker.t()
@@ -105,7 +108,8 @@ defmodule BotManager.BotStateMachineChecker do
       is_melee: nil,
       collision_grid: nil,
       last_time_state_changed: 0,
-      last_time_tracking_exited: 0
+      last_time_tracking_exited: 0,
+      obstacles: nil
     }
   end
 
