@@ -12,8 +12,8 @@ defmodule Arena.GameTracker do
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
   end
 
-  def start_tracking(match_id, client_to_player_map, players, human_clients) do
-    GenServer.call(__MODULE__, {:start_tracking, match_id, client_to_player_map, players, human_clients})
+  def start_tracking(match_params) do
+    GenServer.cast(__MODULE__, {:start_tracking, match_params})
   end
 
   def finish_tracking(match_pid, winner_ids) do
@@ -50,7 +50,25 @@ defmodule Arena.GameTracker do
   end
 
   @impl true
-  def handle_call({:start_tracking, match_id, client_to_player_map, players, human_clients}, {match_pid, _}, state) do
+  def handle_call({:get_player_result, player_id}, {match_pid, _}, state) do
+    match_data = get_in(state, [:matches, match_pid])
+    result = generate_player_result(match_data, player_id)
+
+    {:reply, result, state}
+  end
+
+  @impl true
+  def handle_cast(
+        {:start_tracking,
+         %{
+           match_pid: match_pid,
+           match_id: match_id,
+           client_to_player_map: client_to_player_map,
+           players: players,
+           human_clients: human_clients
+         }},
+        state
+      ) do
     player_to_client =
       Map.new(client_to_player_map, fn {client_id, player_id} -> {player_id, client_id} end)
 
@@ -82,17 +100,9 @@ defmodule Arena.GameTracker do
     }
 
     state = put_in(state, [:matches, match_pid], match_state)
-    {:reply, :ok, state}
+    {:noreply, state}
   end
 
-  def handle_call({:get_player_result, player_id}, {match_pid, _}, state) do
-    match_data = get_in(state, [:matches, match_pid])
-    result = generate_player_result(match_data, player_id)
-
-    {:reply, result, state}
-  end
-
-  @impl true
   def handle_cast({:finish_tracking, match_pid, winner_team}, state) do
     match_data = get_in(state, [:matches, match_pid])
     results = generate_results(match_data, winner_team)
