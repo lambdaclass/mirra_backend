@@ -1,6 +1,9 @@
 name: Deploy new Arena server
 
 on:
+  push:
+    branches:
+      test-deploy
   workflow_dispatch:
     inputs:
       server_hostname:
