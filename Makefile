@@ -104,11 +104,22 @@ setup-caddy:
 	sudo sh -c 'echo "" >> /etc/caddy/Caddyfile'
 	sudo systemctl restart caddy
 
+
+echo app
+app
+echo SH_APP_USERNAME
+SH_APP_USERNAME
+echo app
+app
+
 create-env-file:
 	echo ${SSH_APP_USERNAME}
 	echo $SSH_APP_USERNAME
 	echo $(SSH_APP_USERNAME)
 	sudo truncate -s0 /home/$$(SSH_APP_USERNAME)/.env
+	sudo truncate -s0 /home/$${SSH_APP_USERNAME}/.env
+	sudo truncate -s0 /home/$(SSH_APP_USERNAME)/.env
+	sudo truncate -s0 /home/${SSH_APP_USERNAME}/.env
 	sudo echo "PHX_HOST=$$(hostname).championsofmirra.com" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
 	sudo echo "DATABASE_URL=$${DATABASE_URL}" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
 	sudo echo "CONFIGURATOR_DATABASE_URL=" | sudo tee -a /home/$$(SSH_APP_USERNAME)/.env > /dev/null
