@@ -1,7 +1,5 @@
 name: "[TESTING-CHILE] Deploy to Chile Arena Testing"
 on:
-  push:
-    branches: upgrade-tailscale-gh-action-version
   workflow_dispatch:
 
 jobs:
