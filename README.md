@@ -15,7 +15,11 @@ Run the following command in the terminal:
 curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
 ```
 
-Close the terminal and open it again to verify the installation:
+The installer will ask you for the sudo password, and then print the details about what steps it will perform to install Nix. You have to accept this to proceed with the installation
+
+Make sure there weren't any errors during the installation and, if there are none, close the shell and start a new one.
+
+To test if Nix generally works, just run GNU hello or any other package:
 
 ```bash
 nix run nixpkgs#hello
@@ -31,13 +35,16 @@ Then Nix has been installed correctly. For more details, check the [Nixcademy in
 
 ## 2. Install Devenv
 
+Nix MUST be installed before devenv (devenv depends on nix)
+the following command installs devenv.
+
 After installing Nix, run:
 
 ```bash
 nix-env -if https://install.devenv.sh/latest
 ```
 
-Then, add yourself as a trusted user in the Nix configuration:
+For devenv to manage caches for you, add yourself to trusted-users in nix conf:
 
 ```bash
 sudo su -
@@ -49,12 +56,14 @@ Inside Vim, press `i` to edit and add the following line, replacing `your-user` 
 ```bash
 trusted-users = root your-user
 ```
+ If you don't know your user, you can type the following in a terminal:
 
 To find your username:
 
 ```bash
 whoami
 ```
+ Restart nix-daemon
 
 Save and exit Vim (`Esc`, then `:wq` and Enter). Restart Nix:
 
@@ -93,34 +102,33 @@ mix escript.install hex protobuf
 cd assets
 npm install google-protobuf
 npm install -g protoc-gen-js
+cd ..
 ```
 
 ## 7. Start the applications
 
-From `mirra_backend`, run:
+To build and run all the applications, run the following command:
+
+From `mirra_backend/` folder, run:
 
 ```bash
 devenv up
 ```
 
-Then, open:
-
-[http://localhost:3000/](http://localhost:3000/)
-
-To access the Elixir console:
+If you want to have access to the Elixir console, instead do:
 
 ```bash
 devenv shell postgres
 ```
 
-In another terminal, run:
+Then in another terminal:
 
 ```bash
 devenv shell
 make start
 ```
 
-⚠️ **Note:** Make sure you’ve run `devenv up` before these commands.
+⚠️ **Note:** Make sure you’ve run `devenv up` at least once before executing these commands.
 
 ## Applications
 

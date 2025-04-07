@@ -35,37 +35,6 @@ You can:
 - Assign skills (see skills config) to each character: basic, ultimate, dash.
 - Tune character params: speed, health, stamina, etc.
 
-Its mandatory to activate a character to have a basic skin assigned, for example, if you want to add Uren you should add this this lines of code:
-
-- Set `active` to `true` in `seeds.exs`
-charactername_params = %{
-  name: "valtimer",
-  active: true,
-  ...
-  ...
-}
-
-- 4.2 Create a default skin (if needed)
-charactername_basic_params = %{
-  is_default: true,
-  name: "Basic",
-  character_id: Enum.find(characters, fn c -> c.name == "charactername" end).id
-}
-- Add `charactername_basic_params` to the skins list
-Find the **Insert skins** section and add the new character's basic skin:
-
-Insert skins
-[
-  h4ck_fenix_params,
-  h4ck_basic_params,
-  valtimer_frostimer_params,
-  valtimer_basic_params,
-  kenzu_black_lotus_params,
-  kenzu_basic_params,
-  otix_corrupt_underground,
-  otix_basic_params
-]
-
 ### Game
 
 Here you can add/edit in-game settings.
