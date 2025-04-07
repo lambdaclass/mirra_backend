@@ -88,7 +88,7 @@ defmodule BotManager.BotStateMachineChecker do
       state: :idling,
       progress_for_basic_skill: 0,
       progress_for_ultimate_skill: 0,
-      cap_for_basic_skill: 100,
+      cap_for_basic_skill: 250,
       cap_for_ultimate_skill: 3,
       previous_position: nil,
       current_position: nil,
