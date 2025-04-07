@@ -146,15 +146,21 @@ defmodule BotManager.BotStateMachineChecker do
     distance <= @distance_threshold
   end
 
-  @spec bot_can_turn_aggresive?(BotManager.BotStateMachine.bot_player(), BotManager.BotStateMachineChecker.t()) :: boolean()
+  @spec bot_can_turn_aggresive?(BotManager.BotStateMachine.bot_player(), BotManager.BotStateMachineChecker.t()) ::
+          boolean()
   defp bot_can_turn_aggresive?(bot_player, bot_state_machine) do
     {:player, bot_player_info} = bot_player.aditional_info
 
     current_time = :os.system_time(:millisecond)
     time_since_last_attack = current_time - bot_state_machine.last_time_attacking_exited
 
-    bot_state_machine.state != :attacking && ((bot_state_machine.progress_for_basic_skill >= bot_state_machine.cap_for_basic_skill && Enum.all?(bot_player_info.current_actions, fn current_action -> current_action.action != :EXECUTING_SKILL_1 end)) ||
-      bot_state_machine.progress_for_ultimate_skill >= bot_state_machine.cap_for_ultimate_skill) && time_since_last_attack > @min_time_between_attacks
+    bot_state_machine.state != :attacking &&
+      ((bot_state_machine.progress_for_basic_skill >= bot_state_machine.cap_for_basic_skill &&
+          Enum.all?(bot_player_info.current_actions, fn current_action ->
+            current_action.action != :EXECUTING_SKILL_1
+          end)) ||
+         bot_state_machine.progress_for_ultimate_skill >= bot_state_machine.cap_for_ultimate_skill) &&
+      time_since_last_attack > @min_time_between_attacks
   end
 
   @spec bot_can_follow_a_player?(

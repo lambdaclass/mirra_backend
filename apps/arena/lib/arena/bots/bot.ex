@@ -125,10 +125,15 @@ defmodule Arena.Bots.Bot do
 
   defp update_block_attack_state(state), do: state
 
-  defp send_current_action(%{current_action: %{action: {:move, direction}, sent: false}, bot_player: bot_player} = state) do
+  defp send_current_action(
+         %{current_action: %{action: {:move, direction}, sent: false}, bot_player: bot_player} = state
+       ) do
     {:player, aditional_info} = bot_player.aditional_info
 
-    if Enum.all?(aditional_info.current_actions, fn current_action -> (current_action.action != :EXECUTING_SKILL_1 or not state.bot_skills.basic.block_movement) and (current_action.action != :EXECUTING_SKILL_2 or not state.bot_skills.ultimate.block_movement) end) do
+    if Enum.all?(aditional_info.current_actions, fn current_action ->
+         (current_action.action != :EXECUTING_SKILL_1 or not state.bot_skills.basic.block_movement) and
+           (current_action.action != :EXECUTING_SKILL_2 or not state.bot_skills.ultimate.block_movement)
+       end) do
       timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
       Arena.GameUpdater.move(state.game_pid, state.bot_player.id, direction, timestamp)
     end
