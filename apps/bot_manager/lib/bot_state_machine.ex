@@ -218,8 +218,9 @@ defmodule BotManager.BotStateMachine do
         bot_state_machine.current_position
       )
 
+    new_progress = min(bot_state_machine.cap_for_basic_skill * 3, bot_state_machine.progress_for_basic_skill + distance)
     bot_state_machine =
-      Map.put(bot_state_machine, :progress_for_basic_skill, bot_state_machine.progress_for_basic_skill + distance)
+      Map.put(bot_state_machine, :progress_for_basic_skill, new_progress)
 
     cond do
       Vector.distance(bot_state_machine.previous_position, bot_state_machine.current_position) < 100 &&
