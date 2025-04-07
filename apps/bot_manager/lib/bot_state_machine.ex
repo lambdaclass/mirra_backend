@@ -78,6 +78,11 @@ defmodule BotManager.BotStateMachine do
     |> Map.put(:last_time_tracking_exited, :os.system_time(:millisecond))
   end
 
+  defp exit_state(bot_state_machine, :attacking) do
+    bot_state_machine
+    |> Map.put(:last_time_attacking_exited, :os.system_time(:millisecond))
+  end
+
   defp exit_state(bot_state_machine, _exited_state) do
     bot_state_machine
   end
