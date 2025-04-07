@@ -119,19 +119,24 @@ defmodule Arena.Bots.Bot do
   end
 
   defp update_block_attack_state(%{current_action: %{action: {:use_skill, _, _}, sent: false}} = state) do
-    Process.send_after(self(), :unblock_attack, 100)
+    Process.send_after(self(), :unblock_attack, 50)
     %{state | attack_blocked: true, current_action: %{state.current_action | sent: true}}
   end
 
   defp update_block_attack_state(state), do: state
 
-  defp send_current_action(%{current_action: %{action: {:move, direction}, sent: false}} = state) do
-    timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
-    Arena.GameUpdater.move(state.game_pid, state.bot_player.id, direction, timestamp)
+  defp send_current_action(%{current_action: %{action: {:move, direction}, sent: false}, bot_player: bot_player} = state) do
+    {:player, aditional_info} = bot_player.aditional_info
+
+    if Enum.all?(aditional_info.current_actions, fn current_action -> (current_action.action != :EXECUTING_SKILL_1 or not state.bot_skills.basic.block_movement) and (current_action.action != :EXECUTING_SKILL_2 or not state.bot_skills.ultimate.block_movement) end) do
+      timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+      Arena.GameUpdater.move(state.game_pid, state.bot_player.id, direction, timestamp)
+    end
   end
 
   defp send_current_action(%{current_action: %{action: {:use_skill, skill_key, direction}, sent: false}} = state) do
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+    Arena.GameUpdater.move(state.game_pid, state.bot_player.id, %{x: 0, y: 0}, timestamp)
     Arena.GameUpdater.attack(state.game_pid, state.bot_player.id, skill_key, %{target: direction}, timestamp)
   end
 
@@ -141,6 +146,6 @@ defmodule Arena.Bots.Bot do
     Logger.error("Bot #{state.bot_id} terminating: #{inspect(reason)}")
   end
 
-  defp min_decision_delay_ms(), do: 100
-  defp max_decision_delay_ms(), do: 150
+  defp min_decision_delay_ms(), do: 40
+  defp max_decision_delay_ms(), do: 60
 end
