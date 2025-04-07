@@ -11,6 +11,8 @@ defmodule BotManager.BotStateMachineChecker do
   @tracking_timeout_ms 10_000
   @tracking_cooldown_ms 4000
 
+  @min_time_between_attacks 1500
+
   @type state_step() :: :attacking | :moving | :tracking_player | :idling
 
   @type t :: %BotManager.BotStateMachineChecker{
@@ -34,7 +36,8 @@ defmodule BotManager.BotStateMachineChecker do
           is_melee: boolean() | nil,
           collision_grid: binary() | nil,
           last_time_state_changed: integer(),
-          last_time_tracking_exited: integer()
+          last_time_tracking_exited: integer(),
+          last_time_attacking_exited: integer()
         }
 
   defstruct [
@@ -79,7 +82,9 @@ defmodule BotManager.BotStateMachineChecker do
     # The last time the bot changed state
     :last_time_state_changed,
     # The last time the bot exited the tracking state
-    :last_time_tracking_exited
+    :last_time_tracking_exited,
+    # The last time the bot exited the tracking state
+    :last_time_attacking_exited
   ]
 
   @spec new() :: BotManager.BotStateMachineChecker.t()
@@ -105,7 +110,8 @@ defmodule BotManager.BotStateMachineChecker do
       is_melee: nil,
       collision_grid: nil,
       last_time_state_changed: 0,
-      last_time_tracking_exited: 0
+      last_time_tracking_exited: 0,
+      last_time_attacking_exited: 0
     }
   end
 
@@ -118,7 +124,7 @@ defmodule BotManager.BotStateMachineChecker do
     cond do
       bot_stuck?(bot_state_machine) -> :moving
       bot_can_follow_a_player?(bot_player, bot_state_machine, players) -> :tracking_player
-      bot_can_turn_aggresive?(bot_state_machine) -> :attacking
+      bot_can_turn_aggresive?(bot_player, bot_state_machine) -> :attacking
       true -> :moving
     end
   end
@@ -140,10 +146,15 @@ defmodule BotManager.BotStateMachineChecker do
     distance <= @distance_threshold
   end
 
-  @spec bot_can_turn_aggresive?(BotManager.BotStateMachineChecker.t()) :: boolean()
-  defp bot_can_turn_aggresive?(bot_state_machine) do
-    bot_state_machine.progress_for_basic_skill >= bot_state_machine.cap_for_basic_skill ||
-      bot_state_machine.progress_for_ultimate_skill >= bot_state_machine.cap_for_ultimate_skill
+  @spec bot_can_turn_aggresive?(BotManager.BotStateMachine.bot_player(), BotManager.BotStateMachineChecker.t()) :: boolean()
+  defp bot_can_turn_aggresive?(bot_player, bot_state_machine) do
+    {:player, bot_player_info} = bot_player.aditional_info
+
+    current_time = :os.system_time(:millisecond)
+    time_since_last_attack = current_time - bot_state_machine.last_time_attacking_exited
+
+    bot_state_machine.state != :attacking && ((bot_state_machine.progress_for_basic_skill >= bot_state_machine.cap_for_basic_skill && Enum.all?(bot_player_info.current_actions, fn current_action -> current_action.action != :EXECUTING_SKILL_1 end)) ||
+      bot_state_machine.progress_for_ultimate_skill >= bot_state_machine.cap_for_ultimate_skill) && time_since_last_attack > @min_time_between_attacks
   end
 
   @spec bot_can_follow_a_player?(
@@ -184,7 +195,7 @@ defmodule BotManager.BotStateMachineChecker do
     tracking_in_cooldown = time_since_last_tracking_ended <= @tracking_cooldown_ms
 
     Enum.empty?(players_nearby_to_attack) && not Enum.empty?(players_nearby_to_follow) &&
-      bot_can_turn_aggresive?(bot_state_machine) && not bot_stuck?(bot_state_machine) &&
+      bot_can_turn_aggresive?(bot_player, bot_state_machine) && not bot_stuck?(bot_state_machine) &&
       !tracking_timed_out && !tracking_in_cooldown
   end
 
