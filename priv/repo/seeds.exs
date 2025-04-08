@@ -1308,7 +1308,7 @@ characters =
     kenzu_params,
     otix_params,
     shinko_params,
-    uren_params
+    uren_params,
   ]
   |> Enum.reduce([], fn char_params, characters ->
     {:ok, character} =
@@ -1371,7 +1371,7 @@ otix_basic_params = %{
 shinko_basic_params = %{
   is_default: true,
   name: "Basic",
-  character_id: Enum.find(characters, fn c -> c.name == "otix" end).id
+  character_id: Enum.find(characters, fn c -> c.name == "shinko" end).id
 }
 
 # Insert skins
@@ -1384,7 +1384,7 @@ shinko_basic_params = %{
   kenzu_basic_params,
   otix_corrupt_underground,
   otix_basic_params,
-  shinko_basic_params
+  shinko_basic_params,
 ]
 |> Enum.each(fn skin_params -> Characters.insert_skin(skin_params) end)
 
