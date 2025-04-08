@@ -35,10 +35,8 @@ Then Nix has been installed correctly. For more details, check the [Nixcademy in
 
 ## 2. Install Devenv
 
-Nix MUST be installed before devenv (devenv depends on nix)
-the following command installs devenv.
-
-After installing Nix, run:
+Nix MUST be installed before devenv (devenv depends on nix).  
+The following command installs devenv:
 
 ```bash
 nix-env -if https://install.devenv.sh/latest
@@ -56,16 +54,17 @@ Inside Vim, press `i` to edit and add the following line, replacing `your-user` 
 ```bash
 trusted-users = root your-user
 ```
- If you don't know your user, you can type the following in a terminal:
 
-To find your username:
+
+Save and exit Vim (`Esc`, then `:wq` and Enter).  
+
+- If you don't know your user, you can type the following in a terminal:
 
 ```bash
 whoami
 ```
- Restart nix-daemon
 
-Save and exit Vim (`Esc`, then `:wq` and Enter). Restart Nix:
+Then after you're done with Vim, You have to restart the nix-daemon
 
 ```bash
 sudo launchctl kickstart -k system/systems.determinate.nix-daemon
