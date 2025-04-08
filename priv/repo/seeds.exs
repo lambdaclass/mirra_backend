@@ -1266,7 +1266,7 @@ otix_params = %{
 
 shinko_params = %{
   name: "shinko",
-  active: false,
+  active: true,
   base_speed: 0.65,
   base_size: 100.0,
   base_health: 400,
@@ -1368,6 +1368,12 @@ otix_basic_params = %{
   character_id: Enum.find(characters, fn c -> c.name == "otix" end).id
 }
 
+shinko_basic_params = %{
+  is_default: true,
+  name: "Basic",
+  character_id: Enum.find(characters, fn c -> c.name == "otix" end).id
+}
+
 # Insert skins
 [
   h4ck_fenix_params,
@@ -1377,7 +1383,8 @@ otix_basic_params = %{
   kenzu_black_lotus_params,
   kenzu_basic_params,
   otix_corrupt_underground,
-  otix_basic_params
+  otix_basic_params,
+  shinko_basic_params
 ]
 |> Enum.each(fn skin_params -> Characters.insert_skin(skin_params) end)
 
