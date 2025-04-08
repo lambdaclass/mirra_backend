@@ -214,4 +214,20 @@ defmodule GameBackend.Units.Characters do
     |> Skin.changeset(attrs)
     |> Repo.insert()
   end
+
+  @doc """
+  Gets a Skin.
+  ## Examples
+      iex> insert_skin(%{field: value})
+      {:ok, %Skin{}}
+      iex> insert_skin(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+  """
+  def get_skin(id) do
+    Repo.one(Skin, id)
+    |> case do
+      nil -> {:error, :not_found}
+      skin -> {:ok, skin}
+    end
+  end
 end
