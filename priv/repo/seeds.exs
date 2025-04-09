@@ -1047,7 +1047,7 @@ skills = [
     "attack_type" => "melee",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 10000,
-    "execution_duration_ms" => 525,
+    "execution_duration_ms" => 400,
     "activation_delay_ms" => 0,
     "is_passive" => false,
     "autoaim" => false,
@@ -1266,7 +1266,7 @@ otix_params = %{
 
 shinko_params = %{
   name: "shinko",
-  active: true,
+  active: false,
   base_speed: 0.65,
   base_size: 100.0,
   base_health: 400,
