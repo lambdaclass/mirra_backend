@@ -1391,7 +1391,8 @@ shinko_basic_params = %{
   kenzu_basic_params,
   otix_corrupt_underground,
   otix_basic_params,
-  muflus_basic_params
+  muflus_basic_params,
+  shinko_basic_params
 ]
 |> Enum.each(fn skin_params -> Characters.insert_skin(skin_params) end)
 
