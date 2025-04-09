@@ -586,7 +586,7 @@ skills = [
     "type" => "basic",
     "attack_type" => "melee",
     "cooldown_mechanism" => "stamina",
-    "execution_duration_ms" => 450,
+    "execution_duration_ms" => 350,
     "activation_delay_ms" => 150,
     "is_passive" => false,
     "autoaim" => true,
@@ -639,7 +639,7 @@ skills = [
     "attack_type" => "melee",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 4500,
-    "execution_duration_ms" => 330,
+    "execution_duration_ms" => 500,
     "activation_delay_ms" => 0,
     "is_passive" => false,
     "autoaim" => false,
@@ -650,7 +650,7 @@ skills = [
       %{
         "type" => "dash",
         "speed" => 3.3,
-        "duration_ms" => 330
+        "duration_ms" => 500
       }
     ],
     "version_id" => version.id
@@ -1320,6 +1320,13 @@ characters =
   end)
 
 # Skins params
+
+muflus_basic_params = %{
+  is_default: true,
+  name: "Basic",
+  character_id: Enum.find(characters, fn c -> c.name == "muflus" end).id
+}
+
 h4ck_fenix_params = %{
   is_default: false,
   name: "Fenix",
@@ -1377,7 +1384,8 @@ otix_basic_params = %{
   kenzu_black_lotus_params,
   kenzu_basic_params,
   otix_corrupt_underground,
-  otix_basic_params
+  otix_basic_params,
+  muflus_basic_params
 ]
 |> Enum.each(fn skin_params -> Characters.insert_skin(skin_params) end)
 
