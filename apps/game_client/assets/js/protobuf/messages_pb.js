@@ -7058,7 +7058,7 @@ proto.Entity.prototype.hasTrap = function() {
  * @private {!Array<number>}
  * @const
  */
-proto.Player.repeatedFields_ = [3,10,12];
+proto.Player.repeatedFields_ = [3,11,13];
 
 
 
@@ -7100,22 +7100,23 @@ maxStamina: (f = jspb.Message.getField(msg, 5)) == null ? undefined : f,
 staminaInterval: (f = jspb.Message.getField(msg, 6)) == null ? undefined : f,
 rechargingStamina: (f = jspb.Message.getBooleanField(msg, 7)) == null ? undefined : f,
 characterName: (f = jspb.Message.getField(msg, 8)) == null ? undefined : f,
-powerUps: (f = jspb.Message.getField(msg, 9)) == null ? undefined : f,
+characterLevel: (f = jspb.Message.getField(msg, 9)) == null ? undefined : f,
+powerUps: (f = jspb.Message.getField(msg, 10)) == null ? undefined : f,
 effectsList: jspb.Message.toObjectList(msg.getEffectsList(),
     proto.Effect.toObject, includeInstance),
 cooldownsMap: (f = msg.getCooldownsMap()) ? f.toObject(includeInstance, undefined) : [],
-visiblePlayersList: (f = jspb.Message.getRepeatedField(msg, 12)) == null ? undefined : f,
-onBush: (f = jspb.Message.getBooleanField(msg, 13)) == null ? undefined : f,
-forcedMovement: (f = jspb.Message.getBooleanField(msg, 14)) == null ? undefined : f,
-bountyCompleted: (f = jspb.Message.getBooleanField(msg, 15)) == null ? undefined : f,
-mana: (f = jspb.Message.getField(msg, 16)) == null ? undefined : f,
-currentBasicAnimation: (f = jspb.Message.getField(msg, 17)) == null ? undefined : f,
-matchPosition: (f = jspb.Message.getField(msg, 18)) == null ? undefined : f,
-team: (f = jspb.Message.getField(msg, 19)) == null ? undefined : f,
-maxHealth: (f = jspb.Message.getField(msg, 20)) == null ? undefined : f,
+visiblePlayersList: (f = jspb.Message.getRepeatedField(msg, 13)) == null ? undefined : f,
+onBush: (f = jspb.Message.getBooleanField(msg, 14)) == null ? undefined : f,
+forcedMovement: (f = jspb.Message.getBooleanField(msg, 15)) == null ? undefined : f,
+bountyCompleted: (f = jspb.Message.getBooleanField(msg, 16)) == null ? undefined : f,
+mana: (f = jspb.Message.getField(msg, 17)) == null ? undefined : f,
+currentBasicAnimation: (f = jspb.Message.getField(msg, 18)) == null ? undefined : f,
+matchPosition: (f = jspb.Message.getField(msg, 19)) == null ? undefined : f,
+team: (f = jspb.Message.getField(msg, 20)) == null ? undefined : f,
+maxHealth: (f = jspb.Message.getField(msg, 21)) == null ? undefined : f,
 inventoryMap: (f = msg.getInventoryMap()) ? f.toObject(includeInstance, proto.Item.toObject) : [],
-blockedActions: (f = jspb.Message.getBooleanField(msg, 22)) == null ? undefined : f,
-skinName: (f = jspb.Message.getField(msg, 23)) == null ? undefined : f
+blockedActions: (f = jspb.Message.getBooleanField(msg, 23)) == null ? undefined : f,
+skinName: (f = jspb.Message.getField(msg, 24)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -7187,68 +7188,72 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 9:
       var value = /** @type {number} */ (reader.readUint64());
-      msg.setPowerUps(value);
+      msg.setCharacterLevel(value);
       break;
     case 10:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setPowerUps(value);
+      break;
+    case 11:
       var value = new proto.Effect;
       reader.readMessage(value,proto.Effect.deserializeBinaryFromReader);
       msg.addEffects(value);
       break;
-    case 11:
+    case 12:
       var value = msg.getCooldownsMap();
       reader.readMessage(value, function(message, reader) {
         jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readUint64, null, "", 0);
          });
       break;
-    case 12:
+    case 13:
       var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedUint64() : [reader.readUint64()]);
       for (var i = 0; i < values.length; i++) {
         msg.addVisiblePlayers(values[i]);
       }
       break;
-    case 13:
+    case 14:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setOnBush(value);
       break;
-    case 14:
+    case 15:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setForcedMovement(value);
       break;
-    case 15:
+    case 16:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setBountyCompleted(value);
       break;
-    case 16:
+    case 17:
       var value = /** @type {number} */ (reader.readUint64());
       msg.setMana(value);
       break;
-    case 17:
+    case 18:
       var value = /** @type {number} */ (reader.readUint32());
       msg.setCurrentBasicAnimation(value);
       break;
-    case 18:
+    case 19:
       var value = /** @type {number} */ (reader.readUint32());
       msg.setMatchPosition(value);
       break;
-    case 19:
+    case 20:
       var value = /** @type {number} */ (reader.readUint32());
       msg.setTeam(value);
       break;
-    case 20:
+    case 21:
       var value = /** @type {number} */ (reader.readUint64());
       msg.setMaxHealth(value);
       break;
-    case 21:
+    case 22:
       var value = msg.getInventoryMap();
       reader.readMessage(value, function(message, reader) {
         jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint32, jspb.BinaryReader.prototype.readMessage, proto.Item.deserializeBinaryFromReader, 0, new proto.Item());
          });
       break;
-    case 22:
+    case 23:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setBlockedActions(value);
       break;
-    case 23:
+    case 24:
       var value = /** @type {string} */ (reader.readString());
       msg.setSkinName(value);
       break;
@@ -7345,28 +7350,28 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = /** @type {number} */ (jspb.Message.getField(message, 10));
+  if (f != null) {
+    writer.writeUint64(
+      10,
+      f
+    );
+  }
   f = message.getEffectsList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
-      10,
+      11,
       f,
       proto.Effect.serializeBinaryToWriter
     );
   }
   f = message.getCooldownsMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(11, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeUint64);
+    f.serializeBinary(12, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeUint64);
   }
   f = message.getVisiblePlayersList();
   if (f.length > 0) {
     writer.writePackedUint64(
-      12,
-      f
-    );
-  }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 13));
-  if (f != null) {
-    writer.writeBool(
       13,
       f
     );
@@ -7385,16 +7390,16 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = /** @type {number} */ (jspb.Message.getField(message, 16));
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 16));
   if (f != null) {
-    writer.writeUint64(
+    writer.writeBool(
       16,
       f
     );
   }
   f = /** @type {number} */ (jspb.Message.getField(message, 17));
   if (f != null) {
-    writer.writeUint32(
+    writer.writeUint64(
       17,
       f
     );
@@ -7415,26 +7420,33 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
   }
   f = /** @type {number} */ (jspb.Message.getField(message, 20));
   if (f != null) {
-    writer.writeUint64(
+    writer.writeUint32(
       20,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 21));
+  if (f != null) {
+    writer.writeUint64(
+      21,
       f
     );
   }
   f = message.getInventoryMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(21, writer, jspb.BinaryWriter.prototype.writeUint32, jspb.BinaryWriter.prototype.writeMessage, proto.Item.serializeBinaryToWriter);
+    f.serializeBinary(22, writer, jspb.BinaryWriter.prototype.writeUint32, jspb.BinaryWriter.prototype.writeMessage, proto.Item.serializeBinaryToWriter);
   }
-  f = /** @type {boolean} */ (jspb.Message.getField(message, 22));
+  f = /** @type {boolean} */ (jspb.Message.getField(message, 23));
   if (f != null) {
     writer.writeBool(
-      22,
+      23,
       f
     );
   }
-  f = /** @type {string} */ (jspb.Message.getField(message, 23));
+  f = /** @type {string} */ (jspb.Message.getField(message, 24));
   if (f != null) {
     writer.writeString(
-      23,
+      24,
       f
     );
   }
@@ -7732,10 +7744,10 @@ proto.Player.prototype.hasCharacterName = function() {
 
 
 /**
- * optional uint64 power_ups = 9;
+ * optional uint64 character_level = 9;
  * @return {number}
  */
-proto.Player.prototype.getPowerUps = function() {
+proto.Player.prototype.getCharacterLevel = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
 };
 
@@ -7744,7 +7756,7 @@ proto.Player.prototype.getPowerUps = function() {
  * @param {number} value
  * @return {!proto.Player} returns this
  */
-proto.Player.prototype.setPowerUps = function(value) {
+proto.Player.prototype.setCharacterLevel = function(value) {
   return jspb.Message.setField(this, 9, value);
 };
 
@@ -7753,7 +7765,7 @@ proto.Player.prototype.setPowerUps = function(value) {
  * Clears the field making it undefined.
  * @return {!proto.Player} returns this
  */
-proto.Player.prototype.clearPowerUps = function() {
+proto.Player.prototype.clearCharacterLevel = function() {
   return jspb.Message.setField(this, 9, undefined);
 };
 
@@ -7762,18 +7774,54 @@ proto.Player.prototype.clearPowerUps = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Player.prototype.hasPowerUps = function() {
+proto.Player.prototype.hasCharacterLevel = function() {
   return jspb.Message.getField(this, 9) != null;
 };
 
 
 /**
- * repeated Effect effects = 10;
+ * optional uint64 power_ups = 10;
+ * @return {number}
+ */
+proto.Player.prototype.getPowerUps = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 10, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setPowerUps = function(value) {
+  return jspb.Message.setField(this, 10, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.clearPowerUps = function() {
+  return jspb.Message.setField(this, 10, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.Player.prototype.hasPowerUps = function() {
+  return jspb.Message.getField(this, 10) != null;
+};
+
+
+/**
+ * repeated Effect effects = 11;
  * @return {!Array<!proto.Effect>}
  */
 proto.Player.prototype.getEffectsList = function() {
   return /** @type{!Array<!proto.Effect>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.Effect, 10));
+    jspb.Message.getRepeatedWrapperField(this, proto.Effect, 11));
 };
 
 
@@ -7782,7 +7830,7 @@ proto.Player.prototype.getEffectsList = function() {
  * @return {!proto.Player} returns this
 */
 proto.Player.prototype.setEffectsList = function(value) {
-  return jspb.Message.setRepeatedWrapperField(this, 10, value);
+  return jspb.Message.setRepeatedWrapperField(this, 11, value);
 };
 
 
@@ -7792,7 +7840,7 @@ proto.Player.prototype.setEffectsList = function(value) {
  * @return {!proto.Effect}
  */
 proto.Player.prototype.addEffects = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 10, opt_value, proto.Effect, opt_index);
+  return jspb.Message.addToRepeatedWrapperField(this, 11, opt_value, proto.Effect, opt_index);
 };
 
 
@@ -7806,14 +7854,14 @@ proto.Player.prototype.clearEffectsList = function() {
 
 
 /**
- * map<string, uint64> cooldowns = 11;
+ * map<string, uint64> cooldowns = 12;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<string,number>}
  */
 proto.Player.prototype.getCooldownsMap = function(opt_noLazyCreate) {
   return /** @type {!jspb.Map<string,number>} */ (
-      jspb.Message.getMapField(this, 11, opt_noLazyCreate,
+      jspb.Message.getMapField(this, 12, opt_noLazyCreate,
       null));
 };
 
@@ -7829,11 +7877,11 @@ proto.Player.prototype.clearCooldownsMap = function() {
 
 
 /**
- * repeated uint64 visible_players = 12;
+ * repeated uint64 visible_players = 13;
  * @return {!Array<number>}
  */
 proto.Player.prototype.getVisiblePlayersList = function() {
-  return /** @type {!Array<number>} */ (jspb.Message.getRepeatedField(this, 12));
+  return /** @type {!Array<number>} */ (jspb.Message.getRepeatedField(this, 13));
 };
 
 
@@ -7842,7 +7890,7 @@ proto.Player.prototype.getVisiblePlayersList = function() {
  * @return {!proto.Player} returns this
  */
 proto.Player.prototype.setVisiblePlayersList = function(value) {
-  return jspb.Message.setField(this, 12, value || []);
+  return jspb.Message.setField(this, 13, value || []);
 };
 
 
@@ -7852,7 +7900,7 @@ proto.Player.prototype.setVisiblePlayersList = function(value) {
  * @return {!proto.Player} returns this
  */
 proto.Player.prototype.addVisiblePlayers = function(value, opt_index) {
-  return jspb.Message.addToRepeatedField(this, 12, value, opt_index);
+  return jspb.Message.addToRepeatedField(this, 13, value, opt_index);
 };
 
 
@@ -7866,46 +7914,10 @@ proto.Player.prototype.clearVisiblePlayersList = function() {
 
 
 /**
- * optional bool on_bush = 13;
+ * optional bool on_bush = 14;
  * @return {boolean}
  */
 proto.Player.prototype.getOnBush = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 13, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.Player} returns this
- */
-proto.Player.prototype.setOnBush = function(value) {
-  return jspb.Message.setField(this, 13, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.Player} returns this
- */
-proto.Player.prototype.clearOnBush = function() {
-  return jspb.Message.setField(this, 13, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.Player.prototype.hasOnBush = function() {
-  return jspb.Message.getField(this, 13) != null;
-};
-
-
-/**
- * optional bool forced_movement = 14;
- * @return {boolean}
- */
-proto.Player.prototype.getForcedMovement = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 14, false));
 };
 
@@ -7914,7 +7926,7 @@ proto.Player.prototype.getForcedMovement = function() {
  * @param {boolean} value
  * @return {!proto.Player} returns this
  */
-proto.Player.prototype.setForcedMovement = function(value) {
+proto.Player.prototype.setOnBush = function(value) {
   return jspb.Message.setField(this, 14, value);
 };
 
@@ -7923,7 +7935,7 @@ proto.Player.prototype.setForcedMovement = function(value) {
  * Clears the field making it undefined.
  * @return {!proto.Player} returns this
  */
-proto.Player.prototype.clearForcedMovement = function() {
+proto.Player.prototype.clearOnBush = function() {
   return jspb.Message.setField(this, 14, undefined);
 };
 
@@ -7932,16 +7944,16 @@ proto.Player.prototype.clearForcedMovement = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Player.prototype.hasForcedMovement = function() {
+proto.Player.prototype.hasOnBush = function() {
   return jspb.Message.getField(this, 14) != null;
 };
 
 
 /**
- * optional bool bounty_completed = 15;
+ * optional bool forced_movement = 15;
  * @return {boolean}
  */
-proto.Player.prototype.getBountyCompleted = function() {
+proto.Player.prototype.getForcedMovement = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 15, false));
 };
 
@@ -7950,7 +7962,7 @@ proto.Player.prototype.getBountyCompleted = function() {
  * @param {boolean} value
  * @return {!proto.Player} returns this
  */
-proto.Player.prototype.setBountyCompleted = function(value) {
+proto.Player.prototype.setForcedMovement = function(value) {
   return jspb.Message.setField(this, 15, value);
 };
 
@@ -7959,7 +7971,7 @@ proto.Player.prototype.setBountyCompleted = function(value) {
  * Clears the field making it undefined.
  * @return {!proto.Player} returns this
  */
-proto.Player.prototype.clearBountyCompleted = function() {
+proto.Player.prototype.clearForcedMovement = function() {
   return jspb.Message.setField(this, 15, undefined);
 };
 
@@ -7968,25 +7980,25 @@ proto.Player.prototype.clearBountyCompleted = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Player.prototype.hasBountyCompleted = function() {
+proto.Player.prototype.hasForcedMovement = function() {
   return jspb.Message.getField(this, 15) != null;
 };
 
 
 /**
- * optional uint64 mana = 16;
- * @return {number}
+ * optional bool bounty_completed = 16;
+ * @return {boolean}
  */
-proto.Player.prototype.getMana = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 16, 0));
+proto.Player.prototype.getBountyCompleted = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 16, false));
 };
 
 
 /**
- * @param {number} value
+ * @param {boolean} value
  * @return {!proto.Player} returns this
  */
-proto.Player.prototype.setMana = function(value) {
+proto.Player.prototype.setBountyCompleted = function(value) {
   return jspb.Message.setField(this, 16, value);
 };
 
@@ -7995,7 +8007,7 @@ proto.Player.prototype.setMana = function(value) {
  * Clears the field making it undefined.
  * @return {!proto.Player} returns this
  */
-proto.Player.prototype.clearMana = function() {
+proto.Player.prototype.clearBountyCompleted = function() {
   return jspb.Message.setField(this, 16, undefined);
 };
 
@@ -8004,16 +8016,16 @@ proto.Player.prototype.clearMana = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Player.prototype.hasMana = function() {
+proto.Player.prototype.hasBountyCompleted = function() {
   return jspb.Message.getField(this, 16) != null;
 };
 
 
 /**
- * optional uint32 current_basic_animation = 17;
+ * optional uint64 mana = 17;
  * @return {number}
  */
-proto.Player.prototype.getCurrentBasicAnimation = function() {
+proto.Player.prototype.getMana = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 17, 0));
 };
 
@@ -8022,7 +8034,7 @@ proto.Player.prototype.getCurrentBasicAnimation = function() {
  * @param {number} value
  * @return {!proto.Player} returns this
  */
-proto.Player.prototype.setCurrentBasicAnimation = function(value) {
+proto.Player.prototype.setMana = function(value) {
   return jspb.Message.setField(this, 17, value);
 };
 
@@ -8031,7 +8043,7 @@ proto.Player.prototype.setCurrentBasicAnimation = function(value) {
  * Clears the field making it undefined.
  * @return {!proto.Player} returns this
  */
-proto.Player.prototype.clearCurrentBasicAnimation = function() {
+proto.Player.prototype.clearMana = function() {
   return jspb.Message.setField(this, 17, undefined);
 };
 
@@ -8040,16 +8052,16 @@ proto.Player.prototype.clearCurrentBasicAnimation = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Player.prototype.hasCurrentBasicAnimation = function() {
+proto.Player.prototype.hasMana = function() {
   return jspb.Message.getField(this, 17) != null;
 };
 
 
 /**
- * optional uint32 match_position = 18;
+ * optional uint32 current_basic_animation = 18;
  * @return {number}
  */
-proto.Player.prototype.getMatchPosition = function() {
+proto.Player.prototype.getCurrentBasicAnimation = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 18, 0));
 };
 
@@ -8058,7 +8070,7 @@ proto.Player.prototype.getMatchPosition = function() {
  * @param {number} value
  * @return {!proto.Player} returns this
  */
-proto.Player.prototype.setMatchPosition = function(value) {
+proto.Player.prototype.setCurrentBasicAnimation = function(value) {
   return jspb.Message.setField(this, 18, value);
 };
 
@@ -8067,7 +8079,7 @@ proto.Player.prototype.setMatchPosition = function(value) {
  * Clears the field making it undefined.
  * @return {!proto.Player} returns this
  */
-proto.Player.prototype.clearMatchPosition = function() {
+proto.Player.prototype.clearCurrentBasicAnimation = function() {
   return jspb.Message.setField(this, 18, undefined);
 };
 
@@ -8076,16 +8088,16 @@ proto.Player.prototype.clearMatchPosition = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Player.prototype.hasMatchPosition = function() {
+proto.Player.prototype.hasCurrentBasicAnimation = function() {
   return jspb.Message.getField(this, 18) != null;
 };
 
 
 /**
- * optional uint32 team = 19;
+ * optional uint32 match_position = 19;
  * @return {number}
  */
-proto.Player.prototype.getTeam = function() {
+proto.Player.prototype.getMatchPosition = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 19, 0));
 };
 
@@ -8094,7 +8106,7 @@ proto.Player.prototype.getTeam = function() {
  * @param {number} value
  * @return {!proto.Player} returns this
  */
-proto.Player.prototype.setTeam = function(value) {
+proto.Player.prototype.setMatchPosition = function(value) {
   return jspb.Message.setField(this, 19, value);
 };
 
@@ -8103,7 +8115,7 @@ proto.Player.prototype.setTeam = function(value) {
  * Clears the field making it undefined.
  * @return {!proto.Player} returns this
  */
-proto.Player.prototype.clearTeam = function() {
+proto.Player.prototype.clearMatchPosition = function() {
   return jspb.Message.setField(this, 19, undefined);
 };
 
@@ -8112,16 +8124,16 @@ proto.Player.prototype.clearTeam = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Player.prototype.hasTeam = function() {
+proto.Player.prototype.hasMatchPosition = function() {
   return jspb.Message.getField(this, 19) != null;
 };
 
 
 /**
- * optional uint64 max_health = 20;
+ * optional uint32 team = 20;
  * @return {number}
  */
-proto.Player.prototype.getMaxHealth = function() {
+proto.Player.prototype.getTeam = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 20, 0));
 };
 
@@ -8130,7 +8142,7 @@ proto.Player.prototype.getMaxHealth = function() {
  * @param {number} value
  * @return {!proto.Player} returns this
  */
-proto.Player.prototype.setMaxHealth = function(value) {
+proto.Player.prototype.setTeam = function(value) {
   return jspb.Message.setField(this, 20, value);
 };
 
@@ -8139,7 +8151,7 @@ proto.Player.prototype.setMaxHealth = function(value) {
  * Clears the field making it undefined.
  * @return {!proto.Player} returns this
  */
-proto.Player.prototype.clearMaxHealth = function() {
+proto.Player.prototype.clearTeam = function() {
   return jspb.Message.setField(this, 20, undefined);
 };
 
@@ -8148,20 +8160,56 @@ proto.Player.prototype.clearMaxHealth = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Player.prototype.hasMaxHealth = function() {
+proto.Player.prototype.hasTeam = function() {
   return jspb.Message.getField(this, 20) != null;
 };
 
 
 /**
- * map<uint32, Item> inventory = 21;
+ * optional uint64 max_health = 21;
+ * @return {number}
+ */
+proto.Player.prototype.getMaxHealth = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 21, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setMaxHealth = function(value) {
+  return jspb.Message.setField(this, 21, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.clearMaxHealth = function() {
+  return jspb.Message.setField(this, 21, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.Player.prototype.hasMaxHealth = function() {
+  return jspb.Message.getField(this, 21) != null;
+};
+
+
+/**
+ * map<uint32, Item> inventory = 22;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<number,!proto.Item>}
  */
 proto.Player.prototype.getInventoryMap = function(opt_noLazyCreate) {
   return /** @type {!jspb.Map<number,!proto.Item>} */ (
-      jspb.Message.getMapField(this, 21, opt_noLazyCreate,
+      jspb.Message.getMapField(this, 22, opt_noLazyCreate,
       proto.Item));
 };
 
@@ -8177,11 +8225,11 @@ proto.Player.prototype.clearInventoryMap = function() {
 
 
 /**
- * optional bool blocked_actions = 22;
+ * optional bool blocked_actions = 23;
  * @return {boolean}
  */
 proto.Player.prototype.getBlockedActions = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 22, false));
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 23, false));
 };
 
 
@@ -8190,42 +8238,6 @@ proto.Player.prototype.getBlockedActions = function() {
  * @return {!proto.Player} returns this
  */
 proto.Player.prototype.setBlockedActions = function(value) {
-  return jspb.Message.setField(this, 22, value);
-};
-
-
-/**
- * Clears the field making it undefined.
- * @return {!proto.Player} returns this
- */
-proto.Player.prototype.clearBlockedActions = function() {
-  return jspb.Message.setField(this, 22, undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.Player.prototype.hasBlockedActions = function() {
-  return jspb.Message.getField(this, 22) != null;
-};
-
-
-/**
- * optional string skin_name = 23;
- * @return {string}
- */
-proto.Player.prototype.getSkinName = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 23, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.Player} returns this
- */
-proto.Player.prototype.setSkinName = function(value) {
   return jspb.Message.setField(this, 23, value);
 };
 
@@ -8234,7 +8246,7 @@ proto.Player.prototype.setSkinName = function(value) {
  * Clears the field making it undefined.
  * @return {!proto.Player} returns this
  */
-proto.Player.prototype.clearSkinName = function() {
+proto.Player.prototype.clearBlockedActions = function() {
   return jspb.Message.setField(this, 23, undefined);
 };
 
@@ -8243,8 +8255,44 @@ proto.Player.prototype.clearSkinName = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Player.prototype.hasSkinName = function() {
+proto.Player.prototype.hasBlockedActions = function() {
   return jspb.Message.getField(this, 23) != null;
+};
+
+
+/**
+ * optional string skin_name = 24;
+ * @return {string}
+ */
+proto.Player.prototype.getSkinName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 24, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setSkinName = function(value) {
+  return jspb.Message.setField(this, 24, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.clearSkinName = function() {
+  return jspb.Message.setField(this, 24, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.Player.prototype.hasSkinName = function() {
+  return jspb.Message.getField(this, 24) != null;
 };
 
 

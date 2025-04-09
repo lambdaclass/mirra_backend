@@ -36,6 +36,7 @@ defmodule Arena.Matchmaking.GameLauncher do
       client_id: params.client_id,
       character_name: params.character_name,
       skin_name: params.skin_name,
+      character_level: params.character_level,
       name: params.player_name,
       from_pid: from_pid,
       type: :human
@@ -115,6 +116,8 @@ defmodule Arena.Matchmaking.GameLauncher do
         client_id: client_id,
         skin_name: "Basic",
         character_name: Enum.random(characters).name,
+        # TODO: what do we do with bot levels? Average over all real player's levels
+        character_level: 1,
         name: Enum.at(bot_names, i - 1),
         type: :bot
       }

@@ -6,6 +6,8 @@ defmodule Arena.Entities do
   alias Arena.Game.Player
   alias Arena.Game.Crate
 
+  @stat_increase_per_level 0.1
+
   @type new_player_params :: %{
           id: integer(),
           team: integer(),
@@ -13,6 +15,7 @@ defmodule Arena.Entities do
           position: %{x: float(), y: float()},
           direction: %{x: float(), y: float()},
           character_name: String.t(),
+          character_level: integer(),
           config: map(),
           now: integer()
         }
@@ -26,6 +29,7 @@ defmodule Arena.Entities do
       direction: direction,
       character_name: character_name,
       skin_name: skin_name,
+      character_level: level,
       config: config,
       now: now,
       team: team
