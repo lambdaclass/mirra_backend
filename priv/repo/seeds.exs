@@ -1097,7 +1097,7 @@ skills = [
     "attack_type" => "melee",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 4000,
-    "execution_duration_ms" => 250,
+    "execution_duration_ms" => 275,
     "activation_delay_ms" => 0,
     "is_passive" => false,
     "autoaim" => false,
@@ -1108,7 +1108,7 @@ skills = [
       %{
         "type" => "dash",
         "speed" => 4,
-        "duration_ms" => 250
+        "duration_ms" => 275
       }
     ],
     "version_id" => version.id
