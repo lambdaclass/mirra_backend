@@ -51,7 +51,8 @@ defmodule Arena.Entities do
       aditional_info: %{
         team: team,
         health: (character.base_health + character.base_health * @stat_increase_per_level * (level - 1)) |> round(),
-        base_health: (character.base_health + character.base_health * @stat_increase_per_level * (level - 1)) |> round(),
+        base_health:
+          (character.base_health + character.base_health * @stat_increase_per_level * (level - 1)) |> round(),
         max_health: (character.base_health + character.base_health * @stat_increase_per_level * (level - 1)) |> round(),
         base_attack: character.base_attack + character.base_attack * @stat_increase_per_level * (level - 1),
         base_speed: character.base_speed,
