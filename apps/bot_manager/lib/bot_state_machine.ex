@@ -10,7 +10,6 @@ defmodule BotManager.BotStateMachine do
 
   @skill_1_key "1"
   @skill_2_key "2"
-  # @dash_skill_key "3"
 
   # The minimum distance a tracked player has to move for the tracking path to get recalculated
   @path_recalculation_min_diff 300
