@@ -8,9 +8,17 @@ defmodule BotManager.BotStateMachineChecker do
   @time_stuck_in_position 400
   @distance_threshold 100
 
+  # Bots will track a player for at most @tracking_timeout_ms milliseconds
+  # after which it will transition to another state
   @tracking_timeout_ms 10_000
+
+  # There is a cooldown on tracking of @tracking_cooldown_ms milliseconds to
+  # control the agressiveness of bots. Otherwise they'd chase infinitely
   @tracking_cooldown_ms 4000
 
+  # Adds a small cooldown between attacks of @min_time_between_attacks
+  # milliseconds so that the bot doesn't try to attack too fast, again to
+  # control the aggresiveness of the bot.
   @min_time_between_attacks 1500
 
   @type state_step() :: :attacking | :moving | :tracking_player | :idling

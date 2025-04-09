@@ -11,7 +11,8 @@ defmodule BotManager.BotStateMachine do
   @skill_1_key "1"
   @skill_2_key "2"
 
-  # The minimum distance a tracked player has to move for the tracking path to get recalculated
+  # The minimum distance a tracked player has to move for the tracking path to
+  # get recalculated
   @path_recalculation_min_diff 300
 
   def decide_action(%{bots_enabled?: false, bot_state_machine: bot_state_machine}) do
