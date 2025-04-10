@@ -1283,7 +1283,7 @@ shinko_params = %{
 
 uren_params = %{
   name: "uren",
-  active: true,
+  active: false,
   base_speed: 0.68,
   base_size: 100.0,
   base_health: 400,
