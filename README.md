@@ -3,90 +3,131 @@ Mirra Backend is an umbrella project that contains several apps within it.
 
 The objective is to split the project into multiple applications (modules) based on their responsibilities. This will allow us to add decoupled modules that can be used together without having a dependency between them.
 
-## Requirements
+## Setup Guide
 
-- **Nix:**
-You can install the Nix package manager by running the following command in your terminal:
+This guide will help you install the necessary tools and run the backend services for the Mirra project.
+
+## 1. Install Nix
+
+Run the following command in the terminal:
+
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
 ```
 
-The installer will ask you for the sudo password, and then print the details about what steps it will perform to install Nix. You have to accept this to proceed with the installation.
+The installer will ask you for the sudo password, and then print the details about what steps it will perform to install Nix. You have to accept this to proceed with the installation
 
 Make sure there weren't any errors during the installation and, if there are none, close the shell and start a new one.
 
 To test if Nix generally works, just run GNU hello or any other package:
+
 ```bash
 nix run nixpkgs#hello
+```
+
+If you see:
+
+```bash
 > Hello, world!
 ```
 
-For a more detailed explanation, visit the [Nixcademy installation guide](https://nixcademy.com/2024/01/15/nix-on-macos/).
+Then Nix has been installed correctly. For more details, check the [Nixcademy installation guide](https://nixcademy.com).
 
-- **Devenv:**
+## 2. Install Devenv
 
-After installing Nix, run the following command to install devenv:
+Nix MUST be installed before devenv (devenv depends on nix).  
+The following command installs devenv:
+
 ```bash
 nix-env -if https://install.devenv.sh/latest
 ```
 
 For devenv to manage caches for you, add yourself to trusted-users in nix conf:
+
 ```bash
-# Log in as super user first
 sudo su -
-# Open config file using Vim
 vim /etc/nix/nix.custom.conf
-# Add the users you want to use nix store to nix.custom.conf file
-  # Press 'i' to write stuff in file using vim (insert mode).
-  # Press 'esc' (exit insert mode) then type ':wq' to save changes.
+```
+
+Inside Vim, press `i` to edit and add the following line, replacing `your-user` with your actual username:
+
+```bash
 trusted-users = root your-user
-# If you don't know your user, you can type the following in a terminal:
+```
+
+
+Save and exit Vim (`Esc`, then `:wq` and Enter).  
+
+- If you don't know your user, you can type the following in a terminal:
+
+```bash
 whoami
-# Restart nix-daemon
+```
+
+Then after you're done with Vim, You have to restart the nix-daemon
+
+```bash
 sudo launchctl kickstart -k system/systems.determinate.nix-daemon
 ```
 
-Clone the repo:
+## 3. Clone the repository
+
 ```bash
 git clone https://github.com/lambdaclass/mirra_backend.git
 ```
 
-Install the last elixir package manager inside the repo folder and devenv shell:
+## 4. Install the Elixir package manager
+
 ```bash
 cd mirra_backend
 devenv shell
 mix archive.install github hexpm/hex branch latest
 ```
 
-- **Protobuf:**
-To serialize our websocket messages, we use Protobuf.
-Install running:
+## 5. Install Protobuf
+
+Protobuf is used to serialize WebSocket messages. Install it with:
+
 ```bash
 brew install protobuf
-mix escript.install hex protobuf # Remember to add escripts folder to your $PATH. This step is not needed if you use devenv.
-# JS protobuf for game_client app.
+mix escript.install hex protobuf
+```
+
+⚠️ **Note:** If you used `brew`, add the `escripts` folder to your `$PATH` (follow the instructions after installation).
+
+## 6. Install JS Protobuf for the client
+
+```bash
 cd assets
 npm install google-protobuf
 npm install -g protoc-gen-js
+cd ..
 ```
 
-## Start applications
+## 7. Start the applications
 
 To build and run all the applications, run the following command:
+
+From `mirra_backend/` folder, run:
+
 ```bash
 devenv up
 ```
-Then navigate to the following link to start a game: http://localhost:3000/
-
 
 If you want to have access to the Elixir console, instead do:
+
 ```bash
 devenv shell postgres
-# Then in another terminal:
+```
+
+Then in another terminal:
+
+```bash
 devenv shell
 make start
 ```
-_Note you need to have ran `devenv up` earlier._
+
+⚠️ **Note:** Make sure you’ve run `devenv up` at least once before executing these commands.
 
 ## Applications
 

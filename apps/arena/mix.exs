@@ -36,6 +36,7 @@ defmodule Arena.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:bot_manager, in_umbrella: true},
       {:phoenix, "~> 1.7.10"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_live_dashboard, "~> 0.8.2"},

@@ -36,6 +36,18 @@ defmodule Arena.Configuration do
     end
   end
 
+  def get_current_maps_configuration() do
+    gateway_url = Application.get_env(:arena, :gateway_url)
+
+    {:ok, payload} =
+      Finch.build(:get, "#{gateway_url}/curse/configuration/current", [{"content-type", "application/json"}])
+      |> Finch.request(Arena.Finch)
+
+    Jason.decode!(payload.body, [{:keys, :atoms}])
+    |> Map.get(:map)
+    |> Enum.map(fn map -> parse_map_config(map) end)
+  end
+
   defp parse_map_mode_params(map_mode_params) do
     %{
       map_mode_params
