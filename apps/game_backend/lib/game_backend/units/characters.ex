@@ -7,6 +7,7 @@ defmodule GameBackend.Units.Characters do
   alias GameBackend.Configuration.Version
   alias Ecto.Multi
   alias GameBackend.Repo
+  alias GameBackend.Units.UnitSkin
   alias GameBackend.Units.Characters.Character
   alias GameBackend.Units.Characters.Skin
 
@@ -229,5 +230,11 @@ defmodule GameBackend.Units.Characters do
       nil -> {:error, :not_found}
       skin -> {:ok, skin}
     end
+  end
+
+  def insert_unit_skin(attrs) do
+    %UnitSkin{}
+    |> UnitSkin.changeset(attrs)
+    |> Repo.insert()
   end
 end
