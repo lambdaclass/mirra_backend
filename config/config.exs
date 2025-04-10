@@ -193,6 +193,7 @@ config :gateway, Gateway.Endpoint,
 # App configuration: configurator #
 ###################################
 config :configurator,
+  env: config_env(),
   ecto_repos: [Configurator.Repo],
   generators: [timestamp_type: :utc_datetime]
 
