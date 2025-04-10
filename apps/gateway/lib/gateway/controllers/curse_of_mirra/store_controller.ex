@@ -7,6 +7,7 @@ defmodule Gateway.Controllers.CurseOfMirra.StoreController do
   alias GameBackend.Utils
   alias GameBackend.Users.Currencies
   alias GameBackend.Stores
+  alias GameBackend.Units.Characters
 
   action_fallback Gateway.Controllers.FallbackController
 
@@ -51,6 +52,12 @@ defmodule Gateway.Controllers.CurseOfMirra.StoreController do
          {:can_afford, true} <- {:can_afford, Currencies.can_afford(params["user_id"], [purchase_cost])},
          {:ok, item_updates_map} <- Items.buy_item(params["user_id"], item_template.id, [purchase_cost]) do
       send_resp(conn, 200, Jason.encode!(%{item_id: item_updates_map.item.id}))
+    end
+  end
+
+  def list_skins(conn, _params) do
+    with {:ok, skins} <- Characters.list_skins_with_prices() do
+      send_resp(conn, 200, Jason.encode!(%{skins: skins}))
     end
   end
 end

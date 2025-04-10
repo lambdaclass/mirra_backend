@@ -7,6 +7,7 @@ defmodule GameBackend.Units.Characters do
   alias GameBackend.Configuration.Version
   alias Ecto.Multi
   alias GameBackend.Repo
+  alias GameBackend.Users.Currencies
   alias GameBackend.Units.UnitSkin
   alias GameBackend.Units.Characters.Character
   alias GameBackend.Units.Characters.Skin
@@ -236,5 +237,19 @@ defmodule GameBackend.Units.Characters do
     %UnitSkin{}
     |> UnitSkin.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def list_skins_with_prices() do
+    q = from(s in Skin, where: not s.is_default, preload: [purchase_costs: :currency])
+
+    Enum.flat_map(Repo.all(q), fn skin ->
+      Enum.map(skin.purchase_costs, fn purchase_cost ->
+        %{name: skin.name, currency: %{amount: purchase_cost.amount, details: purchase_cost.currency}}
+      end)
+    end)
+    |> case do
+      [] -> {:error, :not_found}
+      skins -> {:ok, skins}
+    end
   end
 end
