@@ -21,4 +21,14 @@ defmodule Gateway.Controllers.CurseOfMirra.CharacterController do
       send_resp(conn, 200, Jason.encode!(%{character_name: params["character_name"], skin_name: params["skin_name"]}))
     end
   end
+
+  def level_up(conn, params) do
+    with {:ok, unit} <- Units.get_unit_by_character_name(params["character_name"], params["user_id"]),
+         {:ok, %{unit: leveled_up_unit, user_currency: user_currencies}} <- Units.level_up(params["user_id"], unit.id) do
+      new_balances = user_currencies
+        |> Enum.map(fn user_currency -> %{currency_id: user_currency.currency_id, amount: user_currency.amount} end)
+
+      send_resp(conn, 200, Jason.encode!(%{character_name: params["character_name"], new_level: leveled_up_unit.level, new_currency_balance: new_balances}))
+    end
+  end
 end
