@@ -1,4 +1,4 @@
-<%= if not is_nil(@current_user) or Mix.env() == :dev do %>
+<%= if not is_nil(@current_user) or Application.get_env(:configurator, :env) == :dev do %>
   <.header>
     Welcome to Champions of Mirra Configurator
   </.header>
