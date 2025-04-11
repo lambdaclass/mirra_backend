@@ -86,7 +86,7 @@ defmodule GameBackend.Units.Characters do
 
   ## Examples
 
-      iex> get_character(item_template_id)
+      iex> get_character(id)
       {:ok, %Character{}}
 
       iex> get_character(wrong_id)
@@ -220,17 +220,44 @@ defmodule GameBackend.Units.Characters do
   @doc """
   Gets a Skin.
   ## Examples
-      iex> insert_skin(%{field: value})
+      iex> get_skin_by_name(id)
       {:ok, %Skin{}}
-      iex> insert_skin(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
+      iex> get_skin_by_name(wrong_id)
+      {:error, :not_found}
   """
-  def get_skin(id) do
-    Repo.one(Skin, id)
+  def get_skin_by_name(skin_name) do
+    IO.inspect(skin_name, label: :aver_name)
+
+    Repo.get_by(Skin, name: skin_name)
     |> case do
       nil -> {:error, :not_found}
       skin -> {:ok, skin}
     end
+  end
+
+  def get_skin_purchase_cost_by_currency(skin, currency_id) do
+    purchase_cost =
+      Map.get(skin, :purchase_costs)
+      |> Enum.find(fn purchase_cost -> purchase_cost.currency_id == currency_id end)
+
+    case purchase_cost do
+      nil -> {:error, :not_found}
+      purchase_cost -> {:ok, purchase_cost}
+    end
+  end
+
+  @doc """
+  Receives a user_id, a skin_id and a list of CurrencyCosts.
+  Inserts new UserSkin from given Skin for given User.
+  Substract the amount of Currency to User by given params.
+  Returns {:ok, map_of_ran_operations} in case of success.
+  Returns {:error, failed_operation, failed_value, changes_so_far} if one of the operations fail.
+  """
+  def buy_skin(user_id, skin_id, purchase_costs_list) do
+    Multi.new()
+    |> Multi.run(:unit_skin, fn _, _ -> insert_unit_skin(%{user_id: user_id, skin_id: skin_id}) end)
+    |> Multi.run(:currencies, fn _, _ -> Currencies.substract_currencies(user_id, purchase_costs_list) end)
+    |> Repo.transaction()
   end
 
   def insert_unit_skin(attrs) do
@@ -240,11 +267,11 @@ defmodule GameBackend.Units.Characters do
   end
 
   def list_skins_with_prices() do
-    q = from(s in Skin, where: not s.is_default, preload: [purchase_costs: :currency])
+    q = from(s in Skin, where: not s.is_default, preload: [:character, purchase_costs: :currency])
 
     Enum.flat_map(Repo.all(q), fn skin ->
       Enum.map(skin.purchase_costs, fn purchase_cost ->
-        %{name: skin.name, currency: %{amount: purchase_cost.amount, details: purchase_cost.currency}}
+        %{name: skin.name, currency: %{amount: purchase_cost.amount, details: purchase_cost.currency}, character_name: skin.character.name}
       end)
     end)
     |> case do
