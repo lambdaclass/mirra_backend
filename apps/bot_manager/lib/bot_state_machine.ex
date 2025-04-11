@@ -10,9 +10,17 @@ defmodule BotManager.BotStateMachine do
 
   @skill_1_key "1"
   @skill_2_key "2"
-  @dash_skill_key "3"
 
-  def decide_action(%{enabled?: false, bot_state_machine: bot_state_machine}) do
+  # The minimum distance a tracked player has to move for the tracking path to
+  # get recalculated
+  @path_recalculation_min_diff 300
+
+  def decide_action(%{bots_enabled?: false, bot_state_machine: bot_state_machine}) do
+    %{action: {:move, %{x: 0, y: 0}}, bot_state_machine: bot_state_machine}
+  end
+
+  def decide_action(%{bot_player: %{aditional_info: {:player, %{health: health}}}, bot_state_machine: bot_state_machine})
+      when health <= 0 do
     %{action: {:move, %{x: 0, y: 0}}, bot_state_machine: bot_state_machine}
   end
 
@@ -29,30 +37,56 @@ defmodule BotManager.BotStateMachine do
     bot_state_machine = preprocess_bot_state(bot_state_machine, bot_player)
     next_state = BotStateMachineChecker.move_to_next_state(bot_player, bot_state_machine, game_state.players)
 
-    if System.get_env("PATHFINDING_TEST") == "true" do
-      move(bot_player, bot_state_machine, game_state.zone.radius)
-    else
-      case next_state do
-        :moving ->
-          move(bot_player, bot_state_machine, game_state.zone.radius)
+    bot_state_machine = maybe_exit_state(bot_state_machine, next_state)
 
-        :attacking ->
-          use_skill(%{
-            bot_player: bot_player,
-            bot_state_machine: bot_state_machine,
-            game_state: game_state,
-            attack_blocked: attack_blocked,
-            bot_skills: skills
-          })
+    case next_state do
+      :moving ->
+        move(bot_state_machine, game_state.zone.radius)
 
-        :tracking_player ->
-          track_player(game_state, bot_player, bot_state_machine)
-      end
+      :attacking ->
+        use_skill(%{
+          bot_player: bot_player,
+          bot_state_machine: bot_state_machine,
+          game_state: game_state,
+          attack_blocked: attack_blocked,
+          bot_skills: skills
+        })
+
+      :tracking_player ->
+        bot_state_machine = maybe_set_tracking_path(game_state, bot_player, bot_state_machine)
+        track_player(game_state, bot_player, bot_state_machine)
     end
   end
 
   def decide_action(%{bot_state_machine: bot_state_machine}),
     do: %{action: :idling, bot_state_machine: bot_state_machine}
+
+  # This function will handle state switching logic to leave the bot state machine in a proper state
+  defp maybe_exit_state(%{state: state} = bot_state_machine, state) do
+    bot_state_machine
+  end
+
+  defp maybe_exit_state(%{state: state} = bot_state_machine, new_state) do
+    bot_state_machine
+    |> Map.put(:state, new_state)
+    |> Map.put(:last_time_state_changed, :os.system_time(:millisecond))
+    |> exit_state(state)
+  end
+
+  # updates necessary data to exit each specific state
+  defp exit_state(bot_state_machine, :tracking_player) do
+    bot_state_machine
+    |> Map.put(:last_time_tracking_exited, :os.system_time(:millisecond))
+  end
+
+  defp exit_state(bot_state_machine, :attacking) do
+    bot_state_machine
+    |> Map.put(:last_time_attacking_exited, :os.system_time(:millisecond))
+  end
+
+  defp exit_state(bot_state_machine, _exited_state) do
+    bot_state_machine
+  end
 
   @doc """
   This function will be in charge of using the bot's skill.
@@ -81,7 +115,7 @@ defmodule BotManager.BotStateMachine do
           )
 
         if Enum.empty?(players_with_distances) do
-          move(bot_player, bot_state_machine, game_state.zone.radius)
+          move(bot_state_machine, game_state.zone.radius)
         else
           bot_state_machine =
             Map.put(
@@ -108,7 +142,7 @@ defmodule BotManager.BotStateMachine do
           )
 
         if Enum.empty?(players_with_distances) do
-          move(bot_player, bot_state_machine, game_state.zone.radius)
+          move(bot_state_machine, game_state.zone.radius)
         else
           bot_state_machine =
             Map.put(
@@ -124,44 +158,49 @@ defmodule BotManager.BotStateMachine do
         end
 
       true ->
-        move(bot_player, bot_state_machine, game_state.zone.radius)
+        move(bot_state_machine, game_state.zone.radius)
     end
   end
 
-  # This function will determine the direction and action the bot will take.
-  defp determine_player_move_action(bot_player, direction) do
-    {:player, bot_player_info} = bot_player.aditional_info
-
-    if System.get_env("PATHFINDING_TEST") == "true" do
-      {:move, direction}
-    else
-      if Map.has_key?(bot_player_info.cooldowns, @dash_skill_key) do
-        {:move, direction}
-      else
-        {:use_skill, @dash_skill_key, bot_player.direction}
-      end
-    end
-  end
-
-  defp track_player(game_state, bot_player, bot_state_machine) do
+  defp maybe_set_tracking_path(game_state, bot_player, bot_state_machine) do
     players_with_distances =
       Utils.map_directions_to_players(
         game_state.players,
         bot_player,
-        Utils.get_action_distance_based_on_action_type(
+        Utils.get_action_distance_by_type(
           bot_state_machine.is_melee,
           bot_state_machine.melee_tracking_range,
           bot_state_machine.ranged_tracking_range
         )
       )
 
-    if Enum.empty?(players_with_distances) do
-      move(bot_player, bot_state_machine, game_state.zone.radius)
+    closest_player = Enum.min_by(players_with_distances, & &1.distance)
+
+    cond do
+      is_nil(bot_state_machine.path_towards_position) or Enum.empty?(bot_state_machine.path_towards_position) or
+          Vector.distance(bot_state_machine.position_to_move_to, closest_player.position) > @path_recalculation_min_diff ->
+        try_pathing_towards(bot_state_machine, closest_player.position)
+
+      BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) ->
+        Map.put(bot_state_machine, :path_towards_position, tl(bot_state_machine.path_towards_position))
+
+      true ->
+        bot_state_machine
+    end
+  end
+
+  defp track_player(game_state, bot_player, bot_state_machine) do
+    if is_nil(bot_state_machine.path_towards_position) || Enum.empty?(bot_state_machine.path_towards_position) do
+      move(bot_state_machine, game_state.zone.radius)
     else
-      closest_player = Enum.min_by(players_with_distances, & &1.distance)
+      current_waypoint = hd(bot_state_machine.path_towards_position)
+
+      direction =
+        Vector.sub(current_waypoint, bot_player.position)
+        |> Vector.normalize()
 
       %{
-        action: determine_player_move_action(bot_player, closest_player.direction),
+        action: {:move, direction},
         bot_state_machine: bot_state_machine
       }
     end
@@ -185,8 +224,10 @@ defmodule BotManager.BotStateMachine do
         bot_state_machine.current_position
       )
 
+    new_progress = min(bot_state_machine.cap_for_basic_skill * 3, bot_state_machine.progress_for_basic_skill + distance)
+
     bot_state_machine =
-      Map.put(bot_state_machine, :progress_for_basic_skill, bot_state_machine.progress_for_basic_skill + distance)
+      Map.put(bot_state_machine, :progress_for_basic_skill, new_progress)
 
     cond do
       Vector.distance(bot_state_machine.previous_position, bot_state_machine.current_position) < 100 &&
@@ -213,9 +254,9 @@ defmodule BotManager.BotStateMachine do
     end
   end
 
-  defp move(bot_player, bot_state_machine, safe_zone_radius) do
+  defp move(bot_state_machine, safe_zone_radius) do
     bot_state_machine =
-      determine_position_to_move_to(bot_state_machine, safe_zone_radius, System.get_env("PATHFINDING_TEST") == "true")
+      determine_position_to_move_to(bot_state_machine, safe_zone_radius)
 
     # TODO instead of using `get_distance_and_direction_to_positions, use the pathfinding module`
     cond do
@@ -227,7 +268,7 @@ defmodule BotManager.BotStateMachine do
           )
 
         %{
-          action: determine_player_move_action(bot_player, direction),
+          action: {:move, direction},
           bot_state_machine: bot_state_machine
         }
 
@@ -239,7 +280,7 @@ defmodule BotManager.BotStateMachine do
           )
 
         %{
-          action: determine_player_move_action(bot_player, direction),
+          action: {:move, direction},
           bot_state_machine: bot_state_machine
         }
 
@@ -251,53 +292,19 @@ defmodule BotManager.BotStateMachine do
     end
   end
 
-  defp determine_position_to_move_to(bot_state_machine, safe_zone_radius, true = _pathfinding_on) do
+  defp determine_position_to_move_to(%{collision_grid: nil} = bot_state_machine, _safe_zone_radius) do
+    bot_state_machine
+  end
+
+  defp determine_position_to_move_to(bot_state_machine, safe_zone_radius) do
     cond do
-      is_nil(bot_state_machine.collision_grid) ->
-        bot_state_machine
-
-      is_nil(bot_state_machine.path_towards_position) ->
-        position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
-
-        from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
-        to = %{x: position_to_move_to.x, y: position_to_move_to.y}
-
-        shortest_path = AStarNative.a_star_shortest_path(from, to, bot_state_machine.collision_grid)
-
-        # If we don't have a path, retry finding new position in map
-        if Enum.empty?(shortest_path) do
-          Map.put(bot_state_machine, :path_towards_position, nil)
-          |> Map.put(:position_to_move_to, nil)
-        else
-          Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
-          |> Map.put(
-            :path_towards_position,
-            shortest_path
-          )
-          |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
-        end
+      is_nil(bot_state_machine.path_towards_position) || Enum.empty?(bot_state_machine.path_towards_position) ||
+          Vector.distance(%{x: 0, y: 0}, bot_state_machine.position_to_move_to) > safe_zone_radius ->
+        try_pick_random_position_to_move_to(bot_state_machine, safe_zone_radius)
 
       BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) and
           BotStateMachineChecker.should_bot_move_to_another_position?(bot_state_machine) ->
-        position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
-
-        from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
-        to = %{x: position_to_move_to.x, y: position_to_move_to.y}
-
-        shortest_path = AStarNative.a_star_shortest_path(from, to, bot_state_machine.collision_grid)
-
-        # If we don't have a path, retry finding new position in map
-        if Enum.empty?(shortest_path) do
-          Map.put(bot_state_machine, :path_towards_position, nil)
-          |> Map.put(:position_to_move_to, nil)
-        else
-          Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
-          |> Map.put(
-            :path_towards_position,
-            shortest_path
-          )
-          |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
-        end
+        try_pick_random_position_to_move_to(bot_state_machine, safe_zone_radius)
 
       BotStateMachineChecker.current_waypoint_reached?(bot_state_machine) ->
         Map.put(bot_state_machine, :path_towards_position, tl(bot_state_machine.path_towards_position))
@@ -307,23 +314,29 @@ defmodule BotManager.BotStateMachine do
     end
   end
 
-  defp determine_position_to_move_to(bot_state_machine, safe_zone_radius, false = _pathfinding_on) do
-    cond do
-      is_nil(bot_state_machine.position_to_move_to) ||
-          not Utils.position_within_radius(bot_state_machine.position_to_move_to, safe_zone_radius) ->
-        position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
+  defp try_pick_random_position_to_move_to(bot_state_machine, safe_zone_radius) do
+    position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
 
-        Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
-        |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
+    try_pathing_towards(bot_state_machine, position_to_move_to)
+  end
 
-      BotStateMachineChecker.should_bot_move_to_another_position?(bot_state_machine) ->
-        position_to_move_to = BotManager.Utils.random_position_within_safe_zone_radius(floor(safe_zone_radius))
+  defp try_pathing_towards(bot_state_machine, position_to_move_to) do
+    from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
+    to = %{x: position_to_move_to.x, y: position_to_move_to.y}
 
-        Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
-        |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
+    shortest_path = AStarNative.a_star_shortest_path(from, to, bot_state_machine.collision_grid)
 
-      true ->
-        bot_state_machine
+    # If we don't have a path, retry finding new position in map
+    if Enum.empty?(shortest_path) do
+      Map.put(bot_state_machine, :path_towards_position, nil)
+      |> Map.put(:position_to_move_to, nil)
+    else
+      Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
+      |> Map.put(
+        :path_towards_position,
+        shortest_path
+      )
+      |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
     end
   end
 end
