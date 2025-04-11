@@ -13,10 +13,14 @@ defmodule GameBackend.Units do
   import Ecto.Query
 
   alias Ecto.Multi
+  alias GameBackend.Utils
   alias GameBackend.Repo
+  alias GameBackend.Transaction
   alias GameBackend.Units.Unit
   alias GameBackend.Units.Characters.Character
   alias GameBackend.Units.UnitSkin
+  alias GameBackend.Users.Currencies
+  alias GameBackend.Users.Currencies.CurrencyCost
 
   @doc """
   Inserts a unit.
@@ -291,4 +295,55 @@ defmodule GameBackend.Units do
     |> UnitSkin.changeset(attrs)
     |> Repo.insert()
   end
+
+
+  @doc """
+  Levels up a user's unit and substracts the currency cost from the user.
+
+  Returns `{:error, :not_found}` if unit doesn't exist or if it's not owned by user.
+  Returns `{:error, :cant_afford}` if user cannot afford the cost.
+  Returns `{:ok, %{unit: %Unit{}, user_currency: %UserCurrency{}}}` if succesful.
+  """
+  def level_up(user_id, unit_id) do
+    with {:unit, {:ok, unit}} <- {:unit, get_unit(unit_id)},
+         {:unit_owned, true} <- {:unit_owned, unit.user_id == user_id},
+         costs = calculate_level_up_cost(unit),
+         {:can_afford, true} <-
+           {:can_afford, Currencies.can_afford(user_id, costs)} do
+      result =
+        Multi.new()
+        |> Multi.run(:unit, fn _, _ -> add_level(unit) end)
+        |> Multi.run(:user_currency, fn _, _ ->
+          Currencies.substract_currencies(user_id, costs)
+        end)
+        |> Transaction.run()
+
+      case result do
+        {:error, reason} ->
+          {:error, reason}
+
+        {:error, _, _, _} ->
+          {:error, :transaction}
+
+        {:ok, %{unit: unit, user_currency: user_currency}} ->
+          {:ok, %{unit: unit, user_currency: user_currency}}
+      end
+    else
+      {:unit, {:error, :not_found}} -> {:error, :not_found}
+      {:unit_owned, false} -> {:error, :not_found}
+      {:can_afford, false} -> {:error, :cant_afford}
+    end
+  end
+
+  @doc """
+  Calculate how much it costs for a unit to be leveled up.
+  Returns a `%CurrencyCost{}` list.
+  """
+  def calculate_level_up_cost(unit),
+    do: [
+      %CurrencyCost{
+        currency_id: Currencies.get_currency_by_name_and_game!("Gold", Utils.get_game_id(:champions_of_mirra)).id,
+        amount: unit.level |> Math.pow(2) |> round()
+      }
+    ]
 end
