@@ -22,6 +22,7 @@ defmodule Gateway.Router do
       get "/consumable_items", ConfigurationController, :get_consumable_items_configuration
       get "/map", ConfigurationController, :get_map_configurations
       get "/game_modes", ConfigurationController, :get_game_mode_configuration
+      get "/level_up_settings", CharacterController, :level_up_settings
     end
 
     scope "/stores" do

@@ -296,6 +296,18 @@ defmodule GameBackend.Units do
     |> Repo.insert()
   end
 
+  @level_up_config %{
+    1 => %{cost: 0, stat_increase_percentage: 0},
+    2 => %{cost: 375, stat_increase_percentage: 1},
+    3 => %{cost: 800, stat_increase_percentage: 2},
+    4 => %{cost: 1650, stat_increase_percentage: 3},
+    5 => %{cost: 2250, stat_increase_percentage: 4},
+    6 => %{cost: 3750, stat_increase_percentage: 5},
+    7 => %{cost: 5625, stat_increase_percentage: 6},
+    8 => %{cost: 9750, stat_increase_percentage: 7},
+    9 => %{cost: 16500, stat_increase_percentage: 8},
+    10 => %{cost: 26250, stat_increase_percentage: 9},
+  }
 
   @doc """
   Levels up a user's unit and substracts the currency cost from the user.
@@ -307,6 +319,7 @@ defmodule GameBackend.Units do
   def level_up(user_id, unit_id) do
     with {:unit, {:ok, unit}} <- {:unit, get_unit(unit_id)},
          {:unit_owned, true} <- {:unit_owned, unit.user_id == user_id},
+         {:can_level_up, true} <- {:can_level_up, Map.has_key?(@level_up_config, unit.level + 1)},
          costs = calculate_level_up_cost(unit),
          {:can_afford, true} <-
            {:can_afford, Currencies.can_afford(user_id, costs)} do
@@ -330,6 +343,7 @@ defmodule GameBackend.Units do
       end
     else
       {:unit, {:error, :not_found}} -> {:error, :not_found}
+      {:can_level_up, false} -> {:error, :no_more_levels}
       {:unit_owned, false} -> {:error, :not_found}
       {:can_afford, false} -> {:error, :cant_afford}
     end
@@ -339,11 +353,28 @@ defmodule GameBackend.Units do
   Calculate how much it costs for a unit to be leveled up.
   Returns a `%CurrencyCost{}` list.
   """
-  def calculate_level_up_cost(unit),
-    do: [
+  def calculate_level_up_cost(unit) do
+    next_level = unit.level + 1
+
+    [
       %CurrencyCost{
         currency_id: Currencies.get_currency_by_name_and_game!("Gold", Utils.get_game_id(:curse_of_mirra)).id,
-        amount: unit.level |> Math.pow(2) |> round()
+        amount: Map.get(@level_up_config, next_level).cost
       }
     ]
+  end
+
+  def get_level_up_settings() do
+    gold_currency = Currencies.get_currency_by_name_and_game!("Gold", Utils.get_game_id(:curse_of_mirra))
+
+    Enum.map(@level_up_config, fn {level, level_info} -> 
+      currencies_cost = [%{
+        amount: level_info.cost,
+        currency: gold_currency
+      }]
+
+      %{level: level, stat_increase_percentage: level_info.stat_increase_percentage, currencies_cost: currencies_cost}
+    end)
+    |> Enum.to_list()
+  end
 end
