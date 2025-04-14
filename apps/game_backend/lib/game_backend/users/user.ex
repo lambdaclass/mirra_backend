@@ -31,7 +31,8 @@ defmodule GameBackend.Users.User do
              :highest_historical_prestige,
              :user_quests,
              :quest_refresh_at,
-             :daily_quests_week_progress
+             :daily_quests_week_progress,
+             :units
            ]}
   schema "users" do
     field(:game_id, :integer)
