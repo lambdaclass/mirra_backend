@@ -342,7 +342,7 @@ defmodule GameBackend.Units do
   def calculate_level_up_cost(unit),
     do: [
       %CurrencyCost{
-        currency_id: Currencies.get_currency_by_name_and_game!("Gold", Utils.get_game_id(:champions_of_mirra)).id,
+        currency_id: Currencies.get_currency_by_name_and_game!("Gold", Utils.get_game_id(:curse_of_mirra)).id,
         amount: unit.level |> Math.pow(2) |> round()
       }
     ]

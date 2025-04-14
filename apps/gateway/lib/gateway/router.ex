@@ -53,6 +53,7 @@ defmodule Gateway.Router do
       scope "/characters" do
         post "/select", CharacterController, :select
         post "/select_skin", CharacterController, :select_skin
+        post "/level_up", CharacterController, :level_up
       end
 
       scope "/stores" do
