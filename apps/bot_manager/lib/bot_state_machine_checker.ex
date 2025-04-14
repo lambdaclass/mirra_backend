@@ -6,7 +6,7 @@ defmodule BotManager.BotStateMachineChecker do
   alias BotManager.Math.Vector
 
   @time_stuck_in_position 400
-  @distance_threshold 100
+  @distance_threshold 150
 
   # Bots will track a player for at most @tracking_timeout_ms milliseconds
   # after which it will transition to another state
@@ -45,7 +45,8 @@ defmodule BotManager.BotStateMachineChecker do
           collision_grid: binary() | nil,
           last_time_state_changed: integer(),
           last_time_tracking_exited: integer(),
-          last_time_attacking_exited: integer()
+          last_time_attacking_exited: integer(),
+          obstacles: list() | nil
         }
 
   defstruct [
@@ -92,7 +93,9 @@ defmodule BotManager.BotStateMachineChecker do
     # The last time the bot exited the tracking state
     :last_time_tracking_exited,
     # The last time the bot exited the tracking state
-    :last_time_attacking_exited
+    :last_time_attacking_exited,
+    # The obstacles on the level
+    :obstacles
   ]
 
   @spec new() :: BotManager.BotStateMachineChecker.t()
@@ -119,7 +122,8 @@ defmodule BotManager.BotStateMachineChecker do
       collision_grid: nil,
       last_time_state_changed: 0,
       last_time_tracking_exited: 0,
-      last_time_attacking_exited: 0
+      last_time_attacking_exited: 0,
+      obstacles: nil
     }
   end
 
