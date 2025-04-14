@@ -1,0 +1,33 @@
+<.simple_form :let={f} for={@changeset} action={@action} phx-submit={@action} phx-change="validate">
+  <.error :if={@changeset.action}>
+    Oops, something went wrong! Please check the errors below.
+  </.error>
+
+  <p class="font-semibold"><%= "Version: #{@version.name}" %></p>
+  <.input type="hidden" field={f[:version_id]} value={@version.id} />
+
+  <.inputs_for :let={level_info_f} field={f[:level_info]}>
+    <h2>Level <%= level_info_f.data.level %></h2>
+    <.input field={level_info_f[:stat_increase_percentage]} type="number" label="StatIncreasePercentage" />
+    <.inputs_for :let={currency_cost_form} field={level_info_f[:currency_costs]}>
+      <h3>Currency Cost</h3>
+      <.input field={currency_cost_form[:amount]} type="number" label="Amount" step="any" />
+      <.input field={currency_cost_form[:currency_id]} type="select" label="Currency" options={@currency_options} />
+    </.inputs_for>
+  </.inputs_for>
+
+  <!-- <.effect_form form={f} field={:effect} /> -->
+
+  <:actions>
+    <.button>Save Level Up Config</.button>
+  </:actions>
+</.simple_form>
+
+<div class="mt-16">
+  <.link
+    href={"/versions/#{@version.id}"}
+    class="text-sm font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
+  >
+    <.icon name="hero-arrow-left-solid" class="h-3 w-3" /> Back to version
+  </.link>
+</div>
