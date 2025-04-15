@@ -1047,7 +1047,7 @@ skills = [
     "attack_type" => "melee",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 10000,
-    "execution_duration_ms" => 525,
+    "execution_duration_ms" => 400,
     "activation_delay_ms" => 0,
     "is_passive" => false,
     "autoaim" => false,
@@ -1381,6 +1381,12 @@ uren_basic_params = %{
   character_id: Enum.find(characters, fn c -> c.name == "uren" end).id
 }
 
+shinko_basic_params = %{
+  is_default: true,
+  name: "Basic",
+  character_id: Enum.find(characters, fn c -> c.name == "shinko" end).id
+}
+
 # Insert skins
 [
   h4ck_fenix_params,
@@ -1392,7 +1398,8 @@ uren_basic_params = %{
   otix_corrupt_underground,
   otix_basic_params,
   muflus_basic_params,
-  uren_basic_params
+  uren_basic_params,
+  shinko_basic_params
 ]
 |> Enum.each(fn skin_params -> Characters.insert_skin(skin_params) end)
 
