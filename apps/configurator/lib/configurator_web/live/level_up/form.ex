@@ -26,8 +26,9 @@ alias GameBackend.CurseOfMirra.LevelUpConfiguration
   end
 
   def handle_event("validate", %{"level_up_configuration" => level_up_config_params}, socket) do
-    changeset = socket.assigns.changeset
-    changeset = LevelUpConfiguration.changeset(changeset, level_up_config_params)
+    level_up_config = socket.assigns.level_up_config
+
+    changeset = LevelUpConfiguration.changeset(level_up_config, level_up_config_params)
 
     {:noreply, assign(socket, :changeset, changeset)}
   end
@@ -37,13 +38,13 @@ alias GameBackend.CurseOfMirra.LevelUpConfiguration
 
     socket =
       case Configuration.update_level_up_configuration(level_up_config, level_up_config_params) do
-        {:ok, level_up_config} ->
+        {:ok, _level_up_config} ->
           socket
           |> put_flash(:info, "Config updated successfully.")
           |> redirect(to: ~p"/versions/#{socket.assigns.version.id}/level_up")
 
         {:error, %Ecto.Changeset{} = changeset} ->
-          version = Configuration.get_version!(socket.assigns.version_id)
+          version = Configuration.get_version!(socket.assigns.version.id)
 
           socket
           |> put_flash(:error, "Please correct the errors below.")

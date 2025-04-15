@@ -8,6 +8,7 @@
 
   <.inputs_for :let={level_info_f} field={f[:level_info]}>
     <h2>Level <%= level_info_f.data.level %></h2>
+    <.input field={level_info_f[:level]} type="hidden" value={level_info_f.data.level}/>
     <.input field={level_info_f[:stat_increase_percentage]} type="number" label="StatIncreasePercentage" />
     <.inputs_for :let={currency_cost_form} field={level_info_f[:currency_costs]}>
       <h3>Currency Cost</h3>
