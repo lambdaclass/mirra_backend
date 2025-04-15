@@ -1,4 +1,11 @@
 defmodule GameBackend.CurseOfMirra.LevelInfo do
+  @moduledoc """
+  LevelInfo schema
+
+  Embedded schema used to store all the level up config for a particular level.
+  This includes all the costs in possibly more than one currency and the
+  increase percentage from the base stats
+  """
   use GameBackend.Schema
   import Ecto.Changeset
   alias GameBackend.Users.Currencies.CurrencyCost
