@@ -719,6 +719,6 @@ defmodule GameBackend.Configuration do
   end
 
   def get_level_up_configuration_by_version(version_id) do
-    Repo.one(from config in LevelUpConfiguration, where: config.version_id == ^version_id)
+    Repo.one(from config in LevelUpConfiguration, where: config.version_id == ^version_id, preload: [level_info: [currency_costs: :currency]])
   end
 end
