@@ -297,19 +297,6 @@ defmodule GameBackend.Units do
     |> Repo.insert()
   end
 
-  @level_up_config %{
-    1 => %{cost: 0, stat_increase_percentage: 0},
-    2 => %{cost: 375, stat_increase_percentage: 1},
-    3 => %{cost: 800, stat_increase_percentage: 2},
-    4 => %{cost: 1650, stat_increase_percentage: 3},
-    5 => %{cost: 2250, stat_increase_percentage: 4},
-    6 => %{cost: 3750, stat_increase_percentage: 5},
-    7 => %{cost: 5625, stat_increase_percentage: 6},
-    8 => %{cost: 9750, stat_increase_percentage: 7},
-    9 => %{cost: 16500, stat_increase_percentage: 8},
-    10 => %{cost: 26250, stat_increase_percentage: 9}
-  }
-
   @doc """
   Levels up a user's unit and substracts the currency cost from the user.
 
@@ -320,8 +307,11 @@ defmodule GameBackend.Units do
   def level_up(user_id, unit_id) do
     with {:unit, {:ok, unit}} <- {:unit, get_unit(unit_id)},
          {:unit_owned, true} <- {:unit_owned, unit.user_id == user_id},
-         {:can_level_up, true} <- {:can_level_up, Map.has_key?(@level_up_config, unit.level + 1)},
-         costs = calculate_level_up_cost(unit),
+         level_up_config = get_current_level_up_config(),
+         {:can_level_up, true} <-
+           {:can_level_up,
+            Enum.any?(level_up_config.level_info, fn level_info -> level_info.level == unit.level + 1 end)},
+         costs = calculate_level_up_cost(unit, level_up_config),
          {:can_afford, true} <-
            {:can_afford, Currencies.can_afford(user_id, costs)} do
       result =
@@ -354,12 +344,10 @@ defmodule GameBackend.Units do
   Calculate how much it costs for a unit to be leveled up.
   Returns a `%CurrencyCost{}` list.
   """
-  def calculate_level_up_cost(unit) do
+  def calculate_level_up_cost(unit, level_up_config) do
     next_level = unit.level + 1
 
-    version = Configuration.get_current_version()
-
-    Configuration.get_level_up_configuration_by_version(version.id).level_info
+    level_up_config.level_info
     |> Enum.filter(fn level_info -> level_info.level == next_level end)
     |> Enum.map(fn level_info ->
       level_info.currency_costs
@@ -367,10 +355,14 @@ defmodule GameBackend.Units do
     |> Enum.concat()
   end
 
-  def get_level_up_settings() do
+  defp get_current_level_up_config() do
     version = Configuration.get_current_version()
 
-    Configuration.get_level_up_configuration_by_version(version.id).level_info
+    Configuration.get_level_up_configuration_by_version(version.id)
+  end
+
+  def get_level_up_settings() do
+    get_current_level_up_config().level_info
     |> Enum.map(fn level ->
       currency_costs =
         level.currency_costs
