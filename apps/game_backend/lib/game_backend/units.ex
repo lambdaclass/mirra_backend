@@ -13,6 +13,7 @@ defmodule GameBackend.Units do
   import Ecto.Query
 
   alias Ecto.Multi
+  alias GameBackend.Configuration
   alias GameBackend.Utils
   alias GameBackend.Repo
   alias GameBackend.Transaction
@@ -356,24 +357,38 @@ defmodule GameBackend.Units do
   def calculate_level_up_cost(unit) do
     next_level = unit.level + 1
 
-    [
-      %CurrencyCost{
-        currency_id: Currencies.get_currency_by_name_and_game!("Gold", Utils.get_game_id(:curse_of_mirra)).id,
-        amount: Map.get(@level_up_config, next_level).cost
-      }
-    ]
+    version = Configuration.get_current_version()
+
+    Configuration.get_level_up_configuration_by_version(version.id).level_info
+      |> Enum.filter(fn level_info -> level_info.level == next_level end)
+      |> Enum.map(fn level_info -> 
+        level_info.currency_costs
+        
+      end)
+      |> Enum.concat()
   end
 
   def get_level_up_settings() do
-    gold_currency = Currencies.get_currency_by_name_and_game!("Gold", Utils.get_game_id(:curse_of_mirra))
+    version = Configuration.get_current_version()
 
-    Enum.map(@level_up_config, fn {level, level_info} -> 
-      currencies_cost = [%{
-        amount: level_info.cost,
-        currency: gold_currency
-      }]
+    Configuration.get_level_up_configuration_by_version(version.id).level_info
+    |> Enum.map(fn level -> 
+      currency_costs = level.currency_costs
+        |> Enum.map(fn currency_cost -> 
+          %{
+            amount: currency_cost.amount,
+            currency_id: currency_cost.currency_id,
+            currency: %{
+              name: currency_cost.currency.name
+            }
+          }
+        end)
 
-      %{level: level, stat_increase_percentage: level_info.stat_increase_percentage, currencies_cost: currencies_cost}
+      %{
+        level: level.level,
+        currency_costs: currency_costs,
+        stat_increase_percentage: level.stat_increase_percentage
+      } 
     end)
     |> Enum.to_list()
   end
