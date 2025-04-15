@@ -14,14 +14,12 @@ defmodule GameBackend.Units do
 
   alias Ecto.Multi
   alias GameBackend.Configuration
-  alias GameBackend.Utils
   alias GameBackend.Repo
   alias GameBackend.Transaction
   alias GameBackend.Units.Unit
   alias GameBackend.Units.Characters.Character
   alias GameBackend.Units.UnitSkin
   alias GameBackend.Users.Currencies
-  alias GameBackend.Users.Currencies.CurrencyCost
 
   @doc """
   Inserts a unit.
