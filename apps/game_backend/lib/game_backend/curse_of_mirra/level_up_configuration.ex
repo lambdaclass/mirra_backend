@@ -10,7 +10,7 @@ defmodule GameBackend.CurseOfMirra.LevelUpConfiguration do
   alias GameBackend.Configuration.Version
 
   schema "level_up_configurations" do
-    embeds_many :level_info, LevelInfo
+    embeds_many(:level_info, LevelInfo)
 
     belongs_to(:version, Version)
     timestamps(type: :utc_datetime)

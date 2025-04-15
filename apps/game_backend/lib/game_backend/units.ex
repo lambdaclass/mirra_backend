@@ -307,7 +307,7 @@ defmodule GameBackend.Units do
     7 => %{cost: 5625, stat_increase_percentage: 6},
     8 => %{cost: 9750, stat_increase_percentage: 7},
     9 => %{cost: 16500, stat_increase_percentage: 8},
-    10 => %{cost: 26250, stat_increase_percentage: 9},
+    10 => %{cost: 26250, stat_increase_percentage: 9}
   }
 
   @doc """
@@ -360,21 +360,21 @@ defmodule GameBackend.Units do
     version = Configuration.get_current_version()
 
     Configuration.get_level_up_configuration_by_version(version.id).level_info
-      |> Enum.filter(fn level_info -> level_info.level == next_level end)
-      |> Enum.map(fn level_info -> 
-        level_info.currency_costs
-        
-      end)
-      |> Enum.concat()
+    |> Enum.filter(fn level_info -> level_info.level == next_level end)
+    |> Enum.map(fn level_info ->
+      level_info.currency_costs
+    end)
+    |> Enum.concat()
   end
 
   def get_level_up_settings() do
     version = Configuration.get_current_version()
 
     Configuration.get_level_up_configuration_by_version(version.id).level_info
-    |> Enum.map(fn level -> 
-      currency_costs = level.currency_costs
-        |> Enum.map(fn currency_cost -> 
+    |> Enum.map(fn level ->
+      currency_costs =
+        level.currency_costs
+        |> Enum.map(fn currency_cost ->
           %{
             amount: currency_cost.amount,
             currency_id: currency_cost.currency_id,
@@ -388,7 +388,7 @@ defmodule GameBackend.Units do
         level: level.level,
         currency_costs: currency_costs,
         stat_increase_percentage: level.stat_increase_percentage
-      } 
+      }
     end)
     |> Enum.to_list()
   end
