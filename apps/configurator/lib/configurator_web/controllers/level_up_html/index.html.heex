@@ -1,0 +1,8 @@
+<.header>
+  Level Up Configuration
+  <:actions></:actions>
+</.header>
+
+<%= live_render(@conn, ConfiguratorWeb.LevelUpLive.Form,
+  session: %{"level_up_config" => @level_up_config, "version" => @version}
+) %>

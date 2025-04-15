@@ -13,10 +13,13 @@ defmodule GameBackend.Units do
   import Ecto.Query
 
   alias Ecto.Multi
+  alias GameBackend.Configuration
   alias GameBackend.Repo
+  alias GameBackend.Transaction
   alias GameBackend.Units.Unit
   alias GameBackend.Units.Characters.Character
   alias GameBackend.Units.UnitSkin
+  alias GameBackend.Users.Currencies
 
   @doc """
   Inserts a unit.
@@ -290,5 +293,93 @@ defmodule GameBackend.Units do
     %UnitSkin{}
     |> UnitSkin.changeset(attrs)
     |> Repo.insert()
+  end
+
+  @doc """
+  Levels up a user's unit and substracts the currency cost from the user.
+
+  Returns `{:error, :not_found}` if unit doesn't exist or if it's not owned by user.
+  Returns `{:error, :cant_afford}` if user cannot afford the cost.
+  Returns `{:ok, %{unit: %Unit{}, user_currency: %UserCurrency{}}}` if succesful.
+  """
+  def level_up(user_id, unit_id) do
+    with {:unit, {:ok, unit}} <- {:unit, get_unit(unit_id)},
+         {:unit_owned, true} <- {:unit_owned, unit.user_id == user_id},
+         level_up_config = get_current_level_up_config(),
+         {:can_level_up, true} <-
+           {:can_level_up,
+            Enum.any?(level_up_config.level_info, fn level_info -> level_info.level == unit.level + 1 end)},
+         costs = calculate_level_up_cost(unit, level_up_config),
+         {:can_afford, true} <-
+           {:can_afford, Currencies.can_afford(user_id, costs)} do
+      result =
+        Multi.new()
+        |> Multi.run(:unit, fn _, _ -> add_level(unit) end)
+        |> Multi.run(:user_currency, fn _, _ ->
+          Currencies.substract_currencies(user_id, costs)
+        end)
+        |> Transaction.run()
+
+      case result do
+        {:error, reason} ->
+          {:error, reason}
+
+        {:error, _, _, _} ->
+          {:error, :transaction}
+
+        {:ok, %{unit: unit, user_currency: user_currency}} ->
+          {:ok, %{unit: unit, user_currency: user_currency}}
+      end
+    else
+      {:unit, {:error, :not_found}} -> {:error, :not_found}
+      {:can_level_up, false} -> {:error, :no_more_levels}
+      {:unit_owned, false} -> {:error, :not_found}
+      {:can_afford, false} -> {:error, :cant_afford}
+    end
+  end
+
+  @doc """
+  Calculate how much it costs for a unit to be leveled up.
+  Returns a `%CurrencyCost{}` list.
+  """
+  def calculate_level_up_cost(unit, level_up_config) do
+    next_level = unit.level + 1
+
+    level_up_config.level_info
+    |> Enum.filter(fn level_info -> level_info.level == next_level end)
+    |> Enum.map(fn level_info ->
+      level_info.currency_costs
+    end)
+    |> Enum.concat()
+  end
+
+  defp get_current_level_up_config() do
+    version = Configuration.get_current_version()
+
+    Configuration.get_level_up_configuration_by_version(version.id)
+  end
+
+  def get_level_up_settings() do
+    get_current_level_up_config().level_info
+    |> Enum.map(fn level ->
+      currency_costs =
+        level.currency_costs
+        |> Enum.map(fn currency_cost ->
+          %{
+            amount: currency_cost.amount,
+            currency_id: currency_cost.currency_id,
+            currency: %{
+              name: currency_cost.currency.name
+            }
+          }
+        end)
+
+      %{
+        level: level.level,
+        currency_costs: currency_costs,
+        stat_increase_percentage: level.stat_increase_percentage
+      }
+    end)
+    |> Enum.to_list()
   end
 end

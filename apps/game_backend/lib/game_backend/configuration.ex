@@ -3,6 +3,7 @@ defmodule GameBackend.Configuration do
   Configuration context for GameBackend
   """
   import Ecto.Query
+  alias GameBackend.CurseOfMirra.LevelUpConfiguration
   alias GameBackend.CurseOfMirra.MapModeParams
   alias Ecto.Multi
   alias GameBackend.CurseOfMirra.GameConfiguration
@@ -703,5 +704,26 @@ defmodule GameBackend.Configuration do
 
   def get_map_params_for_game_mode(game_mode_id) do
     Repo.all(from(m in MapModeParams, where: m.game_mode_id == ^game_mode_id, preload: :map))
+  end
+
+  def create_level_up_configuration(attrs \\ %{}) do
+    %LevelUpConfiguration{}
+    |> LevelUpConfiguration.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def update_level_up_configuration(%LevelUpConfiguration{} = level_up_configuration, attrs \\ %{}) do
+    level_up_configuration
+    |> LevelUpConfiguration.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def get_level_up_configuration_by_version(version_id) do
+    Repo.one(
+      from(config in LevelUpConfiguration,
+        where: config.version_id == ^version_id,
+        preload: [level_info: [currency_costs: :currency]]
+      )
+    )
   end
 end
