@@ -12,6 +12,12 @@ defmodule GameBackend.CurseOfMirra.Matches do
   alias GameBackend.Matches.ArenaMatchResult
   alias GameBackend.Repo
 
+  @gold_rewards_per_position %{
+    1 => 40,
+    2 => 15,
+    3 => 5
+  }
+
   def create_arena_match_results(match_id, results) do
     Multi.new()
     |> create_arena_match_results(match_id, results)
@@ -85,14 +91,10 @@ defmodule GameBackend.CurseOfMirra.Matches do
                                                                        } ->
         user = Enum.find(users, fn user -> user.id == result["user_id"] end)
 
-        if result["position"] <= 3 do
-          gold_reward_amount =
-            case result["position"] do
-              1 -> 40
-              2 -> 15
-              3 -> 5
-              _ -> 0
-            end
+        resulting_position = result["position"]
+
+        if Map.has_key?(@gold_rewards_per_position, resulting_position) do
+          gold_reward_amount = Map.get(@gold_rewards_per_position, resulting_position)
 
           Currencies.add_currency(user.id, gold_currency.id, gold_reward_amount)
         end
