@@ -7,6 +7,7 @@ defmodule Arena.Entities do
   alias Arena.Game.Crate
 
   @stat_increase_per_level 0.1
+  @character_base_attack 1
 
   @type new_player_params :: %{
           id: integer(),
@@ -53,7 +54,7 @@ defmodule Arena.Entities do
         health: scale_with_level(character.base_health, level) |> round(),
         base_health: scale_with_level(character.base_health, level) |> round(),
         max_health: scale_with_level(character.base_health, level) |> round(),
-        base_attack: scale_with_level(character.base_attack, level),
+        base_attack: scale_with_level(@character_base_attack, level),
         base_speed: character.base_speed,
         base_radius: character.base_size,
         base_stamina_interval: character.stamina_interval,
