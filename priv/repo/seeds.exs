@@ -61,7 +61,7 @@ champions_of_mirra_id = Utils.get_game_id(:champions_of_mirra)
 
 ### Curse Currencies
 
-{:ok, _curse_gold} =
+{:ok, curse_gold} =
   Users.Currencies.insert_currency(%{
     game_id: curse_of_mirra_id,
     name: "Gold"
@@ -1319,6 +1319,11 @@ characters =
     characters ++ [character]
   end)
 
+skin_purchase_cost = %{
+  currency_id: curse_gold.id,
+  amount: 2500
+}
+
 # Skins params
 
 muflus_basic_params = %{
@@ -1330,7 +1335,8 @@ muflus_basic_params = %{
 h4ck_fenix_params = %{
   is_default: false,
   name: "Fenix",
-  character_id: Enum.find(characters, fn c -> c.name == "h4ck" end).id
+  character_id: Enum.find(characters, fn c -> c.name == "h4ck" end).id,
+  purchase_costs: [skin_purchase_cost]
 }
 
 h4ck_basic_params = %{
@@ -1342,7 +1348,8 @@ h4ck_basic_params = %{
 valtimer_frostimer_params = %{
   is_default: false,
   name: "Frostimer",
-  character_id: Enum.find(characters, fn c -> c.name == "valtimer" end).id
+  character_id: Enum.find(characters, fn c -> c.name == "valtimer" end).id,
+  purchase_costs: [skin_purchase_cost]
 }
 
 valtimer_basic_params = %{
@@ -1354,7 +1361,8 @@ valtimer_basic_params = %{
 kenzu_black_lotus_params = %{
   is_default: false,
   name: "Black Lotus",
-  character_id: Enum.find(characters, fn c -> c.name == "kenzu" end).id
+  character_id: Enum.find(characters, fn c -> c.name == "kenzu" end).id,
+  purchase_costs: [skin_purchase_cost]
 }
 
 kenzu_basic_params = %{
@@ -1366,7 +1374,8 @@ kenzu_basic_params = %{
 otix_corrupt_underground = %{
   is_default: false,
   name: "Corrupt Underground",
-  character_id: Enum.find(characters, fn c -> c.name == "otix" end).id
+  character_id: Enum.find(characters, fn c -> c.name == "otix" end).id,
+  purchase_costs: [skin_purchase_cost]
 }
 
 otix_basic_params = %{
