@@ -226,8 +226,6 @@ defmodule GameBackend.Units.Characters do
       {:error, :not_found}
   """
   def get_skin_by_name(skin_name) do
-    IO.inspect(skin_name, label: :aver_name)
-
     Repo.get_by(Skin, name: skin_name)
     |> case do
       nil -> {:error, :not_found}
