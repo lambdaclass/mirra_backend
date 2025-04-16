@@ -50,11 +50,10 @@ defmodule Arena.Entities do
       is_moving: false,
       aditional_info: %{
         team: team,
-        health: (character.base_health + character.base_health * @stat_increase_per_level * (level - 1)) |> round(),
-        base_health:
-          (character.base_health + character.base_health * @stat_increase_per_level * (level - 1)) |> round(),
-        max_health: (character.base_health + character.base_health * @stat_increase_per_level * (level - 1)) |> round(),
-        base_attack: character.base_attack + character.base_attack * @stat_increase_per_level * (level - 1),
+        health: scale_with_level(character.base_health, level) |> round(),
+        base_health: scale_with_level(character.base_health, level) |> round(),
+        max_health: scale_with_level(character.base_health, level) |> round(),
+        base_attack: scale_with_level(character.base_attack, level),
         base_speed: character.base_speed,
         base_radius: character.base_size,
         base_stamina_interval: character.stamina_interval,
@@ -104,6 +103,10 @@ defmodule Arena.Entities do
       },
       collides_with: []
     }
+  end
+
+  defp scale_with_level(stat, level) do
+    stat + stat * @stat_increase_per_level * (level - 1)
   end
 
   @type new_projectile_params :: %{
