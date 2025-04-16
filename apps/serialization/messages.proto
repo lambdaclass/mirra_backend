@@ -222,22 +222,22 @@ message Player {
   optional uint64 stamina_interval = 6;
   optional bool recharging_stamina = 7;
   optional string character_name = 8;
-  optional uint64 character_level = 9;
-  optional uint64 power_ups = 10;
-  repeated Effect effects = 11;
-  map<string, uint64> cooldowns = 12;
-  repeated uint64 visible_players = 13;
-  optional bool on_bush = 14;
-  optional bool forced_movement = 15;
-  optional bool bounty_completed = 16;
-  optional uint64 mana = 17;
-  optional uint32 current_basic_animation = 18;
-  optional uint32 match_position = 19;
-  optional uint32 team = 20;
-  optional uint64 max_health = 21;
-  map<uint32, Item> inventory = 22;
-  optional bool blocked_actions = 23;
-  optional string skin_name = 24;
+  optional uint64 power_ups = 9;
+  repeated Effect effects = 10;
+  map<string, uint64> cooldowns = 11;
+  repeated uint64 visible_players = 12;
+  optional bool on_bush = 13;
+  optional bool forced_movement = 14;
+  optional bool bounty_completed = 15;
+  optional uint64 mana = 16;
+  optional uint32 current_basic_animation = 17;
+  optional uint32 match_position = 18;
+  optional uint32 team = 19;
+  optional uint64 max_health = 20;
+  map<uint32, Item> inventory = 21;
+  optional bool blocked_actions = 22;
+  optional string skin_name = 23;
+  optional uint64 character_level = 24;
 }
 
 message Effect {

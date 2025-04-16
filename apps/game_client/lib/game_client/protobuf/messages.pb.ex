@@ -600,28 +600,28 @@ defmodule GameClient.Protobuf.Player do
   field(:stamina_interval, 6, proto3_optional: true, type: :uint64, json_name: "staminaInterval")
   field(:recharging_stamina, 7, proto3_optional: true, type: :bool, json_name: "rechargingStamina")
   field(:character_name, 8, proto3_optional: true, type: :string, json_name: "characterName")
-  field(:character_level, 9, proto3_optional: true, type: :uint64, json_name: "characterLevel")
-  field(:power_ups, 10, proto3_optional: true, type: :uint64, json_name: "powerUps")
-  field(:effects, 11, repeated: true, type: GameClient.Protobuf.Effect)
-  field(:cooldowns, 12, repeated: true, type: GameClient.Protobuf.Player.CooldownsEntry, map: true)
-  field(:visible_players, 13, repeated: true, type: :uint64, json_name: "visiblePlayers")
-  field(:on_bush, 14, proto3_optional: true, type: :bool, json_name: "onBush")
-  field(:forced_movement, 15, proto3_optional: true, type: :bool, json_name: "forcedMovement")
-  field(:bounty_completed, 16, proto3_optional: true, type: :bool, json_name: "bountyCompleted")
-  field(:mana, 17, proto3_optional: true, type: :uint64)
+  field(:power_ups, 9, proto3_optional: true, type: :uint64, json_name: "powerUps")
+  field(:effects, 10, repeated: true, type: GameClient.Protobuf.Effect)
+  field(:cooldowns, 11, repeated: true, type: GameClient.Protobuf.Player.CooldownsEntry, map: true)
+  field(:visible_players, 12, repeated: true, type: :uint64, json_name: "visiblePlayers")
+  field(:on_bush, 13, proto3_optional: true, type: :bool, json_name: "onBush")
+  field(:forced_movement, 14, proto3_optional: true, type: :bool, json_name: "forcedMovement")
+  field(:bounty_completed, 15, proto3_optional: true, type: :bool, json_name: "bountyCompleted")
+  field(:mana, 16, proto3_optional: true, type: :uint64)
 
-  field(:current_basic_animation, 18,
+  field(:current_basic_animation, 17,
     proto3_optional: true,
     type: :uint32,
     json_name: "currentBasicAnimation"
   )
 
-  field(:match_position, 19, proto3_optional: true, type: :uint32, json_name: "matchPosition")
-  field(:team, 20, proto3_optional: true, type: :uint32)
-  field(:max_health, 21, proto3_optional: true, type: :uint64, json_name: "maxHealth")
-  field(:inventory, 22, repeated: true, type: GameClient.Protobuf.Player.InventoryEntry, map: true)
-  field(:blocked_actions, 23, proto3_optional: true, type: :bool, json_name: "blockedActions")
-  field(:skin_name, 24, proto3_optional: true, type: :string, json_name: "skinName")
+  field(:match_position, 18, proto3_optional: true, type: :uint32, json_name: "matchPosition")
+  field(:team, 19, proto3_optional: true, type: :uint32)
+  field(:max_health, 20, proto3_optional: true, type: :uint64, json_name: "maxHealth")
+  field(:inventory, 21, repeated: true, type: GameClient.Protobuf.Player.InventoryEntry, map: true)
+  field(:blocked_actions, 22, proto3_optional: true, type: :bool, json_name: "blockedActions")
+  field(:skin_name, 23, proto3_optional: true, type: :string, json_name: "skinName")
+  field(:character_level, 24, proto3_optional: true, type: :uint64, json_name: "characterLevel")
 end
 
 defmodule GameClient.Protobuf.Effect do
