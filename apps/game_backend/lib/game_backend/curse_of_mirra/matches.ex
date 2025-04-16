@@ -97,6 +97,8 @@ defmodule GameBackend.CurseOfMirra.Matches do
           gold_reward_amount = Map.get(@gold_rewards_per_position, resulting_position)
 
           Currencies.add_currency(user.id, gold_currency.id, gold_reward_amount)
+        else
+          {:ok, nil}
         end
       end)
     end)
