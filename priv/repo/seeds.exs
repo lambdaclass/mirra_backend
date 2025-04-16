@@ -1732,1957 +1732,1116 @@ _slow_field_effect = %{
 
 araban_map_config = %{
   name: "Araban",
-  radius: 5520.0,
+  radius: 15000,
   active: true,
   initial_positions: [
     %{
-      x: 5400,
-      y: -400.0
+      x: -4300,
+      y: 5800
     },
     %{
-      x: -5300,
-      y: 400.0
+      x: 3700,
+      y: 6000
     },
     %{
-      x: 1100,
-      y: 5100
+      x: 7000,
+      y: 2300
+    },
+    %{
+      x: 7000,
+      y: -7800
     },
     %{
       x: 3200,
-      y: -4300
+      y: -7800
     },
     %{
-      x: -3400,
-      y: 3600
+      x: -2600,
+      y: -7800
     },
     %{
-      x: -1900,
-      y: -5100
+      x: -6400,
+      y: -3400
     },
     %{
-      x: 4200,
-      y: 3200
+      x: -300,
+      y: 2300
+    },
+    %{
+      x: 3800,
+      y: -2000
+    },
+    %{
+      x: -300,
+      y: -5200
+    },
+    %{
+      x: -5000,
+      y: -600
     }
   ],
   obstacles: [
     %{
-      name: "sand_cascade",
-      radius: 365.55,
-      shape: "circle",
-      type: :static,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: -3998.0,
-        y: 3939.0
-      },
-      vertices: []
-    },
-    %{
-      name: "right_center_spikes",
-      radius: 0.0,
-      shape: "polygon",
-      type: :dynamic,
-      base_status: "underground",
-      statuses_cycle: %{
-        "raised" => %{
-          "make_obstacle_collisionable" => true,
-          "next_status" => "underground",
-          "on_activation_mechanics" => %{
-            "polygon_hit" => %{
-              "damage" => 10,
-              "vertices" => [
-                %{"x" => 2967.0, "y" => 1374.0},
-                %{"x" => 2709.0, "y" => 1163.0},
-                %{"x" => 4041.0, "y" => -378.0},
-                %{"x" => 4283.0, "y" => -190.0}
-              ]
-            }
-          },
-          "time_until_transition_ms" => 2000,
-          "transition_time_ms" => 3000
-        },
-        "underground" => %{
-          "make_obstacle_collisionable" => false,
-          "next_status" => "raised",
-          "on_activation_mechanics" => %{},
-          "time_until_transition_ms" => 2000,
-          "transition_time_ms" => 3000
-        }
-      },
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: 2967.0,
-          y: 1374.0
-        },
-        %{
-          x: 2709.0,
-          y: 1163.0
-        },
-        %{
-          x: 4041.0,
-          y: -378.0
-        },
-        %{
-          x: 4283.0,
-          y: -190.0
-        }
+      "name" => "Wall_Top",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "8117.765", "y" => "6600"},
+        %{"x" => "-9005.646", "y" => "6600"},
+        %{"x" => "-8936.1", "y" => "6400"},
+        %{"x" => "7947.096", "y" => "6400"}
       ]
     },
     %{
-      name: "left_bottom_spikes",
-      radius: 0.0,
-      shape: "polygon",
-      type: :dynamic,
-      base_status: "underground",
-      statuses_cycle: %{
-        "raised" => %{
-          "make_obstacle_collisionable" => true,
-          "next_status" => "underground",
-          "on_activation_mechanics" => %{
-            "polygon_hit" => %{
-              "damage" => 10,
-              "vertices" => [
-                %{"x" => -2012.0, "y" => -1905.0},
-                %{"x" => -1896.0, "y" => -2200},
-                %{"x" => -670.0, "y" => -1343.0},
-                %{"x" => -910.0, "y" => -1087.0}
-              ]
-            }
-          },
-          "time_until_transition_ms" => 2000,
-          "transition_time_ms" => 3000
-        },
-        "underground" => %{
-          "make_obstacle_collisionable" => false,
-          "next_status" => "raised",
-          "on_activation_mechanics" => %{},
-          "time_until_transition_ms" => 2000,
-          "transition_time_ms" => 3000
-        }
-      },
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -2012.0,
-          y: -1905.0
-        },
-        %{
-          x: -1896.0,
-          y: -2200
-        },
-        %{
-          x: -670.0,
-          y: -1343.0
-        },
-        %{
-          x: -910.0,
-          y: -1087.0
-        }
+      "name" => "Wall_Bottom",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "8117.765", "y" => "-6600"},
+        %{"x" => "-9005.646", "y" => "-6600"},
+        %{"x" => "-8936.1", "y" => "-6400"},
+        %{"x" => "7947.096", "y" => "-6400"}
       ]
     },
     %{
-      name: "right_bottom_spikes",
-      radius: 0.0,
-      shape: "polygon",
-      type: :dynamic,
-      base_status: "underground",
-      statuses_cycle: %{
-        "raised" => %{
-          "make_obstacle_collisionable" => true,
-          "next_status" => "underground",
-          "on_activation_mechanics" => %{
-            "polygon_hit" => %{
-              "damage" => 10,
-              "vertices" => [
-                %{"x" => 120.0, "y" => -1281.0},
-                %{"x" => 1785.0, "y" => -2107.0},
-                %{"x" => 1599.0, "y" => -2387.0},
-                %{"x" => -59.0, "y" => -1577.0}
-              ]
-            }
-          },
-          "time_until_transition_ms" => 2000,
-          "transition_time_ms" => 3000
-        },
-        "underground" => %{
-          "make_obstacle_collisionable" => false,
-          "next_status" => "raised",
-          "on_activation_mechanics" => %{},
-          "time_until_transition_ms" => 2000,
-          "transition_time_ms" => 3000
-        }
-      },
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: 120.0,
-          y: -1281.0
-        },
-        %{
-          x: 1785.0,
-          y: -2107.0
-        },
-        %{
-          x: 1599.0,
-          y: -2387.0
-        },
-        %{
-          x: -59.0,
-          y: -1577.0
-        }
+      "name" => "Wall_Right",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "6600", "y" => "-6519.197"},
+        %{"x" => "6600", "y" => "6191.239"},
+        %{"x" => "6400", "y" => "6209.371"},
+        %{"x" => "6400", "y" => "-6427.376"}
       ]
     },
     %{
-      name: "left_center_spikes",
-      radius: 0.0,
-      shape: "polygon",
-      type: :dynamic,
-      base_status: "underground",
-      statuses_cycle: %{
-        "raised" => %{
-          "make_obstacle_collisionable" => true,
-          "next_status" => "underground",
-          "on_activation_mechanics" => %{
-            "polygon_hit" => %{
-              "damage" => 10,
-              "vertices" => [
-                %{"x" => -3836.0, "y" => 1192.0},
-                %{"x" => -3140.0, "y" => 157.0},
-                %{"x" => -3488.0, "y" => -43.0},
-                %{"x" => -4171.0, "y" => 1001.0}
-              ]
-            }
-          },
-          "time_until_transition_ms" => 2000,
-          "transition_time_ms" => 3000
-        },
-        "underground" => %{
-          "make_obstacle_collisionable" => false,
-          "next_status" => "raised",
-          "on_activation_mechanics" => %{},
-          "time_until_transition_ms" => 2000,
-          "transition_time_ms" => 3000
-        }
-      },
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -3836.0,
-          y: 1192.0
-        },
-        %{
-          x: -3140.0,
-          y: 157.0
-        },
-        %{
-          x: -3488.0,
-          y: -43.0
-        },
-        %{
-          x: -4171.0,
-          y: 1001.0
-        }
+      "name" => "Wall_Left",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "-6600", "y" => "-6519.197"},
+        %{"x" => "-6600", "y" => "6191.239"},
+        %{"x" => "-6400", "y" => "6209.371"},
+        %{"x" => "-6400", "y" => "-6427.376"}
       ]
     },
     %{
-      name: "top_center_spikes",
-      radius: 0.0,
-      shape: "polygon",
-      type: :dynamic,
-      base_status: "underground",
-      statuses_cycle: %{
-        "raised" => %{
-          "make_obstacle_collisionable" => true,
-          "next_status" => "underground",
-          "on_activation_mechanics" => %{
-            "polygon_hit" => %{
-              "damage" => 10,
-              "vertices" => [
-                %{"x" => -1280.0, "y" => 2965.0},
-                %{"x" => 723.0, "y" => 3165.0},
-                %{"x" => 780.0, "y" => 2826.0},
-                %{"x" => -1245.0, "y" => 2610.0}
-              ]
-            }
-          },
-          "time_until_transition_ms" => 2000,
-          "transition_time_ms" => 3000
-        },
-        "underground" => %{
-          "make_obstacle_collisionable" => false,
-          "next_status" => "raised",
-          "on_activation_mechanics" => %{},
-          "time_until_transition_ms" => 2000,
-          "transition_time_ms" => 3000
-        }
-      },
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -1280.0,
-          y: 2965.0
-        },
-        %{
-          x: 723.0,
-          y: 3165.0
-        },
-        %{
-          x: 780.0,
-          y: 2826.0
-        },
-        %{
-          x: -1245.0,
-          y: 2610.0
-        }
+      "name" => "Rock_T_011",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "-3631.276", "y" => "6298.693"},
+        %{"x" => "-2891.395", "y" => "6455.582"},
+        %{"x" => "-2736.692", "y" => "5319.521"},
+        %{"x" => "-3001.521", "y" => "5180.479"}
       ]
     },
     %{
-      name: "middle stone south",
-      radius: 0.0,
-      shape: "polygon",
-      type: :static,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -956.0,
-          y: -779.0
-        },
-        %{
-          x: -761.0,
-          y: -727.0
-        },
-        %{
-          x: 219.0,
-          y: -1232.0
-        },
-        %{
-          x: 105.0,
-          y: -1632.0
-        },
-        %{
-          x: -503.0,
-          y: -1416.0
-        },
-        %{
-          x: -995.0,
-          y: -989.0
-        }
+      "name" => "Rock_T_02",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "-2396.266", "y" => "3147.654"},
+        %{"x" => "-1782.337", "y" => "3509.896"},
+        %{"x" => "-1280.627", "y" => "2632.996"},
+        %{"x" => "-1556.002", "y" => "2407.177"}
       ]
     },
     %{
-      name: "middle stone north",
-      radius: 0.0,
-      shape: "polygon",
-      type: :static,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -415.0,
-          y: 1413.0
-        },
-        %{
-          x: -459.0,
-          y: 1789.0
-        },
-        %{
-          x: 135.0,
-          y: 1871.0
-        },
-        %{
-          x: 794.0,
-          y: 1716.0
-        },
-        %{
-          x: 769.0,
-          y: 1495.0
-        }
+      "name" => "Rock_T_03_p1",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "2210.523", "y" => "4944.701"},
+        %{"x" => "3061.171", "y" => "5457.247"},
+        %{"x" => "3521.709", "y" => "5410.178"},
+        %{"x" => "2835.657", "y" => "4767.928"}
       ]
     },
     %{
-      name: "carapace 1",
-      radius: 0.0,
-      shape: "polygon",
-      type: :static,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -1674.0,
-          y: 2991.0
-        },
-        %{
-          x: -1428.0,
-          y: 3051.0
-        },
-        %{
-          x: -1222.0,
-          y: 2894.0
-        },
-        %{
-          x: -1180.0,
-          y: 2572.0
-        },
-        %{
-          x: -1575.0,
-          y: 2018.0
-        },
-        %{
-          x: -2335.0,
-          y: 1667.0
-        },
-        %{
-          x: -2661.0,
-          y: 2136.0
-        },
-        %{
-          x: -2450.0,
-          y: 2536.0
-        }
+      "name" => "Rock_T_03_p2",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "2210.523", "y" => "4944.701"},
+        %{"x" => "2216.941", "y" => "4180.208"},
+        %{"x" => "2819.373", "y" => "3917.946"},
+        %{"x" => "2835.657", "y" => "4767.928"}
       ]
     },
     %{
-      name: "carapace 2",
-      radius: 0.0,
-      shape: "polygon",
-      type: :static,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: 2758.0,
-          y: -1822.0
-        },
-        %{
-          x: 2887.0,
-          y: -2198.0
-        },
-        %{
-          x: 2523.0,
-          y: -2600
-        },
-        %{
-          x: 1916.0,
-          y: -3018.0
-        },
-        %{
-          x: 1635.0,
-          y: -3016.0
-        },
-        %{
-          x: 1402.0,
-          y: -2822.0
-        },
-        %{
-          x: 1386.0,
-          y: -2557.0
-        },
-        %{
-          x: 1728.0,
-          y: -2034.0
-        },
-        %{
-          x: 2411.0,
-          y: -1668.0
-        }
+      "name" => "Calduron_T_06",
+      "position" => %{"x" => "-1683", "y" => "6380"},
+      "radius" => "420",
+      "shape" => "circle",
+      "type" => "static",
+      "vertices" => []
+    },
+    %{
+      "name" => "Calduron_T_05",
+      "position" => %{"x" => "1760", "y" => "6380"},
+      "radius" => "420",
+      "shape" => "circle",
+      "type" => "static",
+      "vertices" => []
+    },
+    %{
+      "name" => "Rock_R_01",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "6731.636", "y" => "3630.905"},
+        %{"x" => "6612.104", "y" => "2801.469"},
+        %{"x" => "5287.139", "y" => "2694.42"},
+        %{"x" => "5226.602", "y" => "3159.771"}
       ]
     },
     %{
-      name: "lava rock 1 a",
-      radius: 0.0,
-      shape: "polygon",
-      type: :static,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: 3421.0,
-          y: -1034.0
-        },
-        %{
-          x: 3230.0,
-          y: -759.0
-        },
-        %{
-          x: 3646.0,
-          y: -726.0
-        },
-        %{
-          x: 3970.0,
-          y: -1079.0
-        }
+      "name" => "Rock_R_02",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "3203.68", "y" => "2368.408"},
+        %{"x" => "3605.801", "y" => "1767.61"},
+        %{"x" => "2645.971", "y" => "1281.607"},
+        %{"x" => "2435.806", "y" => "1514.578"}
       ]
     },
     %{
-      name: "lava rock 1 b",
-      radius: 0.0,
-      shape: "polygon",
-      type: :static,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: 3970.0,
-          y: -1079.0
-        },
-        %{
-          x: 3646.0,
-          y: -726.0
-        },
-        %{
-          x: 4020.0,
-          y: -520.0
-        },
-        %{
-          x: 4352.0,
-          y: -882.0
-        }
+      "name" => "Rock_R_03_p1",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "5031.366", "y" => "-2160.352"},
+        %{"x" => "5524.489", "y" => "-3467.086"},
+        %{"x" => "4786.79", "y" => "-2848.165"}
       ]
     },
     %{
-      name: "lava rock 1 c",
-      radius: 0.0,
-      shape: "polygon",
-      type: :static,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: 4352.0,
-          y: -882.0
-        },
-        %{
-          x: 4020.0,
-          y: -520.0
-        },
-        %{
-          x: 4230.0,
-          y: -222.0
-        },
-        %{
-          x: 4600,
-          y: -237.0
-        },
-        %{
-          x: 4697.0,
-          y: -508.0
-        },
-        %{
-          x: 4352.0,
-          y: -882.0
-        },
-        %{
-          x: 4020.0,
-          y: -520.0
-        }
+      "name" => "Rock_R_03_p2",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "5031.366", "y" => "-2160.352"},
+        %{"x" => "4203.926", "y" => "-2242.507"},
+        %{"x" => "3831.921", "y" => "-2830.578"},
+        %{"x" => "4786.79", "y" => "-2848.165"}
       ]
     },
     %{
-      name: "lava rock 2 a",
-      radius: 0.0,
-      shape: "polygon",
-      type: :static,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -4420.0,
-          y: 575.0
-        },
-        %{
-          x: -4663.0,
-          y: 661.0
-        },
-        %{
-          x: -4744.0,
-          y: 840.0
-        },
-        %{
-          x: -4454.0,
-          y: 1279.0
-        },
-        %{
-          x: -4101.0,
-          y: 932.0
-        }
+      "name" => "Calduron_L_01",
+      "position" => %{"x" => "6610", "y" => "1840"},
+      "radius" => "420",
+      "shape" => "circle",
+      "type" => "static",
+      "vertices" => []
+    },
+    %{
+      "name" => "Calduron_L_02",
+      "position" => %{"x" => "6610", "y" => "-1780"},
+      "radius" => "420",
+      "shape" => "circle",
+      "type" => "static",
+      "vertices" => []
+    },
+    %{
+      "name" => "Rock_L_01",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "-6782.466", "y" => "-3745.394"},
+        %{"x" => "-6834.827", "y" => "-2870.991"},
+        %{"x" => "-5365.272", "y" => "-2708.721"},
+        %{"x" => "-5188.337", "y" => "-3064.951"}
       ]
     },
     %{
-      name: "lava rock 2 b",
-      radius: 0.0,
-      shape: "polygon",
-      type: :static,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -4454.0,
-          y: 1279.0
-        },
-        %{
-          x: -3980.0,
-          y: 1513.0
-        },
-        %{
-          x: -3852.0,
-          y: 1140.0
-        },
-        %{
-          x: -4101.0,
-          y: 932.0
-        }
+      "name" => "Rock_L_02",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "-3264.556", "y" => "-2392.352"},
+        %{"x" => "-3437.08", "y" => "-1693.48"},
+        %{"x" => "-2547.287", "y" => "-1257.384"},
+        %{"x" => "-2364.423", "y" => "-1521.288"}
       ]
     },
     %{
-      name: "lava rock 2 c",
-      radius: 0.0,
-      shape: "polygon",
-      type: :static,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -3980.0,
-          y: 1513.0
-        },
-        %{
-          x: -3459.0,
-          y: 1473.0
-        },
-        %{
-          x: -3273.0,
-          y: 1304.0
-        },
-        %{
-          x: -3322.0,
-          y: 1188.0
-        },
-        %{
-          x: -3455.0,
-          y: 1163.0
-        },
-        %{
-          x: -3852.0,
-          y: 1140.0
-        }
+      "name" => "Rock_L_03_p1",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "-4690.288", "y" => "2755.349"},
+        %{"x" => "-5199.296", "y" => "2372.082"},
+        %{"x" => "-5496.187", "y" => "3443.65"}
       ]
     },
     %{
-      name: "cannon rock 1 a",
-      radius: 0.0,
-      shape: "polygon",
-      type: :static,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: 470.0,
-          y: -4100
-        },
-        %{
-          x: 790.0,
-          y: -3950.0
-        },
-        %{
-          x: 1300,
-          y: -4450.0
-        },
-        %{
-          x: 1300,
-          y: -6500
-        },
-        %{
-          x: 360.0,
-          y: -6500
-        },
-        %{
-          x: 360.0,
-          y: -4700
-        }
+      "name" => "Rock_L_03_p2",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "-4690.288", "y" => "2755.349"},
+        %{"x" => "-5199.296", "y" => "2372.082"},
+        %{"x" => "-4567.782", "y" => "2035.565"},
+        %{"x" => "-3802.042", "y" => "2788.869"}
       ]
     },
     %{
-      name: "cannon rock 1 b",
-      radius: 0.0,
-      shape: "polygon",
-      type: :static,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -770.0,
-          y: -5850.0
-        },
-        %{
-          x: 360.0,
-          y: -4700
-        },
-        %{
-          x: 1150.0,
-          y: -5470.0
-        },
-        %{
-          x: 1150.0,
-          y: -8000
-        },
-        %{
-          x: -770.0,
-          y: -8000
-        }
+      "name" => "Calduron_L_03",
+      "position" => %{"x" => "-6460", "y" => "1840"},
+      "radius" => "420",
+      "shape" => "circle",
+      "type" => "static",
+      "vertices" => []
+    },
+    %{
+      "name" => "Calduron_L_04",
+      "position" => %{"x" => "-6460", "y" => "-1610"},
+      "radius" => "420",
+      "shape" => "circle",
+      "type" => "static",
+      "vertices" => []
+    },
+    %{
+      "name" => "Rock_B_01",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "2765.068", "y" => "-6673.642"},
+        %{"x" => "3802.116", "y" => "-6588.992"},
+        %{"x" => "3145.547", "y" => "-5129.084"},
+        %{"x" => "2770.249", "y" => "-5262.095"}
       ]
     },
     %{
-      name: "cannon rock 2 a",
-      radius: 0.0,
-      shape: "polygon",
-      type: :static,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -849.0,
-          y: 4252.0
-        },
-        %{
-          x: -1120.0,
-          y: 4900
-        },
-        %{
-          x: -1120.0,
-          y: 6500
-        },
-        %{
-          x: -135.0,
-          y: 6500
-        },
-        %{
-          x: -135.0,
-          y: 4836.0
-        },
-        %{
-          x: -439.0,
-          y: 4212.0
-        }
+      "name" => "Rock_B_02",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "1679.574", "y" => "-3472.637"},
+        %{"x" => "2424.204", "y" => "-3167.99"},
+        %{"x" => "1507.762", "y" => "-2334.03"},
+        %{"x" => "1364.14", "y" => "-2668.228"}
       ]
     },
     %{
-      name: "cannon rock 2 b",
-      radius: 0.0,
-      shape: "polygon",
-      type: :static,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: 1226.0,
-          y: 5607.0
-        },
-        %{
-          x: -135.0,
-          y: 4836.0
-        },
-        %{
-          x: -748.0,
-          y: 5674.0
-        },
-        %{
-          x: -748.0,
-          y: 6500
-        },
-        %{
-          x: 1226.0,
-          y: 6500
-        }
+      "name" => "Rock_B_03_p1",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "-3284.909", "y" => "-5516.763"},
+        %{"x" => "-2812.067", "y" => "-4680.898"},
+        %{"x" => "-2219.798", "y" => "-5095.086"}
       ]
     },
     %{
-      name: "halfmoon rock 1 a",
-      radius: 0.0,
-      shape: "polygon",
-      type: :static,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -2511.0,
-          y: -2436.0
-        },
-        %{
-          x: -2881.0,
-          y: -2496.0
-        },
-        %{
-          x: -2905.0,
-          y: -1895.0
-        },
-        %{
-          x: -2542.0,
-          y: -1896.0
-        },
-        %{
-          x: -2031.0,
-          y: -1935.0
-        },
-        %{
-          x: -1948.0,
-          y: -2168.0
-        }
+      "name" => "Rock_B_03_p2",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "-2210.021", "y" => "-4205.354"},
+        %{"x" => "-2851.062", "y" => "-3884.709"},
+        %{"x" => "-2812.067", "y" => "-4680.898"},
+        %{"x" => "-2219.798", "y" => "-5095.086"}
       ]
     },
     %{
-      name: "halfmoon rock 1 b",
-      radius: 0.0,
-      shape: "polygon",
-      type: :static,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -2881.0,
-          y: -2496.0
-        },
-        %{
-          x: -3563.0,
-          y: -2312.0
-        },
-        %{
-          x: -3943.0,
-          y: -1877.0
-        },
-        %{
-          x: -3206.0,
-          y: -1552.0
-        },
-        %{
-          x: -2905.0,
-          y: -1895.0
-        }
+      "name" => "Structure_M_TL11",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "-1103.271", "y" => "953.9656"},
+        %{"x" => "-1270.857", "y" => "1168.57"},
+        %{"x" => "-944.2617", "y" => "1393.617"},
+        %{"x" => "-524.387", "y" => "1488.506"},
+        %{"x" => "-495.594", "y" => "1196.877"}
       ]
     },
     %{
-      name: "halfmoon rock 1 c",
-      radius: 0.0,
-      shape: "polygon",
-      type: :static,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -3943.0,
-          y: -1877.0
-        },
-        %{
-          x: -4089.0,
-          y: -1199.0
-        },
-        %{
-          x: -4022.0,
-          y: -707.0
-        },
-        %{
-          x: -3355.0,
-          y: -1030.0
-        },
-        %{
-          x: -3206.0,
-          y: -1552.0
-        }
+      "name" => "Structure_M_TL2",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "-1026.994", "y" => "1007.727"},
+        %{"x" => "-1207.883", "y" => "1208.302"},
+        %{"x" => "-1478.527", "y" => "879.8398"},
+        %{"x" => "-1591.924", "y" => "429.7523"},
+        %{"x" => "-1254.913", "y" => "437.194"}
       ]
     },
     %{
-      name: "halfmoon rock 1 d",
-      radius: 0.0,
-      shape: "polygon",
-      type: :static,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -4022.0,
-          y: -707.0
-        },
-        %{
-          x: -3772.0,
-          y: -241.0
-        },
-        %{
-          x: -3376.0,
-          y: 92.0
-        },
-        %{
-          x: -3173.0,
-          y: -62.0
-        },
-        %{
-          x: -3306.0,
-          y: -520.0
-        },
-        %{
-          x: -3355.0,
-          y: -1030.0
-        }
+      "name" => "Structure_M_TR_11",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "445.6904", "y" => "1203.487"},
+        %{"x" => "433.5128", "y" => "1476.568"},
+        %{"x" => "975.9529", "y" => "1369.776"},
+        %{"x" => "1289.609", "y" => "1153.917"},
+        %{"x" => "1052.909", "y" => "902.122"}
       ]
     },
     %{
-      name: "halfmoon rock 2 a",
-      radius: 0.0,
-      shape: "polygon",
-      type: :static,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: 791.0,
-          y: 3026.0
-        },
-        %{
-          x: 1259.0,
-          y: 3438.0
-        },
-        %{
-          x: 1598.0,
-          y: 3597.0
-        },
-        %{
-          x: 1786.0,
-          y: 3026.0
-        },
-        %{
-          x: 1436.0,
-          y: 2928.0
-        },
-        %{
-          x: 934.0,
-          y: 2825.0
-        }
+      "name" => "Structure_M_TR_2",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "1163.651", "y" => "433.5555"},
+        %{"x" => "1506.128", "y" => "418.9511"},
+        %{"x" => "1439.307", "y" => "846.0876"},
+        %{"x" => "1162.038", "y" => "1177.602"},
+        %{"x" => "949.548", "y" => "988.2453"}
       ]
     },
     %{
-      name: "halfmoon rock 2 b",
-      radius: 0.0,
-      shape: "polygon",
-      type: :static,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: 1598.0,
-          y: 3597.0
-        },
-        %{
-          x: 2304.0,
-          y: 3607.0
-        },
-        %{
-          x: 2789.0,
-          y: 3293.0
-        },
-        %{
-          x: 2169.0,
-          y: 2779.0
-        },
-        %{
-          x: 1786.0,
-          y: 3026.0
-        }
+      "name" => "Structure_M_BR_1",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "388.6146", "y" => "-1226.758"},
+        %{"x" => "427.698", "y" => "-1507.054"},
+        %{"x" => "1212.376", "y" => "-1160.641"},
+        %{"x" => "921.9347", "y" => "-995.4576"}
       ]
     },
     %{
-      name: "halfmoon rock 2 c",
-      radius: 0.0,
-      shape: "polygon",
-      type: :static,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: 2789.0,
-          y: 3293.0
-        },
-        %{
-          x: 3115.0,
-          y: 2681.0
-        },
-        %{
-          x: 3186.0,
-          y: 2190.0
-        },
-        %{
-          x: 2547.0,
-          y: 2229.0
-        },
-        %{
-          x: 2169.0,
-          y: 2779.0
-        }
+      "name" => "Structure_M_BR_2",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "1146.973", "y" => "-475.0844"},
+        %{"x" => "1409.96", "y" => "-482.7019"},
+        %{"x" => "1212.376", "y" => "-1160.641"},
+        %{"x" => "921.9347", "y" => "-995.4576"}
       ]
     },
     %{
-      name: "halfmoon rock 2 d",
-      radius: 0.0,
-      shape: "polygon",
-      type: :static,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: 3186.0,
-          y: 2190.0
-        },
-        %{
-          x: 3073.0,
-          y: 1673.0
-        },
-        %{
-          x: 2783.0,
-          y: 1244.0
-        },
-        %{
-          x: 2546.0,
-          y: 1337.0
-        },
-        %{
-          x: 2547.0,
-          y: 2229.0
-        }
+      "name" => "Structure_M_BL_1",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "-1085.073", "y" => "-451.5762"},
+        %{"x" => "-931.3317", "y" => "-1032.454"},
+        %{"x" => "-1181.466", "y" => "-1175.406"},
+        %{"x" => "-1393.571", "y" => "-454.3091"}
       ]
     },
     %{
-      name: "wall entry",
-      radius: 0.0,
-      shape: "polygon",
-      type: :static,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -2376.0,
-          y: 5248.0
-        },
-        %{
-          x: -2284.0,
-          y: 4949.0
-        },
-        %{
-          x: -3078.0,
-          y: 3927.0
-        },
-        %{
-          x: -3402.0,
-          y: 3897.0
-        },
-        %{
-          x: -5000,
-          y: 3897.0
-        },
-        %{
-          x: -5000,
-          y: 5248.0
-        }
-      ]
-    },
-    %{
-      name: "right center water lake",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: 3578.0,
-          y: 763.0
-        },
-        %{
-          x: 5389.0,
-          y: 2035.0
-        },
-        %{
-          x: 5662.0,
-          y: 1243.0
-        },
-        %{
-          x: 3809.0,
-          y: 438.0
-        }
-      ]
-    },
-    %{
-      name: "bottom left water lake SW",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -1910.0,
-          y: -3253.0
-        },
-        %{
-          x: -1616.0,
-          y: -3434.0
-        },
-        %{
-          x: -1422.0,
-          y: -3827.0
-        },
-        %{
-          x: -1480.0,
-          y: -4195.0
-        },
-        %{
-          x: -2125.0,
-          y: -4696.0
-        },
-        %{
-          x: -2688.0,
-          y: -4563.0
-        },
-        %{
-          x: -2775.0,
-          y: -4101.0
-        }
-      ]
-    },
-    %{
-      name: "bottom left water lake N",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -1208.0,
-          y: -2490.0
-        },
-        %{
-          x: -766.0,
-          y: -2513.0
-        },
-        %{
-          x: -493.0,
-          y: -3091.0
-        },
-        %{
-          x: -971.0,
-          y: -3326.0
-        },
-        %{
-          x: -1378.0,
-          y: -3235.0
-        },
-        %{
-          x: -1690.0,
-          y: -2961.0
-        }
-      ]
-    },
-    %{
-      name: "bottom left water lake E",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -976.0,
-          y: -3814.0
-        },
-        %{
-          x: -412.0,
-          y: -3428.0
-        },
-        %{
-          x: -211.0,
-          y: -3714.0
-        },
-        %{
-          x: -176.0,
-          y: -4068.0
-        },
-        %{
-          x: -303.0,
-          y: -4490.0
-        },
-        %{
-          x: -675.0,
-          y: -4734.0
-        },
-        %{
-          x: -1340.0,
-          y: -4615.0
-        }
+      "name" => "Structure_M_BL_2",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "type" => "static",
+      "vertices" => [
+        %{"x" => "-384.2261", "y" => "-1187.122"},
+        %{"x" => "-931.3317", "y" => "-1032.454"},
+        %{"x" => "-1181.466", "y" => "-1175.406"},
+        %{"x" => "-391.4726", "y" => "-1469.853"}
       ]
     }
   ],
   bushes: [
     %{
-      name: "right edge bushes (b)",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: 5238.0,
-          y: 2467.0
-        },
-        %{
-          x: 5415.0,
-          y: 2076.0
-        },
-        %{
-          x: 4290.0,
-          y: 1173.0
-        },
-        %{
-          x: 3967.0,
-          y: 1852.0
-        }
+      "name" => "Bush_L_cshape",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "-5157.514", "y" => "3506.771"},
+        %{"x" => "-3884.762", "y" => "2924.171"},
+        %{"x" => "-4166.649", "y" => "2380.814"},
+        %{"x" => "-5359.784", "y" => "3028.084"}
       ]
     },
     %{
-      name: "right edge bushes (a)",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: 4290.0,
-          y: 1173.0
-        },
-        %{
-          x: 3535.0,
-          y: 813.0
-        },
-        %{
-          x: 2917.0,
-          y: 1492.0
-        },
-        %{
-          x: 3111.0,
-          y: 2031.0
-        },
-        %{
-          x: 3801.0,
-          y: 2099.0
-        }
+      "name" => "Bush_L_01",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "-1726.511", "y" => "1509.119"},
+        %{"x" => "-1461.806", "y" => "1236.191"},
+        %{"x" => "-2000.816", "y" => "17.44251"},
+        %{"x" => "-2379.591", "y" => "94.73076"}
       ]
     },
     %{
-      name: "right top edge bushes",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: 2520.0,
-          y: 5142.0
-        },
-        %{
-          x: 3859.0,
-          y: 4395.0
-        },
-        %{
-          x: 3347.0,
-          y: 2874.0
-        },
-        %{
-          x: 3023.0,
-          y: 2888.0
-        },
-        %{
-          x: 1974.0,
-          y: 3737.0
-        }
+      "name" => "Bush_L_02",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "-2242.885", "y" => "-1488.032"},
+        %{"x" => "-2033.694", "y" => "-1831.04"},
+        %{"x" => "-2960.76", "y" => "-2789.73"},
+        %{"x" => "-3313.971", "y" => "-2570.724"}
       ]
     },
     %{
-      name: "top edge bushes",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -73.0,
-          y: 5375.0
-        },
-        %{
-          x: 718.0,
-          y: 5346.0
-        },
-        %{
-          x: 766.0,
-          y: 4681.0
-        },
-        %{
-          x: 131.0,
-          y: 4305.0
-        },
-        %{
-          x: -577.0,
-          y: 4374.0
-        }
+      "name" => "Bush_L_island",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "-5994.002", "y" => "321.6628"},
+        %{"x" => "-6598.221", "y" => "-815.4293"},
+        %{"x" => "-5253.056", "y" => "-1134.551"}
       ]
     },
     %{
-      name: "top pass bushes",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -1373.0,
-          y: 4325.0
-        },
-        %{
-          x: -618.0,
-          y: 4398.0
-        },
-        %{
-          x: -1289.0,
-          y: 2801.0
-        },
-        %{
-          x: -1733.0,
-          y: 2894.0
-        },
-        %{
-          x: -1915.0,
-          y: 3307.0
-        }
+      "name" => "Bush_T_cshape",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "3613.491", "y" => "5084.046"},
+        %{"x" => "2991.442", "y" => "3874.203"},
+        %{"x" => "2413.875", "y" => "4192.751"},
+        %{"x" => "3185.681", "y" => "5364.128"}
       ]
     },
     %{
-      name: "top left edge bushes (a)",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -3489.0,
-          y: 1910.0
-        },
-        %{
-          x: -3455.0,
-          y: 1348.0
-        },
-        %{
-          x: -4631.0,
-          y: 1025.0
-        },
-        %{
-          x: -5581.0,
-          y: 1156.0
-        },
-        %{
-          x: -5441.0,
-          y: 1743.0
-        }
+      "name" => "Bush_T_01",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "1475.148", "y" => "1894.788"},
+        %{"x" => "1272.097", "y" => "1619.064"},
+        %{"x" => "12.1933", "y" => "2078.002"},
+        %{"x" => "162.8254", "y" => "2409.733"}
       ]
     },
     %{
-      name: "top left edge bushes (b)",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -3653.0,
-          y: 1868.0
-        },
-        %{
-          x: -2472.0,
-          y: 2223.0
-        },
-        %{
-          x: -2014.0,
-          y: 1265.0
-        },
-        %{
-          x: -2667.0,
-          y: 760.0
-        },
-        %{
-          x: -3037.0,
-          y: 796.0
-        }
+      "name" => "Bush_T_02",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "-1481.342", "y" => "2465.74"},
+        %{"x" => "-1721.525", "y" => "2073.964"},
+        %{"x" => "-2739.646", "y" => "3115.903"},
+        %{"x" => "-2545.367", "y" => "3416.882"}
       ]
     },
     %{
-      name: "bottom left edge bushes",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -3973.0,
-          y: -1290.0
-        },
-        %{
-          x: -3473.0,
-          y: -2191.0
-        },
-        %{
-          x: -5065.0,
-          y: -2925.0
-        },
-        %{
-          x: -5532.0,
-          y: -1858.0
-        }
+      "name" => "Bush_T_island",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "289.1804", "y" => "5952.137"},
+        %{"x" => "-785.1105", "y" => "6537.438"},
+        %{"x" => "-1021.93", "y" => "5283.718"}
       ]
     },
     %{
-      name: "lake bottom left bushes",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -2568.0,
-          y: -3802.0
-        },
-        %{
-          x: -2178.0,
-          y: -4690.0
-        },
-        %{
-          x: -2418.0,
-          y: -5303.0
-        },
-        %{
-          x: -3883.0,
-          y: -4379.0
-        },
-        %{
-          x: -3262.0,
-          y: -3809.0
-        }
+      "name" => "Bush_R_cshape",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "4281.373", "y" => "-2392.708"},
+        %{"x" => "5387.699", "y" => "-3071.004"},
+        %{"x" => "5120.566", "y" => "-3595.442"},
+        %{"x" => "3971.13", "y" => "-2957.985"}
       ]
     },
     %{
-      name: "lake bottom right bushes",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -746.0,
-          y: -4637.0
-        },
-        %{
-          x: -187.0,
-          y: -5021.0
-        },
-        %{
-          x: -167.0,
-          y: -5372.0
-        },
-        %{
-          x: -710.0,
-          y: -5828.0
-        },
-        %{
-          x: -1697.0,
-          y: -5539.0
-        },
-        %{
-          x: -1472.0,
-          y: -4731.0
-        }
+      "name" => "Bush_R_01",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "1955.627", "y" => "9.792709"},
+        %{"x" => "2380.753", "y" => "-152.2906"},
+        %{"x" => "1864.56", "y" => "-1462.079"},
+        %{"x" => "1526.821", "y" => "-1226.789"}
       ]
     },
     %{
-      name: "bottom edge bushes",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: 1133.0,
-          y: -3654.0
-        },
-        %{
-          x: 2193.0,
-          y: -4166.0
-        },
-        %{
-          x: 2136.0,
-          y: -5482.0
-        },
-        %{
-          x: 1048.0,
-          y: -5500
-        },
-        %{
-          x: 521.0,
-          y: -4089.0
-        },
-        %{
-          x: 619.0,
-          y: -3775.0
-        }
+      "name" => "Bush_R_02 ",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "3348.349", "y" => "2655.573"},
+        %{"x" => "2401.388", "y" => "1553.669"},
+        %{"x" => "2103.234", "y" => "1748.015"},
+        %{"x" => "3082.343", "y" => "2805.086"}
       ]
     },
     %{
-      name: "with hole in the middle bushes (a)",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: 2810.0,
-          y: -89.0
-        },
-        %{
-          x: 3636.0,
-          y: -63.0
-        },
-        %{
-          x: 3995.0,
-          y: -414.0
-        },
-        %{
-          x: 4323.0,
-          y: -1052.0
-        },
-        %{
-          x: 2921.0,
-          y: -2986.0
-        },
-        %{
-          x: 1832.0,
-          y: -1752.0
-        },
-        %{
-          x: 1884.0,
-          y: -1261.0
-        }
+      "name" => "Bush_R_island",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "6749.867", "y" => "826.6964"},
+        %{"x" => "5413.483", "y" => "1052.161"},
+        %{"x" => "5907.448", "y" => "-258.0237"}
       ]
     },
     %{
-      name: "with hole in the middle bushes (b)",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: 4289.0,
-          y: -1035.0
-        },
-        %{
-          x: 5648.0,
-          y: -1995.0
-        },
-        %{
-          x: 5272.0,
-          y: -2692.0
-        },
-        %{
-          x: 3706.0,
-          y: -1596.0
-        }
+      "name" => "Bush_B_cshape",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "-3187.642", "y" => "-5294.691"},
+        %{"x" => "-2596.555", "y" => "-4069.327"},
+        %{"x" => "-3072.92", "y" => "-3948.402"},
+        %{"x" => "-3539.842", "y" => "-5008.903"}
       ]
     },
     %{
-      name: "with hole in the middle bushes (c)",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: 4662.0,
-          y: -1944.0
-        },
-        %{
-          x: 5431.0,
-          y: -2452.0
-        },
-        %{
-          x: 4438.0,
-          y: -3902.0
-        },
-        %{
-          x: 3644.0,
-          y: -3559.0
-        }
+      "name" => "Bush_B_01",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "27.76451", "y" => "-1930.305"},
+        %{"x" => "11.83586", "y" => "-2296.283"},
+        %{"x" => "-1349.111", "y" => "-1872.221"},
+        %{"x" => "-1118.045", "y" => "-1551.602"}
       ]
     },
     %{
-      name: "with hole in the middle bushes (d)",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: 3246.0,
-          y: -2469.0
-        },
-        %{
-          x: 4269.0,
-          y: -2991.0
-        },
-        %{
-          x: 3795.0,
-          y: -3638.0
-        },
-        %{
-          x: 2938.0,
-          y: -2976.0
-        }
+      "name" => "Bush_B_02",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "2869.763", "y" => "-3044.426"},
+        %{"x" => "2587.075", "y" => "-3314.726"},
+        %{"x" => "1564.604", "y" => "-2388.573"},
+        %{"x" => "1805.244", "y" => "-2041.001"}
       ]
     },
     %{
-      name: "center bottom small bush",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -548.0,
-          y: -1302.0
-        },
-        %{
-          x: 9.0,
-          y: -1594.0
-        },
-        %{
-          x: -51.0,
-          y: -2024.0
-        },
-        %{
-          x: -1038.0,
-          y: -1705.0
-        }
-      ]
-    },
-    %{
-      name: "bottom lake top bush",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -2066.0,
-          y: -2114.0
-        },
-        %{
-          x: -1428.0,
-          y: -2684.0
-        },
-        %{
-          x: -1711.0,
-          y: -3032.0
-        },
-        %{
-          x: -2672.0,
-          y: -2426.0
-        }
-      ]
-    },
-    %{
-      name: "left cave bush",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -2771.0,
-          y: -218.0
-        },
-        %{
-          x: -1948.0,
-          y: -662.0
-        },
-        %{
-          x: -1762.0,
-          y: -1297.0
-        },
-        %{
-          x: -2026.0,
-          y: -1982.0
-        },
-        %{
-          x: -3063.0,
-          y: -1976.0
-        },
-        %{
-          x: -3514.0,
-          y: -437.0
-        }
-      ]
-    },
-    %{
-      name: "middle top bush",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -1442.0,
-          y: 2139.0
-        },
-        %{
-          x: -1146.0,
-          y: 2512.0
-        },
-        %{
-          x: 1373.0,
-          y: 2795.0
-        },
-        %{
-          x: 733.0,
-          y: 1820.0
-        },
-        %{
-          x: -782.0,
-          y: 1710.0
-        }
-      ]
-    },
-    %{
-      name: "right cave bush (a)",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: 1323.0,
-          y: 2919.0
-        },
-        %{
-          x: 2363.0,
-          y: 3005.0
-        },
-        %{
-          x: 2543.0,
-          y: 2427.0
-        },
-        %{
-          x: 1275.0,
-          y: 2509.0
-        }
-      ]
-    },
-    %{
-      name: "right cave bush (b)",
-      radius: 0.0,
-      shape: "polygon",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: 2072.0,
-          y: 2456.0
-        },
-        %{
-          x: 2635.0,
-          y: 2413.0
-        },
-        %{
-          x: 2600,
-          y: 1198.0
-        },
-        %{
-          x: 1992.0,
-          y: 1232.0
-        }
+      "name" => "Bush_B_island",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "468.0905", "y" => "-5245.852"},
+        %{"x" => "-156.4262", "y" => "-6414.775"},
+        %{"x" => "1315.218", "y" => "-6229.148"}
       ]
     }
   ],
   crates: [],
-  pools: [],
+  pools: [
+    %{
+      "effect" => %{
+        "allow_multiple_effects" => true,
+        "disabled_outside_pool" => true,
+        "duration_ms" => "180000",
+        "effect_mechanics" => [
+          %{
+            "damage" => "30",
+            "effect_delay_ms" => "1000",
+            "execute_multiple_times" => true,
+            "name" => "damage"
+          }
+        ],
+        "name" => "damage_effect",
+        "one_time_application" => true,
+        "remove_on_action" => false
+      },
+      "name" => "Lava_T_L_s",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "-6228.787", "y" => "5892.756"},
+        %{"x" => "-5870", "y" => "6134.025"},
+        %{"x" => "-4636.379", "y" => "4959.863"},
+        %{"x" => "-4826.637", "y" => "4497.038"}
+      ]
+    },
+    %{
+      "effect" => %{
+        "allow_multiple_effects" => true,
+        "disabled_outside_pool" => true,
+        "duration_ms" => "180000",
+        "effect_mechanics" => [
+          %{
+            "damage" => "30",
+            "effect_delay_ms" => "1000",
+            "execute_multiple_times" => true,
+            "name" => "damage"
+          }
+        ],
+        "name" => "damage_effect",
+        "one_time_application" => true,
+        "remove_on_action" => false
+      },
+      "name" => "Lava_T_L",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "-4483.661", "y" => "4178.818"},
+        %{"x" => "-4325.283", "y" => "4648.48"},
+        %{"x" => "-1193.775", "y" => "1515.677"},
+        %{"x" => "-1540.612", "y" => "1220.493"}
+      ]
+    },
+    %{
+      "effect" => %{
+        "allow_multiple_effects" => true,
+        "disabled_outside_pool" => true,
+        "duration_ms" => "180000",
+        "effect_mechanics" => [
+          %{
+            "damage" => "30",
+            "effect_delay_ms" => "1000",
+            "execute_multiple_times" => true,
+            "name" => "damage"
+          }
+        ],
+        "name" => "damage_effect",
+        "one_time_application" => true,
+        "remove_on_action" => false
+      },
+      "name" => "Lava_T_R_s",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "5713.42", "y" => "5906.121"},
+        %{"x" => "6125.13", "y" => "5639.894"},
+        %{"x" => "5089.757", "y" => "4611.174"},
+        %{"x" => "4617.9", "y" => "4790.271"}
+      ]
+    },
+    %{
+      "effect" => %{
+        "allow_multiple_effects" => true,
+        "disabled_outside_pool" => true,
+        "duration_ms" => "180000",
+        "effect_mechanics" => [
+          %{
+            "damage" => "30",
+            "effect_delay_ms" => "1000",
+            "execute_multiple_times" => true,
+            "name" => "damage"
+          }
+        ],
+        "name" => "damage_effect",
+        "one_time_application" => true,
+        "remove_on_action" => false
+      },
+      "name" => "Lava_T_R",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "4305.658", "y" => "4452.338"},
+        %{"x" => "4765.873", "y" => "4273.772"},
+        %{"x" => "1619.973", "y" => "1147.344"},
+        %{"x" => "1309.234", "y" => "1459.771"}
+      ]
+    },
+    %{
+      "effect" => %{
+        "allow_multiple_effects" => true,
+        "disabled_outside_pool" => true,
+        "duration_ms" => "180000",
+        "effect_mechanics" => [
+          %{
+            "damage" => "30",
+            "effect_delay_ms" => "1000",
+            "execute_multiple_times" => true,
+            "name" => "damage"
+          }
+        ],
+        "name" => "damage_effect",
+        "one_time_application" => true,
+        "remove_on_action" => false
+      },
+      "name" => "Lava_B_L",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "-4097.322", "y" => "-4589.48"},
+        %{"x" => "-4587.197", "y" => "-4389.593"},
+        %{"x" => "-1519.185", "y" => "-1339.063"},
+        %{"x" => "-1135.502", "y" => "-1630.063"}
+      ]
+    },
+    %{
+      "effect" => %{
+        "allow_multiple_effects" => true,
+        "disabled_outside_pool" => true,
+        "duration_ms" => "180000",
+        "effect_mechanics" => [
+          %{
+            "damage" => "30",
+            "effect_delay_ms" => "1000",
+            "execute_multiple_times" => true,
+            "name" => "damage"
+          }
+        ],
+        "name" => "damage_effect",
+        "one_time_application" => true,
+        "remove_on_action" => false
+      },
+      "name" => "Lava_B_L_s",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "-5954.249", "y" => "-6446.541"},
+        %{"x" => "-6228.873", "y" => "-6163.637"},
+        %{"x" => "-4941.389", "y" => "-4715.835"},
+        %{"x" => "-4438.478", "y" => "-4906.552"}
+      ]
+    },
+    %{
+      "effect" => %{
+        "allow_multiple_effects" => true,
+        "disabled_outside_pool" => true,
+        "duration_ms" => "180000",
+        "effect_mechanics" => [
+          %{
+            "damage" => "30",
+            "effect_delay_ms" => "1000",
+            "execute_multiple_times" => true,
+            "name" => "damage"
+          }
+        ],
+        "name" => "damage_effect",
+        "one_time_application" => true,
+        "remove_on_action" => false
+      },
+      "name" => "Lava_B_R",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "4494.057", "y" => "-4188.89"},
+        %{"x" => "4340.32", "y" => "-4661.753"},
+        %{"x" => "1219.201", "y" => "-1571.758"},
+        %{"x" => "1534.54", "y" => "-1229.803"}
+      ]
+    },
+    %{
+      "effect" => %{
+        "allow_multiple_effects" => true,
+        "disabled_outside_pool" => true,
+        "duration_ms" => "180000",
+        "effect_mechanics" => [
+          %{
+            "damage" => "30",
+            "effect_delay_ms" => "1000",
+            "execute_multiple_times" => true,
+            "name" => "damage"
+          }
+        ],
+        "name" => "damage_effect",
+        "one_time_application" => true,
+        "remove_on_action" => false
+      },
+      "name" => "Lava_B_R_s",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "6336.88", "y" => "-6090.804"},
+        %{"x" => "6026.017", "y" => "-6397.371"},
+        %{"x" => "4660.152", "y" => "-4993.641"},
+        %{"x" => "4874.12", "y" => "-4530.465"}
+      ]
+    },
+    %{
+      "effect" => %{
+        "allow_multiple_effects" => true,
+        "disabled_outside_pool" => true,
+        "duration_ms" => "180000",
+        "effect_mechanics" => [
+          %{
+            "damage" => "30",
+            "effect_delay_ms" => "1000",
+            "execute_multiple_times" => true,
+            "name" => "damage"
+          }
+        ],
+        "name" => "damage_effect",
+        "one_time_application" => true,
+        "remove_on_action" => false
+      },
+      "name" => "Lava_M_T",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "-266.0307", "y" => "1939.59"},
+        %{"x" => "705.4561", "y" => "1802.05"},
+        %{"x" => "1465.969", "y" => "1297.05"},
+        %{"x" => "1187.064", "y" => "1045.797"},
+        %{"x" => "-123.2952", "y" => "1509.82"}
+      ]
+    },
+    %{
+      "effect" => %{
+        "allow_multiple_effects" => true,
+        "disabled_outside_pool" => true,
+        "duration_ms" => "180000",
+        "effect_mechanics" => [
+          %{
+            "damage" => "30",
+            "effect_delay_ms" => "1000",
+            "execute_multiple_times" => true,
+            "name" => "damage"
+          }
+        ],
+        "name" => "damage_effect",
+        "one_time_application" => true,
+        "remove_on_action" => false
+      },
+      "name" => "Lava_M_T1",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "1396.628", "y" => "503.8064"},
+        %{"x" => "1841.824", "y" => "688.5865"},
+        %{"x" => "1465.969", "y" => "1297.05"},
+        %{"x" => "1187.064", "y" => "1045.797"}
+      ]
+    },
+    %{
+      "effect" => %{
+        "allow_multiple_effects" => true,
+        "disabled_outside_pool" => true,
+        "duration_ms" => "180000",
+        "effect_mechanics" => [
+          %{
+            "damage" => "30",
+            "effect_delay_ms" => "1000",
+            "execute_multiple_times" => true,
+            "name" => "damage"
+          }
+        ],
+        "name" => "damage_effect",
+        "one_time_application" => true,
+        "remove_on_action" => false
+      },
+      "name" => "Lava_M_L",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "1878.059", "y" => "280.5017"},
+        %{"x" => "1946.518", "y" => "36.83777"},
+        %{"x" => "1829.031", "y" => "-634.7307"},
+        %{"x" => "1357.55", "y" => "-588.7642"},
+        %{"x" => "1493.295", "y" => "107.4883"}
+      ]
+    },
+    %{
+      "effect" => %{
+        "allow_multiple_effects" => true,
+        "disabled_outside_pool" => true,
+        "duration_ms" => "180000",
+        "effect_mechanics" => [
+          %{
+            "damage" => "30",
+            "effect_delay_ms" => "1000",
+            "execute_multiple_times" => true,
+            "name" => "damage"
+          }
+        ],
+        "name" => "damage_effect",
+        "one_time_application" => true,
+        "remove_on_action" => false
+      },
+      "name" => "Lava_M_L1",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "677.988", "y" => "-1818.792"},
+        %{"x" => "1412.499", "y" => "-1445.245"},
+        %{"x" => "1829.031", "y" => "-634.7307"},
+        %{"x" => "1357.55", "y" => "-588.7642"},
+        %{"x" => "523.1795", "y" => "-1444.89"}
+      ]
+    },
+    %{
+      "effect" => %{
+        "allow_multiple_effects" => true,
+        "disabled_outside_pool" => true,
+        "duration_ms" => "180000",
+        "effect_mechanics" => [
+          %{
+            "damage" => "30",
+            "effect_delay_ms" => "1000",
+            "execute_multiple_times" => true,
+            "name" => "damage"
+          }
+        ],
+        "name" => "damage_effect",
+        "one_time_application" => true,
+        "remove_on_action" => false
+      },
+      "name" => "Lava_M_B",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "265.4776", "y" => "-1913.465"},
+        %{"x" => "-533.4549", "y" => "-1913.333"},
+        %{"x" => "-1335.006", "y" => "-1391.035"},
+        %{"x" => "-1036.319", "y" => "-1274.458"},
+        %{"x" => "86.27892", "y" => "-1480.431"}
+      ]
+    },
+    %{
+      "effect" => %{
+        "allow_multiple_effects" => true,
+        "disabled_outside_pool" => true,
+        "duration_ms" => "180000",
+        "effect_mechanics" => [
+          %{
+            "damage" => "30",
+            "effect_delay_ms" => "1000",
+            "execute_multiple_times" => true,
+            "name" => "damage"
+          }
+        ],
+        "name" => "damage_effect",
+        "one_time_application" => true,
+        "remove_on_action" => false
+      },
+      "name" => "Lava_M_B1",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "-1843.178", "y" => "-663.4233"},
+        %{"x" => "-1602.128", "y" => "-1134.899"},
+        %{"x" => "-1335.006", "y" => "-1391.035"},
+        %{"x" => "-976.0599", "y" => "-1249.586"},
+        %{"x" => "-1439.618", "y" => "-476.5906"}
+      ]
+    },
+    %{
+      "effect" => %{
+        "allow_multiple_effects" => true,
+        "disabled_outside_pool" => true,
+        "duration_ms" => "180000",
+        "effect_mechanics" => [
+          %{
+            "damage" => "30",
+            "effect_delay_ms" => "1000",
+            "execute_multiple_times" => true,
+            "name" => "damage"
+          }
+        ],
+        "name" => "damage_effect",
+        "one_time_application" => true,
+        "remove_on_action" => false
+      },
+      "name" => "Lava_M_R",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "-1923.018", "y" => "-270.664"},
+        %{"x" => "-1887.907", "y" => "569.2549"},
+        %{"x" => "-1451.703", "y" => "1407.043"},
+        %{"x" => "-1270.348", "y" => "1076.371"},
+        %{"x" => "-1492.641", "y" => "-97.68877"}
+      ]
+    },
+    %{
+      "effect" => %{
+        "allow_multiple_effects" => true,
+        "disabled_outside_pool" => true,
+        "duration_ms" => "180000",
+        "effect_mechanics" => [
+          %{
+            "damage" => "30",
+            "effect_delay_ms" => "1000",
+            "execute_multiple_times" => true,
+            "name" => "damage"
+          }
+        ],
+        "name" => "damage_effect",
+        "one_time_application" => true,
+        "remove_on_action" => false
+      },
+      "name" => "Lava_M_R1",
+      "position" => %{"x" => "0", "y" => "0"},
+      "radius" => "0",
+      "shape" => "polygon",
+      "vertices" => [
+        %{"x" => "-520.0995", "y" => "1398.698"},
+        %{"x" => "-705.1613", "y" => "1832.864"},
+        %{"x" => "-1451.703", "y" => "1407.043"},
+        %{"x" => "-1270.348", "y" => "1076.371"}
+      ]
+    }
+  ],
   version_id: version.id
 }
 
