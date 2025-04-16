@@ -253,10 +253,13 @@ defmodule GameBackend.Units.Characters do
   Returns {:ok, map_of_ran_operations} in case of success.
   Returns {:error, failed_operation, failed_value, changes_so_far} if one of the operations fail.
   """
-  def buy_skin(user_id, skin_id, purchase_costs_list) do
+  def buy_skin(%{user_id: user_id, skin_id: skin_id, unit_id: unit_id}, purchase_costs_list) do
+    curse_id = GameBackend.Utils.get_game_id(:curse_of_mirra)
+
     Multi.new()
-    |> Multi.run(:unit_skin, fn _, _ -> insert_unit_skin(%{user_id: user_id, skin_id: skin_id}) end)
+    |> Multi.run(:unit_skin, fn _, _ -> insert_unit_skin(%{user_id: user_id, skin_id: skin_id, unit_id: unit_id}) end)
     |> Multi.run(:currencies, fn _, _ -> Currencies.substract_currencies(user_id, purchase_costs_list) end)
+    |> Multi.run(:updated_user, fn _, _ -> GameBackend.Users.get_user_by_id_and_game_id(user_id, curse_id) end)
     |> Repo.transaction()
   end
 
@@ -271,7 +274,11 @@ defmodule GameBackend.Units.Characters do
 
     Enum.flat_map(Repo.all(q), fn skin ->
       Enum.map(skin.purchase_costs, fn purchase_cost ->
-        %{name: skin.name, currency: %{amount: purchase_cost.amount, details: purchase_cost.currency}, character_name: skin.character.name}
+        %{
+          name: skin.name,
+          currency: %{amount: purchase_cost.amount, details: purchase_cost.currency},
+          character_name: skin.character.name
+        }
       end)
     end)
     |> case do

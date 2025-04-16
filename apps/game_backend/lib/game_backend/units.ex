@@ -149,6 +149,19 @@ defmodule GameBackend.Units do
     end
   end
 
+  def get_unit_by_character_id(user_id, character_id) do
+    case Repo.one(
+           from(unit in user_units_query(user_id),
+             join: character in Character,
+             on: unit.character_id == character.id,
+             where: character.id == ^character_id
+           )
+         ) do
+      nil -> {:error, :not_found}
+      unit -> {:ok, unit}
+    end
+  end
+
   @doc """
   Deletes a unit.
   """

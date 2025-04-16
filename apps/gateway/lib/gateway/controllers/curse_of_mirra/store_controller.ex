@@ -7,6 +7,7 @@ defmodule Gateway.Controllers.CurseOfMirra.StoreController do
   alias GameBackend.Utils
   alias GameBackend.Users.Currencies
   alias GameBackend.Stores
+  alias GameBackend.Units
   alias GameBackend.Units.Characters
 
   action_fallback Gateway.Controllers.FallbackController
@@ -48,16 +49,18 @@ defmodule Gateway.Controllers.CurseOfMirra.StoreController do
   end
 
   def buy_skin(conn, params) do
-    curse_of_mirra_id = Utils.get_game_id(:curse_of_mirra)
+    curse_of_mirra_id = GameBackend.Utils.get_game_id(:curse_of_mirra)
 
     with {:ok, skin} <- Characters.get_skin_by_name(params["skin_name"]),
+         {:ok, unit} <- Units.get_unit_by_character_id(params["user_id"], skin.character_id),
          {:ok, currency} <-
            Currencies.get_currency_by_name_and_game(params["currency_name"], curse_of_mirra_id),
          {:ok, purchase_cost} <-
            Characters.get_skin_purchase_cost_by_currency(skin, currency.id),
          {:can_afford, true} <- {:can_afford, Currencies.can_afford(params["user_id"], [purchase_cost])},
-         {:ok, skin_updates} <- Characters.buy_skin(params["user_id"], skin.id, [purchase_cost]) do
-      send_resp(conn, 200, Jason.encode!(%{unit_skin_id: skin_updates.unit_skin.id}))
+         {:ok, %{updated_user: updated_user}} <-
+           Characters.buy_skin(%{user_id: params["user_id"], skin_id: skin.id, unit_id: unit.id}, [purchase_cost]) do
+      send_resp(conn, 200, Jason.encode!(updated_user))
     end
   end
 end
