@@ -6,6 +6,9 @@ defmodule Arena.Entities do
   alias Arena.Game.Player
   alias Arena.Game.Crate
 
+  @stat_increase_per_level 0.1
+  @character_base_attack 1
+
   @type new_player_params :: %{
           id: integer(),
           team: integer(),
@@ -13,6 +16,7 @@ defmodule Arena.Entities do
           position: %{x: float(), y: float()},
           direction: %{x: float(), y: float()},
           character_name: String.t(),
+          character_level: integer(),
           config: map(),
           now: integer()
         }
@@ -26,6 +30,7 @@ defmodule Arena.Entities do
       direction: direction,
       character_name: character_name,
       skin_name: skin_name,
+      character_level: level,
       config: config,
       now: now,
       team: team
@@ -46,9 +51,10 @@ defmodule Arena.Entities do
       is_moving: false,
       aditional_info: %{
         team: team,
-        health: character.base_health,
-        base_health: character.base_health,
-        max_health: character.base_health,
+        health: scale_with_level(character.base_health, level) |> round(),
+        base_health: scale_with_level(character.base_health, level) |> round(),
+        max_health: scale_with_level(character.base_health, level) |> round(),
+        base_attack: scale_with_level(@character_base_attack, level),
         base_speed: character.base_speed,
         base_radius: character.base_size,
         base_stamina_interval: character.stamina_interval,
@@ -98,6 +104,10 @@ defmodule Arena.Entities do
       },
       collides_with: []
     }
+  end
+
+  defp scale_with_level(stat, level) do
+    stat + stat * @stat_increase_per_level * (level - 1)
   end
 
   @type new_projectile_params :: %{
