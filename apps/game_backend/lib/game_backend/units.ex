@@ -289,11 +289,12 @@ defmodule GameBackend.Units do
     |> Repo.transaction()
   end
 
+  @doc """
+  Returns a boolean value indicating if the unit has the skin or not.
+  """
   def has_skin?(unit, skin_name) do
-    case Enum.any?(unit.skins, fn unit_skin -> unit_skin.skin.name == skin_name end) do
-      true -> {:ok, :skin_exists}
-      _ -> {:error, :skin_not_found}
-    end
+    unit = Repo.preload(unit, skins: :skin)
+    Enum.any?(unit.skins, fn unit_skin -> unit_skin.skin.name == skin_name end)
   end
 
   @doc """

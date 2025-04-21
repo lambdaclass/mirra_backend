@@ -53,6 +53,7 @@ defmodule Gateway.Controllers.CurseOfMirra.StoreController do
 
     with {:ok, skin} <- Characters.get_skin_by_name(params["skin_name"]),
          {:ok, unit} <- Units.get_unit_by_character_id(params["user_id"], skin.character_id),
+         {:already_bought_skin?, false} <- {:already_bought_skin?, Units.has_skin?(unit, params["skin_name"])},
          {:ok, currency} <-
            Currencies.get_currency_by_name_and_game(params["currency_name"], curse_of_mirra_id),
          {:ok, purchase_cost} <-
