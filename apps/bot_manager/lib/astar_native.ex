@@ -8,7 +8,7 @@ defmodule AStarNative do
   # When your NIF is loaded, it will override this function.
   def a_star_shortest_path(_from, _to, _collision_grid), do: :erlang.nif_error(:nif_not_loaded)
 
-  def simplify_path(path, obstacles), do: :erlang.nif_error(:nif_not_loaded)
+  def simplify_path(_path, _obstacles), do: :erlang.nif_error(:nif_not_loaded)
 
   def build_collision_grid(_obstacles), do: :erlang.nif_error(:nif_not_loaded)
 end
