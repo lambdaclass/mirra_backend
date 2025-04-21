@@ -235,7 +235,7 @@ defmodule GameBackend.Units.Characters do
 
   def get_skin_purchase_cost_by_currency(skin, currency_id) do
     purchase_cost =
-      Map.get(skin, :purchase_costs)
+      Map.get(skin, :purchase_costs, [])
       |> Enum.find(fn purchase_cost -> purchase_cost.currency_id == currency_id end)
 
     case purchase_cost do
