@@ -331,6 +331,7 @@ defmodule BotManager.BotStateMachine do
       Enum.empty?(shortest_path) ->
         Map.put(bot_state_machine, :path_towards_position, nil)
         |> Map.put(:position_to_move_to, nil)
+
       length(shortest_path) == 1 ->
         Map.put(bot_state_machine, :position_to_move_to, position_to_move_to)
         |> Map.put(
@@ -338,17 +339,20 @@ defmodule BotManager.BotStateMachine do
           [to]
         )
         |> Map.put(:last_time_position_changed, :os.system_time(:millisecond))
+
       true ->
         # Replacing first and last points with the actual start and end points
-        shortest_path = ([from] ++ Enum.slice(shortest_path, 1, Enum.count(shortest_path) - 2) ++ [to])
-        |> AStarNative.simplify_path(bot_state_machine.obstacles)
+        shortest_path =
+          ([from] ++ Enum.slice(shortest_path, 1, Enum.count(shortest_path) - 2) ++ [to])
+          |> AStarNative.simplify_path(bot_state_machine.obstacles)
 
-        shortest_path = if System.get_env("TEST_PATHFINDING_SPLINES") == "true" do
-          shortest_path
-          |> SplinePath.smooth_path()
-        else
-          shortest_path
-        end
+        shortest_path =
+          if System.get_env("TEST_PATHFINDING_SPLINES") == "true" do
+            shortest_path
+            |> SplinePath.smooth_path()
+          else
+            shortest_path
+          end
 
         # The first point should only be necessary to simplify the path
         shortest_path = tl(shortest_path)
