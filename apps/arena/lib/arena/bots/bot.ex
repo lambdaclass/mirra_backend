@@ -83,39 +83,40 @@ defmodule Arena.Bots.Bot do
     |> maybe_set_obstacles(game_state)
   end
 
-  defp maybe_set_obstacles(%{bot_state_machine: %{obstacles: nil}} = state, %{obstacles: obstacles}) when not is_nil(obstacles) do
+  defp maybe_set_obstacles(%{bot_state_machine: %{obstacles: nil}} = state, %{obstacles: obstacles})
+       when not is_nil(obstacles) do
     obstacles =
-        obstacles
-        |> Enum.map(fn {obstacle_id, obstacle} ->
-          obstacle =
-            obstacle
-            |> Map.take([
-              :id,
-              :shape,
-              :position,
-              :radius,
-              :vertices,
-              :speed,
-              :category,
-              :direction,
-              :is_moving,
-              :name
-            ])
+      obstacles
+      |> Enum.map(fn {obstacle_id, obstacle} ->
+        obstacle =
+          obstacle
+          |> Map.take([
+            :id,
+            :shape,
+            :position,
+            :radius,
+            :vertices,
+            :speed,
+            :category,
+            :direction,
+            :is_moving,
+            :name
+          ])
 
-          obstacle =
-            obstacle
-            |> Map.put(:position, %{x: obstacle.position.x, y: obstacle.position.y})
-            |> Map.put(
-              :vertices,
-              Enum.map(obstacle.vertices.positions, fn position -> %{x: position.x, y: position.y} end)
-            )
-            |> Map.put(:direction, %{x: obstacle.direction.x, y: obstacle.direction.y})
-            |> Map.put(:shape, get_shape(obstacle.shape))
-            |> Map.put(:category, get_category(obstacle.category))
+        obstacle =
+          obstacle
+          |> Map.put(:position, %{x: obstacle.position.x, y: obstacle.position.y})
+          |> Map.put(
+            :vertices,
+            Enum.map(obstacle.vertices.positions, fn position -> %{x: position.x, y: position.y} end)
+          )
+          |> Map.put(:direction, %{x: obstacle.direction.x, y: obstacle.direction.y})
+          |> Map.put(:shape, get_shape(obstacle.shape))
+          |> Map.put(:category, get_category(obstacle.category))
 
-          {obstacle_id, obstacle}
-        end)
-        |> Map.new()
+        {obstacle_id, obstacle}
+      end)
+      |> Map.new()
 
     %{state | bot_state_machine: %{state.bot_state_machine | obstacles: obstacles}}
   end
