@@ -3928,52 +3928,52 @@ level_up_config_params = %{
   level_info: [
     %{
       level: 1,
-      currency_costs: [%{amount: 0, currency_id: gold_currency.id}],
+      currency_costs: [%{amount: 0, currency_id: curse_gold.id}],
       stat_increase_percentage: 0
     },
     %{
       level: 2,
-      currency_costs: [%{amount: 375, currency_id: gold_currency.id}],
+      currency_costs: [%{amount: 375, currency_id: curse_gold.id}],
       stat_increase_percentage: 1
     },
     %{
       level: 3,
-      currency_costs: [%{amount: 800, currency_id: gold_currency.id}],
+      currency_costs: [%{amount: 800, currency_id: curse_gold.id}],
       stat_increase_percentage: 2
     },
     %{
       level: 4,
-      currency_costs: [%{amount: 1650, currency_id: gold_currency.id}],
+      currency_costs: [%{amount: 1650, currency_id: curse_gold.id}],
       stat_increase_percentage: 3
     },
     %{
       level: 5,
-      currency_costs: [%{amount: 2250, currency_id: gold_currency.id}],
+      currency_costs: [%{amount: 2250, currency_id: curse_gold.id}],
       stat_increase_percentage: 4
     },
     %{
       level: 6,
-      currency_costs: [%{amount: 3750, currency_id: gold_currency.id}],
+      currency_costs: [%{amount: 3750, currency_id: curse_gold.id}],
       stat_increase_percentage: 5
     },
     %{
       level: 7,
-      currency_costs: [%{amount: 5625, currency_id: gold_currency.id}],
+      currency_costs: [%{amount: 5625, currency_id: curse_gold.id}],
       stat_increase_percentage: 6
     },
     %{
       level: 8,
-      currency_costs: [%{amount: 9750, currency_id: gold_currency.id}],
+      currency_costs: [%{amount: 9750, currency_id: curse_gold.id}],
       stat_increase_percentage: 7
     },
     %{
       level: 9,
-      currency_costs: [%{amount: 16500, currency_id: gold_currency.id}],
+      currency_costs: [%{amount: 16500, currency_id: curse_gold.id}],
       stat_increase_percentage: 8
     },
     %{
       level: 10,
-      currency_costs: [%{amount: 26250, currency_id: gold_currency.id}],
+      currency_costs: [%{amount: 26250, currency_id: curse_gold.id}],
       stat_increase_percentage: 9
     }
   ],
