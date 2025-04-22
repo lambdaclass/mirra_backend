@@ -16,7 +16,7 @@ defmodule Gateway.Controllers.CurseOfMirra.CharacterController do
 
   def select_skin(conn, params) do
     with {:ok, unit} <- Units.get_unit_by_character_name(params["character_name"], params["user_id"]),
-         {:ok, :skin_exists} <- Units.has_skin?(unit, params["skin_name"]),
+         {:can_select_skin?, true} <- {:can_select_skin?, Units.has_skin?(unit, params["skin_name"])},
          {:ok, _transaction} <- Units.select_unit_skin(unit, params["skin_name"]) do
       send_resp(conn, 200, Jason.encode!(%{character_name: params["character_name"], skin_name: params["skin_name"]}))
     end

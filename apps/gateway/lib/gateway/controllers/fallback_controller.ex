@@ -52,6 +52,14 @@ defmodule Gateway.Controllers.FallbackController do
     send_resp(conn, 400, Jason.encode!(%{"error" => "user cannot afford the cost"}))
   end
 
+  def call(conn, {:can_select_skin?, false}) do
+    send_resp(conn, 400, Jason.encode!(%{"error" => "user cannot select the skin"}))
+  end
+
+  def call(conn, {:already_bought_skin?, true}) do
+    send_resp(conn, 400, Jason.encode!(%{"error" => "user has the skin already"}))
+  end
+
   def call(conn, {:error, :quest_type_not_implemented}) do
     send_resp(conn, 400, Jason.encode!(%{"error" => "quest type not implemented yet"}))
   end
