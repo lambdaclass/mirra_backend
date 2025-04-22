@@ -26,6 +26,8 @@ defmodule Gateway.Router do
 
     scope "/stores" do
       get "/:store_name/list_items", StoreController, :list_items
+      get "/list_skins", StoreController, :list_skins
+      get "/buy_skin", StoreController, :buy_skin
     end
 
     post "/users", UserController, :create_guest_user
