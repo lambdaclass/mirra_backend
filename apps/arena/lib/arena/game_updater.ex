@@ -938,6 +938,7 @@ defmodule Arena.GameUpdater do
           direction: direction,
           character_name: player.character_name,
           skin_name: player.skin_name,
+          character_level: player.character_level,
           config: config,
           now: now
         }
