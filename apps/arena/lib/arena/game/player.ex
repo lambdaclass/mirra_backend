@@ -351,6 +351,7 @@ defmodule Arena.Game.Player do
   def calculate_real_damage(
         %{
           aditional_info: %{
+            base_attack: base_attack,
             power_ups: power_up_amount,
             power_up_damage_modifier: power_up_damage_modifier,
             bonus_damage: bonus_damage
@@ -358,7 +359,7 @@ defmodule Arena.Game.Player do
         } = _player_damage_owner,
         damage
       ) do
-    multiplier = 1 + power_up_damage_modifier * power_up_amount + bonus_damage
+    multiplier = base_attack + power_up_damage_modifier * power_up_amount + bonus_damage
 
     (damage * multiplier)
     |> round()
