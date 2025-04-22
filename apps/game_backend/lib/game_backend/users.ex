@@ -688,9 +688,7 @@ defmodule GameBackend.Users do
     end)
     |> Multi.run(:insert_unit_skins, fn _, %{insert_user: user} ->
       Enum.each(user.units, fn unit ->
-        # TODO: When users can buy skins, we should only insert the "default" ones.
-        # https://github.com/lambdaclass/mirra_backend/issues/1080
-        skins = Repo.all(from(s in Skin, where: s.character_id == ^unit.character_id))
+        skins = Repo.all(from(s in Skin, where: s.character_id == ^unit.character_id and s.is_default))
 
         Enum.each(skins, fn skin ->
           Units.insert_unit_skin(%{unit_id: unit.id, skin_id: skin.id, selected: skin.is_default})

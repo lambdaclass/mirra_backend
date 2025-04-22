@@ -253,7 +253,7 @@ defmodule GameBackend.Items do
   """
   def get_item_template_purchase_cost_by_currency(item_template, currency_id) do
     purchase_cost =
-      Map.get(item_template, :purchase_costs)
+      Map.get(item_template, :purchase_costs, [])
       |> Enum.find(fn purchase_cost -> purchase_cost.currency_id == currency_id end)
 
     case purchase_cost do
