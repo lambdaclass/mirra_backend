@@ -1,6 +1,8 @@
 name: "[TESTING-EUROPE] Deploy to Europe Arena testing"
 on:
   workflow_dispatch:
+  push:
+    branches: gh-1178-update-europe-workflows
 
 jobs:
   build-deploy:
