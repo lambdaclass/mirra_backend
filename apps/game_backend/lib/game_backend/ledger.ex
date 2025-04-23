@@ -47,19 +47,9 @@ defmodule GameBackend.Ledger do
     Repo.one(q)
   end
 
-  def register_currency_spent(user_id, currency_id, amount_spent, description) do
-    transaction_changeset = %Transaction{}
-      |> Transaction.changeset(%{
-        user_id: user_id,
-        currency_id: currency_id,
-        type: :debit,
-        amount: amount_spent,
-        description: description,
-        timestamp: DateTime.utc_now()
-      })
-
+  def register_currencies_spent(user_id, currency_costs, description) do
     # Question: do we include the action we want to do (e.g. buying a skin) in the same transaction?
-    Multi.new()
+    multi = Multi.new()
     |> Multi.run(:set_serializable_step, fn repo, _ ->
       # This is needed because in tests we run inside a transaction,
       # nesting transactions or changing isolation level doesn't work
@@ -69,36 +59,40 @@ defmodule GameBackend.Ledger do
         {:ok, repo.query!("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE")}
       end
     end)
-    |> Multi.run(:user_currency, fn repo, _changes -> 
-      {:ok, repo.get_by(UserCurrency, [user_id: user_id, currency_id: currency_id])}
+
+    Enum.reduce(currency_costs, multi, fn currency_cost, acc -> 
+      transaction_changeset = %Transaction{}
+        |> Transaction.changeset(%{
+          user_id: user_id,
+          currency_id: currency_cost.currency_id,
+          type: :debit,
+          amount: currency_cost.amount,
+          description: description,
+          timestamp: DateTime.utc_now()
+        })
+
+      acc
+      |> Multi.run({:user_currency, currency_cost.currency_id}, fn repo, _changes -> 
+        {:ok, repo.get_by(UserCurrency, [user_id: user_id, currency_id: currency_cost.currency_id])}
+      end)
+      |> Multi.run({:has_enough_currency?, currency_cost.currency_id}, fn _repo, %{user_currency: user_currency} -> 
+        if not is_nil(user_currency) and user_currency.amount >= currency_cost.amount do
+          {:ok, true}
+        else
+          {:error, :not_enough_currency}
+        end
+      end)
+      |> Multi.update({:remove_currency_from_user, currency_cost.currency_id}, fn %{user_currency: user_currency} -> 
+        Ecto.Changeset.change(user_currency, amount: user_currency.amount - currency_cost.amount)
+      end)
+      |> Multi.insert({:insert_currency_removal_into_ledger, currency_cost.currency_id}, transaction_changeset)
     end)
-    |> Multi.run(:has_enough_currency?, fn _repo, %{user_currency: user_currency} -> 
-      if not is_nil(user_currency) and user_currency.amount >= amount_spent do
-        {:ok, true}
-      else
-        {:error, :not_enough_currency}
-      end
-    end)
-    |> Multi.update(:remove_currency_from_user, fn %{user_currency: user_currency} -> 
-      Ecto.Changeset.change(user_currency, amount: user_currency.amount - amount_spent)
-    end)
-    |> Multi.insert(:insert_currency_removal_into_ledger, transaction_changeset)
     |> Repo.transaction()
   end
 
-  def register_currency_earned(user_id, currency_id, amount_earned, description) do
-    transaction_changeset = %Transaction{}
-      |> Transaction.changeset(%{
-        user_id: user_id,
-        currency_id: currency_id,
-        type: :credit,
-        amount: amount_earned,
-        description: description,
-        timestamp: DateTime.utc_now()
-      })
-
+  def register_currency_earned(user_id, earned_currencies, description) do
     # Question: do we include the action we want to do (e.g. buying a skin) in the same transaction?
-    Multi.new()
+    multi = Multi.new()
     |> Multi.run(:set_serializable_step, fn repo, _ ->
       # This is needed because in tests we run inside a transaction,
       # nesting transactions or changing isolation level doesn't work
@@ -108,29 +102,43 @@ defmodule GameBackend.Ledger do
         {:ok, repo.query!("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE")}
       end
     end)
-    |> Multi.run(:user_currency, fn repo, _changes -> 
-      user_currency = repo.get_by(UserCurrency, [user_id: user_id, currency_id: currency_id])
 
-      if is_nil(user_currency) do
-        %UserCurrency{}
-        |> UserCurrency.changeset(%{user_id: user_id, currency_id: currency_id, amount: 0})
-        |> repo.insert()
-      else
-        {:ok, user_currency}
-      end
+    Enum.reduce(earned_currencies, multi, fn currency_earned, acc -> 
+      transaction_changeset = %Transaction{}
+        |> Transaction.changeset(%{
+          user_id: user_id,
+          currency_id: currency_earned.currency_id,
+          type: :credit,
+          amount: currency_earned.amount,
+          description: description,
+          timestamp: DateTime.utc_now()
+        })
+
+      acc
+      |> Multi.run({:user_currency, currency_earned.currency_id}, fn repo, _changes -> 
+        user_currency = repo.get_by(UserCurrency, [user_id: user_id, currency_id: currency_earned.currency_id])
+
+        if is_nil(user_currency) do
+          %UserCurrency{}
+          |> UserCurrency.changeset(%{user_id: user_id, currency_id: currency_earned.currency_id, amount: 0})
+          |> repo.insert()
+        else
+          {:ok, user_currency}
+        end
+      end)
+      |> Multi.run({:user_currency_cap, currency_earned.currency_id}, fn repo, _changes -> 
+        {:ok, repo.get_by(UserCurrencyCap, [user_id: user_id, currency_id: currency_earned.currency_id])}
+      end)
+      |> Multi.update({:add_currency_to_user, currency_earned.currency_id}, fn %{user_currency: user_currency, user_currency_cap: user_currency_cap} -> 
+        case user_currency_cap do
+          nil ->
+            Ecto.Changeset.change(user_currency, amount: user_currency.amount + currency_earned.amount)
+          %UserCurrencyCap{cap: cap} ->
+            Ecto.Changeset.change(user_currency, amount: min(user_currency.amount + currency_earned.amount, cap))
+        end
+      end)
+      |> Multi.insert({:insert_currency_income_into_ledger, currency_earned.currency_id}, transaction_changeset)
     end)
-    |> Multi.run(:user_currency_cap, fn repo, _changes -> 
-      {:ok, repo.get_by(UserCurrencyCap, [user_id: user_id, currency_id: currency_id])}
-    end)
-    |> Multi.update(:add_currency_to_user, fn %{user_currency: user_currency, user_currency_cap: user_currency_cap} -> 
-      case user_currency_cap do
-        nil ->
-          Ecto.Changeset.change(user_currency, amount: user_currency.amount + amount_earned)
-        %UserCurrencyCap{cap: cap} ->
-          Ecto.Changeset.change(user_currency, amount: min(user_currency.amount + amount_earned, cap))
-      end
-    end)
-    |> Multi.insert(:insert_currency_income_into_ledger, transaction_changeset)
     |> Repo.transaction()
   end
 end
