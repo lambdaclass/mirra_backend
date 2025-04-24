@@ -323,14 +323,13 @@ defmodule GameBackend.Units do
          {:ok, true} <- validate_unit_owned(unit.user_id, user_id),
          {:ok, true} <- validate_next_level_exists_in_config(level_up_config.level_info, unit.level),
          costs = calculate_level_up_cost(unit, level_up_config),
-         {:ok, true} <- (if Currencies.can_afford(user_id, costs), do: {:ok, true}, else: {:error, :cant_afford}) do
-
-        Multi.new()
-        |> Multi.run(:unit, fn _, _ -> add_level(unit) end)
-        |> Multi.run(:user_currency, fn _, _ ->
-          Currencies.substract_currencies(user_id, costs)
-        end)
-        |> Transaction.run()
+         {:ok, true} <- if(Currencies.can_afford(user_id, costs), do: {:ok, true}, else: {:error, :cant_afford}) do
+      Multi.new()
+      |> Multi.run(:unit, fn _, _ -> add_level(unit) end)
+      |> Multi.run(:user_currency, fn _, _ ->
+        Currencies.substract_currencies(user_id, costs)
+      end)
+      |> Transaction.run()
     end
   end
 
