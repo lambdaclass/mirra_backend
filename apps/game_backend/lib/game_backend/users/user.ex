@@ -24,6 +24,7 @@ defmodule GameBackend.Users.User do
            only: [
              :username,
              :currencies,
+             :units,
              :prestige,
              :most_played_character,
              :total_kills,
@@ -31,8 +32,7 @@ defmodule GameBackend.Users.User do
              :highest_historical_prestige,
              :user_quests,
              :quest_refresh_at,
-             :daily_quests_week_progress,
-             :units
+             :daily_quests_week_progress
            ]}
   schema "users" do
     field(:game_id, :integer)
