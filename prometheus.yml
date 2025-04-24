@@ -5,4 +5,4 @@ scrape_configs:
   - job_name: 'arena'
     scrape_interval: 1m
     static_configs:
-      - targets: ['host.docker.internal:9568']
+      - targets: ['arena-chile-testing.prometheus.championsofmirra.com/metrics']
