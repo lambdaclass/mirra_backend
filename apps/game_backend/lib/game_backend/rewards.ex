@@ -136,13 +136,11 @@ defmodule GameBackend.Rewards do
     |> Multi.run(:get_currency, fn _, _ ->
       Currencies.get_currency_by_name_and_game(daily_reward["currency"], Utils.get_game_id(:curse_of_mirra))
     end)
-    |> Multi.run(:update_user_currencies, fn _, %{get_currency: currency} ->
-      Ledger.register_currency_earned(
+    |> Ledger.register_currency_earned(
         user.id,
         [%{currency_id: currency.id, amount: daily_reward["amount"]}],
         "Daily Reward Claim"
-      )
-    end)
+    )
     |> Repo.transaction()
   end
 end

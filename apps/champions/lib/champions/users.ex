@@ -244,22 +244,11 @@ defmodule Champions.Users do
 
   defp claim_afk_rewards(user_id, afk_rewards, type) do
     Multi.new()
-    |> Multi.run(:add_currencies, fn _, _ ->
-      results =
-        Enum.map(afk_rewards, fn afk_reward ->
-          Ledger.register_currency_earned(
-            user_id,
-            [%{currency_id: afk_reward.currency.id, amount: trunc(afk_reward.amount)}],
-            "AFK Reward Claimed"
-          )
-        end)
-
-      if Enum.all?(results, fn {result, _} -> result == :ok end) do
-        {:ok, Enum.map(results, fn {_ok, currency} -> currency end)}
-      else
-        {:error, "failed"}
-      end
-    end)
+    |> Ledger.register_currency_earned(
+      user_id,
+      Enum.map(afk_rewards, fn afk_reward -> %{currency_id: afk_reward.currency.id, amount: trunc(afk_reward.amount)} end),
+      "AFK Reward Claimed"
+    )
     |> Multi.run(:reset_afk_claim, fn _, _ ->
       Users.reset_afk_rewards_claim(user_id, type)
     end)
