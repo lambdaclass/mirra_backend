@@ -153,43 +153,6 @@ defmodule GameBackend.Users.Currencies do
   end
 
   @doc """
-  Substracts all CurrencyCosts from the user.
-
-  If all calls succeed, `{:ok, results}` is returned, where `results` is a %UserCurrency{} list.
-  If any of the calls fail, `{:error, "failed"}` is returned instead.
-
-  Note that on failure, the succesful calls still take effect. Because of this, it's heavily
-  advised that you use this function inside a Multi transaction, specially if you are combining
-  it with other DB acesses.
-
-  ## Examples
-
-      iex> Ecto.Multi.new()
-      |> Ecto.Multi.run(:some_other_operation, fn _, _ -> other_operation() end)
-      |> Ecto.Multi.run(:user_currency, fn _, _ ->
-        Currencies.substract_currencies(user_id, [
-          %CurrencyCost{currency_id: currency_id, amount: amount}
-        ])
-      end)
-      |> GameBackend.Repo.transaction()
-      {:ok, %{user_currency: [%UserCurrency{}]}
-  """
-  def substract_currencies(_user_id, []), do: {:ok, []}
-
-  def substract_currencies(user_id, costs) do
-    results =
-      Enum.map(costs, fn %CurrencyCost{currency_id: currency_id, amount: cost} ->
-        add_currency(user_id, currency_id, -cost)
-      end)
-
-    if Enum.all?(results, fn {result, _} -> result == :ok end) do
-      {:ok, Enum.map(results, fn {_ok, currency} -> currency end)}
-    else
-      {:error, "failed"}
-    end
-  end
-
-  @doc """
   Gets how much a user has of a given currency by its name.
   """
   def get_amount_of_currency_by_name(user_id, currency_name) do

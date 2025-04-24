@@ -3,6 +3,7 @@ defmodule Champions.Gacha do
   Gacha logic for Champions of Mirra.
   """
 
+  alias GameBackend.Ledger
   alias GameBackend.Gacha
   alias GameBackend.Transaction
   alias GameBackend.Users
@@ -45,7 +46,7 @@ defmodule Champions.Gacha do
         Multi.new()
         |> Multi.run(:unit, fn _, _ -> Units.insert_unit(params) end)
         |> Multi.run(:substract_currencies, fn _, _ ->
-          Currencies.substract_currencies(user_id, box.cost)
+          Ledger.register_currencies_spent(user_id, box.cost, "Summoned Box Cost")
         end)
         |> Transaction.run()
 

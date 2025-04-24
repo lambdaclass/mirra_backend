@@ -2,6 +2,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
   @moduledoc """
     Module to work with quest logic
   """
+  alias GameBackend.Ledger
   alias GameBackend.Users
   alias GameBackend.CurseOfMirra.Quests
   alias GameBackend.Utils
@@ -257,7 +258,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
           true ->
             Multi.new()
             |> Multi.run(:deduct_currencies, fn _, _ ->
-              Currencies.substract_currencies(daily_quest.user_id, reroll_costs)
+              Ledger.register_currencies_spent(daily_quest.user_id, reroll_costs, "Reroll Quest")
             end)
             |> Multi.update(:change_previous_quest, finish_previous_quest_changeset)
             |> Multi.insert(:insert_quest, new_quest_changeset)

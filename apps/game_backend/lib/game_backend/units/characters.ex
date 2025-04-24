@@ -4,10 +4,10 @@ defmodule GameBackend.Units.Characters do
   """
 
   import Ecto.Query
+  alias GameBackend.Ledger
   alias GameBackend.Configuration.Version
   alias Ecto.Multi
   alias GameBackend.Repo
-  alias GameBackend.Users.Currencies
   alias GameBackend.Units.UnitSkin
   alias GameBackend.Units.Characters.Character
   alias GameBackend.Units.Characters.Skin
@@ -256,7 +256,7 @@ defmodule GameBackend.Units.Characters do
 
     Multi.new()
     |> Multi.run(:unit_skin, fn _, _ -> insert_unit_skin(%{user_id: user_id, skin_id: skin_id, unit_id: unit_id}) end)
-    |> Multi.run(:currencies, fn _, _ -> Currencies.substract_currencies(user_id, purchase_costs_list) end)
+    |> Multi.run(:currencies, fn _, _ -> Ledger.register_currencies_spent(user_id, purchase_costs_list, "Skin Bought") end)
     |> Multi.run(:updated_user, fn _, _ -> GameBackend.Users.get_user_by_id_and_game_id(user_id, curse_id) end)
     |> Repo.transaction()
   end
