@@ -9,14 +9,14 @@ defmodule GameBackend.Ledger.Transaction do
   alias GameBackend.Users.Currencies.Currency
 
   schema "ledger_transactions" do
-      field(:type, Ecto.Enum, values: [:credit, :debit])
-      field(:amount, :integer)
-      field(:description, :string)
+    field(:type, Ecto.Enum, values: [:credit, :debit])
+    field(:amount, :integer)
+    field(:description, :string)
 
-      belongs_to(:user, User)
-      belongs_to(:currency, Currency)
+    belongs_to(:user, User)
+    belongs_to(:currency, Currency)
 
-      timestamps(type: :utc_datetime)
+    timestamps(type: :utc_datetime)
   end
 
   def changeset(transaction, attrs) do
@@ -26,7 +26,7 @@ defmodule GameBackend.Ledger.Transaction do
       :amount,
       :description,
       :user_id,
-      :currency_id,
+      :currency_id
     ])
     |> validate_required([:type, :amount, :description, :user_id, :currency_id])
   end

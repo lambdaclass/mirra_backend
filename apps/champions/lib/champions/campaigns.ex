@@ -117,7 +117,7 @@ defmodule Champions.Campaigns do
   end
 
   defp apply_currency_rewards(multi, user_id, currency_rewards) do
-    Multi.run(multi, :add_currencies, fn _, _ -> 
+    Multi.run(multi, :add_currencies, fn _, _ ->
       Ledger.register_currency_earned(user_id, currency_rewards, "Campaign Rewards")
     end)
   end

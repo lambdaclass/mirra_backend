@@ -92,16 +92,49 @@ defmodule Champions.Users do
   end
 
   defp add_sample_currencies(user) do
-    Ledger.register_currency_earned(user.id, [
-      %{ currency_id: Currencies.get_currency_by_name_and_game!("Gold", Utils.get_game_id(:champions_of_mirra)).id, amount: 100 },
-      %{ currency_id: Currencies.get_currency_by_name_and_game!("Gems", Utils.get_game_id(:champions_of_mirra)).id, amount: 500 },
-      %{ currency_id: Currencies.get_currency_by_name_and_game!("Summon Scrolls", Utils.get_game_id(:champions_of_mirra)).id, amount: 100 },
-      %{ currency_id: Currencies.get_currency_by_name_and_game!("Fertilizer", Utils.get_game_id(:champions_of_mirra)).id, amount: 100 },
-      %{ currency_id: Currencies.get_currency_by_name_and_game!("Arcane Crystals", Utils.get_game_id(:champions_of_mirra)).id, amount: 100 },
-      %{ currency_id: Currencies.get_currency_by_name_and_game!("Hero Souls", Utils.get_game_id(:champions_of_mirra)).id, amount: 100 },
-      %{ currency_id: Currencies.get_currency_by_name_and_game!("Blueprints", Utils.get_game_id(:champions_of_mirra)).id, amount: 50 },
-      %{ currency_id: Currencies.get_currency_by_name_and_game!("Supplies", Utils.get_game_id(:champions_of_mirra)).id, amount: 5 }
-    ], "Sample Currencies")
+    Ledger.register_currency_earned(
+      user.id,
+      [
+        %{
+          currency_id: Currencies.get_currency_by_name_and_game!("Gold", Utils.get_game_id(:champions_of_mirra)).id,
+          amount: 100
+        },
+        %{
+          currency_id: Currencies.get_currency_by_name_and_game!("Gems", Utils.get_game_id(:champions_of_mirra)).id,
+          amount: 500
+        },
+        %{
+          currency_id:
+            Currencies.get_currency_by_name_and_game!("Summon Scrolls", Utils.get_game_id(:champions_of_mirra)).id,
+          amount: 100
+        },
+        %{
+          currency_id:
+            Currencies.get_currency_by_name_and_game!("Fertilizer", Utils.get_game_id(:champions_of_mirra)).id,
+          amount: 100
+        },
+        %{
+          currency_id:
+            Currencies.get_currency_by_name_and_game!("Arcane Crystals", Utils.get_game_id(:champions_of_mirra)).id,
+          amount: 100
+        },
+        %{
+          currency_id:
+            Currencies.get_currency_by_name_and_game!("Hero Souls", Utils.get_game_id(:champions_of_mirra)).id,
+          amount: 100
+        },
+        %{
+          currency_id:
+            Currencies.get_currency_by_name_and_game!("Blueprints", Utils.get_game_id(:champions_of_mirra)).id,
+          amount: 50
+        },
+        %{
+          currency_id: Currencies.get_currency_by_name_and_game!("Supplies", Utils.get_game_id(:champions_of_mirra)).id,
+          amount: 5
+        }
+      ],
+      "Sample Currencies"
+    )
   end
 
   defp add_super_campaign_progresses(user) do
@@ -214,7 +247,11 @@ defmodule Champions.Users do
     |> Multi.run(:add_currencies, fn _, _ ->
       results =
         Enum.map(afk_rewards, fn afk_reward ->
-          Ledger.register_currency_earned(user_id, [%{currency_id: afk_reward.currency.id, amount: trunc(afk_reward.amount)}], "AFK Reward Claimed")
+          Ledger.register_currency_earned(
+            user_id,
+            [%{currency_id: afk_reward.currency.id, amount: trunc(afk_reward.amount)}],
+            "AFK Reward Claimed"
+          )
         end)
 
       if Enum.all?(results, fn {result, _} -> result == :ok end) do

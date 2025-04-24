@@ -21,9 +21,12 @@ defmodule Gateway.Controllers.CurseOfMirra.CurrencyController do
          {:curse_user, ^game_id} <- {:curse_user, user.game_id},
          {:get_currency, {:ok, currency}} <-
            {:get_currency, Currencies.get_currency_by_name_and_game(currencty_name, user.game_id)},
-         {:add_currency, {:ok, _}} <- Ledger.register_currency_earned(user_id, [%{currency_id: currency.id, amount: amount}], "Modified User Currency") do
-
-
+         {:add_currency, {:ok, _}} <-
+           Ledger.register_currency_earned(
+             user_id,
+             [%{currency_id: currency.id, amount: amount}],
+             "Modified User Currency"
+           ) do
       send_resp(conn, 200, Jason.encode!(%{amount: amount, user_id: user_id, currency_id: currency.id}))
     else
       {:get_user, _} -> send_resp(conn, 404, "User not found")

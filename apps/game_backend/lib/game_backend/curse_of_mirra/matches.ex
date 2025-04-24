@@ -97,7 +97,11 @@ defmodule GameBackend.CurseOfMirra.Matches do
         if Map.has_key?(@gold_rewards_per_position, resulting_position) do
           gold_reward_amount = Map.get(@gold_rewards_per_position, resulting_position)
 
-          Ledger.register_currency_earned(user.id, [%{currency_id: gold_currency.id, amount: gold_reward_amount}], "Match Reward")
+          Ledger.register_currency_earned(
+            user.id,
+            [%{currency_id: gold_currency.id, amount: gold_reward_amount}],
+            "Match Reward"
+          )
         else
           {:ok, nil}
         end
