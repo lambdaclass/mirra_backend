@@ -40,12 +40,6 @@ defmodule Gateway.Controllers.CurseOfMirra.CharacterController do
           new_currency_balance: new_balances
         })
       )
-    else
-      {:error, :no_more_levels} ->
-        send_resp(conn, 400, "Cannot further level up")
-
-      {:error, :cant_afford} ->
-        send_resp(conn, 400, "Cannot afford levelling up")
     end
   end
 

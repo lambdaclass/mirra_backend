@@ -317,38 +317,36 @@ defmodule GameBackend.Units do
   Returns `{:ok, %{unit: %Unit{}, user_currency: %UserCurrency{}}}` if succesful.
   """
   def level_up(user_id, unit_id) do
-    with {:unit, {:ok, unit}} <- {:unit, get_unit(unit_id)},
-         {:unit_owned, true} <- {:unit_owned, unit.user_id == user_id},
-         level_up_config = get_current_level_up_config(),
-         {:can_level_up, true} <-
-           {:can_level_up,
-            Enum.any?(level_up_config.level_info, fn level_info -> level_info.level == unit.level + 1 end)},
+    level_up_config = get_current_level_up_config()
+
+    with {:ok, unit} <- get_unit(unit_id),
+         {:ok, true} <- validate_unit_owned(unit.user_id, user_id),
+         {:ok, true} <- validate_next_level_exists_in_config(level_up_config.level_info, unit.level),
          costs = calculate_level_up_cost(unit, level_up_config),
-         {:can_afford, true} <-
-           {:can_afford, Currencies.can_afford(user_id, costs)} do
-      result =
+         {:ok, true} <- (if Currencies.can_afford(user_id, costs), do: {:ok, true}, else: {:error, :cant_afford}) do
+
         Multi.new()
         |> Multi.run(:unit, fn _, _ -> add_level(unit) end)
         |> Multi.run(:user_currency, fn _, _ ->
           Currencies.substract_currencies(user_id, costs)
         end)
         |> Transaction.run()
+    end
+  end
 
-      case result do
-        {:error, reason} ->
-          {:error, reason}
+  defp validate_unit_owned(user_id, user_id) do
+    {:ok, true}
+  end
 
-        {:error, _, _, _} ->
-          {:error, :transaction}
+  defp validate_unit_owned(_unit_user_id, _user_id) do
+    {:error, :not_found}
+  end
 
-        {:ok, %{unit: unit, user_currency: user_currency}} ->
-          {:ok, %{unit: unit, user_currency: user_currency}}
-      end
+  defp validate_next_level_exists_in_config(levels_info, current_level) do
+    if Enum.any?(levels_info, fn level_info -> level_info.level == current_level + 1 end) do
+      {:ok, true}
     else
-      {:unit, {:error, :not_found}} -> {:error, :not_found}
-      {:can_level_up, false} -> {:error, :no_more_levels}
-      {:unit_owned, false} -> {:error, :not_found}
-      {:can_afford, false} -> {:error, :cant_afford}
+      {:error, :no_more_levels}
     end
   end
 

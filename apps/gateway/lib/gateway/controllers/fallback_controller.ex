@@ -72,6 +72,10 @@ defmodule Gateway.Controllers.FallbackController do
     send_resp(conn, 400, Jason.encode!(%{"error" => "the user doesn't have that quest"}))
   end
 
+  def call(conn, {:error, :no_more_levels}) do
+    send_resp(conn, 400, Jason.encode!(%{"error" => "cannot further level up"}))
+  end
+
   def call(conn, {:error, _failed_operation, :not_found, _changes_so_far}) do
     send_resp(conn, 404, Jason.encode!(%{"error" => "not found"}))
   end
