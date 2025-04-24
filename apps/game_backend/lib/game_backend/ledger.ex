@@ -49,20 +49,24 @@ defmodule GameBackend.Ledger do
     Repo.one(q)
   end
 
-  def register_currencies_spent(user_id, currency_costs, description) do
-    # Question: do we include the action we want to do (e.g. buying a skin) in the same transaction?
-    multi =
-      Multi.new()
-      |> Multi.run(:set_serializable_step, fn repo, _ ->
-        # This is needed because in tests we run inside a transaction,
-        # nesting transactions or changing isolation level doesn't work
-        if Application.get_env(:game_backend, :env) == :test do
-          {:ok, :skip}
-        else
-          {:ok, repo.query!("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE")}
-        end
-      end)
+  @doc """
+  Returns an `Ecto.Multi` that will perform all checks, substract the specified
+  currencies to the user and adds a register to the transaction log.
 
+  To ensure transaction isolation you can set the isolation level with:
+
+    Multi.run(:set_serializable_step, fn repo, _ ->
+      # This is needed because in tests we run inside a transaction,
+      # nesting transactions or changing isolation level doesn't work
+      if Application.get_env(:game_backend, :env) == :test do
+        {:ok, :skip}
+      else
+        {:ok, repo.query!("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE")}
+      end
+    end)
+  
+  """
+  def register_currencies_spent_multi(multi, user_id, currency_costs, description) do
     Enum.reduce(currency_costs, multi, fn currency_cost, acc ->
       transaction_changeset =
         %Transaction{}
@@ -79,35 +83,61 @@ defmodule GameBackend.Ledger do
       |> Multi.run({:user_currency, currency_cost.currency_id}, fn repo, _changes ->
         {:ok, repo.get_by(UserCurrency, user_id: user_id, currency_id: currency_cost.currency_id)}
       end)
-      |> Multi.run({:has_enough_currency?, currency_cost.currency_id}, fn _repo, %{user_currency: user_currency} ->
+      |> Multi.run({:has_enough_currency?, currency_cost.currency_id}, fn _repo, changes ->
+        user_currency = Map.get(changes, {:user_currency, currency_cost.currency_id})
+
         if not is_nil(user_currency) and user_currency.amount >= currency_cost.amount do
           {:ok, true}
         else
           {:error, :not_enough_currency}
         end
       end)
-      |> Multi.update({:remove_currency_from_user, currency_cost.currency_id}, fn %{user_currency: user_currency} ->
+      |> Multi.update({:remove_currency_from_user, currency_cost.currency_id}, fn changes ->
+        user_currency = Map.get(changes, {:user_currency, currency_cost.currency_id})
         Ecto.Changeset.change(user_currency, amount: user_currency.amount - currency_cost.amount)
       end)
       |> Multi.insert({:insert_currency_removal_into_ledger, currency_cost.currency_id}, transaction_changeset)
     end)
+  end
+
+  def register_currencies_spent(user_id, currency_costs, description) do
+    register_currencies_spent_multi(Multi.new(), user_id, currency_costs, description)
     |> Repo.transaction()
   end
 
-  def register_currency_earned(user_id, earned_currencies, description) do
-    # Question: do we include the action we want to do (e.g. buying a skin) in the same transaction?
-    multi =
-      Multi.new()
-      |> Multi.run(:set_serializable_step, fn repo, _ ->
-        # This is needed because in tests we run inside a transaction,
-        # nesting transactions or changing isolation level doesn't work
-        if Application.get_env(:game_backend, :env) == :test do
-          {:ok, :skip}
-        else
-          {:ok, repo.query!("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE")}
-        end
-      end)
+  def register_currencies_spent(multi, user_id, currency_costs, description) do
+    Multi.new()
+    |> Multi.run(:set_serializable_step, fn repo, _ ->
+      # This is needed because in tests we run inside a transaction,
+      # nesting transactions or changing isolation level doesn't work
+      if Application.get_env(:game_backend, :env) == :test do
+        {:ok, :skip}
+      else
+        {:ok, repo.query!("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE")}
+      end
+    end)
+    |> Multi.merge(fn _ -> multi end)
+    |> register_currencies_spent_multi(user_id, currency_costs, description)
+  end
 
+  @doc """
+  Returns an `Ecto.Multi` that will perform all checks, add the specified
+  currencies to the user and adds a register to the transaction log.
+
+  To ensure transaction isolation you can set the isolation level with:
+
+    Multi.run(:set_serializable_step, fn repo, _ ->
+      # This is needed because in tests we run inside a transaction,
+      # nesting transactions or changing isolation level doesn't work
+      if Application.get_env(:game_backend, :env) == :test do
+        {:ok, :skip}
+      else
+        {:ok, repo.query!("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE")}
+      end
+    end)
+  
+  """
+  def register_currency_earned_multi(multi, user_id, earned_currencies, description) do
     Enum.reduce(earned_currencies, multi, fn currency_earned, acc ->
       transaction_changeset =
         %Transaction{}
@@ -135,10 +165,10 @@ defmodule GameBackend.Ledger do
       |> Multi.run({:user_currency_cap, currency_earned.currency_id}, fn repo, _changes ->
         {:ok, repo.get_by(UserCurrencyCap, user_id: user_id, currency_id: currency_earned.currency_id)}
       end)
-      |> Multi.update({:add_currency_to_user, currency_earned.currency_id}, fn %{
-                                                                                 user_currency: user_currency,
-                                                                                 user_currency_cap: user_currency_cap
-                                                                               } ->
+      |> Multi.update({:add_currency_to_user, currency_earned.currency_id}, fn changes ->
+        user_currency = Map.get(changes, {:user_currency, currency_earned.currency_id})
+        user_currency_cap = Map.get(changes, {:user_currency_cap, currency_earned.currency_id})
+
         case user_currency_cap do
           nil ->
             Ecto.Changeset.change(user_currency, amount: user_currency.amount + currency_earned.amount)
@@ -149,6 +179,25 @@ defmodule GameBackend.Ledger do
       end)
       |> Multi.insert({:insert_currency_income_into_ledger, currency_earned.currency_id}, transaction_changeset)
     end)
+  end
+
+  def register_currency_earned(user_id, earned_currencies, description) do
+    register_currency_earned_multi(Multi.new(), user_id, earned_currencies, description)
     |> Repo.transaction()
+  end
+
+  def register_currency_earned(multi, user_id, currency_costs, description) do
+    Multi.new()
+    |> Multi.run(:set_serializable_step, fn repo, _ ->
+      # This is needed because in tests we run inside a transaction,
+      # nesting transactions or changing isolation level doesn't work
+      if Application.get_env(:game_backend, :env) == :test do
+        {:ok, :skip}
+      else
+        {:ok, repo.query!("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE")}
+      end
+    end)
+    |> Multi.merge(fn _ -> multi end)
+    |> register_currency_earned_multi(user_id, currency_costs, description)
   end
 end
