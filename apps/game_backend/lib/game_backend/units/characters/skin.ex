@@ -12,6 +12,7 @@ defmodule GameBackend.Units.Characters.Skin do
   @derive {Jason.Encoder,
            only: [
              :is_default,
+             :name,
              :character_id
            ]}
 
