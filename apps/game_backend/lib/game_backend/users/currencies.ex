@@ -88,12 +88,6 @@ defmodule GameBackend.Users.Currencies do
         )
       )
 
-  defp insert_user_currency(attrs) do
-    %UserCurrency{}
-    |> UserCurrency.changeset(attrs)
-    |> Repo.insert()
-  end
-
   @doc """
   Returns whether the user can afford the required amounts of the specified currencies.
   """
