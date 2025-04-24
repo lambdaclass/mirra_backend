@@ -4,6 +4,7 @@ defmodule GameBackend.Rewards do
   """
 
   import Ecto.Query
+  alias GameBackend.Ledger
   alias Ecto.Multi
   alias GameBackend.Repo
   alias GameBackend.Campaigns.Rewards.AfkRewardRate
@@ -132,13 +133,11 @@ defmodule GameBackend.Rewards do
         last_daily_reward_claim: daily_reward["day"]
       })
     end)
-    |> Multi.run(:update_user_currencies, fn _, _ ->
-      Currencies.add_currency_by_name_and_game!(
-        user.id,
-        daily_reward["currency"],
-        Utils.get_game_id(:curse_of_mirra),
-        daily_reward["amount"]
-      )
+    |> Multi.run(:get_currency, fn _, _ -> 
+      Currencies.get_currency_by_name_and_game(daily_reward["currency"], Utils.get_game_id(:curse_of_mirra))
+    end)
+    |> Multi.run(:update_user_currencies, fn _, %{get_currency: currency} ->
+      Ledger.register_currency_earned(user.id, [%{currency_id: currency.id, amount: daily_reward["amount"]}], "Daily Reward Claim")
     end)
     |> Repo.transaction()
   end

@@ -166,34 +166,6 @@ defmodule GameBackend.Users.Currencies do
   end
 
   @doc """
-  Add amount of currency to user by its name.
-  """
-  def add_currency_by_name_and_game!(user_id, currency_name, game_id, amount),
-    do:
-      user_id
-      |> add_currency(get_currency_by_name_and_game!(currency_name, game_id).id, amount)
-
-  @doc """
-  Add the specified amount of currency to an user by it's name
-
-  Returns nil if the currency doesn't exists
-
-  ## Examples
-
-      iex> add_currency_by_name_and_game(user_id, currency_name, game_id, amount)
-      %UserCurrency{}
-
-      iex> add_currency_by_name_and_game(user_id, currency_name, game_id, amount)
-      nil
-  """
-  def add_currency_by_name_and_game(user_id, currency_name, game_id, amount) do
-    case get_currency_by_name_and_game(currency_name, game_id) do
-      {:error, :not_found} -> nil
-      {:ok, currency} -> add_currency(user_id, currency.id, amount)
-    end
-  end
-
-  @doc """
   Inserts an UserCurrencyCap.
   """
   def insert_user_currency_cap(attrs) do

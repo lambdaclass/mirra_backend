@@ -5,6 +5,7 @@ defmodule Gateway.Controllers.CurseOfMirra.CurrencyController do
 
   use Gateway, :controller
 
+  alias GameBackend.Ledger
   alias GameBackend.Users
   alias GameBackend.Utils
   alias GameBackend.Users.Currencies
@@ -18,9 +19,12 @@ defmodule Gateway.Controllers.CurseOfMirra.CurrencyController do
 
     with {:get_user, {:ok, user}} <- {:get_user, Users.get_user(user_id)},
          {:curse_user, ^game_id} <- {:curse_user, user.game_id},
-         {:add_currency, {:ok, user_currency}} <-
-           {:add_currency, Currencies.add_currency_by_name_and_game(user_id, currencty_name, user.game_id, amount)} do
-      send_resp(conn, 200, Jason.encode!(Map.take(user_currency, [:amount, :user_id, :currency_id])))
+         {:get_currency, {:ok, currency}} <-
+           {:get_currency, Currencies.get_currency_by_name_and_game(currencty_name, user.game_id)},
+         {:add_currency, {:ok, _}} <- Ledger.register_currency_earned(user_id, [%{currency_id: currency.id, amount: amount}], "Modified User Currency") do
+
+
+      send_resp(conn, 200, Jason.encode!(%{amount: amount, user_id: user_id, currency_id: currency.id}))
     else
       {:get_user, _} -> send_resp(conn, 404, "User not found")
       {:curse_user, _} -> send_resp(conn, 400, "User from another game")
