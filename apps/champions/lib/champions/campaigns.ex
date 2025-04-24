@@ -3,12 +3,12 @@ defmodule Champions.Campaigns do
   Campaigns logic for Champions of Mirra.
   """
 
+  alias GameBackend.Ledger
   alias GameBackend.Campaigns
   alias GameBackend.Campaigns.SuperCampaignProgress
   alias GameBackend.Items.Item
   alias GameBackend.Repo
   alias GameBackend.Units.Unit
-  alias GameBackend.Users.Currencies
   alias Ecto.Multi
 
   @doc """
@@ -117,10 +117,8 @@ defmodule Champions.Campaigns do
   end
 
   defp apply_currency_rewards(multi, user_id, currency_rewards) do
-    Enum.reduce(currency_rewards, multi, fn currency_reward, multi ->
-      Multi.run(multi, {:add_currency, currency_reward.currency_id}, fn _, _ ->
-        Currencies.add_currency(user_id, currency_reward.currency_id, currency_reward.amount)
-      end)
+    Multi.run(multi, :add_currencies, fn _, _ -> 
+      Ledger.register_currency_earned(user_id, currency_rewards, "Campaign Rewards")
     end)
   end
 end

@@ -78,47 +78,6 @@ defmodule GameBackend.Users.Currencies do
       ) || 0
 
   @doc """
-  Adds (or substracts) the given amount of currency to a user.
-  Creates the relational table if it didn't exist previously.
-  """
-  def add_currency(user_id, currency_id, amount) do
-    result =
-      case get_user_currency(user_id, currency_id) do
-        %UserCurrency{} = user_currency ->
-          new_amount =
-            case get_user_currency_cap(user_id, currency_id) do
-              %UserCurrencyCap{cap: cap} ->
-                if cap <= user_currency.amount do
-                  # Cap reached, don't add anything.
-                  user_currency.amount
-                else
-                  # Cap not reached, add the amount. We are fine with allowing overflows.
-                  user_currency.amount + amount
-                end
-
-              nil ->
-                # No cap, just add the amount.
-                user_currency.amount + amount
-            end
-            # We don't want users with negative currencies
-            |> max(0)
-
-          user_currency
-          |> UserCurrency.update_changeset(%{amount: new_amount})
-          |> Repo.update()
-
-        nil ->
-          # User has none of this currency, create it with given amount
-          insert_user_currency(%{user_id: user_id, currency_id: currency_id, amount: max(amount, 0)})
-      end
-
-    case result do
-      {:error, reason} -> {:error, reason}
-      {:ok, currency} -> {:ok, currency |> Repo.preload([:currency])}
-    end
-  end
-
-  @doc """
   Get a UserCurrency.
   """
   def get_user_currency(user_id, currency_id),
