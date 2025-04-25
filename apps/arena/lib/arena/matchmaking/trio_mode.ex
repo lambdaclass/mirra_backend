@@ -33,14 +33,19 @@ defmodule Arena.Matchmaking.TrioMode do
   def handle_call({:join, params}, {from_pid, _}, %{clients: clients} = state) do
     batch_start_at = maybe_make_batch_start_at(state.clients, state.batch_start_at)
 
+    IO.inspect("HOLA")
+
     client = %{
       client_id: params.client_id,
       character_name: params.character_name,
       skin_name: params.skin_name,
+      character_level: params.character_level,
       name: params.player_name,
       from_pid: from_pid,
       type: :human
     }
+
+    IO.inspect("CHAU")
 
     {:reply, :ok,
      %{
@@ -59,7 +64,11 @@ defmodule Arena.Matchmaking.TrioMode do
   def handle_info(:launch_game?, %{clients: clients} = state) do
     Process.send_after(self(), :launch_game?, 300)
 
+    IO.inspect("Launch Game?")
+
     state = Matchmaking.get_matchmaking_configuration(state, 3, "battle_royale")
+
+    IO.inspect(Map.has_key?(state, :game_mode_configuration), label: "HAS KEY")
 
     diff = System.monotonic_time(:millisecond) - state.batch_start_at
 
@@ -118,6 +127,7 @@ defmodule Arena.Matchmaking.TrioMode do
         client_id: client_id,
         skin_name: "Basic",
         character_name: Enum.random(characters).name,
+        character_level: 1,
         name: Enum.at(bot_names, i - 1),
         type: :bot
       }

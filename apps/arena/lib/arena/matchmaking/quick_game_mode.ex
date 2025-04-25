@@ -27,6 +27,8 @@ defmodule Arena.Matchmaking.QuickGameMode do
     client = %{
       client_id: client_id,
       character_name: character_name,
+      # TODO: fetch this? Is it relevant for a quick game?
+      character_level: 1,
       name: player_name,
       from_pid: from_pid,
       type: :human
