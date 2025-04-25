@@ -3120,12 +3120,12 @@ merliot_map_config = %{
     },
     %{
       "base_status" => nil,
-      "name" => "Center altar",
-      "position" => %{"x" => "31", "y" => "-140"},
-      "radius" => "400",
+      "name" => "Center",
+      "position" => %{"x" => "-25.95077", "y" => "-25.9697"},
+      "radius" => "446.8141",
       "shape" => "circle",
       "statuses_cycle" => nil,
-      "type" => "static",
+      "type" => "lake",
       "vertices" => []
     },
     %{
