@@ -327,9 +327,7 @@ defmodule GameBackend.Units do
          {:can_afford, true} <- {:can_afford, Currencies.can_afford(user_id, costs)} do
       Multi.new()
       |> Multi.run(:unit, fn _, _ -> add_level(unit) end)
-      |> Multi.run(:user_currency, fn _, _changes_so_far ->
-        Ledger.register_currencies_spent(user_id, costs, "Level Up")
-      end)
+      |> Ledger.register_currencies_spent(user_id, costs, "Level Up")
       |> Transaction.run()
     end
   end

@@ -126,15 +126,14 @@ defmodule GameBackend.Rewards do
   Returns {:error, failed_operation, failed_value, changes_so_far} if one of the operations fail.
   """
   def update_user_due_to_daily_rewards_claim(user, daily_reward) do
+    currency = Currencies.get_currency_by_name_and_game(daily_reward["currency"], Utils.get_game_id(:curse_of_mirra))
+
     Multi.new()
     |> Multi.run(:update_user, fn _, _ ->
       Users.update_user(user, %{
         last_daily_reward_claim_at: DateTime.utc_now(),
         last_daily_reward_claim: daily_reward["day"]
       })
-    end)
-    |> Multi.run(:get_currency, fn _, _ ->
-      Currencies.get_currency_by_name_and_game(daily_reward["currency"], Utils.get_game_id(:curse_of_mirra))
     end)
     |> Ledger.register_currency_earned(
         user.id,

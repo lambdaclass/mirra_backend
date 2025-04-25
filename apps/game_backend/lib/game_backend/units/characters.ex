@@ -256,9 +256,7 @@ defmodule GameBackend.Units.Characters do
 
     Multi.new()
     |> Multi.run(:unit_skin, fn _, _ -> insert_unit_skin(%{user_id: user_id, skin_id: skin_id, unit_id: unit_id}) end)
-    |> Multi.run(:currencies, fn _, _ ->
-      Ledger.register_currencies_spent(user_id, purchase_costs_list, "Skin Bought")
-    end)
+    |> Ledger.register_currencies_spent(user_id, purchase_costs_list, "Skin Bought")
     |> Multi.run(:updated_user, fn _, _ -> GameBackend.Users.get_user_by_id_and_game_id(user_id, curse_id) end)
     |> Repo.transaction()
   end

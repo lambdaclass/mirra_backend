@@ -45,9 +45,7 @@ defmodule Champions.Gacha do
       result =
         Multi.new()
         |> Multi.run(:unit, fn _, _ -> Units.insert_unit(params) end)
-        |> Multi.run(:substract_currencies, fn _, _ ->
-          Ledger.register_currencies_spent(user_id, box.cost, "Summoned Box Cost")
-        end)
+        |> Ledger.register_currencies_spent(user_id, box.cost, "Summoned Box Cost")
         |> Transaction.run()
 
       case result do

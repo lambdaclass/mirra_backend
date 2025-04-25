@@ -37,9 +37,7 @@ defmodule Champions.Battle do
 
       {:ok, response} =
         Multi.new()
-        |> Multi.run(:substract_currencies, fn _, _ ->
-          Ledger.register_currencies_spent(user_id, level.attempt_cost, "Fighting Level")
-        end)
+        |> Ledger.register_currencies_spent(user_id, level.attempt_cost, "Fighting Level")
         |> Multi.run(:run_battle, fn _repo, _changes -> run_battle(user_id, level, units) end)
         |> Repo.transaction()
 

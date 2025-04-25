@@ -416,9 +416,7 @@ defmodule GameBackend.Users do
     {:ok, _result} =
       Multi.new()
       |> Multi.run(:user, fn _, _ -> increment_tree_level(user_id) end)
-      |> Multi.run(:user_currency, fn _, _changes_so_far ->
-        Ledger.register_currencies_spent(user_id, level_up_costs, "Kaline Tree Leveled up")
-      end)
+      |> Ledger.register_currencies_spent(user_id, level_up_costs, "Kaline Tree Leveled up")
       |> Repo.transaction()
 
     get_user(user_id)
@@ -447,7 +445,7 @@ defmodule GameBackend.Users do
     result =
       Multi.new()
       |> Multi.run(:user, fn _, _ -> increment_settlement_level(user_id) end)
-      |> Multi.run(:currencies, fn _, _ -> Ledger.register_currencies_spent(user_id, level_up_costs, "Level Up") end)
+      |> Ledger.register_currencies_spent(user_id, level_up_costs, "Level Up")
       |> Multi.run(:supply_cap, fn _, %{user: user} ->
         dungeon_settlement_level = Repo.get(DungeonSettlementLevel, user.dungeon_settlement_level_id)
 
@@ -544,7 +542,7 @@ defmodule GameBackend.Users do
       |> Multi.run(:upgrade, fn _, _ ->
         insert_unlock(%{user_id: user_id, upgrade_id: upgrade_id, name: upgrade.name, type: type})
       end)
-      |> Multi.run(:currencies, fn _, _ -> Ledger.register_currencies_spent(user_id, upgrade.cost, "Upgrade Bought") end)
+      |> Ledger.register_currencies_spent(user_id, upgrade.cost, "Upgrade Bought")
       |> Transaction.run()
       |> case do
         {:ok, _} -> {:ok, get_user(user_id)}

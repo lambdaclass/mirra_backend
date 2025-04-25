@@ -90,9 +90,7 @@ defmodule Champions.Units do
       result =
         Multi.new()
         |> Multi.run(:unit, fn _, _ -> Units.add_level(unit) end)
-        |> Multi.run(:user_currency, fn _, _ ->
-          Ledger.register_currencies_spent(user_id, costs, "Level Up Unit")
-        end)
+        |> Ledger.register_currencies_spent(user_id, costs, "Level Up Unit") 
         |> Transaction.run()
 
       case result do
@@ -166,9 +164,7 @@ defmodule Champions.Units do
       result =
         Multi.new()
         |> Multi.run(:unit, fn _, _ -> Units.add_tier(unit) end)
-        |> Multi.run(:user_currency, fn _, _ ->
-          Ledger.register_currencies_spent(user_id, costs, "Tier up")
-        end)
+        |> Ledger.register_currencies_spent(user_id, costs, "Tier up")
         |> GameBackend.Transaction.run()
 
       case result do

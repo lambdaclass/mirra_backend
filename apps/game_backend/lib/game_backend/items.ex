@@ -272,9 +272,7 @@ defmodule GameBackend.Items do
   def buy_item(user_id, template_id, purchase_costs_list) do
     Multi.new()
     |> Multi.run(:item, fn _, _ -> insert_item(%{user_id: user_id, template_id: template_id}) end)
-    |> Multi.run(:currencies, fn _, _ ->
-      Ledger.register_currencies_spent(user_id, purchase_costs_list, "Item Bought")
-    end)
+    |> Ledger.register_currencies_spent(user_id, purchase_costs_list, "Item Bought") 
     |> Repo.transaction()
   end
 

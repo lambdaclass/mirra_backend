@@ -257,9 +257,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
 
           true ->
             Multi.new()
-            |> Multi.run(:deduct_currencies, fn _, _ ->
-              Ledger.register_currencies_spent(daily_quest.user_id, reroll_costs, "Reroll Quest")
-            end)
+            |> Ledger.register_currencies_spent(daily_quest.user_id, reroll_costs, "Reroll Quest")
             |> Multi.update(:change_previous_quest, finish_previous_quest_changeset)
             |> Multi.insert(:insert_quest, new_quest_changeset)
             |> Repo.transaction()
