@@ -76,6 +76,7 @@ defmodule ConfiguratorWeb.Router do
         get "/map_configurations/:id/edit_crates", MapConfigurationController, :edit_crates
         put "/map_configurations/:id/update_crates", MapConfigurationController, :update_crates
         resources "/consumable_items", ConsumableItemController
+        resources "/level_up", LevelUpController, only: [:index]
       end
     end
   end
