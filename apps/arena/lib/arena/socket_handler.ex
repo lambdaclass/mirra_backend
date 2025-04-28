@@ -34,7 +34,7 @@ defmodule Arena.SocketHandler do
 
     {character_name, skin_name, character_level} =
       if System.get_env("OVERRIDE_JWT") == "true" do
-        {:cowboy_req.binding(:character_name, req), "Basic"}
+        {:cowboy_req.binding(:character_name, req), "Basic", 1}
       else
         gateway_url = Application.get_env(:arena, :gateway_url)
         url = "#{gateway_url}/curse/users/#{user_id}/get_unit"
