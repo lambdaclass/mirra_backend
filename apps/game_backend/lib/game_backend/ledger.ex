@@ -64,7 +64,7 @@ defmodule GameBackend.Ledger do
         {:ok, repo.query!("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE")}
       end
     end)
-  
+
   """
   def register_currencies_spent_multi(multi, user_id, currency_costs, description) do
     Enum.reduce(currency_costs, multi, fn currency_cost, acc ->
@@ -135,7 +135,7 @@ defmodule GameBackend.Ledger do
         {:ok, repo.query!("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE")}
       end
     end)
-  
+
   """
   def register_currency_earned_multi(multi, user_id, earned_currencies, description) do
     Enum.reduce(earned_currencies, multi, fn currency_earned, acc ->

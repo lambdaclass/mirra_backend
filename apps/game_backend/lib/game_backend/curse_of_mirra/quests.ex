@@ -338,7 +338,8 @@ defmodule GameBackend.CurseOfMirra.Quests do
         status: "completed"
       })
 
-    currency = Currencies.get_currency_by_name_and_game(user_quest.reward["currency"], Utils.get_game_id(:curse_of_mirra))
+    currency =
+      Currencies.get_currency_by_name_and_game(user_quest.reward["currency"], Utils.get_game_id(:curse_of_mirra))
 
     Multi.new()
     |> Multi.run(:check_quest_completed, fn _, _ ->

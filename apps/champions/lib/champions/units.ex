@@ -90,7 +90,7 @@ defmodule Champions.Units do
       result =
         Multi.new()
         |> Multi.run(:unit, fn _, _ -> Units.add_level(unit) end)
-        |> Ledger.register_currencies_spent(user_id, costs, "Level Up Unit") 
+        |> Ledger.register_currencies_spent(user_id, costs, "Level Up Unit")
         |> Transaction.run()
 
       case result do

@@ -136,9 +136,9 @@ defmodule GameBackend.Rewards do
       })
     end)
     |> Ledger.register_currency_earned(
-        user.id,
-        [%{currency_id: currency.id, amount: daily_reward["amount"]}],
-        "Daily Reward Claim"
+      user.id,
+      [%{currency_id: currency.id, amount: daily_reward["amount"]}],
+      "Daily Reward Claim"
     )
     |> Repo.transaction()
   end
