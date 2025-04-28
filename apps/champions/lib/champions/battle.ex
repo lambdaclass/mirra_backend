@@ -5,6 +5,7 @@ defmodule Champions.Battle do
 
   require Logger
 
+  alias GameBackend.Ledger
   alias Ecto.Multi
   alias GameBackend.Users.Currencies
   alias Champions.Battle.Simulator
@@ -36,9 +37,7 @@ defmodule Champions.Battle do
 
       {:ok, response} =
         Multi.new()
-        |> Multi.run(:substract_currencies, fn _repo, _changes ->
-          Currencies.substract_currencies(user_id, level.attempt_cost)
-        end)
+        |> Ledger.register_currencies_spent(user_id, level.attempt_cost, "Fighting Level")
         |> Multi.run(:run_battle, fn _repo, _changes -> run_battle(user_id, level, units) end)
         |> Repo.transaction()
 

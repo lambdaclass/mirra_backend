@@ -3,6 +3,7 @@ defmodule Champions.Users do
   Users logic for Champions Of Mirra.
   """
 
+  alias GameBackend.Ledger
   alias Ecto.{Changeset, Multi}
   alias Champions.Users
   alias GameBackend.Items
@@ -91,52 +92,45 @@ defmodule Champions.Users do
   end
 
   defp add_sample_currencies(user) do
-    Currencies.add_currency(
-      user.id,
-      Currencies.get_currency_by_name_and_game!("Gold", Utils.get_game_id(:champions_of_mirra)).id,
-      100
-    )
+    game_id = Utils.get_game_id(:champions_of_mirra)
 
-    Currencies.add_currency(
+    Ledger.register_currency_earned(
       user.id,
-      Currencies.get_currency_by_name_and_game!("Gems", Utils.get_game_id(:champions_of_mirra)).id,
-      500
-    )
-
-    Currencies.add_currency(
-      user.id,
-      Currencies.get_currency_by_name_and_game!("Summon Scrolls", Utils.get_game_id(:champions_of_mirra)).id,
-      100
-    )
-
-    Currencies.add_currency(
-      user.id,
-      Currencies.get_currency_by_name_and_game!("Fertilizer", Utils.get_game_id(:champions_of_mirra)).id,
-      100
-    )
-
-    Currencies.add_currency(
-      user.id,
-      Currencies.get_currency_by_name_and_game!("Arcane Crystals", Utils.get_game_id(:champions_of_mirra)).id,
-      100
-    )
-
-    Currencies.add_currency(
-      user.id,
-      Currencies.get_currency_by_name_and_game!("Hero Souls", Utils.get_game_id(:champions_of_mirra)).id,
-      100
-    )
-
-    Currencies.add_currency(
-      user.id,
-      Currencies.get_currency_by_name_and_game!("Blueprints", Utils.get_game_id(:champions_of_mirra)).id,
-      50
-    )
-
-    Currencies.add_currency(
-      user.id,
-      Currencies.get_currency_by_name_and_game!("Supplies", Utils.get_game_id(:champions_of_mirra)).id,
-      5
+      [
+        %{
+          currency_id: Currencies.get_currency_by_name_and_game!("Gold", game_id).id,
+          amount: 100
+        },
+        %{
+          currency_id: Currencies.get_currency_by_name_and_game!("Gems", game_id).id,
+          amount: 500
+        },
+        %{
+          currency_id: Currencies.get_currency_by_name_and_game!("Summon Scrolls", game_id).id,
+          amount: 100
+        },
+        %{
+          currency_id: Currencies.get_currency_by_name_and_game!("Fertilizer", game_id).id,
+          amount: 100
+        },
+        %{
+          currency_id: Currencies.get_currency_by_name_and_game!("Arcane Crystals", game_id).id,
+          amount: 100
+        },
+        %{
+          currency_id: Currencies.get_currency_by_name_and_game!("Hero Souls", game_id).id,
+          amount: 100
+        },
+        %{
+          currency_id: Currencies.get_currency_by_name_and_game!("Blueprints", game_id).id,
+          amount: 50
+        },
+        %{
+          currency_id: Currencies.get_currency_by_name_and_game!("Supplies", game_id).id,
+          amount: 5
+        }
+      ],
+      "Sample Currencies"
     )
   end
 
@@ -247,18 +241,13 @@ defmodule Champions.Users do
 
   defp claim_afk_rewards(user_id, afk_rewards, type) do
     Multi.new()
-    |> Multi.run(:add_currencies, fn _, _ ->
-      results =
-        Enum.map(afk_rewards, fn afk_reward ->
-          Currencies.add_currency(user_id, afk_reward.currency.id, trunc(afk_reward.amount))
-        end)
-
-      if Enum.all?(results, fn {result, _} -> result == :ok end) do
-        {:ok, Enum.map(results, fn {_ok, currency} -> currency end)}
-      else
-        {:error, "failed"}
-      end
-    end)
+    |> Ledger.register_currency_earned(
+      user_id,
+      Enum.map(afk_rewards, fn afk_reward ->
+        %{currency_id: afk_reward.currency.id, amount: trunc(afk_reward.amount)}
+      end),
+      "AFK Reward Claimed"
+    )
     |> Multi.run(:reset_afk_claim, fn _, _ ->
       Users.reset_afk_rewards_claim(user_id, type)
     end)

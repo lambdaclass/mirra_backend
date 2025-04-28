@@ -8,11 +8,11 @@ defmodule GameBackend.Items do
   Items are created by instantiating copies of ItemTemplates. This way, many users can have their own copy of the "Epic Sword" item. Likewise, this allows for a user to have many copies of it, each equipped to a different unit.
   """
 
+  alias GameBackend.Ledger
   alias Ecto.Multi
   alias GameBackend.Items.Item
   alias GameBackend.Items.ItemTemplate
   alias GameBackend.Items.ConsumableItem
-  alias GameBackend.Users.Currencies
   alias GameBackend.Repo
   alias GameBackend.Units
 
@@ -272,7 +272,7 @@ defmodule GameBackend.Items do
   def buy_item(user_id, template_id, purchase_costs_list) do
     Multi.new()
     |> Multi.run(:item, fn _, _ -> insert_item(%{user_id: user_id, template_id: template_id}) end)
-    |> Multi.run(:currencies, fn _, _ -> Currencies.substract_currencies(user_id, purchase_costs_list) end)
+    |> Ledger.register_currencies_spent(user_id, purchase_costs_list, "Item Bought")
     |> Repo.transaction()
   end
 

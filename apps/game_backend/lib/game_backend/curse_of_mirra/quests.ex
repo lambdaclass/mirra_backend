@@ -2,6 +2,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
   @moduledoc """
     Module to work with quest logic
   """
+  alias GameBackend.Ledger
   alias GameBackend.Users
   alias GameBackend.CurseOfMirra.Quests
   alias GameBackend.Utils
@@ -256,9 +257,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
 
           true ->
             Multi.new()
-            |> Multi.run(:deduct_currencies, fn _, _ ->
-              Currencies.substract_currencies(daily_quest.user_id, reroll_costs)
-            end)
+            |> Ledger.register_currencies_spent(daily_quest.user_id, reroll_costs, "Reroll Quest")
             |> Multi.update(:change_previous_quest, finish_previous_quest_changeset)
             |> Multi.insert(:insert_quest, new_quest_changeset)
             |> Repo.transaction()
@@ -282,16 +281,15 @@ defmodule GameBackend.CurseOfMirra.Quests do
         quest_id: quest_id
       })
 
+    currency = Currencies.get_currency_by_name_and_game(quest.reward["currency"], Utils.get_game_id(:curse_of_mirra))
+
     Multi.new()
     |> Multi.insert(:insert_completed_quest, user_quest_changeset)
-    |> Multi.run(:add_currency_to_user, fn _, _ ->
-      Currencies.add_currency_by_name_and_game(
-        user_id,
-        quest.reward["currency"],
-        Utils.get_game_id(:curse_of_mirra),
-        quest.reward["amount"]
-      )
-    end)
+    |> Ledger.register_currency_earned(
+      user_id,
+      [%{currency_id: currency.id, amount: quest.reward["amount"]}],
+      "Completed Quest Reward"
+    )
     |> Repo.transaction()
   end
 
@@ -340,6 +338,9 @@ defmodule GameBackend.CurseOfMirra.Quests do
         status: "completed"
       })
 
+    currency =
+      Currencies.get_currency_by_name_and_game(user_quest.reward["currency"], Utils.get_game_id(:curse_of_mirra))
+
     Multi.new()
     |> Multi.run(:check_quest_completed, fn _, _ ->
       if user_quest.status == "available" and Quests.completed_quest?(user_quest, user) do
@@ -363,14 +364,11 @@ defmodule GameBackend.CurseOfMirra.Quests do
           |> GameBackend.Repo.update()
       end
     end)
-    |> Multi.run(:add_currency, fn _, _ ->
-      Currencies.add_currency_by_name_and_game(
-        user.id,
-        user_quest.quest.reward["currency"],
-        Utils.get_game_id(:curse_of_mirra),
-        user_quest.quest.reward["amount"]
-      )
-    end)
+    |> Ledger.register_currency_earned(
+      user.id,
+      [%{currency_id: currency.id, amount: user_quest.reward["amount"]}],
+      "Completed Quest Reward"
+    )
     |> Multi.run(:updated_user, fn _, _ ->
       Users.get_user_by_id_and_game_id(user.id, user.game_id)
     end)

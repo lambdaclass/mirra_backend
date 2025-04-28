@@ -7,6 +7,7 @@ defmodule Champions.Units do
   - Tier ups cost an amount of gold that depends on the unit level, plus a set number of gems.
   """
 
+  alias GameBackend.Ledger
   alias GameBackend.Utils
   alias Ecto.Multi
   alias GameBackend.Transaction
@@ -89,9 +90,7 @@ defmodule Champions.Units do
       result =
         Multi.new()
         |> Multi.run(:unit, fn _, _ -> Units.add_level(unit) end)
-        |> Multi.run(:user_currency, fn _, _ ->
-          Currencies.substract_currencies(user_id, costs)
-        end)
+        |> Ledger.register_currencies_spent(user_id, costs, "Level Up Unit")
         |> Transaction.run()
 
       case result do
@@ -165,9 +164,7 @@ defmodule Champions.Units do
       result =
         Multi.new()
         |> Multi.run(:unit, fn _, _ -> Units.add_tier(unit) end)
-        |> Multi.run(:user_currency, fn _, _ ->
-          Currencies.substract_currencies(user_id, costs)
-        end)
+        |> Ledger.register_currencies_spent(user_id, costs, "Tier up")
         |> GameBackend.Transaction.run()
 
       case result do
