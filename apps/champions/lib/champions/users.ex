@@ -92,44 +92,45 @@ defmodule Champions.Users do
   end
 
   defp add_sample_currencies(user) do
+    game_id = Utils.get_game_id(:champions_of_mirra)
     Ledger.register_currency_earned(
       user.id,
       [
         %{
-          currency_id: Currencies.get_currency_by_name_and_game!("Gold", Utils.get_game_id(:champions_of_mirra)).id,
+          currency_id: Currencies.get_currency_by_name_and_game!("Gold", game_id).id,
           amount: 100
         },
         %{
-          currency_id: Currencies.get_currency_by_name_and_game!("Gems", Utils.get_game_id(:champions_of_mirra)).id,
+          currency_id: Currencies.get_currency_by_name_and_game!("Gems", game_id).id,
           amount: 500
         },
         %{
           currency_id:
-            Currencies.get_currency_by_name_and_game!("Summon Scrolls", Utils.get_game_id(:champions_of_mirra)).id,
+            Currencies.get_currency_by_name_and_game!("Summon Scrolls", game_id).id,
           amount: 100
         },
         %{
           currency_id:
-            Currencies.get_currency_by_name_and_game!("Fertilizer", Utils.get_game_id(:champions_of_mirra)).id,
+            Currencies.get_currency_by_name_and_game!("Fertilizer", game_id).id,
           amount: 100
         },
         %{
           currency_id:
-            Currencies.get_currency_by_name_and_game!("Arcane Crystals", Utils.get_game_id(:champions_of_mirra)).id,
+            Currencies.get_currency_by_name_and_game!("Arcane Crystals", game_id).id,
           amount: 100
         },
         %{
           currency_id:
-            Currencies.get_currency_by_name_and_game!("Hero Souls", Utils.get_game_id(:champions_of_mirra)).id,
+            Currencies.get_currency_by_name_and_game!("Hero Souls", game_id).id,
           amount: 100
         },
         %{
           currency_id:
-            Currencies.get_currency_by_name_and_game!("Blueprints", Utils.get_game_id(:champions_of_mirra)).id,
+            Currencies.get_currency_by_name_and_game!("Blueprints", game_id).id,
           amount: 50
         },
         %{
-          currency_id: Currencies.get_currency_by_name_and_game!("Supplies", Utils.get_game_id(:champions_of_mirra)).id,
+          currency_id: Currencies.get_currency_by_name_and_game!("Supplies", game_id).id,
           amount: 5
         }
       ],
