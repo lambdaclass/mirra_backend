@@ -88,14 +88,14 @@ defmodule Arena.GameUpdater do
     bot_clients_ids =
       Enum.filter(players, fn player -> player.type == :bot end) |> Enum.map(fn player -> player.client_id end)
 
-    :ok =
-      GameTracker.start_tracking(%{
-        match_pid: self(),
-        match_id: match_id,
-        client_to_player_map: game_state.client_to_player_map,
-        players: game_state.players,
-        human_clients: clients_ids
-      })
+    # :ok =
+    #   GameTracker.start_tracking(%{
+    #     match_pid: self(),
+    #     match_id: match_id,
+    #     client_to_player_map: game_state.client_to_player_map,
+    #     players: game_state.players,
+    #     human_clients: clients_ids
+    #   })
 
     :telemetry.execute([:arena, :game], %{count: 1})
 
