@@ -181,7 +181,7 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_cast({:select_bounty, player_id, bounty_quest_id}, state) do
-    GameTracker.push_event(self(), {:select_bounty, player_id, bounty_quest_id})
+    # GameTracker.push_event(self(), {:select_bounty, player_id, bounty_quest_id})
 
     state =
       update_in(state, [:game_state, :players, player_id, :aditional_info], fn aditional_info ->
@@ -346,7 +346,8 @@ defmodule Arena.GameUpdater do
     teams_with_kills =
       state.game_state.players
       |> Enum.map(fn {player_id, player} ->
-        %{kills: kills} = GameTracker.get_player_result(player_id)
+        # %{kills: kills} = GameTracker.get_player_result(player_id)
+        kills = []
         Map.put(player, :kills, kills)
       end)
       |> Enum.group_by(fn player -> player.aditional_info.team end)
@@ -368,7 +369,7 @@ defmodule Arena.GameUpdater do
         teams_with_kills
         |> Enum.reduce(game_state, fn {team, position}, game_state_acc ->
           Enum.reduce(team.players, game_state_acc, fn player, game_state_acc ->
-            GameTracker.push_event(self(), {:deathmatch_position, player.id, position})
+            # GameTracker.push_event(self(), {:deathmatch_position, player.id, position})
             put_player_position(game_state_acc, player.id, position)
           end)
         end)
@@ -377,7 +378,7 @@ defmodule Arena.GameUpdater do
     PubSub.broadcast(Arena.PubSub, state.game_state.game_id, :end_game_state)
     broadcast_game_ended(winner_team_players, state.game_state)
 
-    GameTracker.finish_tracking(self(), winner_team.team)
+    # GameTracker.finish_tracking(self(), winner_team.team)
 
     Process.send_after(self(), :game_ended, state.game_config.game.shutdown_game_wait_ms)
 
@@ -405,7 +406,7 @@ defmodule Arena.GameUpdater do
 
         PubSub.broadcast(Arena.PubSub, state.game_state.game_id, :end_game_state)
         broadcast_game_ended(winner_team, state.game_state)
-        GameTracker.finish_tracking(self(), winner_team_number)
+        # GameTracker.finish_tracking(self(), winner_team_number)
 
         ## The idea of having this waiting period is in case websocket processes keep
         ## sending messages, this way we give some time before making them crash
@@ -598,16 +599,17 @@ defmodule Arena.GameUpdater do
 
     case Map.get(game_state.players, killer_id) do
       nil ->
-        GameTracker.push_event(self(), {:kill_by_zone, victim_id})
+        nil
+        # GameTracker.push_event(self(), {:kill_by_zone, victim_id})
 
       killer ->
         victim = Map.get(game_state.players, victim_id)
 
-        GameTracker.push_event(
-          self(),
-          {:kill, %{id: killer_id, character_name: killer.aditional_info.character_name},
-           %{id: victim_id, character_name: victim.aditional_info.character_name}}
-        )
+        # GameTracker.push_event(
+        #   self(),
+        #   {:kill, %{id: killer_id, character_name: killer.aditional_info.character_name},
+        #    %{id: victim_id, character_name: victim.aditional_info.character_name}}
+        # )
     end
 
     {:noreply, %{state | game_state: game_state}}
@@ -623,7 +625,7 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info({:damage_done, player_id, damage}, state) do
-    GameTracker.push_event(self(), {:damage_done, player_id, damage})
+    # GameTracker.push_event(self(), {:damage_done, player_id, damage})
 
     state =
       update_in(state, [:game_state, :damage_done, player_id], fn
@@ -635,7 +637,7 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info({:damage_taken, player_id, damage}, state) do
-    GameTracker.push_event(self(), {:damage_taken, player_id, damage})
+    # GameTracker.push_event(self(), {:damage_taken, player_id, damage})
 
     state =
       update_in(state, [:game_state, :damage_taken, player_id], fn
@@ -1406,32 +1408,32 @@ defmodule Arena.GameUpdater do
     game_state
   end
 
-  defp update_bounties_states(%{status: :RUNNING} = game_state, state) do
-    # We only want to run this check for actual players, and we are saving their id in state.clients
-    game_state.client_to_player_map
-    |> Map.take(state.clients)
-    |> Enum.reduce(game_state, fn {client_id, player_id}, game_state ->
-      player = get_in(game_state, [:players, player_id])
+  # defp update_bounties_states(%{status: :RUNNING} = game_state, state) do
+  #   # We only want to run this check for actual players, and we are saving their id in state.clients
+  #   game_state.client_to_player_map
+  #   |> Map.take(state.clients)
+  #   |> Enum.reduce(game_state, fn {client_id, player_id}, game_state ->
+  #     player = get_in(game_state, [:players, player_id])
 
-      if not player.aditional_info.bounty_completed and Player.alive?(player) and
-           Bounties.completed_bounty?(player.aditional_info.selected_bounty, [
-             GameTracker.get_player_result(player_id)
-           ]) do
-        # TODO: WE SHOULDN'T DO REQUEST IN THE MIDDLE OF THE GAME UPDATES
-        spawn(fn ->
-          path = "/curse/users/#{client_id}/quest/#{player.aditional_info.selected_bounty.id}/complete_bounty"
-          gateway_url = Application.get_env(:arena, :gateway_url)
+  #     if not player.aditional_info.bounty_completed and Player.alive?(player) and
+  #          Bounties.completed_bounty?(player.aditional_info.selected_bounty, [
+  #            GameTracker.get_player_result(player_id)
+  #          ]) do
+  #       # TODO: WE SHOULDN'T DO REQUEST IN THE MIDDLE OF THE GAME UPDATES
+  #       spawn(fn ->
+  #         path = "/curse/users/#{client_id}/quest/#{player.aditional_info.selected_bounty.id}/complete_bounty"
+  #         gateway_url = Application.get_env(:arena, :gateway_url)
 
-          Finch.build(:get, "#{gateway_url}#{path}")
-          |> Finch.request(Arena.Finch)
-        end)
+  #         Finch.build(:get, "#{gateway_url}#{path}")
+  #         |> Finch.request(Arena.Finch)
+  #       end)
 
-        put_in(game_state, [:players, player_id, :aditional_info, :bounty_completed], true)
-      else
-        game_state
-      end
-    end)
-  end
+  #       put_in(game_state, [:players, player_id, :aditional_info, :bounty_completed], true)
+  #     else
+  #       game_state
+  #     end
+  #   end)
+  # end
 
   defp update_bounties_states(game_state, _state) do
     game_state
