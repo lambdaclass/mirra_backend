@@ -17,9 +17,8 @@ defmodule Arena.Bots.PathfindingGrid do
     {:ok, %{}}
   end
 
-  def get_map_collision_grid(_map_name, _from_pid) do
-    nil
-    # GenServer.cast(__MODULE__, {:get_map_collision_grid, map_name, from_pid})
+  def get_map_collision_grid(map_name, from_pid) do
+    GenServer.cast(__MODULE__, {:get_map_collision_grid, map_name, from_pid})
   end
 
   def handle_info(:update_config, _state) do
