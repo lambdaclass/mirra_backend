@@ -9,7 +9,7 @@ defmodule Arena.Bots.Bot do
   alias BotManager.BotStateMachine
   alias BotManager.BotStateMachineChecker
   require Logger
-  @action_delay_ms 30
+  @action_delay_ms 500
 
   def start_link(%{bot_id: bot_id, game_id: _game_id, game_topic: _game_topic} = params) do
     GenServer.start_link(__MODULE__, params, name: generate_bot_name(bot_id))
@@ -73,9 +73,9 @@ defmodule Arena.Bots.Bot do
   end
 
   defp maybe_update_state_params(state, game_state, config) do
-    if is_nil(state.bot_state_machine.collision_grid) do
-      PathfindingGrid.get_map_collision_grid(config.map.name, self())
-    end
+    # if is_nil(state.bot_state_machine.collision_grid) do
+    #   PathfindingGrid.get_map_collision_grid(config.map.name, self())
+    # end
 
     state
     |> Map.put_new(:config, config)
@@ -151,6 +151,6 @@ defmodule Arena.Bots.Bot do
     Logger.error("Bot #{state.bot_id} terminating: #{inspect(reason)}")
   end
 
-  defp min_decision_delay_ms(), do: 40
-  defp max_decision_delay_ms(), do: 60
+  defp min_decision_delay_ms(), do: 500
+  defp max_decision_delay_ms(), do: 550
 end

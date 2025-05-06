@@ -101,8 +101,13 @@ defmodule BotManager.BotStateMachine do
         bot_state_machine: bot_state_machine,
         bot_skills: skills
       }) do
+    {:player, bot_player_info} = bot_player.aditional_info
+
     cond do
-      bot_state_machine.progress_for_ultimate_skill >= bot_state_machine.cap_for_ultimate_skill ->
+      Enum.all?(bot_player_info.current_actions, fn current_action ->
+            current_action.action != :EXECUTING_SKILL_2
+          end) &&
+      Enum.all?(bot_player_info.cooldowns, fn {skill_key, _cooldown} -> skill_key != "2" end) ->
         players_with_distances =
           Utils.map_directions_to_players(
             game_state.players,
@@ -129,7 +134,10 @@ defmodule BotManager.BotStateMachine do
           %{action: {:use_skill, @skill_2_key, direction}, bot_state_machine: bot_state_machine}
         end
 
-      bot_state_machine.progress_for_basic_skill >= bot_state_machine.cap_for_basic_skill ->
+      Enum.all?(bot_player_info.current_actions, fn current_action ->
+            current_action.action != :EXECUTING_SKILL_1
+          end) &&
+      Enum.all?(bot_player_info.cooldowns, fn {skill_key, _cooldown} -> skill_key != "1" end) ->
         players_with_distances =
           Utils.map_directions_to_players(
             game_state.players,
@@ -324,7 +332,11 @@ defmodule BotManager.BotStateMachine do
     from = %{x: bot_state_machine.current_position.x, y: bot_state_machine.current_position.y}
     to = %{x: position_to_move_to.x, y: position_to_move_to.y}
 
-    shortest_path = AStarNative.a_star_shortest_path(from, to, bot_state_machine.collision_grid)
+    shortest_path = if is_nil(bot_state_machine.collision_grid) do
+      []
+    else
+      AStarNative.a_star_shortest_path(from, to, bot_state_machine.collision_grid)
+    end
 
     # If we don't have a path, retry finding new position in map
     if Enum.empty?(shortest_path) do
