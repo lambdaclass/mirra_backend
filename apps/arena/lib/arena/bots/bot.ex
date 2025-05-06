@@ -16,8 +16,6 @@ defmodule Arena.Bots.Bot do
   end
 
   def init(%{bot_id: bot_id, game_id: game_id, game_topic: game_topic}) do
-    Process.flag(:priority, :low)
-
     game_pid = game_id |> Base58.decode() |> :erlang.binary_to_term([:safe])
     PubSub.subscribe(Arena.PubSub, game_topic)
     send(self(), :decide_action)

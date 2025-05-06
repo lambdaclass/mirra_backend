@@ -61,8 +61,6 @@ defmodule Arena.GameUpdater do
   ##########################
 
   def init(%{players: players, game_params: game_params, map_mode_params: map_mode_params}) do
-    Process.flag(:priority, :high)
-
     game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
     game_config = Configuration.get_game_config(map_mode_params.map.name)
 
