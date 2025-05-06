@@ -295,7 +295,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:crates, state_diff[:crates])
       |> complete_state_entities()
 
-    broadcast_game_state_to_bots(state_diff, state)
+    # broadcast_game_state_to_bots(state_diff, state)
     broadcast_game_update(state_diff, game_state.game_id)
 
     ## We need this check cause there is some unexpected behaviour from the client
