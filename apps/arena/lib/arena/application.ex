@@ -22,7 +22,7 @@ defmodule Arena.Application do
       # Arena.GameTracker,
       Arena.Authentication.GatewaySigner,
       Arena.Bots.BotSupervisor,
-      Arena.Bots.PathfindingGrid,
+      # Arena.Bots.PathfindingGrid,
       {Registry, keys: :unique, name: BotRegistry},
       # Start a worker by calling: Arena.Worker.start_link(arg)
       # {Arena.Worker, arg},

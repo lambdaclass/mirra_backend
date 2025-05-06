@@ -73,9 +73,9 @@ defmodule Arena.Bots.Bot do
   end
 
   defp maybe_update_state_params(state, game_state, config) do
-    if is_nil(state.bot_state_machine.collision_grid) do
-      PathfindingGrid.get_map_collision_grid(config.map.name, self())
-    end
+    # if is_nil(state.bot_state_machine.collision_grid) do
+    #   PathfindingGrid.get_map_collision_grid(config.map.name, self())
+    # end
 
     state
     |> Map.put_new(:config, config)

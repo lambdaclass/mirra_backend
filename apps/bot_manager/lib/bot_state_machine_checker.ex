@@ -162,13 +162,12 @@ defmodule BotManager.BotStateMachineChecker do
     current_time = :os.system_time(:millisecond)
     time_since_last_attack = current_time - bot_state_machine.last_time_attacking_exited
 
-    bot_state_machine.state != :attacking &&
-      ((bot_state_machine.progress_for_basic_skill >= bot_state_machine.cap_for_basic_skill &&
+    (bot_state_machine.state != :attacking &&
+      (
           Enum.all?(bot_player_info.current_actions, fn current_action ->
-            current_action.action != :EXECUTING_SKILL_1
-          end)) ||
-         bot_state_machine.progress_for_ultimate_skill >= bot_state_machine.cap_for_ultimate_skill) &&
-      time_since_last_attack > @min_time_between_attacks
+            current_action.action != :EXECUTING_SKILL_1 and current_action.action != :EXECUTING_SKILL_2
+          end)) &&
+      time_since_last_attack > @min_time_between_attacks)
   end
 
   @spec bot_can_follow_a_player?(
@@ -215,6 +214,7 @@ defmodule BotManager.BotStateMachineChecker do
 
   @spec bot_stuck?(BotManager.BotStateMachineChecker.t()) :: boolean()
   defp bot_stuck?(%{start_time_stuck_in_position: nil}), do: false
+  defp bot_stuck?(%{collision_grid: nil}), do: false
 
   defp bot_stuck?(bot_state_machine) do
     time_stuck = :os.system_time(:millisecond) - bot_state_machine.start_time_stuck_in_position
