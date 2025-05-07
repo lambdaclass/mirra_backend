@@ -73,7 +73,7 @@ defmodule Arena.GameUpdater do
     match_id = Ecto.UUID.generate()
 
     send(self(), :update_game)
-
+    
     bounties_enabled? = game_config.game.bounty_pick_time_ms > 0
 
     if bounties_enabled? do
@@ -81,6 +81,10 @@ defmodule Arena.GameUpdater do
     else
       Process.send_after(self(), :game_start, game_config.game.start_game_time_ms)
     end
+
+    bots_topic = BotSupervisor.get_game_topic(game_id)
+    # wait 1 second
+    Process.send_after(self(), {:send_config_to_bots, bots_topic, game_config}, 1000)
 
     clients_ids =
       Enum.filter(players, fn player -> player.type == :human end) |> Enum.map(fn player -> player.client_id end)
@@ -108,7 +112,7 @@ defmodule Arena.GameUpdater do
        bounties_enabled?: bounties_enabled?,
        bots_enabled?: game_config.game.bots_enabled,
        game_state: game_state,
-       bots_topic: BotSupervisor.get_game_topic(game_id),
+       bots_topic: bots_topic,
        last_broadcasted_game_state: %{}
      }}
   end
@@ -317,6 +321,12 @@ defmodule Arena.GameUpdater do
     Process.send_after(self(), :pick_default_bounty_for_missing_players, state.game_config.game.start_game_time_ms)
 
     {:noreply, put_in(state, [:game_state, :status], :SELECTING_BOUNTY)}
+  end
+
+  def handle_info({:send_config_to_bots, bots_topic, game_config}, state) do
+    PubSub.broadcast(Arena.PubSub, bots_topic, {:game_config_update,  game_config})
+
+    {:noreply, state}
   end
 
   def handle_info(:game_start, state) do
@@ -814,8 +824,8 @@ defmodule Arena.GameUpdater do
     })
   end
 
-  defp broadcast_game_state_to_bots(state, %{game_config: game_config, bots_topic: bots_topic}) do
-    PubSub.broadcast(Arena.PubSub, bots_topic, {:game_update, state, game_config})
+  defp broadcast_game_state_to_bots(state, %{bots_topic: bots_topic}) do
+    PubSub.broadcast(Arena.PubSub, bots_topic, {:game_update, state})
   end
 
   defp broadcast_game_update(state, game_id) do
