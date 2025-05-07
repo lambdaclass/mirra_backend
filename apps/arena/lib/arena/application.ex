@@ -23,6 +23,7 @@ defmodule Arena.Application do
       Arena.Authentication.GatewaySigner,
       Arena.Bots.BotSupervisor,
       Arena.Bots.PathfindingGrid,
+      Arena.PromEx,
       {Registry, keys: :unique, name: BotRegistry},
       # Start a worker by calling: Arena.Worker.start_link(arg)
       # {Arena.Worker, arg},

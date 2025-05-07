@@ -7,7 +7,8 @@ defmodule Arena.PromEx do
   @impl true
   def plugins() do
     [
-      PromEx.Plugins.Beam
+      PromEx.Plugins.Beam,
+      Arena.PromExPlugin
     ]
   end
 end
