@@ -82,10 +82,6 @@ defmodule Arena.GameUpdater do
       Process.send_after(self(), :game_start, game_config.game.start_game_time_ms)
     end
 
-    bots_topic = BotSupervisor.get_game_topic(game_id)
-    # wait 1 second
-    Process.send_after(self(), {:send_config_to_bots, bots_topic, game_config}, 1000)
-
     clients_ids =
       Enum.filter(players, fn player -> player.type == :human end) |> Enum.map(fn player -> player.client_id end)
 
@@ -112,7 +108,7 @@ defmodule Arena.GameUpdater do
        bounties_enabled?: bounties_enabled?,
        bots_enabled?: game_config.game.bots_enabled,
        game_state: game_state,
-       bots_topic: bots_topic,
+       bots_topic: BotSupervisor.get_game_topic(game_id),
        last_broadcasted_game_state: %{}
      }}
   end
@@ -323,13 +319,12 @@ defmodule Arena.GameUpdater do
     {:noreply, put_in(state, [:game_state, :status], :SELECTING_BOUNTY)}
   end
 
-  def handle_info({:send_config_to_bots, bots_topic, game_config}, state) do
+  def broadcast_config_to_bots(bots_topic, game_config) do
     PubSub.broadcast(Arena.PubSub, bots_topic, {:game_config_update,  game_config})
-
-    {:noreply, state}
   end
 
   def handle_info(:game_start, state) do
+    broadcast_config_to_bots(state.bots_topic, state.game_config)
     broadcast_enable_incomming_messages(state.game_state.game_id)
 
     Process.send_after(self(), :start_zone, state.game_config.game.zone_shrink_start_ms)
