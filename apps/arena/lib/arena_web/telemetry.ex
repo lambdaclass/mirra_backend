@@ -28,7 +28,7 @@ defmodule ArenaWeb.Telemetry do
       last_value("vm.total_run_queue_lengths.cpu"),
       last_value("vm.total_run_queue_lengths.io"),
 
-      # Single instance GenServers' message queues
+      # All BEAM processes message queues
       last_value([:vm, :message_queue, :length], tags: [:process]),
 
       # Bots

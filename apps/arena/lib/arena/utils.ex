@@ -4,8 +4,6 @@ defmodule Arena.Utils do
   It contains utility functions like math functions.
   """
 
-  alias Arena.Matchmaking
-
   @bot_prefixes [
     "Astro",
     "Blaze",
@@ -144,33 +142,20 @@ defmodule Arena.Utils do
   def start_timeout_ms(), do: 4_000
 
   def message_queue_lengths() do
-    [
-      Matchmaking.DeathmatchMode,
-      Matchmaking.DuoMode,
-      Matchmaking.GameLauncher,
-      Matchmaking.QuickGameMode,
-      Matchmaking.TrioMode,
-      Arena.GameBountiesFetcher,
-      Arena.GameTracker,
-      Arena.Bots.PathfindingGrid
-    ]
-    |> Enum.each(fn registered_name ->
-      Process.whereis(registered_name)
-      |> register_process_info()
-    end)
-
+    register_all_processes_queues()
     register_bots_queues()
     register_game_updater_queues()
   end
 
-  defp register_process_info(nil), do: nil
-
-  defp register_process_info(pid) do
-    case Process.info(pid, [:message_queue_len, :registered_name]) do
-      [message_queue_len: len, registered_name: name] -> register_queue_length(name, len)
-      [message_queue_len: len] -> register_queue_length(pid, len)
-      _ -> nil
-    end
+  def register_all_processes_queues() do
+    Process.list()
+    |> Enum.each(fn pid ->
+      case Process.info(pid, [:message_queue_len, :registered_name]) do
+        [message_queue_len: len, registered_name: name] -> register_queue_length(name, len)
+        [message_queue_len: len] -> register_queue_length(pid, len)
+        _ -> nil
+      end
+    end)
   end
 
   defp register_queue_length(name, len) do
