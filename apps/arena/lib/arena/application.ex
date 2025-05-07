@@ -24,7 +24,6 @@ defmodule Arena.Application do
       Arena.Bots.BotSupervisor,
       Arena.Bots.PathfindingGrid,
       Arena.PromEx,
-      {Registry, keys: :unique, name: BotRegistry},
       # Start a worker by calling: Arena.Worker.start_link(arg)
       # {Arena.Worker, arg},
       # Start to serve requests, typically the last entry
