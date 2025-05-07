@@ -20,8 +20,11 @@ defmodule Arena.Bots.BotSupervisor do
   def start_bots_for_game(bot_clients, game_id) do
     game_topic = get_game_topic(game_id)
 
-    Enum.each(bot_clients, fn %{client_id: bot_id} ->
-      DynamicSupervisor.start_child(__MODULE__, {Bot, %{bot_id: bot_id, game_id: game_id, game_topic: game_topic}})
+    Enum.reduce(bot_clients, [], fn %{client_id: bot_id}, pids ->
+      {:ok, pid} =
+        DynamicSupervisor.start_child(__MODULE__, {Bot, %{bot_id: bot_id, game_id: game_id, game_topic: game_topic}})
+
+      pids ++ [pid]
     end)
   end
 

@@ -151,7 +151,8 @@ defmodule Arena.Matchmaking.DeathmatchMode do
 
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()
 
-    BotSupervisor.start_bots_for_game(bot_clients, game_id)
+    bot_pids = BotSupervisor.start_bots_for_game(bot_clients, game_id)
+    Process.send(game_pid, {:save_bot_pids, bot_pids}, [])
 
     Enum.each(clients, fn %{from_pid: from_pid} ->
       Process.send(from_pid, {:join_game, game_id}, [])

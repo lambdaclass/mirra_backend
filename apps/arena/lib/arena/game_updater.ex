@@ -109,6 +109,7 @@ defmodule Arena.GameUpdater do
        bots_enabled?: game_config.game.bots_enabled,
        game_state: game_state,
        bots_topic: BotSupervisor.get_game_topic(game_id),
+       bot_pids: [],
        last_broadcasted_game_state: %{}
      }}
   end
@@ -232,6 +233,10 @@ defmodule Arena.GameUpdater do
   ##########################
   # Game Callbacks
   ##########################
+
+  def handle_info({:save_bot_pids, bot_pids}, state) do
+    {:noreply, state |> Map.put(:bot_pids, bot_pids)}
+  end
 
   def handle_info(:toggle_bots, state) do
     GenServer.cast(self(), :toggle_bots)
@@ -814,8 +819,8 @@ defmodule Arena.GameUpdater do
     })
   end
 
-  defp broadcast_game_state_to_bots(state, %{game_config: game_config, bots_topic: bots_topic}) do
-    PubSub.broadcast(Arena.PubSub, bots_topic, {:game_update, state, game_config})
+  defp broadcast_game_state_to_bots(state, %{game_config: game_config, bot_pids: bot_pids}) do
+    Enum.each(bot_pids, fn bot_pid -> Process.send(bot_pid, {:game_update, state, game_config}, []) end)
   end
 
   defp broadcast_game_update(state, game_id) do
