@@ -318,10 +318,6 @@ defmodule Arena.GameUpdater do
     {:noreply, put_in(state, [:game_state, :status], :SELECTING_BOUNTY)}
   end
 
-  def broadcast_config_to_bots(bots_topic, game_config) do
-    PubSub.broadcast(Arena.PubSub, bots_topic, {:game_config_update, game_config})
-  end
-
   def handle_info(:game_start, state) do
     broadcast_config_to_bots(state.bots_topic, state.game_config)
     broadcast_enable_incomming_messages(state.game_state.game_id)
@@ -816,6 +812,10 @@ defmodule Arena.GameUpdater do
       traps: complete_entities(state[:traps], :trap),
       external_wall: complete_entity(state[:external_wall], :obstacle)
     })
+  end
+
+  defp broadcast_config_to_bots(bots_topic, game_config) do
+    PubSub.broadcast(Arena.PubSub, bots_topic, {:game_config_update, game_config})
   end
 
   defp broadcast_game_state_to_bots(state, %{bots_topic: bots_topic}) do
