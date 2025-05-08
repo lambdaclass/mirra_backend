@@ -56,7 +56,9 @@ defmodule Arena.Bots.Bot do
     {:noreply, state}
   end
 
-  def handle_info({:game_update, game_state}, state) do
+  def handle_info({:game_update, state_lookup_tid}, state) do
+    [{_, game_state}] = :ets.lookup(state_lookup_tid, :diff)
+
     state = maybe_update_state_params(state, game_state)
 
     case game_state.status do

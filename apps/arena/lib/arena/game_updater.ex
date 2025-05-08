@@ -99,10 +99,14 @@ defmodule Arena.GameUpdater do
 
     :telemetry.execute([:arena, :game], %{count: 1})
 
+    tid = :ets.new(:state, [:set, :protected])
+    :ets.insert(tid, {:diff, game_state})
+
     {:ok,
      %{
        match_id: match_id,
        clients: clients_ids,
+       game_ets_tid: tid,
        bot_clients: bot_clients_ids,
        game_config: game_config,
        bounties_enabled?: bounties_enabled?,
@@ -294,6 +298,8 @@ defmodule Arena.GameUpdater do
       |> Map.put(:crates, state_diff[:crates])
       |> complete_state_entities()
 
+    :ets.insert(state.game_ets_tid, {:diff, state_diff})
+
     broadcast_game_state_to_bots(state_diff, state)
     broadcast_game_update(state_diff, game_state.game_id)
 
@@ -407,6 +413,8 @@ defmodule Arena.GameUpdater do
         PubSub.broadcast(Arena.PubSub, state.game_state.game_id, :end_game_state)
         broadcast_game_ended(winner_team, state.game_state)
         GameTracker.finish_tracking(self(), winner_team_number)
+
+        :ets.delete(state.game_ets_tid)
 
         ## The idea of having this waiting period is in case websocket processes keep
         ## sending messages, this way we give some time before making them crash
@@ -819,8 +827,8 @@ defmodule Arena.GameUpdater do
     PubSub.broadcast(Arena.PubSub, bots_topic, {:game_config_update, game_config})
   end
 
-  defp broadcast_game_state_to_bots(state, %{bots_topic: bots_topic}) do
-    PubSub.broadcast(Arena.PubSub, bots_topic, {:game_update, state})
+  defp broadcast_game_state_to_bots(state, %{bots_topic: bots_topic, game_ets_tid: tid}) do
+    PubSub.broadcast(Arena.PubSub, bots_topic, {:game_update, tid})
   end
 
   defp broadcast_game_update(state, game_id) do
