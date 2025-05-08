@@ -8,7 +8,6 @@ defmodule Arena.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      ArenaWeb.Telemetry,
       {DNSCluster, query: Application.get_env(:arena, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Arena.PubSub},
       # Start the Finch HTTP client for sending emails
