@@ -23,6 +23,12 @@ defmodule Arena.PromExPlugin do
           reporter_options: [buckets: [7_500_000.0, 15_000_000.0, 22_500_000.0]]
         ),
         sum("arena.clients.count", description: "Number of clients (websockets) connected")
+      ]),
+      Event.build(:vm_metrics, [
+        last_value("vm.memory.total", unit: {:byte, :kilobyte}),
+        last_value("vm.total_run_queue_lengths.total", description: "Total run queue length of CPU and IO schedulers"),
+        last_value("vm.total_run_queue_lengths.cpu", description: "Run queue length of CPU scheduler"),
+        last_value("vm.total_run_queue_lengths.io", description: "Run queue length of IO scheduler")
       ])
     ]
   end
