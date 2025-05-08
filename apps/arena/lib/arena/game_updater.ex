@@ -298,7 +298,9 @@ defmodule Arena.GameUpdater do
       |> Map.put(:crates, state_diff[:crates])
       |> complete_state_entities()
 
-    :ets.insert(state.game_ets_tid, {:diff, state_diff})
+    if get_in(state, [:game_state, :status]) != :ENDED do
+      :ets.insert(state.game_ets_tid, {:diff, state_diff})
+    end
 
     broadcast_game_state_to_bots(state_diff, state)
     broadcast_game_update(state_diff, game_state.game_id)
@@ -828,7 +830,7 @@ defmodule Arena.GameUpdater do
   end
 
   defp broadcast_game_state_to_bots(state, %{bots_topic: bots_topic, game_ets_tid: tid}) do
-    PubSub.broadcast(Arena.PubSub, bots_topic, {:game_update, tid})
+    PubSub.broadcast(Arena.PubSub, bots_topic, {:game_update, state.status, tid})
   end
 
   defp broadcast_game_update(state, game_id) do
