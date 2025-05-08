@@ -1,7 +1,7 @@
 defmodule Arena.PromExPlugin do
   @moduledoc """
   This module defines our custom PromEx plugin.
-  It contains all our custom metrics that are displayed on the graphana dashboard.
+  It contains all our custom metrics that are displayed on the grafana dashboard.
   """
 
   use PromEx.Plugin
