@@ -60,7 +60,7 @@ config :arena, :metrics_endpoint_port, metrics_endpoint_port
 
 config :arena, Arena.PromEx,
   metrics_server: [
-    port: 9568,
+    port: metrics_endpoint_port,
     auth_strategy: :none
   ]
 
