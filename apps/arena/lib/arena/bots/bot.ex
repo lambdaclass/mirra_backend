@@ -21,6 +21,8 @@ defmodule Arena.Bots.Bot do
     send(self(), :decide_action)
     send(self(), :perform_action)
 
+    :telemetry.execute([:bots], %{count: 1})
+
     {:ok,
      %{
        bot_id: bot_id,
@@ -48,8 +50,14 @@ defmodule Arena.Bots.Bot do
     {:noreply, %{state | attack_blocked: false}}
   end
 
-  def handle_info({:game_update, game_state, config}, state) do
-    state = maybe_update_state_params(state, game_state, config)
+  def handle_info({:game_config_update, config}, state) do
+    state = update_config(state, config)
+
+    {:noreply, state}
+  end
+
+  def handle_info({:game_update, game_state}, state) do
+    state = maybe_update_state_params(state, game_state)
 
     case game_state.status do
       :RUNNING ->
@@ -72,13 +80,17 @@ defmodule Arena.Bots.Bot do
     {:noreply, %{state | bot_state_machine: %{state.bot_state_machine | collision_grid: grid}}}
   end
 
-  defp maybe_update_state_params(state, game_state, config) do
+  defp update_config(state, config) do
     if is_nil(state.bot_state_machine.collision_grid) do
       PathfindingGrid.get_map_collision_grid(config.map.name, self())
     end
 
     state
     |> Map.put_new(:config, config)
+  end
+
+  defp maybe_update_state_params(state, game_state) do
+    state
     |> Map.put_new(:bot_player_id, get_in(game_state, [:client_to_player_map, state.bot_id]))
   end
 
@@ -148,6 +160,7 @@ defmodule Arena.Bots.Bot do
   defp send_current_action(_), do: nil
 
   def terminate(reason, state) do
+    :telemetry.execute([:bots], %{count: -1})
     Logger.error("Bot #{state.bot_id} terminating: #{inspect(reason)}")
   end
 

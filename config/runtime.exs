@@ -78,6 +78,8 @@ if System.get_env("USE_PROXY") do
   ])
 end
 
+config :arena, :loadtest_alone_mode?, System.get_env("LOADTEST_ALONE_MODE") == "true"
+
 if config_env() == :prod do
   # The secret key base is used to sign/encrypt cookies and other secrets.
   # A default value is used in config/dev.exs and config/test.exs but you
