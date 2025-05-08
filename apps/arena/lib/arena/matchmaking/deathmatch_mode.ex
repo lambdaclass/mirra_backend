@@ -28,7 +28,15 @@ defmodule Arena.Matchmaking.DeathmatchMode do
   def init(_) do
     Process.send_after(self(), :launch_game?, 300)
     Process.send_after(self(), :update_params, 30_000)
-    {:ok, %{clients: [], batch_start_at: 0}}
+
+    state =
+      if Application.get_env(:arena, :loadtest_alone_mode?) do
+        %{clients: [], batch_start_at: 0, launch_game_interval: 10, amount_of_players: 1}
+      else
+        %{clients: [], batch_start_at: 0, launch_game_interval: 300, amount_of_players: nil}
+      end
+
+    {:ok, state}
   end
 
   @impl true
@@ -60,14 +68,15 @@ defmodule Arena.Matchmaking.DeathmatchMode do
 
   @impl true
   def handle_info(:launch_game?, %{clients: clients} = state) do
-    Process.send_after(self(), :launch_game?, 300)
+    Process.send_after(self(), :launch_game?, state.launch_game_interval)
     diff = System.monotonic_time(:millisecond) - state.batch_start_at
-
     state = Matchmaking.get_matchmaking_configuration(state, 1, "deathmatch")
 
-    if Map.has_key?(state, :game_mode_configuration) &&
-         (length(clients) >= state.current_map.amount_of_players or
-            (diff >= Utils.start_timeout_ms() and length(clients) > 0)) do
+    amount_of_players = state.amount_of_players || state.current_map.amount_of_players
+    has_enough_players? = length(clients) >= amount_of_players
+    is_queue_timed_out? = diff >= Utils.start_timeout_ms() and length(clients) > 0
+
+    if Map.has_key?(state, :game_mode_configuration) && (has_enough_players? or is_queue_timed_out?) do
       send(self(), :start_game)
     end
 
