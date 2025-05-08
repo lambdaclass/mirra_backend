@@ -42,10 +42,10 @@ defmodule Arena.PromExPlugin do
         # All BEAM processes message queues
         last_value([:vm, :message_queue, :length], tags: [:process]),
         # Bots
-        distribution([:bots, :message_queue, :length], reporter_options: [buckets: [0, 10, 100, 1000, 10000, 100_000]]),
+        distribution([:bots, :message_queue, :length], reporter_options: [buckets: [0, 10, 100, 1_000, 10_000, 100_000]]),
         # GameUpdater
         distribution([:game_updater, :message_queue, :length],
-          reporter_options: [buckets: [0, 10, 100, 1000, 10000, 100_000]]
+          reporter_options: [buckets: [0, 10, 100, 1_000, 10_000, 100_000]]
         )
       ])
     ]
