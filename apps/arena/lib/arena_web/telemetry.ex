@@ -34,6 +34,7 @@ defmodule ArenaWeb.Telemetry do
       # Bots
       summary([:bots, :message_queue, :length]),
       distribution([:bots, :message_queue, :length], reporter_options: [buckets: [0, 10, 100, 1000, 10000, 100_000]]),
+      sum([:bots, :count], description: "Amount of active bots"),
 
       # GameUpdater
       summary([:game_updater, :message_queue, :length]),

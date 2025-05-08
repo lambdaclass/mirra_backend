@@ -21,6 +21,8 @@ defmodule Arena.Bots.Bot do
     send(self(), :decide_action)
     send(self(), :perform_action)
 
+    :telemetry.execute([:bots], %{count: 1})
+
     {:ok,
      %{
        bot_id: bot_id,
@@ -148,6 +150,7 @@ defmodule Arena.Bots.Bot do
   defp send_current_action(_), do: nil
 
   def terminate(reason, state) do
+    :telemetry.execute([:bots], %{count: -1})
     Logger.error("Bot #{state.bot_id} terminating: #{inspect(reason)}")
   end
 
