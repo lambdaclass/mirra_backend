@@ -17,9 +17,7 @@ make run
 Inside the Elixir shell:
 ```elixir
 # number_of_simulated_players must be a positive integer
-System.put_env("LOADTEST_ALONE_MODE", "true")
-System.put_env("LOADTEST_EUROPE_HOST", "176.9.26.172")
-number_of_simulated_players = 25
+number_of_simulated_players = 500
 ArenaLoadTest.SocketSupervisor.spawn_players(number_of_simulated_players)
 ```
 
@@ -40,3 +38,11 @@ ulimit -n
 
 ### Amount of players per game
 It's important to note that the Arena application defines how many players play in the same game match. If you want to increase the number of players in a game, you have to deploy the Arena application in the desired server with that configuration.
+
+### Games filled with arena bots
+We can run our loadtests using not only our mock players but also the bots in arena application.
+To do so, set the following environment variable:
+```bash
+System.put_env("LOADTEST_ALONE_MODE", "true")
+```
+With this enabled, each game will be filled with one player and the remaining players will be bots.
