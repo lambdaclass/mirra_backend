@@ -55,7 +55,8 @@ defmodule Arena.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:toxiproxy_ex, "~> 1.1.1"},
       {:joken, "~> 2.6"},
-      {:new_relic_agent, "~> 1.0", only: [:prod]}
+      {:new_relic_agent, "~> 1.0", only: [:prod]},
+      {:prom_ex, "~> 1.11.0"}
     ]
   end
 
