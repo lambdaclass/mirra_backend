@@ -42,7 +42,16 @@ It's important to note that the Arena application defines how many players play 
 ### Games filled with arena bots
 We can run our loadtests using not only our mock players but also the bots in arena application.
 To do so, set the following environment variable:
+
 ```bash
-System.put_env("LOADTEST_ALONE_MODE", "true")
+export LOADTEST_ALONE_MODE=true
 ```
-With this enabled, each game will be filled with one player and the remaining players will be bots.
+
+With this enabled, each game will be filled with one player and the remaining players will be bots. 
+
+You'll need to restart the app for this to take effect. Alternatively you can do:
+
+```elixir
+# This will not update the env var, beware
+Application.put_env(:arena, :loadtest_alone_mode?, true)
+```
