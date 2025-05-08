@@ -28,6 +28,20 @@ defmodule ArenaWeb.Telemetry do
       last_value("vm.total_run_queue_lengths.cpu"),
       last_value("vm.total_run_queue_lengths.io"),
 
+      # All BEAM processes message queues
+      last_value([:vm, :message_queue, :length], tags: [:process]),
+
+      # Bots
+      summary([:bots, :message_queue, :length]),
+      distribution([:bots, :message_queue, :length], reporter_options: [buckets: [0, 10, 100, 1_000, 10_000, 100_000]]),
+      sum([:bots, :count], description: "Amount of active bots"),
+
+      # GameUpdater
+      summary([:game_updater, :message_queue, :length]),
+      distribution([:game_updater, :message_queue, :length],
+        reporter_options: [buckets: [0, 10, 100, 1_000, 10_000, 100_000]]
+      ),
+
       ## Arena (game) metrics
       sum("arena.game.count", description: "Number of games in progress"),
       ## TODO: this metric is an attempt to gather data to properly set the buckets for the distribution metric below
@@ -50,6 +64,7 @@ defmodule ArenaWeb.Telemetry do
       # A module, function and arguments to be invoked periodically.
       # This function must call :telemetry.execute/3 and a metric must be added above.
       # {ArenaWeb, :count_users, []}
+      {Arena.Utils, :message_queue_lengths, []}
     ]
   end
 end
