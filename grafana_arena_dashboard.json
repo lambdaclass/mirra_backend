@@ -15,7 +15,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "11.5.2"
+      "version": "12.0.0"
     },
     {
       "type": "datasource",
@@ -101,8 +101,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -133,9 +132,13 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "12.0.0",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "bots_count",
@@ -144,11 +147,7 @@
           "legendFormat": "__auto",
           "range": true,
           "refId": "A",
-          "useBackend": false,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          }
+          "useBackend": false
         }
       ],
       "title": "[BOTS] Count",
@@ -159,6 +158,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
+      "description": "Amount of active players (not bots).",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -202,8 +202,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -220,7 +219,7 @@
         "x": 12,
         "y": 0
       },
-      "id": 15,
+      "id": 7,
       "options": {
         "legend": {
           "calcs": [],
@@ -234,21 +233,26 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "12.0.0",
       "targets": [
         {
-          "editorMode": "code",
-          "expr": "histogram_quantile(0.95, rate(game_updater_message_queue_length_bucket[1m]))",
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
-          }
+          },
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "arena_clients_count",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
         }
       ],
-      "title": "[GameUpdater] 95th percentile msg queue (1 min)",
+      "title": "[PLAYERS] Count",
       "type": "timeseries"
     },
     {
@@ -299,8 +303,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -331,21 +334,21 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "12.0.0",
       "targets": [
         {
-          "editorMode": "code",
-          "expr": "histogram_quantile(0.95, rate(bots_message_queue_length_bucket[1m]))",
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
-          }
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, rate(bots_message_queue_length_bucket[5m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
         }
       ],
-      "title": "[BOTS] 95th percentile msg queue (1 min)",
+      "title": "[BOTS] 95th percentile msg queue (5 min)",
       "type": "timeseries"
     },
     {
@@ -396,8 +399,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -414,7 +416,7 @@
         "x": 12,
         "y": 8
       },
-      "id": 17,
+      "id": 15,
       "options": {
         "legend": {
           "calcs": [],
@@ -428,21 +430,21 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "12.0.0",
       "targets": [
         {
-          "editorMode": "code",
-          "expr": "histogram_quantile(0.50, rate(game_updater_message_queue_length_bucket[1m]))",
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
-          }
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, rate(game_updater_message_queue_length_bucket[5m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
         }
       ],
-      "title": "[GameUpdater] Median msg queue (1 min)",
+      "title": "[GameUpdater] 95th percentile msg queue (5 min)",
       "type": "timeseries"
     },
     {
@@ -493,8 +495,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -525,21 +526,21 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "12.0.0",
       "targets": [
         {
-          "editorMode": "code",
-          "expr": "histogram_quantile(0.50, rate(bots_message_queue_length_bucket[1m]))",
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
-          }
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.50, rate(bots_message_queue_length_bucket[5m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
         }
       ],
-      "title": "[BOTS] Median msg queue (1 min)",
+      "title": "[BOTS] Median msg queue (5 min)",
       "type": "timeseries"
     },
     {
@@ -590,8 +591,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -608,7 +608,7 @@
         "x": 12,
         "y": 16
       },
-      "id": 12,
+      "id": 17,
       "options": {
         "legend": {
           "calcs": [],
@@ -622,25 +622,21 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "12.0.0",
       "targets": [
         {
-          "disableTextWrap": false,
-          "editorMode": "code",
-          "expr": "rate(bots_message_queue_length_sum[1m]) / rate(bots_message_queue_length_count[1m])",
-          "fullMetaSearch": false,
-          "includeNullMetadata": true,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A",
-          "useBackend": false,
           "datasource": {
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
-          }
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.50, rate(game_updater_message_queue_length_bucket[5m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
         }
       ],
-      "title": "[BOTS] Avg msg queue per avg count (1 min)",
+      "title": "[GameUpdater] Median msg queue (5 min)",
       "type": "timeseries"
     },
     {
@@ -691,8 +687,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -723,21 +718,21 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "12.0.0",
       "targets": [
         {
-          "editorMode": "code",
-          "expr": "rate(game_updater_message_queue_length_sum[1m]) / rate(game_updater_message_queue_length_count[1m])\n",
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
-          }
+          },
+          "editorMode": "code",
+          "expr": "rate(game_updater_message_queue_length_sum[5m]) / rate(game_updater_message_queue_length_count[5m])\n",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
         }
       ],
-      "title": "[GameUpdater] Avg msg queue per avg count (1 min)",
+      "title": "[GameUpdater] Avg msg queue per avg count (5 min)",
       "type": "timeseries"
     },
     {
@@ -788,8 +783,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -806,7 +800,7 @@
         "x": 12,
         "y": 24
       },
-      "id": 7,
+      "id": 12,
       "options": {
         "legend": {
           "calcs": [],
@@ -820,7 +814,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "12.0.0",
       "targets": [
         {
           "datasource": {
@@ -828,18 +822,17 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "arena_clients_count",
+          "editorMode": "code",
+          "expr": "rate(bots_message_queue_length_sum[5m]) / rate(bots_message_queue_length_count[5m])",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
-          "instant": false,
           "legendFormat": "__auto",
           "range": true,
           "refId": "A",
           "useBackend": false
         }
       ],
-      "title": "Current connected players",
+      "title": "[BOTS] Avg msg queue per avg count (5 min)",
       "type": "timeseries"
     },
     {
@@ -921,7 +914,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "12.0.0",
       "targets": [
         {
           "datasource": {
@@ -1453,7 +1446,7 @@
     }
   ],
   "refresh": "5s",
-  "schemaVersion": 40,
+  "schemaVersion": 41,
   "tags": [],
   "templating": {
     "list": []
@@ -1466,6 +1459,6 @@
   "timezone": "browser",
   "title": "Arena",
   "uid": "fdixa7yyhidxca",
-  "version": 2,
+  "version": 9,
   "weekStart": ""
 }
