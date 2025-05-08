@@ -73,7 +73,6 @@ defmodule Arena.GameUpdater do
     match_id = Ecto.UUID.generate()
 
     send(self(), :update_game)
-
     bounties_enabled? = game_config.game.bounty_pick_time_ms > 0
 
     if bounties_enabled? do
@@ -320,6 +319,7 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info(:game_start, state) do
+    broadcast_config_to_bots(state.bots_topic, state.game_config)
     broadcast_enable_incomming_messages(state.game_state.game_id)
 
     Process.send_after(self(), :start_zone, state.game_config.game.zone_shrink_start_ms)
@@ -814,8 +814,12 @@ defmodule Arena.GameUpdater do
     })
   end
 
-  defp broadcast_game_state_to_bots(state, %{game_config: game_config, bots_topic: bots_topic}) do
-    PubSub.broadcast(Arena.PubSub, bots_topic, {:game_update, state, game_config})
+  defp broadcast_config_to_bots(bots_topic, game_config) do
+    PubSub.broadcast(Arena.PubSub, bots_topic, {:game_config_update, game_config})
+  end
+
+  defp broadcast_game_state_to_bots(state, %{bots_topic: bots_topic}) do
+    PubSub.broadcast(Arena.PubSub, bots_topic, {:game_update, state})
   end
 
   defp broadcast_game_update(state, game_id) do
