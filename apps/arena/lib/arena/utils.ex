@@ -141,10 +141,16 @@ defmodule Arena.Utils do
   # Time to wait to start game with any amount of clients
   def start_timeout_ms(), do: 4_000
 
-  def message_queue_lengths() do
+  def periodic_measurements() do
     register_all_processes_queues()
     register_bots_queues()
     register_game_updater_queues()
+    register_os_usage()
+  end
+
+  def register_os_usage() do
+    :telemetry.execute([:os], %{cpu_usage: :cpu_sup.util()})
+    :telemetry.execute([:os], Map.new(:memsup.get_system_memory_data()))
   end
 
   def register_all_processes_queues() do
