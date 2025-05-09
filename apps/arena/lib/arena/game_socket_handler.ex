@@ -187,10 +187,8 @@ defmodule Arena.GameSocketHandler do
     :telemetry.execute([:arena, :clients], %{count: -1})
     Logger.error("Player #{state.player_id} terminating: #{inspect(reason)}")
 
-    # Bots break if they start in the middle of the game because we don't send a full snapshot of the game
-    # Check https://github.com/lambdaclass/mirra_backend/issues/1128 for more info. In this case since the player
-    # didn't actually disconnect we might have to send the full state in another way
-    # BotSupervisor.start_bots_for_game([%{client_id: state.player_id}], game_id)
+    # TODO: We have to reconnect the bots here, we lost this behavior when moved the bots inside Arena.
+    # https://github.com/lambdaclass/mirra_backend/issues/1128
   end
 
   def terminate(reason, _req, state) do
