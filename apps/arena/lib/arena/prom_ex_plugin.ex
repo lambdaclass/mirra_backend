@@ -39,7 +39,7 @@ defmodule Arena.PromExPlugin do
     poll_rate = 10_000
 
     [
-      Polling.build(:periodic_measurements, poll_rate, {Arena.Utils, :message_queue_lengths, []}, [
+      Polling.build(:periodic_measurements, poll_rate, {Arena.Utils, :periodic_measurements, []}, [
         # All BEAM processes message queues
         last_value([:vm, :message_queue, :length], tags: [:process]),
         # Bots
@@ -49,7 +49,16 @@ defmodule Arena.PromExPlugin do
         # GameUpdater
         distribution([:game_updater, :message_queue, :length],
           reporter_options: [buckets: [0, 10, 100, 1_000, 10_000, 100_000]]
-        )
+        ),
+        # OS
+
+        last_value([:os, :cpu_usage], []),
+        last_value([:os, :system_total_memory], unit: {:byte, :megabyte}),
+        last_value([:os, :free_memory], unit: {:byte, :megabyte}),
+        last_value([:os, :buffered_memory], unit: {:byte, :megabyte}),
+        last_value([:os, :cached_memory], unit: {:byte, :megabyte}),
+        last_value([:os, :total_swap], unit: {:byte, :megabyte}),
+        last_value([:os, :free_swap], unit: {:byte, :megabyte})
       ])
     ]
   end
