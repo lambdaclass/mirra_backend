@@ -3,6 +3,7 @@ defmodule Arena.GameSocketHandler do
   Module that handles cowboy websocket requests
   """
   require Logger
+  alias Arena.Bots.BotSupervisor
   alias Arena.Authentication.GatewaySigner
   alias Arena.Authentication.GatewayTokenManager
   alias Arena.Serialization
@@ -183,16 +184,14 @@ defmodule Arena.GameSocketHandler do
   end
 
   @impl true
-  def terminate(reason, _req, %{game_finished: false, player_alive: true} = state) do
+  def terminate(reason, _req, %{game_finished: false, player_alive: true, game_id: game_id} = state) do
     :telemetry.execute([:arena, :clients], %{count: -1})
     Logger.error("Player #{state.player_id} terminating: #{inspect(reason)}")
 
-    # if Application.get_env(:arena, :spawn_bots) do
-    #   spawn(fn ->
-    #     Finch.build(:get, Utils.get_bot_connection_url(state.game_id, state.client_id))
-    #     |> Finch.request(Arena.Finch)
-    #   end)
-    # end
+    # Bots break if they start in the middle of the game because we don't send a full snapshot of the game
+    # Check https://github.com/lambdaclass/mirra_backend/issues/1128 for more info. In this case since the player
+    # didn't actually disconnect we might have to send the full state in another way
+    # BotSupervisor.start_bots_for_game([%{client_id: state.player_id}], game_id)
   end
 
   def terminate(reason, _req, state) do
