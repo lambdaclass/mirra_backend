@@ -63,12 +63,14 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
           NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
+          LOADTEST_ALONE_MODE: ${{ vars.LOADTEST_ALONE_MODE }}
         run: |
           ssh ${SSH_USERNAME}@${SSH_HOST} \
             SSH_APP_USERNAME=${SSH_APP_USERNAME} \
             DATABASE_URL=${DATABASE_URL} \
             SECRET_KEY_BASE=${SECRET_KEY_BASE} \
             NEWRELIC_KEY=${NEWRELIC_KEY} \
+                LOADTEST_ALONE_MODE=${LOADTEST_ALONE_MODE} \
             /home/${SSH_USERNAME}/mirra_backend/devops/setup-admin-deps.sh
 
       - name: Tailscale
