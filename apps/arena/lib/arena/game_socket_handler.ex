@@ -5,7 +5,6 @@ defmodule Arena.GameSocketHandler do
   require Logger
   alias Arena.Authentication.GatewaySigner
   alias Arena.Authentication.GatewayTokenManager
-  alias Arena.Utils
   alias Arena.Serialization
   alias Arena.GameUpdater
   alias Arena.Serialization.GameEvent
@@ -108,6 +107,7 @@ defmodule Arena.GameSocketHandler do
   @impl true
   def websocket_info({:game_finished, game_state}, state) do
     # Logger.info("Websocket info, Message: GAME FINISHED")
+    Process.send_after(self(), :terminate_connection, 10_000)
     {:reply, {:binary, game_state}, state}
   end
 
@@ -172,6 +172,10 @@ defmodule Arena.GameSocketHandler do
     end
   end
 
+  def websocket_info(:terminate_connection, state) do
+    {:stop, state}
+  end
+
   @impl true
   def websocket_info(message, state) do
     Logger.info("You should not be here: #{inspect(message)}")
@@ -179,22 +183,21 @@ defmodule Arena.GameSocketHandler do
   end
 
   @impl true
-  def terminate(_reason, _req, %{game_finished: false, player_alive: true} = state) do
+  def terminate(reason, _req, %{game_finished: false, player_alive: true} = state) do
     :telemetry.execute([:arena, :clients], %{count: -1})
+    Logger.error("Player #{state.player_id} terminating: #{inspect(reason)}")
 
-    if Application.get_env(:arena, :spawn_bots) do
-      spawn(fn ->
-        Finch.build(:get, Utils.get_bot_connection_url(state.game_id, state.client_id))
-        |> Finch.request(Arena.Finch)
-      end)
-    end
-
-    :ok
+    # if Application.get_env(:arena, :spawn_bots) do
+    #   spawn(fn ->
+    #     Finch.build(:get, Utils.get_bot_connection_url(state.game_id, state.client_id))
+    #     |> Finch.request(Arena.Finch)
+    #   end)
+    # end
   end
 
-  def terminate(_reason, _req, _state) do
+  def terminate(reason, _req, state) do
     :telemetry.execute([:arena, :clients], %{count: -1})
-    :ok
+    Logger.error("Player #{state.player_id} terminating: #{inspect(reason)}")
   end
 
   defp to_broadcast_config(config) do
