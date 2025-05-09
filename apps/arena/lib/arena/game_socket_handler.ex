@@ -3,7 +3,6 @@ defmodule Arena.GameSocketHandler do
   Module that handles cowboy websocket requests
   """
   require Logger
-  alias Arena.Bots.BotSupervisor
   alias Arena.Authentication.GatewaySigner
   alias Arena.Authentication.GatewayTokenManager
   alias Arena.Serialization
@@ -184,7 +183,7 @@ defmodule Arena.GameSocketHandler do
   end
 
   @impl true
-  def terminate(reason, _req, %{game_finished: false, player_alive: true, game_id: game_id} = state) do
+  def terminate(reason, _req, %{game_finished: false, player_alive: true} = state) do
     :telemetry.execute([:arena, :clients], %{count: -1})
     Logger.error("Player #{state.player_id} terminating: #{inspect(reason)}")
 

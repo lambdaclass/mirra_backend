@@ -53,12 +53,12 @@ defmodule Arena.PromExPlugin do
         # OS
 
         last_value([:os, :cpu_usage], []),
-        last_value([:os, :system_total_memory], [unit: {:byte, :megabyte}]),
-        last_value([:os, :free_memory], [unit: {:byte, :megabyte}]),
-        last_value([:os, :buffered_memory], [unit: {:byte, :megabyte}]),
-        last_value([:os, :cached_memory], [unit: {:byte, :megabyte}]),
-        last_value([:os, :total_swap], [unit: {:byte, :megabyte}]),
-        last_value([:os, :free_swap], [unit: {:byte, :megabyte}]),
+        last_value([:os, :system_total_memory], unit: {:byte, :megabyte}),
+        last_value([:os, :free_memory], unit: {:byte, :megabyte}),
+        last_value([:os, :buffered_memory], unit: {:byte, :megabyte}),
+        last_value([:os, :cached_memory], unit: {:byte, :megabyte}),
+        last_value([:os, :total_swap], unit: {:byte, :megabyte}),
+        last_value([:os, :free_swap], unit: {:byte, :megabyte})
       ])
     ]
   end
