@@ -140,4 +140,51 @@ defmodule Arena.Utils do
 
   # Time to wait to start game with any amount of clients
   def start_timeout_ms(), do: 4_000
+
+  def periodic_measurements() do
+    register_all_processes_queues()
+    register_bots_queues()
+    register_game_updater_queues()
+    register_os_usage()
+  end
+
+  def register_os_usage() do
+    :telemetry.execute([:os], %{cpu_usage: :cpu_sup.util()})
+    :telemetry.execute([:os], Map.new(:memsup.get_system_memory_data()))
+  end
+
+  def register_all_processes_queues() do
+    Process.list()
+    |> Enum.each(fn pid ->
+      case Process.info(pid, [:message_queue_len, :registered_name]) do
+        [message_queue_len: len, registered_name: name] -> register_queue_length(name, len)
+        [message_queue_len: len] -> register_queue_length(pid, len)
+        _ -> nil
+      end
+    end)
+  end
+
+  defp register_queue_length(name, len) do
+    :telemetry.execute([:vm, :message_queue], %{length: len}, %{process: inspect(name)})
+  end
+
+  defp register_bots_queues() do
+    Registry.select(BotRegistry, [{{:"$1", :"$2", :"$3"}, [], [{{:"$1", :"$2"}}]}])
+    |> Enum.each(fn {_bot_id, pid} ->
+      case Process.info(pid, [:message_queue_len]) do
+        [message_queue_len: len] -> :telemetry.execute([:bots, :message_queue], %{length: len}, %{})
+        _ -> nil
+      end
+    end)
+  end
+
+  defp register_game_updater_queues() do
+    Registry.select(GameUpdaterRegistry, [{{:"$1", :"$2", :"$3"}, [], [{{:"$1", :"$2"}}]}])
+    |> Enum.each(fn {_game_id, pid} ->
+      case Process.info(pid, [:message_queue_len]) do
+        [message_queue_len: len] -> :telemetry.execute([:game_updater, :message_queue], %{length: len}, %{})
+        _ -> nil
+      end
+    end)
+  end
 end

@@ -61,7 +61,7 @@ champions_of_mirra_id = Utils.get_game_id(:champions_of_mirra)
 
 ### Curse Currencies
 
-{:ok, _curse_gold} =
+{:ok, curse_gold} =
   Users.Currencies.insert_currency(%{
     game_id: curse_of_mirra_id,
     name: "Gold"
@@ -1319,6 +1319,11 @@ characters =
     characters ++ [character]
   end)
 
+skin_purchase_cost = %{
+  currency_id: curse_gold.id,
+  amount: 2500
+}
+
 # Skins params
 
 muflus_basic_params = %{
@@ -1330,7 +1335,8 @@ muflus_basic_params = %{
 h4ck_fenix_params = %{
   is_default: false,
   name: "Fenix",
-  character_id: Enum.find(characters, fn c -> c.name == "h4ck" end).id
+  character_id: Enum.find(characters, fn c -> c.name == "h4ck" end).id,
+  purchase_costs: [skin_purchase_cost]
 }
 
 h4ck_basic_params = %{
@@ -1342,7 +1348,8 @@ h4ck_basic_params = %{
 valtimer_frostimer_params = %{
   is_default: false,
   name: "Frostimer",
-  character_id: Enum.find(characters, fn c -> c.name == "valtimer" end).id
+  character_id: Enum.find(characters, fn c -> c.name == "valtimer" end).id,
+  purchase_costs: [skin_purchase_cost]
 }
 
 valtimer_basic_params = %{
@@ -1354,7 +1361,8 @@ valtimer_basic_params = %{
 kenzu_black_lotus_params = %{
   is_default: false,
   name: "Black Lotus",
-  character_id: Enum.find(characters, fn c -> c.name == "kenzu" end).id
+  character_id: Enum.find(characters, fn c -> c.name == "kenzu" end).id,
+  purchase_costs: [skin_purchase_cost]
 }
 
 kenzu_basic_params = %{
@@ -1366,7 +1374,8 @@ kenzu_basic_params = %{
 otix_corrupt_underground = %{
   is_default: false,
   name: "Corrupt Underground",
-  character_id: Enum.find(characters, fn c -> c.name == "otix" end).id
+  character_id: Enum.find(characters, fn c -> c.name == "otix" end).id,
+  purchase_costs: [skin_purchase_cost]
 }
 
 otix_basic_params = %{
@@ -1792,8 +1801,8 @@ araban_map_config = %{
       "shape" => "polygon",
       "type" => "static",
       "vertices" => [
-        %{"x" => "8117.765", "y" => "6600"},
-        %{"x" => "-9005.646", "y" => "6600"},
+        %{"x" => "9864.28", "y" => "9083.508"},
+        %{"x" => "-9828.964", "y" => "8714.535"},
         %{"x" => "-8936.1", "y" => "6400"},
         %{"x" => "7947.096", "y" => "6400"}
       ]
@@ -1805,8 +1814,8 @@ araban_map_config = %{
       "shape" => "polygon",
       "type" => "static",
       "vertices" => [
-        %{"x" => "8117.765", "y" => "-6600"},
-        %{"x" => "-9005.646", "y" => "-6600"},
+        %{"x" => "9360.592", "y" => "-8927.555"},
+        %{"x" => "-9974.064", "y" => "-8985.142"},
         %{"x" => "-8936.1", "y" => "-6400"},
         %{"x" => "7947.096", "y" => "-6400"}
       ]
@@ -1818,10 +1827,10 @@ araban_map_config = %{
       "shape" => "polygon",
       "type" => "static",
       "vertices" => [
-        %{"x" => "6600", "y" => "-6519.197"},
-        %{"x" => "6600", "y" => "6191.239"},
-        %{"x" => "6400", "y" => "6209.371"},
-        %{"x" => "6400", "y" => "-6427.376"}
+        %{"x" => "10690", "y" => "-9680"},
+        %{"x" => "8560", "y" => "8490"},
+        %{"x" => "6400", "y" => "8580"},
+        %{"x" => "6400", "y" => "-9910"}
       ]
     },
     %{
@@ -1831,10 +1840,10 @@ araban_map_config = %{
       "shape" => "polygon",
       "type" => "static",
       "vertices" => [
-        %{"x" => "-6600", "y" => "-6519.197"},
-        %{"x" => "-6600", "y" => "6191.239"},
-        %{"x" => "-6400", "y" => "6209.371"},
-        %{"x" => "-6400", "y" => "-6427.376"}
+        %{"x" => "-9180", "y" => "-9510"},
+        %{"x" => "-8520", "y" => "9250"},
+        %{"x" => "-6400", "y" => "9180"},
+        %{"x" => "-6400", "y" => "-9170"}
       ]
     },
     %{
@@ -3111,12 +3120,12 @@ merliot_map_config = %{
     },
     %{
       "base_status" => nil,
-      "name" => "Center altar",
-      "position" => %{"x" => "31", "y" => "-140"},
-      "radius" => "400",
+      "name" => "Center",
+      "position" => %{"x" => "-25.95077", "y" => "-25.9697"},
+      "radius" => "446.8141",
       "shape" => "circle",
       "statuses_cycle" => nil,
-      "type" => "static",
+      "type" => "lake",
       "vertices" => []
     },
     %{
@@ -3915,6 +3924,62 @@ trio_mode_params = %{
   version_id: version.id
 }
 
+level_up_config_params = %{
+  level_info: [
+    %{
+      level: 1,
+      currency_costs: [%{amount: 0, currency_id: curse_gold.id}],
+      stat_increase_percentage: 0
+    },
+    %{
+      level: 2,
+      currency_costs: [%{amount: 375, currency_id: curse_gold.id}],
+      stat_increase_percentage: 1
+    },
+    %{
+      level: 3,
+      currency_costs: [%{amount: 800, currency_id: curse_gold.id}],
+      stat_increase_percentage: 2
+    },
+    %{
+      level: 4,
+      currency_costs: [%{amount: 1650, currency_id: curse_gold.id}],
+      stat_increase_percentage: 3
+    },
+    %{
+      level: 5,
+      currency_costs: [%{amount: 2250, currency_id: curse_gold.id}],
+      stat_increase_percentage: 4
+    },
+    %{
+      level: 6,
+      currency_costs: [%{amount: 3750, currency_id: curse_gold.id}],
+      stat_increase_percentage: 5
+    },
+    %{
+      level: 7,
+      currency_costs: [%{amount: 5625, currency_id: curse_gold.id}],
+      stat_increase_percentage: 6
+    },
+    %{
+      level: 8,
+      currency_costs: [%{amount: 9750, currency_id: curse_gold.id}],
+      stat_increase_percentage: 7
+    },
+    %{
+      level: 9,
+      currency_costs: [%{amount: 16500, currency_id: curse_gold.id}],
+      stat_increase_percentage: 8
+    },
+    %{
+      level: 10,
+      currency_costs: [%{amount: 26250, currency_id: curse_gold.id}],
+      stat_increase_percentage: 9
+    }
+  ],
+  version_id: version.id
+}
+
 {:ok, _battle} = GameBackend.Configuration.create_game_mode_configuration(battle_mode_params)
 
 {:ok, _deathmatch} =
@@ -3925,6 +3990,9 @@ trio_mode_params = %{
 {:ok, _trio} = GameBackend.Configuration.create_game_mode_configuration(trio_mode_params)
 
 {:ok, _quick_game} = GameBackend.Configuration.create_game_mode_configuration(quick_game_params)
+
+{:ok, _level_up_configuration} =
+  GameBackend.Configuration.create_level_up_configuration(level_up_config_params)
 
 GameBackend.Configuration.create_arena_server(brazil_arena_server)
 

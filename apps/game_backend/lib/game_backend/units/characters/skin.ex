@@ -7,10 +7,12 @@ defmodule GameBackend.Units.Characters.Skin do
   import Ecto.Changeset
 
   alias GameBackend.Units.Characters.Character
+  alias GameBackend.Users.Currencies.CurrencyCost
 
   @derive {Jason.Encoder,
            only: [
              :is_default,
+             :name,
              :character_id
            ]}
 
@@ -18,6 +20,7 @@ defmodule GameBackend.Units.Characters.Skin do
     field(:name, :string)
     field(:is_default, :boolean, default: false)
     belongs_to(:character, Character)
+    embeds_many(:purchase_costs, CurrencyCost, on_replace: :delete)
 
     timestamps()
   end
@@ -31,5 +34,6 @@ defmodule GameBackend.Units.Characters.Skin do
       :character_id
     ])
     |> validate_required([:name, :is_default, :character_id])
+    |> cast_embed(:purchase_costs)
   end
 end

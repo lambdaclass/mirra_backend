@@ -55,6 +55,7 @@ jobs:
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
           NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME }}
           NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
+          LOADTEST_ALONE_MODE: ${{ vars.LOADTEST_ALONE_MODE }}
           DBUS_SESSION_BUS_ADDRESS: ${{ vars.DBUS_SESSION_BUS_ADDRESS }}
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
         run: |
@@ -73,5 +74,6 @@ jobs:
                 SECRET_KEY_BASE=${SECRET_KEY_BASE} \
                 NEWRELIC_APP_NAME=${NEWRELIC_APP_NAME} \
                 NEWRELIC_KEY=${NEWRELIC_KEY} \
+                LOADTEST_ALONE_MODE=${LOADTEST_ALONE_MODE} \
                 DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS} \
                 /home/${SSH_USERNAME}/deploy-script/deploy.sh

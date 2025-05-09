@@ -2,13 +2,21 @@ defmodule GameBackend.CurseOfMirra.Matches do
   @moduledoc """
   Matches
   """
+  alias GameBackend.Users.Currencies
   alias GameBackend.Units
   alias GameBackend.Units.Unit
 
   alias GameBackend.Users
+  alias GameBackend.Utils
   alias Ecto.Multi
   alias GameBackend.Matches.ArenaMatchResult
   alias GameBackend.Repo
+
+  @gold_rewards_per_position %{
+    1 => 40,
+    2 => 15,
+    3 => 5
+  }
 
   def create_arena_match_results(match_id, results) do
     Multi.new()
@@ -16,6 +24,7 @@ defmodule GameBackend.CurseOfMirra.Matches do
     |> maybe_create_unit_for_user(results)
     |> add_users_to_multi(results)
     |> give_prestige(results)
+    |> give_gold(results)
     |> Repo.transaction()
   end
 
@@ -63,6 +72,33 @@ defmodule GameBackend.CurseOfMirra.Matches do
 
             {:ok, _update_highest_historical_prestige} =
               maybe_update_highest_prestige_for_user(user, reward)
+        end
+      end)
+    end)
+  end
+
+  defp give_gold(multi, results) do
+    multi =
+      Multi.run(multi, :get_gold_currency, fn _repo, _changes ->
+        Currencies.get_currency_by_name_and_game("Gold", Utils.get_game_id(:curse_of_mirra))
+      end)
+
+    Enum.reduce(results, multi, fn result, transaction_acc ->
+      Multi.run(transaction_acc, {:gold_reward, result["user_id"]}, fn _repo,
+                                                                       %{
+                                                                         get_users: users,
+                                                                         get_gold_currency: gold_currency
+                                                                       } ->
+        user = Enum.find(users, fn user -> user.id == result["user_id"] end)
+
+        resulting_position = result["position"]
+
+        if Map.has_key?(@gold_rewards_per_position, resulting_position) do
+          gold_reward_amount = Map.get(@gold_rewards_per_position, resulting_position)
+
+          Currencies.add_currency(user.id, gold_currency.id, gold_reward_amount)
+        else
+          {:ok, nil}
         end
       end)
     end)

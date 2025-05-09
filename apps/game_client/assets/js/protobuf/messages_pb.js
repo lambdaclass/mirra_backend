@@ -7115,7 +7115,8 @@ team: (f = jspb.Message.getField(msg, 19)) == null ? undefined : f,
 maxHealth: (f = jspb.Message.getField(msg, 20)) == null ? undefined : f,
 inventoryMap: (f = msg.getInventoryMap()) ? f.toObject(includeInstance, proto.Item.toObject) : [],
 blockedActions: (f = jspb.Message.getBooleanField(msg, 22)) == null ? undefined : f,
-skinName: (f = jspb.Message.getField(msg, 23)) == null ? undefined : f
+skinName: (f = jspb.Message.getField(msg, 23)) == null ? undefined : f,
+characterLevel: (f = jspb.Message.getField(msg, 24)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -7251,6 +7252,10 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
     case 23:
       var value = /** @type {string} */ (reader.readString());
       msg.setSkinName(value);
+      break;
+    case 24:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setCharacterLevel(value);
       break;
     default:
       reader.skipField();
@@ -7435,6 +7440,13 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeString(
       23,
+      f
+    );
+  }
+  f = /** @type {number} */ (jspb.Message.getField(message, 24));
+  if (f != null) {
+    writer.writeUint64(
+      24,
       f
     );
   }
@@ -8245,6 +8257,42 @@ proto.Player.prototype.clearSkinName = function() {
  */
 proto.Player.prototype.hasSkinName = function() {
   return jspb.Message.getField(this, 23) != null;
+};
+
+
+/**
+ * optional uint64 character_level = 24;
+ * @return {number}
+ */
+proto.Player.prototype.getCharacterLevel = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 24, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setCharacterLevel = function(value) {
+  return jspb.Message.setField(this, 24, value);
+};
+
+
+/**
+ * Clears the field making it undefined.
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.clearCharacterLevel = function() {
+  return jspb.Message.setField(this, 24, undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.Player.prototype.hasCharacterLevel = function() {
+  return jspb.Message.getField(this, 24) != null;
 };
 
 

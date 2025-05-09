@@ -13,6 +13,7 @@ defmodule GameBackend.Units.UnitSkin do
            only: [
              :unit_id,
              :skin_id,
+             :skin,
              :selected
            ]}
 

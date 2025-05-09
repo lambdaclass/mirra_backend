@@ -58,6 +58,12 @@ metrics_endpoint_port =
 config :arena, :gateway_url, System.get_env("GATEWAY_URL") || "http://localhost:4001"
 config :arena, :metrics_endpoint_port, metrics_endpoint_port
 
+config :arena, Arena.PromEx,
+  metrics_server: [
+    port: metrics_endpoint_port,
+    auth_strategy: :none
+  ]
+
 if System.get_env("PHX_SERVER") do
   config :arena, ArenaWeb.Endpoint, server: true
 end
@@ -71,6 +77,8 @@ if System.get_env("USE_PROXY") do
     }
   ])
 end
+
+config :arena, :loadtest_alone_mode?, System.get_env("LOADTEST_ALONE_MODE") == "true"
 
 if config_env() == :prod do
   # The secret key base is used to sign/encrypt cookies and other secrets.

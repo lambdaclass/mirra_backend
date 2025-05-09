@@ -8,7 +8,8 @@ defmodule Arena.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      ArenaWeb.Telemetry,
+      {Registry, keys: :unique, name: BotRegistry},
+      {Registry, keys: :unique, name: GameUpdaterRegistry},
       {DNSCluster, query: Application.get_env(:arena, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Arena.PubSub},
       # Start the Finch HTTP client for sending emails
@@ -23,7 +24,7 @@ defmodule Arena.Application do
       Arena.Authentication.GatewaySigner,
       Arena.Bots.BotSupervisor,
       Arena.Bots.PathfindingGrid,
-      {Registry, keys: :unique, name: BotRegistry},
+      Arena.PromEx,
       # Start a worker by calling: Arena.Worker.start_link(arg)
       # {Arena.Worker, arg},
       # Start to serve requests, typically the last entry

@@ -4,7 +4,7 @@ defmodule Arena.MixProject do
   def project do
     [
       app: :arena,
-      version: "0.21.1",
+      version: "0.22.1",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
       deps_path: "../../deps",
@@ -23,7 +23,7 @@ defmodule Arena.MixProject do
   def application do
     [
       mod: {Arena.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :os_mon]
     ]
   end
 
@@ -55,7 +55,8 @@ defmodule Arena.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:toxiproxy_ex, "~> 1.1.1"},
       {:joken, "~> 2.6"},
-      {:new_relic_agent, "~> 1.0", only: [:prod]}
+      {:new_relic_agent, "~> 1.0", only: [:prod]},
+      {:prom_ex, "~> 1.11.0"}
     ]
   end
 

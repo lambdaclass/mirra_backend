@@ -24,6 +24,7 @@ defmodule GameBackend.Users.User do
            only: [
              :username,
              :currencies,
+             :units,
              :prestige,
              :most_played_character,
              :total_kills,

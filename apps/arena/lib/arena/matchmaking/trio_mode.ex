@@ -26,7 +26,15 @@ defmodule Arena.Matchmaking.TrioMode do
   def init(_) do
     Process.send_after(self(), :launch_game?, 300)
     Process.send_after(self(), :update_params, 30_000)
-    {:ok, %{clients: [], batch_start_at: 0}}
+
+    state =
+      if Application.get_env(:arena, :loadtest_alone_mode?) do
+        %{clients: [], batch_start_at: 0, launch_game_interval: 10, amount_of_players: 1}
+      else
+        %{clients: [], batch_start_at: 0, launch_game_interval: 300, amount_of_players: nil}
+      end
+
+    {:ok, state}
   end
 
   @impl true
@@ -37,6 +45,7 @@ defmodule Arena.Matchmaking.TrioMode do
       client_id: params.client_id,
       character_name: params.character_name,
       skin_name: params.skin_name,
+      character_level: params.character_level,
       name: params.player_name,
       from_pid: from_pid,
       type: :human
@@ -57,15 +66,15 @@ defmodule Arena.Matchmaking.TrioMode do
 
   @impl true
   def handle_info(:launch_game?, %{clients: clients} = state) do
-    Process.send_after(self(), :launch_game?, 300)
-
+    Process.send_after(self(), :launch_game?, state.launch_game_interval)
+    diff = System.monotonic_time(:millisecond) - state.batch_start_at
     state = Matchmaking.get_matchmaking_configuration(state, 3, "battle_royale")
 
-    diff = System.monotonic_time(:millisecond) - state.batch_start_at
+    amount_of_players = state.amount_of_players || state.current_map.amount_of_players
+    has_enough_players? = length(clients) >= amount_of_players
+    is_queue_timed_out? = diff >= Utils.start_timeout_ms() and length(clients) > 0
 
-    if Map.has_key?(state, :game_mode_configuration) &&
-         (length(clients) >= state.current_map.amount_of_players or
-            (diff >= Utils.start_timeout_ms() and length(clients) > 0)) do
+    if Map.has_key?(state, :game_mode_configuration) && (has_enough_players? or is_queue_timed_out?) do
       send(self(), :start_game)
     end
 
@@ -118,6 +127,7 @@ defmodule Arena.Matchmaking.TrioMode do
         client_id: client_id,
         skin_name: "Basic",
         character_name: Enum.random(characters).name,
+        character_level: 1,
         name: Enum.at(bot_names, i - 1),
         type: :bot
       }

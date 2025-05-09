@@ -22,10 +22,13 @@ defmodule Gateway.Router do
       get "/consumable_items", ConfigurationController, :get_consumable_items_configuration
       get "/map", ConfigurationController, :get_map_configurations
       get "/game_modes", ConfigurationController, :get_game_mode_configuration
+      get "/level_up_settings", CharacterController, :level_up_settings
     end
 
     scope "/stores" do
       get "/:store_name/list_items", StoreController, :list_items
+      get "/list_skins", StoreController, :list_skins
+      get "/buy_skin", StoreController, :buy_skin
     end
 
     post "/users", UserController, :create_guest_user
@@ -53,6 +56,7 @@ defmodule Gateway.Router do
       scope "/characters" do
         post "/select", CharacterController, :select
         post "/select_skin", CharacterController, :select_skin
+        post "/level_up", CharacterController, :level_up
       end
 
       scope "/stores" do

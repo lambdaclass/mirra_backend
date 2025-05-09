@@ -52,6 +52,14 @@ defmodule Gateway.Controllers.FallbackController do
     send_resp(conn, 400, Jason.encode!(%{"error" => "user cannot afford the cost"}))
   end
 
+  def call(conn, {:can_select_skin?, false}) do
+    send_resp(conn, 400, Jason.encode!(%{"error" => "user cannot select the skin"}))
+  end
+
+  def call(conn, {:already_bought_skin?, true}) do
+    send_resp(conn, 400, Jason.encode!(%{"error" => "user has the skin already"}))
+  end
+
   def call(conn, {:error, :quest_type_not_implemented}) do
     send_resp(conn, 400, Jason.encode!(%{"error" => "quest type not implemented yet"}))
   end
@@ -62,6 +70,10 @@ defmodule Gateway.Controllers.FallbackController do
 
   def call(conn, {:error, :unexistent_user_quest}) do
     send_resp(conn, 400, Jason.encode!(%{"error" => "the user doesn't have that quest"}))
+  end
+
+  def call(conn, {:error, :no_more_levels}) do
+    send_resp(conn, 400, Jason.encode!(%{"error" => "cannot further level up"}))
   end
 
   def call(conn, {:error, _failed_operation, :not_found, _changes_so_far}) do
