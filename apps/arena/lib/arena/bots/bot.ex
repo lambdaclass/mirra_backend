@@ -207,8 +207,8 @@ defmodule Arena.Bots.Bot do
     Logger.error("Bot #{state.bot_id} terminating: #{inspect(reason)}")
   end
 
-  defp min_decision_delay_ms(), do: 100
-  defp max_decision_delay_ms(), do: 150
+  defp min_decision_delay_ms(), do: 40
+  defp max_decision_delay_ms(), do: 60
 
   defp get_shape("polygon"), do: :polygon
   defp get_shape("circle"), do: :circle
