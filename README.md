@@ -205,3 +205,70 @@ In future iterations, we will add the following apps:
 - Leaderboard
 
 And some more.
+
+## Performance
+
+We perform load tests to evaluate how many games our servers can handle. Our load tests setup consists of a load test runner server and an arena server. Then, we launch X amount of load test clients (players) on the load test app that try to join a game in the arena server. We also control how many of those players join into the same game. Games are completed with bots until they reach the game mode's player amount. With these we have evaluated 2 different scenarios:
+
+- Games consisting of 12 load test players
+- Games consisting of 1 load test player and 11 bots
+    - We have been able to support ~350 games in a single server where it nears 100% CPU utilization. If you get to 400 games instead, your games might start stuttering. 
+
+Specs of the servers used for these tests are:
+
+<details>
+<summary>Arena server specs</summary>
+
+```bash
+🔹 Hostname & OS Info:
+Operating System: Debian GNU/Linux 12 (bookworm)
+          Kernel: Linux 6.1.0-28-amd64
+    Architecture: x86-64
+
+🔹 CPU Information:
+CPU(s):                               64
+On-line CPU(s) list:                  0-63
+Vendor ID:                            AuthenticAMD
+Model name:                           AMD EPYC 7502P 32-Core Processor
+Thread(s) per core:                   2
+Core(s) per socket:                   32
+Socket(s):                            1
+CPU(s) scaling MHz:                   63%
+NUMA node0 CPU(s):                    0-63
+
+🔹 Total Memory (RAM):
+125.65 GB
+
+🔹 Filesystem Disk Usage:
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/nvme0n1p3  875G  5.1G  825G   1% /
+```
+</details>
+
+<details>
+<summary>Load Test runner server specs (virtualized)</summary>
+
+```bash
+🔹 Hostname & OS Info:
+Operating System: Debian GNU/Linux 12 (bookworm)
+          Kernel: Linux 6.1.0-31-amd64
+    Architecture: x86-64
+
+🔹 CPU Information:
+CPU(s):                               4
+On-line CPU(s) list:                  0-3
+Vendor ID:                            GenuineIntel
+Model name:                           Intel Xeon Processor (Skylake, IBRS, no TSX)
+Thread(s) per core:                   1
+Core(s) per socket:                   4
+Socket(s):                            1
+NUMA node0 CPU(s):                    0-3
+
+🔹 Total Memory (RAM):
+7.57 GB
+
+🔹 Filesystem Disk Usage:
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1        75G  6.4G   66G   9% /
+```
+</details>
