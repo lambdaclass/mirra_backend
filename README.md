@@ -212,7 +212,7 @@ We perform load tests to evaluate how many games our servers can handle. Our loa
 
 - Games consisting of 12 load test players
 - Games consisting of 1 load test player and 11 bots
-    - We have been able to support ~350 games in a single server where it nears 100% CPU utilization. If you get to 400 games instead, your games might start stuttering. 
+    - ([Loadtest Snapshot](https://grafana.championsofmirra.com/dashboard/snapshot/p86A4TiHhxOsMmQFJrO7XPeBI1reVix3?orgId=1&from=2025-05-09T16:07:15.000Z&to=2025-05-09T17:25:15.000Z&timezone=browser&refresh=5s)) We have been able to support ~350 games in a single server where it nears 100% CPU utilization. If you get to 400 games instead, your games might start stuttering. 
 
 Specs of the servers used for these tests are:
 
