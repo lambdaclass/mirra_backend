@@ -272,3 +272,14 @@ Filesystem      Size  Used Avail Use% Mounted on
 /dev/sda1        75G  6.4G   66G   9% /
 ```
 </details>
+
+### Next tests
+
+#### ETS Tables
+
+We changed how the GameUpdater broadcasts information to bots. Instead of sending the game state via PubSub (as we do for normal clients/players), we now create an ETS table per match. The game state diffs are inserted into this table, and bots fetch the data whenever the updater instructs them to do so (via PubSub).
+
+We ran a load test with 1 player and 11 bots per match and observed no performance differences compared to main.
+  - Here's the used code: https://github.com/lambdaclass/mirra_backend/pull/1203
+
+Next, we plan to test this further by completely removing PubSub for bots, allowing them to fetch new states on demand. We'll also experiment with having them fetch state less frequently than the tick rate (e.g., intervals > 30ms). These tests will help us gain deeper insight into how we can continue improving backend bot performance.
