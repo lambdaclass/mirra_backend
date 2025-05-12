@@ -177,8 +177,13 @@ setup-central-caddy:
 	echo "  reverse_proxy localhost:4000" | sudo tee -a /etc/caddy/Caddyfile > /dev/null && \
 	echo "}" | sudo tee -a /etc/caddy/Caddyfile > /dev/null && \
 	sudo sh -c 'echo "" >> /etc/caddy/Caddyfile'
+	sudo truncate -s 0 /etc/caddy/Caddyfile && \
+	echo "$$(hostname).configurator.championsofmirra.com {" | sudo tee -a /etc/caddy/Caddyfile > /dev/null && \
+	echo "  reverse_proxy localhost:4100" | sudo tee -a /etc/caddy/Caddyfile > /dev/null && \
+	echo "}" | sudo tee -a /etc/caddy/Caddyfile > /dev/null && \
+	sudo sh -c 'echo "" >> /etc/caddy/Caddyfile'
 	echo "$$(hostname).grafana.championsofmirra.com {" | sudo tee -a /etc/caddy/Caddyfile > /dev/null && \
-	echo "  reverse_proxy localhost:4000" | sudo tee -a /etc/caddy/Caddyfile > /dev/null && \
+	echo "  reverse_proxy localhost:3000" | sudo tee -a /etc/caddy/Caddyfile > /dev/null && \
 	echo "}" | sudo tee -a /etc/caddy/Caddyfile > /dev/null && \
 	sudo sh -c 'echo "" >> /etc/caddy/Caddyfile'
 	sudo systemctl restart caddy
