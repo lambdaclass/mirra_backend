@@ -831,6 +831,8 @@ defmodule Arena.GameUpdater do
         event: {:update, game_state}
       })
 
+    :telemetry.execute([:game_updater, :broadcast], %{binary_size: bit_size(encoded_state) / 1_000_000})
+
     PubSub.broadcast(Arena.PubSub, game_id, {:game_update, encoded_state})
   end
 

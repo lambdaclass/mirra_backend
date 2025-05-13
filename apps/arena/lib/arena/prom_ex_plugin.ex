@@ -23,7 +23,11 @@ defmodule Arena.PromExPlugin do
           reporter_options: [buckets: [7_500_000.0, 15_000_000.0, 22_500_000.0]]
         ),
         sum("arena.clients.count", description: "Number of clients (websockets) connected"),
-        sum([:bots, :count], description: "Amount of active bots")
+        sum([:bots, :count], description: "Amount of active bots"),
+        distribution([:game_updater, :broadcast, :binary_size],
+          reporter_options: [buckets: [0, 10, 100, 1_000, 10_000, 100_000]],
+          description: "Size of encoded game update broadcast in Megabits"
+        )
       ]),
       Event.build(:vm_metrics, [
         last_value("vm.memory.total", unit: {:byte, :kilobyte}),
