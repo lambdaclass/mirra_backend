@@ -91,7 +91,7 @@ debian-install-deps:
 	cd ~/ \
 	sudo dpkg -i /tmp/libssl1.1_1.1.1w-0+deb11u1_amd64.deb \
 	sudo dpkg -i /tmp/esl-erlang_26.2.3-1~debian~buster_amd64.deb \
-	sudo unzip -qo /tmp/elixir-otp-26.zip
+	sudo unzip -d /usr/ -qo /tmp/elixir-otp-26.zip
 	rm /tmp/libssl1.1_1.1.1w-0+deb11u1_amd64.deb
 	rm /tmp/esl-erlang_26.2.3-1~debian~buster_amd64.deb
 	rm /tmp/elixir-otp-26.zip
