@@ -15,7 +15,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "11.5.2"
+      "version": "12.0.0"
     },
     {
       "type": "datasource",
@@ -100,15 +100,15 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "percent"
         },
         "overrides": []
       },
@@ -132,9 +132,13 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "12.0.0",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
           "disableTextWrap": false,
           "editorMode": "builder",
           "expr": "os_cpu_usage",
@@ -143,11 +147,7 @@
           "legendFormat": "__auto",
           "range": true,
           "refId": "A",
-          "useBackend": false,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          }
+          "useBackend": false
         }
       ],
       "title": "CPU Usage (%)",
@@ -201,15 +201,15 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "decmbytes"
         },
         "overrides": []
       },
@@ -233,9 +233,13 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "12.0.0",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
           "disableTextWrap": false,
           "editorMode": "code",
           "expr": "os_free_memory",
@@ -244,11 +248,7 @@
           "legendFormat": "__auto",
           "range": true,
           "refId": "A",
-          "useBackend": false,
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          }
+          "useBackend": false
         },
         {
           "datasource": {
@@ -285,7 +285,7 @@
           "useBackend": false
         }
       ],
-      "title": "OS Memory usage (MB)",
+      "title": "OS Memory usage",
       "type": "timeseries"
     },
     {
@@ -337,8 +337,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -369,7 +368,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "12.0.0",
       "targets": [
         {
           "datasource": {
@@ -439,8 +438,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -471,7 +469,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "12.0.0",
       "targets": [
         {
           "datasource": {
@@ -541,8 +539,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -573,7 +570,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "12.0.0",
       "targets": [
         {
           "datasource": {
@@ -638,8 +635,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -670,7 +666,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "12.0.0",
       "targets": [
         {
           "datasource": {
@@ -766,7 +762,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "12.0.0",
       "targets": [
         {
           "datasource": {
@@ -831,8 +827,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -863,7 +858,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.2",
+      "pluginVersion": "12.0.0",
       "targets": [
         {
           "datasource": {
@@ -1081,6 +1076,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
+      "description": "Amount of game matches being played.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1182,7 +1178,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "",
+      "description": "Size of encoded game update broadcasted to each player.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1234,7 +1230,7 @@
               }
             ]
           },
-          "unit": "count"
+          "unit": "Mbits"
         },
         "overrides": []
       },
@@ -1244,7 +1240,7 @@
         "x": 12,
         "y": 40
       },
-      "id": 2,
+      "id": 21,
       "options": {
         "legend": {
           "calcs": [],
@@ -1261,23 +1257,22 @@
       "pluginVersion": "12.0.0",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "avg by(le) (arena_game_tick_duration_bucket)",
+          "editorMode": "code",
+          "expr": "rate(game_updater_broadcast_binary_size_sum[5m]) / rate(game_updater_broadcast_binary_size_count[5m]) * 30\n",
           "fullMetaSearch": false,
-          "includeNullMetadata": false,
-          "instant": false,
+          "includeNullMetadata": true,
           "legendFormat": "__auto",
           "range": true,
           "refId": "A",
-          "useBackend": false
+          "useBackend": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          }
         }
       ],
-      "title": "(Do not use) Game tick duration",
+      "title": "Avg broadcast binary size",
       "type": "timeseries"
     },
     {
@@ -1285,6 +1280,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
+      "description": "Average time to process a game state update in milliseconds.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1336,7 +1332,7 @@
               }
             ]
           },
-          "unit": "ns"
+          "unit": "ms"
         },
         "overrides": []
       },
@@ -1368,8 +1364,8 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "avg by(host) (arena_game_tick_duration_measure)",
+          "editorMode": "code",
+          "expr": "rate(arena_game_tick_duration_sum[5m]) / rate(arena_game_tick_duration_count[5m])",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -1379,7 +1375,7 @@
           "useBackend": false
         }
       ],
-      "title": "Game tick last duration",
+      "title": "Avg game update tick duration (ms)",
       "type": "timeseries"
     },
     {
@@ -1646,8 +1642,8 @@
       "gridPos": {
         "h": 8,
         "w": 12,
-        "x": 0,
-        "y": 64
+        "x": 12,
+        "y": 56
       },
       "id": 3,
       "options": {
@@ -1687,19 +1683,19 @@
     }
   ],
   "refresh": "5s",
-  "schemaVersion": 40,
+  "schemaVersion": 41,
   "tags": [],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "Arena",
   "uid": "fdixa7yyhidxca",
-  "version": 3,
+  "version": 2,
   "weekStart": ""
 }
