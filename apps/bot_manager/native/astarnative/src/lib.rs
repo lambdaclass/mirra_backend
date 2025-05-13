@@ -80,6 +80,32 @@ fn build_collision_grid<'a>(env: Env<'a>, obstacles: HashMap<u64, Entity>) -> Re
     return Ok(grid.release(env));
 }
 
+#[rustler::nif()]
+fn simplify_path(path: Vec<Position>, obstacles: HashMap<u64, Entity>) -> Vec<Position> {
+    if path.len() < 3 {
+        return path;
+    }
+
+    let obstacles = obstacles.into_values().collect::<Vec<_>>();
+    let mut final_path = vec![path[0]];
+
+    let mut checkpoint_index = 1;
+    while checkpoint_index < path.len() - 1 {
+        let mut line = Entity::new_line(0, vec![final_path[final_path.len() - 1], path[checkpoint_index + 1]]);
+
+        if !line.collides_with(&obstacles).is_empty() {
+            final_path.push(path[checkpoint_index]);
+        }
+
+        checkpoint_index += 1;
+    } 
+
+    final_path.push(path[path.len() - 1]);
+
+    return final_path;
+}
+
+
 #[derive(Clone, Copy, Eq, PartialEq)]
 struct NodeEntry {
     node: (i64, i64),
@@ -175,4 +201,4 @@ fn grid_to_world(grid_pos: &(i64, i64)) -> Position {
     }
 }
 
-rustler::init!("Elixir.AStarNative", [a_star_shortest_path, build_collision_grid]);
+rustler::init!("Elixir.AStarNative", [a_star_shortest_path, build_collision_grid, simplify_path]);
