@@ -13,6 +13,7 @@ defmodule Arena.PromExPlugin do
         sum("arena.game.count", description: "Number of games in progress"),
         distribution("arena.game.tick.duration",
           description: "Time spent on running a game update tick",
+          unit: {:native, :millisecond},
           reporter_options: [buckets: [0, 5, 10, 30, 100, 1_000]]
         ),
         sum("arena.clients.count", description: "Number of clients (websockets) connected"),
