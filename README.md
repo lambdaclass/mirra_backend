@@ -3,11 +3,16 @@ Mirra Backend is an umbrella project that contains several apps within it.
 
 The objective is to split the project into multiple applications (modules) based on their responsibilities. This will allow us to add decoupled modules that can be used together without having a dependency between them.
 
+## Table of Contents
+- [Setup Guide](#setup-guide)
+- [Applications](#applications)
+- [Performance](#performance)
+
 ## Setup Guide
 
 This guide will help you install the necessary tools and run the backend services for the Mirra project.
 
-## 1. Install Nix
+### 1. Install Nix
 
 Run the following command in the terminal:
 
@@ -33,7 +38,7 @@ If you see:
 
 Then Nix has been installed correctly. For more details, check the [Nixcademy installation guide](https://nixcademy.com).
 
-## 2. Install Devenv
+### 2. Install Devenv
 
 Nix MUST be installed before devenv (devenv depends on nix).  
 The following command installs devenv:
@@ -70,13 +75,13 @@ Then after you're done with Vim, You have to restart the nix-daemon
 sudo launchctl kickstart -k system/systems.determinate.nix-daemon
 ```
 
-## 3. Clone the repository
+### 3. Clone the repository
 
 ```bash
 git clone https://github.com/lambdaclass/mirra_backend.git
 ```
 
-## 4. Install the Elixir package manager
+### 4. Install the Elixir package manager
 
 ```bash
 cd mirra_backend
@@ -84,7 +89,7 @@ devenv shell
 mix archive.install github hexpm/hex branch latest
 ```
 
-## 5. Install Protobuf
+### 5. Install Protobuf
 
 Protobuf is used to serialize WebSocket messages. Install it with:
 
@@ -95,7 +100,7 @@ mix escript.install hex protobuf
 
 ⚠️ **Note:** If you used `brew`, add the `escripts` folder to your `$PATH` (follow the instructions after installation).
 
-## 6. Install JS Protobuf for the client
+### 6. Install JS Protobuf for the client
 
 ```bash
 cd assets
@@ -104,7 +109,7 @@ npm install -g protoc-gen-js
 cd ..
 ```
 
-## 7. Start the applications
+### 7. Start the applications
 
 To build and run all the applications, run the following command:
 
@@ -205,3 +210,103 @@ In future iterations, we will add the following apps:
 - Leaderboard
 
 And some more.
+
+## Performance
+
+We perform load tests to evaluate how many games and players our servers can handle. Our load test setup consists of a load test runner server and an arena server. We launch a number of load test clients (players) from the load test app, which attempt to join games hosted by the arena server. We also control how many of those players are placed into the same game. Matches are filled with bots until they reach the required player count, which is currently 12 players (clients + bots) per match. It’s important to note that bots run inside the same Arena application as the game matches.
+
+Using this setup, we evaluated three different scenarios. The results below are from one-hour load test sessions:
+
+- Games with 12 load test clients (no bots scenario):
+  - Supported 75 concurrent games, totaling 900 load test clients.
+  - Bandwidth reached the 1 Gbps limit.
+  - [Loadtest Snapshot](https://grafana.championsofmirra.com/dashboard/snapshot/OmIYoHxi1kWnhBSec2YbWiJ3aLuxoiY8?orgId=1&from=2025-05-13T16:10:00.000Z&to=2025-05-13T17:10:59.000Z&timezone=browser&refresh=5s)
+- Games with 6 load test clients and 6 bots:
+  - Supported 150 concurrent games, totaling 900 load test clients and 900 bots.
+  - Bandwidth reached the 1 Gbps limit.
+  - [Loadtest Snapshot](https://grafana.championsofmirra.com/dashboard/snapshot/Kvx7Jyhm5ThB6sa8B6eS0F27bQKDucOU)
+- Games with 1 load test client and 11 bots (solo client scenario):
+  - Supported around concurrent 350 games, totaling 350 load test clients and 3850 bots.
+  - CPU usage reached 100% and became the limiting factor.
+  - [Loadtest Snapshot](https://grafana.championsofmirra.com/dashboard/snapshot/p86A4TiHhxOsMmQFJrO7XPeBI1reVix3?orgId=1&from=2025-05-09T16:07:15.000Z&to=2025-05-09T17:25:15.000Z&timezone=browser&refresh=5s)
+
+### Specs of the servers used for load tests
+
+<details>
+<summary>Arena server specs</summary>
+
+```bash
+🔹 Hostname & OS Info:
+Operating System: Debian GNU/Linux 12 (bookworm)
+          Kernel: Linux 6.1.0-28-amd64
+    Architecture: x86-64
+
+🔹 CPU Information:
+CPU(s):                               64
+On-line CPU(s) list:                  0-63
+Vendor ID:                            AuthenticAMD
+Model name:                           AMD EPYC 7502P 32-Core Processor
+Thread(s) per core:                   2
+Core(s) per socket:                   32
+Socket(s):                            1
+CPU(s) scaling MHz:                   63%
+NUMA node0 CPU(s):                    0-63
+
+🔹 Total Memory (RAM):
+125.65 GB
+
+🔹 Filesystem Disk Usage:
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/nvme0n1p3  875G  5.1G  825G   1% /
+```
+</details>
+
+<details>
+<summary>Load Test runner server specs (virtualized)</summary>
+
+```bash
+🔹 Hostname & OS Info:
+Operating System: Debian GNU/Linux 12 (bookworm)
+          Kernel: Linux 6.1.0-31-amd64
+    Architecture: x86-64
+
+🔹 CPU Information:
+CPU(s):                               4
+On-line CPU(s) list:                  0-3
+Vendor ID:                            GenuineIntel
+Model name:                           Intel Xeon Processor (Skylake, IBRS, no TSX)
+Thread(s) per core:                   1
+Core(s) per socket:                   4
+Socket(s):                            1
+NUMA node0 CPU(s):                    0-3
+
+🔹 Total Memory (RAM):
+7.57 GB
+
+🔹 Filesystem Disk Usage:
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1        75G  6.4G   66G   9% /
+```
+</details>
+
+### Next tests
+
+#### Increase server network bandwidth
+
+It'd be ideal in the future to be able to deploy and run a loadtest without bandwidth bottleneck. This could be achieved by increasing the server’s network bandwidth capacity.
+
+#### Reducing bandwidth consumption
+
+Currently each client consumes 1mbps. Even by having 10gbps we wouldn't stand 10k users on a single server. We should try to reduce the size of our updates (our diff algorithm is still a bit naive, so we can definitely do some improvements over there).
+
+#### Reduce bots messages: ETS Tables
+
+We recently [fixed a bug](https://github.com/lambdaclass/mirra_backend/pull/1195) that prevented us from supporting more than 100 games (110 players + 1100 bots) before the gameplay started to degrade.
+The issue was caused by the GameUpdater process sending 231,648 bytes to each bot process every 30 milliseconds. We discovered that 217,336 of those bytes were redundant—bots didn’t need that data more than once. This inefficiency pushed us closer to real hardware bottlenecks, particularly in CPU and bandwidth usage.
+
+While looking for alternatives, we changed how the GameUpdater broadcasts information to bots. Instead of sending the game state via PubSub (as we do for normal clients/players), we now create an ETS table per match. The game state diffs are inserted into this table, and bots fetch the data whenever the updater instructs them to do so (via PubSub).
+
+We ran a load test with 1 player and 11 bots per match and observed no performance differences compared to main.
+  - Here's the used code: https://github.com/lambdaclass/mirra_backend/pull/1203
+
+Next, we plan to test this further by completely removing PubSub for bots, allowing them to fetch new states on demand. We'll also experiment with having them fetch state less frequently than the tick rate (e.g., intervals > 30ms). These tests will help us gain deeper insight into how we can continue improving backend bot performance.
