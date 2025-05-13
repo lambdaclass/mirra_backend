@@ -3,6 +3,7 @@ defmodule Champions.Items do
   Items logic for Champions of Mirra.
   """
 
+  alias GameBackend.Ledger
   alias Ecto.Multi
   alias GameBackend.Items
   alias GameBackend.Transaction
@@ -55,9 +56,7 @@ defmodule Champions.Items do
         Multi.new()
         |> Multi.run(:item, fn _, _ -> Items.insert_item(%{user_id: user_id, template_id: new_template.id}) end)
         |> Multi.run(:deleted_items, fn _, _ -> delete_consumed_items(consumed_items_ids) end)
-        |> Multi.run(:currency_deduction, fn _, _ ->
-          Currencies.substract_currencies(user_id, new_template.upgrade_costs)
-        end)
+        |> Ledger.register_currencies_spent(user_id, new_template.upgrade_costs, "Fuse item")
         |> Transaction.run()
 
       case result do
