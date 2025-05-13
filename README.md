@@ -293,7 +293,7 @@ Filesystem      Size  Used Avail Use% Mounted on
 
 #### Increase server network bandwidth
 
-It'd be ideal in the future to be able to deploy and run a loadtest without bandwidth bottleneck, by increasing the network bandwidth to a higher number.
+It'd be ideal in the future to be able to deploy and run a loadtest without bandwidth bottleneck. This could be achieved by increasing the server’s network bandwidth capacity.
 
 #### Reducing bandwidth consumption
 
