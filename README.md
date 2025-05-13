@@ -208,33 +208,21 @@ And some more.
 
 ## Performance
 
-Each client consumes about 1Mbps of bandwidth during games, so keep it into
-account when deploying your arena servers. Your server might be able to handle
-thousands of CCUs if you look at the cpu and memory but if you lack the
-bandwidth the game will get stuck and it won't be a nice gaming experience.
+Each client consumes about 1Mbps of bandwidth during games, so keep it into account when deploying your arena servers. Your server might be able to handle thousands of CCUs if you look at the cpu and memory but if you lack the bandwidth the game will get stuck and it won't be a nice gaming experience.
 
-We perform load tests to evaluate how many games our servers can handle. Our
-load tests setup consists of a load test runner server and an arena server.
-Then, we launch X amount of load test clients (players) on the load test app
-that try to join a game in the arena server. We also control how many of those
-players join into the same game. Games are completed with bots until they reach
-the game mode's player amount. With these we have evaluated 2 different
-scenarios:
+We perform load tests to evaluate how many games our servers can handle. Our load tests setup consists of a load test runner server and an arena server. Then, we launch X amount of load test clients (players) on the load test app that try to join a game in the arena server. We also control how many of those players join into the same game. Games are completed with bots until they reach the game mode's player amount. With these we have evaluated 2 different scenarios:
 
 - Games consisting of 12 load test players
-    - Due to bandwidth constraints, we were only able to test 75 games full of
-    load test players (900 load test clients) as we were reaching the 1gbps
-    bandwidth limit.
+    - Due to bandwidth constraints, we were only able to test 75 games full of load test players (900 load test clients) as we were reaching the 1gbps bandwidth limit.
     - [Loadtest Snapshot](https://grafana.championsofmirra.com/dashboard/snapshot/OmIYoHxi1kWnhBSec2YbWiJ3aLuxoiY8?orgId=1&from=2025-05-13T16:10:00.000Z&to=2025-05-13T17:10:59.000Z&timezone=browser&refresh=5s)
 - Games consisting of 6 load test players and 6 bots
-    - We were able to test 150 games with this setup (900 load test clients +
-    900 bots) again limited by bandwidth constraints
-    - [Loadtest Snapshot]()
+    - We were able to test 150 games with this setup (900 load test clients + 900 bots) again limited by bandwidth constraints
+    - [Loadtest Snapshot](https://grafana.championsofmirra.com/dashboard/snapshot/Kvx7Jyhm5ThB6sa8B6eS0F27bQKDucOU)
 - Games consisting of 1 load test player and 11 bots
     - we were able to test 400 games with this setup (400 load test clients + 4400 bots)
     - ([Loadtest Snapshot](https://grafana.championsofmirra.com/dashboard/snapshot/p86A4TiHhxOsMmQFJrO7XPeBI1reVix3?orgId=1&from=2025-05-09T16:07:15.000Z&to=2025-05-09T17:25:15.000Z&timezone=browser&refresh=5s)) We have been able to support ~350 games in a single server where it nears 100% CPU utilization. If you get to 400 games instead, your games might start stuttering. 
 
-Specs of the servers used for these tests are:
+### Specs of the servers used for load tests
 
 <details>
 <summary>Arena server specs</summary>
@@ -297,7 +285,11 @@ Filesystem      Size  Used Avail Use% Mounted on
 
 #### Test env
 
-It'd be ideal in the future to be able to deploy and run a loadtest environment suited for our needs, trying to avoid hardware constraints such as core amount, bandwidth, system memory, etc.
+It'd be ideal in the future to be able to deploy and run a loadtest without bandwidth bottleneck.
+
+#### Reducing bandwidth consumption
+
+Currently each client consumes 1mbps, which is quite a lot. Even by having 10gbps we wouldn't stand 10k users on a single server. We should try to reduce the size of our updates (our diff algorithm is still a bit naive, so we can definitely do some improvements over there).
 
 #### ETS Tables
 
